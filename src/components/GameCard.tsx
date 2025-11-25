@@ -115,9 +115,9 @@ export const GameCard = ({ game }: GameCardProps) => {
   };
 
   const difficultyColors = {
-    easy: 'bg-green-500/20 text-green-300 border-green-500/30',
-    medium: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-    hard: 'bg-red-500/20 text-red-300 border-red-500/30',
+    easy: 'bg-primary/30 text-primary border-primary/50',
+    medium: 'bg-secondary/30 text-secondary border-secondary/50',
+    hard: 'bg-accent/30 text-accent border-accent/50',
   };
 
   const difficultyEmoji = {
@@ -126,13 +126,14 @@ export const GameCard = ({ game }: GameCardProps) => {
     hard: '🔥',
   };
 
-  // Generate thumbnail placeholder based on game genre
+  // Generate thumbnail placeholder based on game genre - Green & Orange Theme!
   const genreColors = {
-    casual: 'from-blue-400 to-blue-600',
-    brain: 'from-purple-400 to-purple-600',
-    adventure: 'from-green-400 to-green-600',
-    educational: 'from-yellow-400 to-yellow-600',
-    racing: 'from-red-400 to-red-600',
+    casual: 'from-primary via-secondary to-accent',
+    brain: 'from-secondary via-accent to-primary',
+    adventure: 'from-primary to-secondary',
+    educational: 'from-accent to-primary',
+    racing: 'from-secondary to-primary',
+    puzzle: 'from-primary via-accent to-secondary',
   };
 
   const genreEmojis = {
@@ -141,6 +142,7 @@ export const GameCard = ({ game }: GameCardProps) => {
     adventure: '🗺️',
     educational: '📚',
     racing: '🏎️',
+    puzzle: '🧩',
   };
 
   return (
@@ -153,10 +155,20 @@ export const GameCard = ({ game }: GameCardProps) => {
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${genreColors[game.genre as keyof typeof genreColors] || 'from-primary to-secondary'} flex items-center justify-center`}>
-            <span className="text-8xl opacity-80 transform group-hover:scale-125 transition-transform duration-500">
+          <div className={`w-full h-full bg-gradient-to-br ${genreColors[game.genre as keyof typeof genreColors] || 'from-primary to-secondary'} flex flex-col items-center justify-center gap-4 relative overflow-hidden`}>
+            {/* Animated Background Circles */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            
+            {/* Game Emoji */}
+            <span className="text-9xl filter drop-shadow-2xl transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 relative z-10">
               {genreEmojis[game.genre as keyof typeof genreEmojis] || '🎮'}
             </span>
+            
+            {/* Game Title Overlay */}
+            <div className="text-white text-2xl font-fredoka font-bold text-center px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 relative z-10 bg-black/30 backdrop-blur-sm rounded-2xl py-2">
+              {game.title}
+            </div>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
