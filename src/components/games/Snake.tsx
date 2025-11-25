@@ -7,13 +7,28 @@ interface Position {
   y: number;
 }
 
-export const Snake = () => {
+interface SnakeProps {
+  level?: number;
+  difficultyMultiplier?: number;
+  onLevelComplete?: () => void;
+  onBack?: () => void;
+}
+
+export const Snake = ({ 
+  level = 1, 
+  difficultyMultiplier = 1.0,
+  onLevelComplete 
+}: SnakeProps = {}) => {
   const gridSize = 20;
+  const baseSpeed = 150;
+  const gameSpeed = baseSpeed / difficultyMultiplier; // Speed increases with difficulty
+  
   const [snake, setSnake] = useState<Position[]>([{ x: 10, y: 10 }]);
   const [food, setFood] = useState<Position>({ x: 15, y: 15 });
   const [direction, setDirection] = useState<'UP' | 'DOWN' | 'LEFT' | 'RIGHT'>('RIGHT');
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
+  const targetScore = Math.floor(5 * difficultyMultiplier); // Target increases with level
 
   const generateFood = useCallback(() => {
     const newFood = {

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useGameLevel } from "@/hooks/useGameLevel";
+import { LevelSelector } from "@/components/LevelSelector";
 
 // Import all game components
 import { TicTacToe } from "@/components/games/TicTacToe";
@@ -43,6 +45,18 @@ const GamePlay = () => {
   const { user } = useAuth();
   const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLevelSelector, setShowLevelSelector] = useState(true);
+  const [gameStarted, setGameStarted] = useState(false);
+  
+  const {
+    currentLevel,
+    setCurrentLevel,
+    highestLevelCompleted,
+    loading: levelLoading,
+    completeLevel,
+    getLevelConfig,
+    getCoinReward,
+  } = useGameLevel(gameId || "");
 
   useEffect(() => {
     if (gameId) {
@@ -101,35 +115,66 @@ const GamePlay = () => {
     }
   };
 
+  const handleStartGame = () => {
+    setShowLevelSelector(false);
+    setGameStarted(true);
+  };
+
+  const handleBackToLevelSelect = () => {
+    setShowLevelSelector(true);
+    setGameStarted(false);
+  };
+
+  const handleLevelComplete = () => {
+    completeLevel(currentLevel);
+    // Show level selector again after completing a level
+    setTimeout(() => {
+      setShowLevelSelector(true);
+      setGameStarted(false);
+      // Auto-advance to next level if available
+      if (currentLevel < 10) {
+        setCurrentLevel(currentLevel + 1);
+      }
+    }, 1500);
+  };
+
   const renderGame = () => {
     if (!game) return null;
 
+    const levelConfig = getLevelConfig(currentLevel);
+    const gameProps = {
+      level: currentLevel,
+      difficultyMultiplier: levelConfig.difficultyMultiplier,
+      onLevelComplete: handleLevelComplete,
+      onBack: handleBackToLevelSelect,
+    };
+
     // Map component_name from database to actual components
     switch (game.component_name) {
-      case "TicTacToe": return <TicTacToe />;
-      case "MemoryCards": return <MemoryCards />;
-      case "Snake": return <Snake />;
-      case "Game2048": return <Game2048 />;
-      case "FlappyBird": return <FlappyBird />;
-      case "SpaceShooter": return <SpaceShooter />;
-      case "MazeRunner": return <MazeRunner />;
-      case "ColorMatch": return <ColorMatch />;
-      case "MathQuiz": return <MathQuiz />;
-      case "RockPaperScissors": return <RockPaperScissors />;
-      case "Platformer": return <Platformer />;
-      case "Racing": return <Racing />;
-      case "TowerDefense": return <TowerDefense />;
-      case "DungeonCrawler": return <DungeonCrawler />;
+      case "TicTacToe": return <TicTacToe {...gameProps} />;
+      case "MemoryCards": return <MemoryCards {...gameProps} />;
+      case "Snake": return <Snake {...gameProps} />;
+      case "Game2048": return <Game2048 {...gameProps} />;
+      case "FlappyBird": return <FlappyBird {...gameProps} />;
+      case "SpaceShooter": return <SpaceShooter {...gameProps} />;
+      case "MazeRunner": return <MazeRunner {...gameProps} />;
+      case "ColorMatch": return <ColorMatch {...gameProps} />;
+      case "MathQuiz": return <MathQuiz {...gameProps} />;
+      case "RockPaperScissors": return <RockPaperScissors {...gameProps} />;
+      case "Platformer": return <Platformer {...gameProps} />;
+      case "Racing": return <Racing {...gameProps} />;
+      case "TowerDefense": return <TowerDefense {...gameProps} />;
+      case "DungeonCrawler": return <DungeonCrawler {...gameProps} />;
       
       // Old games still available
-      case "GuessNumber": return <GuessNumber />;
-      case "WhackAMole": return <WhackAMole />;
-      case "BalloonPop": return <BalloonPop />;
-      case "Sudoku": return <Sudoku />;
-      case "WordScramble": return <WordScramble />;
-      case "SimonSays": return <SimonSays />;
-      case "TriviaQuiz": return <TriviaQuiz />;
-      case "TreasureHunt": return <TreasureHunt />;
+      case "GuessNumber": return <GuessNumber {...gameProps} />;
+      case "WhackAMole": return <WhackAMole {...gameProps} />;
+      case "BalloonPop": return <BalloonPop {...gameProps} />;
+      case "Sudoku": return <Sudoku {...gameProps} />;
+      case "WordScramble": return <WordScramble {...gameProps} />;
+      case "SimonSays": return <SimonSays {...gameProps} />;
+      case "TriviaQuiz": return <TriviaQuiz {...gameProps} />;
+      case "TreasureHunt": return <TreasureHunt {...gameProps} />;
       
       default:
         return (
@@ -142,7 +187,7 @@ const GamePlay = () => {
     }
   };
 
-  if (loading) {
+  if (loading || levelLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
@@ -204,7 +249,17 @@ const GamePlay = () => {
             </div>
 
             <div className="w-full">
-              {renderGame()}
+              {showLevelSelector && !gameStarted ? (
+                <LevelSelector
+                  highestLevelCompleted={highestLevelCompleted}
+                  currentLevel={currentLevel}
+                  onLevelSelect={setCurrentLevel}
+                  onStartGame={handleStartGame}
+                  getCoinReward={getCoinReward}
+                />
+              ) : (
+                renderGame()
+              )}
             </div>
           </div>
         </div>
