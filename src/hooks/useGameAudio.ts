@@ -14,8 +14,16 @@ export const useGameAudio = () => {
     };
   }, []);
 
+  const resumeAudioContext = async () => {
+    if (audioContextRef.current?.state === 'suspended') {
+      await audioContextRef.current.resume();
+    }
+  };
+
   const playSound = (frequency: number, duration: number, type: OscillatorType = 'sine') => {
     if (!isSoundEnabled || !audioContextRef.current) return;
+
+    resumeAudioContext();
 
     const ctx = audioContextRef.current;
     const oscillator = ctx.createOscillator();
@@ -81,8 +89,10 @@ export const useGameAudio = () => {
     playSound(1000, 0.15, 'triangle');
   };
 
-  const startBackgroundMusic = () => {
+  const startBackgroundMusic = async () => {
     if (!isMusicEnabled || !audioContextRef.current || musicNodeRef.current) return;
+
+    await resumeAudioContext();
 
     const ctx = audioContextRef.current;
     const oscillator = ctx.createOscillator();
