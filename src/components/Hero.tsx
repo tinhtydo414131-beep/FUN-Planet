@@ -3,6 +3,7 @@ import { Input } from "./ui/input";
 import { Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import camlyCoin from "@/assets/camly-coin.png";
 
 export const Hero = () => {
   const [search, setSearch] = useState("");
@@ -31,11 +32,25 @@ export const Hero = () => {
             <span className="font-comic text-lg font-bold text-primary">Welcome to KidCrypto Games! 🎉</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-fredoka font-black">
-            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-scale-in">
-              FUN GAME!
-            </span>
-          </h1>
+          <div className="flex items-center justify-center gap-6 md:gap-8">
+            <img 
+              src={camlyCoin} 
+              alt="Camly Coin" 
+              className="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 animate-spin" 
+              style={{ animationDuration: '10s' }}
+            />
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-fredoka font-black">
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-scale-in">
+                FUN GAME!
+              </span>
+            </h1>
+            <img 
+              src={camlyCoin} 
+              alt="Camly Coin" 
+              className="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 animate-spin" 
+              style={{ animationDuration: '10s', animationDirection: 'reverse' }}
+            />
+          </div>
 
           <p className="text-xl md:text-2xl text-muted-foreground font-comic max-w-3xl mx-auto leading-relaxed">
             🎮 Awesome games for kids! 🌟 Safe and fun! 🎁 Earn crypto rewards while you play!
