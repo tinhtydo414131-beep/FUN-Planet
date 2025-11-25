@@ -1,56 +1,192 @@
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { GameCard } from "@/components/GameCard";
-import { games } from "@/data/games";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { Search } from "lucide-react";
+import { toast } from "sonner";
+
+interface Game {
+  id: string;
+  title: string;
+  description: string;
+  genre: string;
+  difficulty: string;
+  thumbnail_url: string | null;
+  component_name: string;
+  total_likes: number;
+  total_plays: number;
+  how_to_play: string | null;
+}
 
 const Games = () => {
+  const [searchParams] = useSearchParams();
+  const [games, setGames] = useState<Game[]>([]);
+  const [filteredGames, setFilteredGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   
   const categories = [
-    { id: 'all', label: 'Tất cả' },
-    { id: 'casual', label: 'Giải trí' },
-    { id: 'brain', label: 'Trí tuệ' },
-    { id: 'adventure', label: 'Phiêu lưu' },
+    { id: 'all', label: 'All Games 🎮', emoji: '🎮' },
+    { id: 'casual', label: 'Casual', emoji: '🎯' },
+    { id: 'brain', label: 'Brain', emoji: '🧠' },
+    { id: 'adventure', label: 'Adventure', emoji: '🗺️' },
+    { id: 'educational', label: 'Educational', emoji: '📚' },
+    { id: 'racing', label: 'Racing', emoji: '🏎️' },
   ];
-  
-  const filteredGames = selectedCategory === 'all' 
-    ? games 
-    : games.filter(game => game.category === selectedCategory);
+
+  useEffect(() => {
+    fetchGames();
+  }, []);
+
+  useEffect(() => {
+    filterGames();
+  }, [games, selectedCategory, searchQuery]);
+
+  const fetchGames = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("games")
+        .select("*")
+        .eq("is_active", true)
+        .order("total_likes", { ascending: false });
+
+      if (error) throw error;
+      setGames(data || []);
+    } catch (error: any) {
+      console.error("Error fetching games:", error);
+      toast.error("Couldn't load games 😢");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterGames = () => {
+    let filtered = games;
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(game => game.genre === selectedCategory);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(game => 
+        game.title.toLowerCase().includes(query) ||
+        (game.description && game.description.toLowerCase().includes(query)) ||
+        game.genre.toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredGames(filtered);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    filterGames();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto py-32 px-4 text-center">
+          <div className="animate-bounce text-6xl mb-4">🎮</div>
+          <p className="text-2xl font-fredoka text-primary">Loading awesome games... ⏳</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
       <Navigation />
       
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-12 space-y-4 animate-fade-in">
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground">
-              Kho Game
+            <h1 className="text-5xl md:text-6xl font-fredoka font-bold text-primary">
+              Game Library 🎮
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Hơn {games.length} game thú vị đang chờ bạn khám phá
+            <p className="text-xl text-muted-foreground font-comic max-w-2xl mx-auto">
+              {games.length} amazing games waiting for you! 🌟
             </p>
           </div>
+
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-12">
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+              <Input
+                type="text"
+                placeholder="Search for games... 🔍"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-14 pr-4 py-6 text-lg font-comic border-4 border-primary/30 focus:border-primary rounded-2xl shadow-lg hover:shadow-xl transition-all"
+              />
+              <Button 
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 font-fredoka font-bold px-6 py-5 bg-gradient-to-r from-primary to-secondary hover:shadow-lg transform hover:scale-105 transition-all"
+              >
+                Search
+              </Button>
+            </div>
+          </form>
           
+          {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {categories.map((category) => (
               <Button
                 key={category.id}
                 variant={selectedCategory === category.id ? 'default' : 'outline'}
                 onClick={() => setSelectedCategory(category.id)}
-                className="px-6"
+                className={`font-fredoka font-bold text-lg px-8 py-6 border-4 transform hover:scale-110 transition-all ${
+                  selectedCategory === category.id
+                    ? 'bg-gradient-to-r from-primary to-secondary shadow-lg'
+                    : 'border-primary/30 hover:border-primary hover:bg-primary/10'
+                }`}
               >
+                <span className="mr-2">{category.emoji}</span>
                 {category.label}
               </Button>
             ))}
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredGames.map((game) => (
-              <GameCard key={game.id} game={game} />
-            ))}
-          </div>
+
+          {/* Games Grid */}
+          {filteredGames.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">😢</div>
+              <p className="text-2xl font-fredoka text-muted-foreground mb-2">No games found!</p>
+              <p className="text-lg font-comic text-muted-foreground">Try a different search or category</p>
+              <Button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                }}
+                className="mt-6 font-fredoka font-bold px-8 py-6 bg-gradient-to-r from-primary to-secondary"
+              >
+                Show All Games
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="text-center mb-8">
+                <p className="text-lg font-comic text-muted-foreground">
+                  Showing <span className="font-fredoka font-bold text-primary text-xl">{filteredGames.length}</span> game{filteredGames.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredGames.map((game) => (
+                  <GameCard key={game.id} game={game} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
     </div>

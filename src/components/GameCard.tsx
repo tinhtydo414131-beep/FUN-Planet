@@ -1,53 +1,254 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play } from "lucide-react";
-import { Game } from "@/data/games";
+import { Play, Heart, Info, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface Game {
+  id: string;
+  title: string;
+  description: string;
+  genre: string;
+  difficulty: string;
+  thumbnail_url: string | null;
+  total_likes: number;
+  total_plays: number;
+  how_to_play: string | null;
+}
 
 interface GameCardProps {
   game: Game;
 }
 
 export const GameCard = ({ game }: GameCardProps) => {
+  const { user } = useAuth();
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(game.total_likes);
+  const [plays, setPlays] = useState(game.total_plays);
+
+  useEffect(() => {
+    if (user) {
+      checkIfLiked();
+    }
+  }, [user, game.id]);
+
+  const checkIfLiked = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("game_ratings")
+        .select("id")
+        .eq("game_id", game.id)
+        .eq("user_id", user.id)
+        .eq("liked", true)
+        .single();
+
+      if (data) {
+        setLiked(true);
+      }
+    } catch (error: any) {
+      // No rating found
+    }
+  };
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast.error("Please log in to like games! 😊");
+      return;
+    }
+
+    try {
+      if (liked) {
+        // Unlike
+        await supabase
+          .from("game_ratings")
+          .delete()
+          .eq("game_id", game.id)
+          .eq("user_id", user.id);
+
+        await supabase
+          .from("games")
+          .update({ total_likes: Math.max(0, likes - 1) })
+          .eq("id", game.id);
+
+        setLiked(false);
+        setLikes(Math.max(0, likes - 1));
+        toast.success("Removed from favorites 💔");
+      } else {
+        // Like
+        await supabase
+          .from("game_ratings")
+          .insert({
+            game_id: game.id,
+            user_id: user.id,
+            liked: true,
+          });
+
+        await supabase
+          .from("games")
+          .update({ total_likes: likes + 1 })
+          .eq("id", game.id);
+
+        setLiked(true);
+        setLikes(likes + 1);
+        toast.success("Added to favorites! ❤️");
+      }
+    } catch (error: any) {
+      console.error("Error toggling like:", error);
+      toast.error("Something went wrong! 😢");
+    }
+  };
+
   const difficultyColors = {
     easy: 'bg-green-500/20 text-green-300 border-green-500/30',
     medium: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
     hard: 'bg-red-500/20 text-red-300 border-red-500/30',
   };
 
+  const difficultyEmoji = {
+    easy: '😊',
+    medium: '😎',
+    hard: '🔥',
+  };
+
+  // Generate thumbnail placeholder based on game genre
+  const genreColors = {
+    casual: 'from-blue-400 to-blue-600',
+    brain: 'from-purple-400 to-purple-600',
+    adventure: 'from-green-400 to-green-600',
+    educational: 'from-yellow-400 to-yellow-600',
+    racing: 'from-red-400 to-red-600',
+  };
+
+  const genreEmojis = {
+    casual: '🎯',
+    brain: '🧠',
+    adventure: '🗺️',
+    educational: '📚',
+    racing: '🏎️',
+  };
+
   return (
-    <Card className="group overflow-hidden border-2 border-border hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 animate-fade-in">
+    <Card className="group overflow-hidden border-4 border-primary/20 hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 animate-fade-in transform hover:scale-105">
       <div className="relative aspect-video overflow-hidden">
-        <img 
-          src={game.image} 
-          alt={game.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+        {game.thumbnail_url ? (
+          <img 
+            src={game.thumbnail_url} 
+            alt={game.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-br ${genreColors[game.genre as keyof typeof genreColors] || 'from-primary to-secondary'} flex items-center justify-center`}>
+            <span className="text-8xl opacity-80 transform group-hover:scale-125 transition-transform duration-500">
+              {genreEmojis[game.genre as keyof typeof genreEmojis] || '🎮'}
+            </span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+        
+        {/* Play Icon Overlay */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <Play className="w-16 h-16 text-primary drop-shadow-lg" />
+          <div className="bg-primary/90 p-6 rounded-full shadow-2xl transform scale-0 group-hover:scale-100 transition-transform duration-300">
+            <Play className="w-12 h-12 text-white" />
+          </div>
         </div>
-        <div className="absolute top-3 right-3">
-          <Badge className={`${difficultyColors[game.difficulty]} border backdrop-blur-sm`}>
-            {game.difficulty === 'easy' ? 'Dễ' : game.difficulty === 'medium' ? 'Trung bình' : 'Khó'}
+
+        {/* Badges */}
+        <div className="absolute top-3 right-3 flex gap-2">
+          <Badge className={`${difficultyColors[game.difficulty as keyof typeof difficultyColors]} border backdrop-blur-sm font-fredoka font-bold`}>
+            {difficultyEmoji[game.difficulty as keyof typeof difficultyEmoji]} {game.difficulty}
           </Badge>
+        </div>
+
+        {/* Stats */}
+        <div className="absolute bottom-3 left-3 flex gap-2">
+          <div className="bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full border-2 border-primary/30 flex items-center gap-1">
+            <Heart className="w-4 h-4 text-red-500" />
+            <span className="font-fredoka font-bold text-sm">{likes}</span>
+          </div>
+          <div className="bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full border-2 border-accent/30 flex items-center gap-1">
+            <TrendingUp className="w-4 h-4 text-accent" />
+            <span className="font-fredoka font-bold text-sm">{plays}</span>
+          </div>
         </div>
       </div>
       
       <CardContent className="p-6 space-y-4">
-        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+        <h3 className="text-2xl font-fredoka font-bold text-foreground group-hover:text-primary transition-colors">
           {game.title}
         </h3>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-sm font-comic line-clamp-2">
           {game.description}
         </p>
-        <Link to={`/game/${game.id}`}>
-          <Button className="w-full group/btn">
-            Chơi ngay
-            <Play className="ml-2 w-4 h-4 transition-transform group-hover/btn:scale-110" />
+
+        <div className="flex gap-2">
+          <Link to={`/game/${game.id}`} className="flex-1">
+            <Button className="w-full group/btn font-fredoka font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all">
+              Play Now! 🎮
+              <Play className="ml-2 w-4 h-4 transition-transform group-hover/btn:scale-125" />
+            </Button>
+          </Link>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleLike}
+            className={`border-4 transition-all transform hover:scale-110 ${
+              liked 
+                ? 'bg-red-500 border-red-500 hover:bg-red-600 hover:border-red-600' 
+                : 'border-primary/30 hover:border-red-500 hover:bg-red-500/10'
+            }`}
+          >
+            <Heart className={`w-5 h-5 ${liked ? 'fill-white text-white' : 'text-red-500'}`} />
           </Button>
-        </Link>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-4 border-accent/30 hover:border-accent hover:bg-accent/10 transition-all transform hover:scale-110"
+              >
+                <Info className="w-5 h-5 text-accent" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="border-4 border-primary/30 max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="font-fredoka text-3xl text-primary">
+                  How to Play {game.title} 🎮
+                </DialogTitle>
+                <DialogDescription className="font-comic text-lg pt-4">
+                  {game.how_to_play ? (
+                    <div className="space-y-2 text-left">
+                      {game.how_to_play.split('\n').map((line, i) => (
+                        <p key={i} className="text-foreground">{line}</p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground">
+                      Click "Play Now" to start the game and learn as you play! Have fun! 🌟
+                    </p>
+                  )}
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardContent>
     </Card>
   );
