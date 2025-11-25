@@ -49,19 +49,27 @@ export default function Auth() {
 
         if (error) throw error;
 
-        if (data.user) {
-          toast.success("🎊 Account created! You can now log in!");
+        // With auto_confirm_email enabled, user should have a session immediately
+        if (data.session) {
+          if (rememberMe) {
+            localStorage.setItem("kidcrypto_session", JSON.stringify(data.session));
+          }
+          toast.success("🎊 Chào mừng bạn đến với KidCrypto Games!");
+          navigate("/");
+        } else if (data.user) {
+          toast.success("🎊 Tài khoản đã được tạo! Bạn có thể đăng nhập ngay!");
           setIsLogin(true);
         }
       }
     } catch (error: any) {
       console.error("Auth error:", error);
-      if (error.message.includes("already registered")) {
-        toast.error("This email is already registered. Please log in instead!");
+      if (error.message.includes("already registered") || error.message.includes("User already registered")) {
+        toast.error("Email này đã được đăng ký rồi! Vui lòng đăng nhập thay vì đăng ký!");
+        setIsLogin(true);
       } else if (error.message.includes("Invalid login credentials")) {
-        toast.error("Wrong email or password. Please try again!");
+        toast.error("Email hoặc mật khẩu không đúng! Nếu bạn chưa có tài khoản, hãy đăng ký nhé!");
       } else {
-        toast.error(error.message || "Something went wrong. Please try again!");
+        toast.error(error.message || "Có lỗi xảy ra! Vui lòng thử lại!");
       }
     } finally {
       setLoading(false);
