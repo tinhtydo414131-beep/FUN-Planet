@@ -5,8 +5,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Gamepad2, Users, MessageCircle, Trophy, Wallet } from "lucide-react";
+import { Gamepad2, Users, MessageCircle, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import { WalletConnect } from "@/components/WalletConnect";
 
 interface Profile {
   id: string;
@@ -162,32 +163,7 @@ export default function Dashboard() {
           </div>
 
           {/* Wallet Section */}
-          <Card className="border-4 border-accent/30 shadow-xl bg-gradient-to-br from-background to-accent/5 mb-8">
-            <CardHeader>
-              <CardTitle className="text-3xl font-fredoka flex items-center gap-3">
-                <Wallet className="w-8 h-8 text-accent" />
-                Your Crypto Wallet 💰
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground font-comic">Balance</p>
-                  <p className="text-4xl font-fredoka font-bold text-accent">
-                    {profile.wallet_balance.toFixed(4)} ETH
-                  </p>
-                </div>
-                <Button className="bg-gradient-to-r from-accent to-secondary hover:shadow-lg transform hover:scale-105 transition-all text-lg font-bold px-6">
-                  Connect Wallet 🔗
-                </Button>
-              </div>
-              {!profile.wallet_address && (
-                <p className="text-muted-foreground font-comic text-center p-4 bg-muted/30 rounded-lg">
-                  Connect your MetaMask or WalletConnect to start earning crypto rewards! 🎁
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <WalletConnect />
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
