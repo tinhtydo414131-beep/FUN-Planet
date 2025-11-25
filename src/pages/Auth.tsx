@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Gamepad2, Mail, Lock, User } from "lucide-react";
+import { Gamepad2, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +14,7 @@ export default function Auth() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleEmailAuth = async (e: React.FormEvent) => {
@@ -148,14 +149,26 @@ export default function Auth() {
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Super secret password 🔐"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 text-lg border-2 border-primary/30 focus:border-primary"
+                  className="pl-10 pr-10 text-lg border-2 border-primary/30 focus:border-primary"
                   required
                   minLength={6}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </div>
 
