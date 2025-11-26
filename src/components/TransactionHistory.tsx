@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CheckCircle, XCircle, Clock, Users, Coins, Calendar, ArrowUpRight, Zap } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, XCircle, Clock, Users, Coins, Calendar, ArrowUpRight, ArrowDownLeft, Zap, Copy, ExternalLink, Check } from "lucide-react";
+import { formatDistanceToNow, format, isToday, isYesterday } from "date-fns";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface Transaction {
   id: string;
@@ -21,56 +24,68 @@ interface TransactionHistoryProps {
 }
 
 export const TransactionHistory = ({ transactions }: TransactionHistoryProps) => {
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-400" />;
-      case 'failed':
-        return <XCircle className="w-5 h-5 text-red-400" />;
-      default:
-        return <Clock className="w-5 h-5 text-yellow-400" />;
+  const [displayCount, setDisplayCount] = useState(10);
+  const [copiedHash, setCopiedHash] = useState<string | null>(null);
+
+  // Format time intelligently
+  const formatTime = (date: Date) => {
+    if (isToday(date)) {
+      return `Today at ${format(date, 'HH:mm')}`;
+    } else if (isYesterday(date)) {
+      return `Yesterday at ${format(date, 'HH:mm')}`;
+    } else {
+      const timeAgo = formatDistanceToNow(date, { addSuffix: true });
+      if (timeAgo.includes('hour') || timeAgo.includes('minute')) {
+        return timeAgo;
+      }
+      return format(date, 'MMM dd, yyyy');
     }
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'airdrop':
-        return <Zap className="w-6 h-6 text-yellow-400" />;
-      case 'send':
-        return <ArrowUpRight className="w-6 h-6 text-cyan-400" />;
-      default:
-        return <Coins className="w-6 h-6 text-green-400" />;
-    }
+  // Copy hash to clipboard
+  const copyHash = (hash: string) => {
+    navigator.clipboard.writeText(hash);
+    setCopiedHash(hash);
+    toast.success("Transaction hash copied!");
+    setTimeout(() => setCopiedHash(null), 2000);
   };
 
-  const getTypeGradient = (type: string) => {
-    switch (type) {
-      case 'airdrop':
-        return 'linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,20,147,0.2))';
-      case 'send':
-        return 'linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,136,255,0.2))';
-      default:
-        return 'linear-gradient(135deg, rgba(0,255,0,0.2), rgba(0,200,0,0.2))';
+  // Format hash with line breaks
+  const formatHash = (hash: string): string[] => {
+    if (!hash) return [];
+    const chunkSize = 16;
+    const chunks: string[] = [];
+    for (let i = 0; i < hash.length; i += chunkSize) {
+      chunks.push(hash.slice(i, i + chunkSize));
     }
+    return chunks;
   };
 
-  const getTypeBorder = (type: string) => {
-    switch (type) {
-      case 'airdrop':
-        return '2px solid rgba(255,215,0,0.5)';
-      case 'send':
-        return '2px solid rgba(0,255,255,0.5)';
-      default:
-        return '2px solid rgba(0,255,0,0.5)';
-    }
+  // Load more transactions
+  const loadMore = () => {
+    setDisplayCount(prev => Math.min(prev + 10, transactions.length));
   };
+
+  // Infinite scroll handler
+  useEffect(() => {
+    const handleScroll = (e: any) => {
+      const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+      if (bottom && displayCount < transactions.length) {
+        loadMore();
+      }
+    };
+
+    const scrollArea = document.querySelector('[data-radix-scroll-area-viewport]');
+    scrollArea?.addEventListener('scroll', handleScroll);
+    return () => scrollArea?.removeEventListener('scroll', handleScroll);
+  }, [displayCount, transactions.length]);
 
   if (transactions.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-12"
+        className="text-center py-16"
       >
         <motion.div
           animate={{ 
@@ -78,205 +93,179 @@ export const TransactionHistory = ({ transactions }: TransactionHistoryProps) =>
             scale: [1, 1.1, 1]
           }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="inline-block mb-4"
+          className="inline-block mb-6"
         >
-          <Coins className="w-16 h-16 text-yellow-400" />
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center backdrop-blur-sm border-2 border-purple-500/30">
+            <Coins className="w-12 h-12 text-purple-400" />
+          </div>
         </motion.div>
-        <p className="text-white/60 text-lg font-bold">No transactions yet</p>
-        <p className="text-white/40 text-sm">Your transaction history will appear here</p>
+        <h3 className="text-white text-xl font-bold mb-2">No transactions yet</h3>
+        <p className="text-white/50 text-sm">Your transaction history will appear here</p>
       </motion.div>
     );
   }
 
-  return (
-    <ScrollArea className="h-[600px] pr-4">
-      <div className="space-y-4">
-        {transactions.map((tx, index) => (
-          <motion.div
-            key={tx.id}
-            initial={{ opacity: 0, x: -50, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.02 }}
-          >
-            <Card 
-              className="border-0 relative overflow-hidden cursor-pointer"
-              style={{
-                background: getTypeGradient(tx.type),
-                backdropFilter: 'blur(20px)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                border: getTypeBorder(tx.type)
-              }}
-            >
-              {/* Animated gradient overlay */}
-              <motion.div
-                animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                }}
-                transition={{ duration: 5, repeat: Infinity }}
-                className="absolute inset-0 opacity-30 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-                  backgroundSize: '200% 100%'
-                }}
-              />
+  const displayedTransactions = transactions.slice(0, displayCount);
 
-              {/* Content */}
-              <div className="relative z-10 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    {/* Type icon with animation */}
+  return (
+    <ScrollArea className="h-[600px] pr-2">
+      <div className="space-y-3">
+        {displayedTransactions.map((tx, index) => {
+          const isReceive = tx.type === 'receive';
+          const isSend = tx.type === 'send' || tx.type === 'airdrop';
+          const txDate = new Date(tx.created_at);
+          
+          return (
+            <motion.div
+              key={tx.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Card className="border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl hover:border-white/20 transition-all duration-300 overflow-hidden group">
+                <div className="p-4">
+                  <div className="flex items-start gap-4">
+                    {/* Icon */}
                     <motion.div
-                      animate={{ 
-                        rotate: tx.type === 'airdrop' ? [0, 360] : 0,
-                        scale: [1, 1.1, 1]
-                      }}
-                      transition={{ 
-                        rotate: { duration: 3, repeat: Infinity, ease: "linear" },
-                        scale: { duration: 2, repeat: Infinity }
-                      }}
-                      className="p-3 rounded-full"
-                      style={{
-                        background: tx.type === 'airdrop' 
-                          ? 'linear-gradient(135deg, #FFD700, #FFA500)'
-                          : tx.type === 'send'
-                          ? 'linear-gradient(135deg, #00FFFF, #0088FF)'
-                          : 'linear-gradient(135deg, #00FF00, #00AA00)',
-                        boxShadow: '0 0 20px rgba(255,215,0,0.5)'
-                      }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        tx.type === 'airdrop' 
+                          ? 'bg-gradient-to-br from-yellow-500 to-orange-500'
+                          : isReceive
+                          ? 'bg-gradient-to-br from-green-500 to-emerald-500'
+                          : 'bg-gradient-to-br from-red-500 to-pink-500'
+                      }`}
                     >
-                      {getTypeIcon(tx.type)}
+                      {tx.type === 'airdrop' ? (
+                        <Zap className="w-6 h-6 text-white" />
+                      ) : isReceive ? (
+                        <ArrowDownLeft className="w-6 h-6 text-white" />
+                      ) : (
+                        <ArrowUpRight className="w-6 h-6 text-white" />
+                      )}
                     </motion.div>
 
-                    <div>
-                      <h3 className="text-xl font-black text-white mb-1">
-                        {tx.type === 'airdrop' ? '🎁 AIRDROP SENT' : 
-                         tx.type === 'send' ? '📤 Token Sent' : 
-                         '📥 Token Received'}
-                      </h3>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
-                        <Calendar className="w-4 h-4" />
-                        <span className="font-bold">
-                          {formatDistanceToNow(new Date(tx.created_at), { addSuffix: true })}
-                        </span>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <div>
+                          <h4 className={`font-bold text-sm ${
+                            tx.type === 'airdrop' 
+                              ? 'text-yellow-400'
+                              : isReceive 
+                              ? 'text-green-400' 
+                              : 'text-red-400'
+                          }`}>
+                            {tx.type === 'airdrop' ? 'Airdrop Sent' : isReceive ? 'Token Received' : 'Token Sent'}
+                          </h4>
+                          <p className="text-[10px] text-white/40 mt-0.5">
+                            {formatTime(txDate)}
+                          </p>
+                        </div>
+
+                        {/* Status Badge */}
+                        <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                          tx.status === 'completed' 
+                            ? 'bg-green-500/20 text-green-400'
+                            : tx.status === 'failed'
+                            ? 'bg-red-500/20 text-red-400'
+                            : 'bg-yellow-500/20 text-yellow-400'
+                        }`}>
+                          {tx.status === 'completed' ? (
+                            <CheckCircle className="w-3 h-3" />
+                          ) : tx.status === 'failed' ? (
+                            <XCircle className="w-3 h-3" />
+                          ) : (
+                            <Clock className="w-3 h-3" />
+                          )}
+                          <span>{tx.status}</span>
+                        </div>
                       </div>
+
+                      {/* Amount */}
+                      <div className={`text-lg font-black mb-3 ${
+                        isReceive ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {isReceive ? '+' : '-'}{tx.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {tx.token_type}
+                      </div>
+
+                      {/* Recipients for airdrop */}
+                      {tx.type === 'airdrop' && tx.recipients_count && (
+                        <div className="flex items-center gap-1 text-xs text-white/50 mb-3">
+                          <Users className="w-3 h-3" />
+                          <span>{tx.recipients_count} recipients</span>
+                        </div>
+                      )}
+
+                      {/* Transaction Hash */}
+                      {tx.transaction_hash && (
+                        <div className="bg-black/20 rounded-lg p-3 mb-3 border border-white/5">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] text-white/40 font-medium">Transaction Hash</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyHash(tx.transaction_hash!)}
+                              className="h-6 px-2 text-[10px] hover:bg-white/10"
+                            >
+                              {copiedHash === tx.transaction_hash ? (
+                                <Check className="w-3 h-3 text-green-400" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
+                            </Button>
+                          </div>
+                          <div className="space-y-0.5">
+                            {formatHash(tx.transaction_hash).map((chunk, i) => (
+                              <p key={i} className="text-[10px] font-mono text-white/60 leading-tight">
+                                {chunk}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Notes */}
+                      {tx.notes && (
+                        <p className="text-xs text-white/50 mb-3 italic">"{tx.notes}"</p>
+                      )}
+
+                      {/* View on Explorer */}
+                      {tx.transaction_hash && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(`https://bscscan.com/tx/${tx.transaction_hash}`, '_blank')}
+                          className="h-8 text-xs gap-2 bg-white/5 border-white/10 hover:bg-white/10 hover:border-primary/50 group-hover:border-primary/30 transition-all"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          View on BscScan
+                        </Button>
+                      )}
                     </div>
                   </div>
-
-                  {/* Status badge */}
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="flex items-center gap-2 px-3 py-1 rounded-full"
-                    style={{
-                      background: tx.status === 'completed' 
-                        ? 'rgba(0,255,0,0.2)' 
-                        : tx.status === 'failed'
-                        ? 'rgba(255,0,0,0.2)'
-                        : 'rgba(255,255,0,0.2)'
-                    }}
-                  >
-                    {getStatusIcon(tx.status)}
-                    <span className="text-xs font-black text-white uppercase">
-                      {tx.status}
-                    </span>
-                  </motion.div>
                 </div>
+              </Card>
+            </motion.div>
+          );
+        })}
 
-                {/* Transaction details */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div 
-                    className="p-3 rounded-xl"
-                    style={{
-                      background: 'rgba(255,255,255,0.1)',
-                      backdropFilter: 'blur(10px)'
-                    }}
-                  >
-                    <p className="text-xs text-white/60 mb-1 font-bold">Amount</p>
-                    <p className="text-lg font-black text-white">
-                      {tx.amount.toLocaleString()} {tx.token_type}
-                    </p>
-                  </div>
-
-                  {tx.type === 'airdrop' && tx.recipients_count && (
-                    <div 
-                      className="p-3 rounded-xl"
-                      style={{
-                        background: 'rgba(255,255,255,0.1)',
-                        backdropFilter: 'blur(10px)'
-                      }}
-                    >
-                      <p className="text-xs text-white/60 mb-1 font-bold flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        Recipients
-                      </p>
-                      <p className="text-lg font-black text-white">
-                        {tx.recipients_count} wallets
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Transaction hash */}
-                {tx.transaction_hash && (
-                  <div 
-                    className="p-3 rounded-xl"
-                    style={{
-                      background: 'rgba(0,0,0,0.2)',
-                      backdropFilter: 'blur(10px)'
-                    }}
-                  >
-                    <p className="text-xs text-white/60 mb-1 font-bold">Transaction Hash</p>
-                    <p className="text-xs font-mono text-white/80 break-all">
-                      {tx.transaction_hash}
-                    </p>
-                  </div>
-                )}
-
-                {/* Notes for airdrop */}
-                {tx.notes && (
-                  <div 
-                    className="mt-3 p-3 rounded-xl"
-                    style={{
-                      background: 'rgba(255,215,0,0.1)',
-                      border: '1px solid rgba(255,215,0,0.3)'
-                    }}
-                  >
-                    <p className="text-xs text-yellow-300 font-bold">
-                      ✨ {tx.notes}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Sparkle effects for airdrops */}
-              {tx.type === 'airdrop' && (
-                <>
-                  {[...Array(8)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-1 h-1 rounded-full bg-yellow-400"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                      }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0, 2, 0]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: i * 0.3
-                      }}
-                    />
-                  ))}
-                </>
-              )}
-            </Card>
+        {/* Load More Button */}
+        {displayCount < transactions.length && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center pt-4"
+          >
+            <Button
+              onClick={loadMore}
+              variant="outline"
+              className="bg-white/5 border-white/10 hover:bg-white/10"
+            >
+              Load More ({transactions.length - displayCount} remaining)
+            </Button>
           </motion.div>
-        ))}
+        )}
       </div>
     </ScrollArea>
   );
