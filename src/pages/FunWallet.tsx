@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { CelebrationNotification } from "@/components/CelebrationNotification";
 import { AirdropConfirmModal } from "@/components/AirdropConfirmModal";
 import { TransactionHistory } from "@/components/TransactionHistory";
-import { BackgroundRemover } from "@/components/BackgroundRemover";
+
 import { toast } from "sonner";
 import { ethers } from "ethers";
 import { useAuth } from "@/hooks/useAuth";
@@ -1990,8 +1990,6 @@ export default function FunWallet() {
         )}
       </AnimatePresence>
 
-      {/* Background Remover Tool */}
-      <BackgroundRemover onImageProcessed={(url) => setProcessedCoinImage(url)} />
 
       <style>{`
         .scrollbar-hide::-webkit-scrollbar {
