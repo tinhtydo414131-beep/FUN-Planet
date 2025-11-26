@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CelebrationNotification } from "@/components/CelebrationNotification";
+import { AirdropConfirmModal } from "@/components/AirdropConfirmModal";
 import { toast } from "sonner";
 import { ethers } from "ethers";
 import { useAuth } from "@/hooks/useAuth";
@@ -52,7 +53,9 @@ const tokens = [
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
   "function transfer(address to, uint256 amount) returns (bool)",
-  "function decimals() view returns (uint8)"
+  "function decimals() view returns (uint8)",
+  "function approve(address spender, uint256 amount) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)"
 ];
 
 export default function FunWallet() {
@@ -75,6 +78,8 @@ export default function FunWallet() {
   const [bulkAmount, setBulkAmount] = useState("1000");
   const [bulkSending, setBulkSending] = useState(false);
   const [bulkProgress, setBulkProgress] = useState(0);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [bulkProgressText, setBulkProgressText] = useState("");
 
   useEffect(() => {
     checkConnection();
@@ -318,7 +323,7 @@ export default function FunWallet() {
     toast.success("Wallet disconnected! 👋");
   };
 
-  const handleBulkSend = async () => {
+  const handleBulkSendClick = () => {
     const addresses = bulkAddresses.split('\n').map(addr => addr.trim()).filter(addr => addr);
     
     if (addresses.length === 0) {
@@ -339,11 +344,19 @@ export default function FunWallet() {
       }
     }
 
+    setShowConfirmModal(true);
+  };
+
+  const handleBulkSend = async () => {
+    setShowConfirmModal(false);
+    
+    const addresses = bulkAddresses.split('\n').map(addr => addr.trim()).filter(addr => addr);
+    const amount = parseFloat(bulkAmount);
     const totalAmount = amount * addresses.length;
-    toast.success(`Sending ${amount} CAMLY to ${addresses.length} addresses (Total: ${totalAmount} CAMLY)`);
 
     setBulkSending(true);
     setBulkProgress(0);
+    setBulkProgressText("");
 
     try {
       const camlyToken = tokens.find(t => t.symbol === "CAMLY");
@@ -357,9 +370,23 @@ export default function FunWallet() {
       const contract = new ethers.Contract(camlyToken.contract, ERC20_ABI, signer);
       const decimals = await contract.decimals();
 
+      // Check current balance
+      const balance = await contract.balanceOf(account);
+      const balanceFormatted = parseFloat(ethers.formatUnits(balance, decimals));
+      
+      if (balanceFormatted < totalAmount) {
+        toast.error(`Insufficient CAMLY! You have ${balanceFormatted.toFixed(2)} but need ${totalAmount}`);
+        setBulkSending(false);
+        return;
+      }
+
+      toast.success("🚀 Starting airdrop to " + addresses.length + " wallets!");
+
       let successCount = 0;
       for (let i = 0; i < addresses.length; i++) {
         try {
+          setBulkProgressText(`Airdropping... ${i + 1}/${addresses.length} wallets done`);
+          
           const tx = await contract.transfer(
             addresses[i],
             ethers.parseUnits(bulkAmount, decimals)
@@ -369,17 +396,18 @@ export default function FunWallet() {
           successCount++;
           setBulkProgress(Math.round(((i + 1) / addresses.length) * 100));
           
-          toast.success(`✅ Sent ${amount} CAMLY to ${addresses[i].slice(0, 6)}...${addresses[i].slice(-4)}`);
-        } catch (error) {
+          toast.success(`✅ ${i + 1}/${addresses.length}: Sent ${amount} CAMLY to ${addresses[i].slice(0, 6)}...${addresses[i].slice(-4)}`);
+        } catch (error: any) {
           console.error(`Failed to send to ${addresses[i]}:`, error);
-          toast.error(`❌ Failed: ${addresses[i].slice(0, 6)}...${addresses[i].slice(-4)}`);
+          toast.error(`❌ ${i + 1}/${addresses.length}: Failed ${addresses[i].slice(0, 6)}...${addresses[i].slice(-4)}`);
         }
       }
 
+      // Trigger 10-second celebration!
       setCelebrationAmount(totalAmount);
       setShowCelebration(true);
 
-      toast.success(`🎉 Airdrop complete! Sent to ${successCount}/${addresses.length} addresses!`);
+      toast.success(`🎉 AIRDROP COMPLETE! Successfully sent to ${successCount}/${addresses.length} addresses!`);
       setBulkAddresses("");
       await getCamlyBalance(account!);
     } catch (error: any) {
@@ -388,6 +416,7 @@ export default function FunWallet() {
     } finally {
       setBulkSending(false);
       setBulkProgress(0);
+      setBulkProgressText("");
     }
   };
 
@@ -1041,14 +1070,20 @@ export default function FunWallet() {
                           animate={{ scale: 1, opacity: 1 }}
                           className="space-y-3"
                         >
-                          <p className="text-white font-bold">🚀 Airdrop in progress...</p>
-                          <Progress value={bulkProgress} className="h-4" />
-                          <p className="text-cyan-400 text-center text-lg font-black">{bulkProgress}%</p>
+                          <p className="text-white font-black text-xl text-center">
+                            ✨ {bulkProgressText || `Airdropping... ${bulkProgress}%`}
+                          </p>
+                          <Progress value={bulkProgress} className="h-6" style={{
+                            background: 'rgba(255,255,255,0.2)',
+                          }} />
+                          <p className="text-cyan-400 text-center text-2xl font-black animate-pulse">
+                            {bulkProgress}% Complete
+                          </p>
                         </motion.div>
                       )}
 
                       <Button
-                        onClick={handleBulkSend}
+                        onClick={handleBulkSendClick}
                         disabled={bulkSending || !bulkAddresses || !bulkAmount}
                         className="w-full font-black text-2xl py-8 border-0 relative overflow-hidden group"
                         style={{
@@ -1091,6 +1126,16 @@ export default function FunWallet() {
           </>
         )}
       </div>
+
+      <AirdropConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleBulkSend}
+        walletCount={bulkAddresses.split('\n').filter(a => a.trim()).length}
+        amountPerWallet={bulkAmount}
+        totalAmount={parseFloat(bulkAmount) * bulkAddresses.split('\n').filter(a => a.trim()).length}
+        estimatedGas="~0.008"
+      />
 
       <AnimatePresence>
         {showCelebration && (
