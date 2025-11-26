@@ -58,6 +58,9 @@ const MULTISEND_ABI = [
   "function approve(address token, uint256 amount)"
 ];
 
+// CAMLY uses 18 decimals for ultra-precise airdrops
+const CAMLY_DECIMALS = 18;
+
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
   "function transfer(address to, uint256 amount) returns (bool)",
@@ -533,19 +536,26 @@ export default function FunWallet() {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const camlyContract = new ethers.Contract(camlyToken.contract, ERC20_ABI, signer);
-      const decimals = await camlyContract.decimals();
+      const CAMLY_DECIMALS_ONCHAIN = CAMLY_DECIMALS;
 
-      console.log("CAMLY Decimals:", decimals.toString());
+      // Convert human-readable amount to smallest units (BigInt)
+      const amountPerWalletWei = ethers.parseUnits(bulkAmount, CAMLY_DECIMALS_ONCHAIN);
+      const totalAmountWei = amountPerWalletWei * BigInt(addresses.length);
+
+      console.log("Using CAMLY decimals for airdrop:", CAMLY_DECIMALS_ONCHAIN);
+      console.log("Amount per wallet (wei):", amountPerWalletWei.toString());
+      console.log("Total amount (wei):", totalAmountWei.toString());
 
       // Check current balance
       const balance = await camlyContract.balanceOf(account);
-      const balanceFormatted = parseFloat(ethers.formatUnits(balance, decimals));
+      const balanceFormatted = parseFloat(ethers.formatUnits(balance, CAMLY_DECIMALS_ONCHAIN));
+      const totalNeededFormatted = parseFloat(ethers.formatUnits(totalAmountWei, CAMLY_DECIMALS_ONCHAIN));
       
       console.log("Your CAMLY balance:", balanceFormatted);
-      console.log("Total needed:", totalAmount);
+      console.log("Total needed (formatted):", totalNeededFormatted);
       
-      if (balanceFormatted < totalAmount) {
-        toast.error(`❌ Insufficient CAMLY! You have ${balanceFormatted.toFixed(2)} but need ${totalAmount}`);
+      if (balance < totalAmountWei) {
+        toast.error(`❌ Insufficient CAMLY! You have ${balanceFormatted.toFixed(2)} but need ${totalNeededFormatted.toFixed(2)}`);
         setBulkSending(false);
         return;
       }
@@ -555,18 +565,17 @@ export default function FunWallet() {
       setBulkProgress(10);
       
       const currentAllowance = await camlyContract.allowance(account, MULTISEND_CONTRACT);
-      const totalAmountInWei = ethers.parseUnits(totalAmount.toString(), decimals);
       
-      console.log("Current allowance:", ethers.formatUnits(currentAllowance, decimals));
-      console.log("Needed allowance:", totalAmount);
+      console.log("Current allowance (wei):", currentAllowance.toString());
+      console.log("Needed allowance (wei):", totalAmountWei.toString());
 
       // Step 2: Approve if needed
-      if (currentAllowance < totalAmountInWei) {
+      if (currentAllowance < totalAmountWei) {
         setBulkProgressText("Approving CAMLY for multi-send contract... ✍️");
         setBulkProgress(20);
         toast.info("Please approve CAMLY spending in MetaMask... 🦊");
         
-        const approveTx = await camlyContract.approve(MULTISEND_CONTRACT, totalAmountInWei);
+        const approveTx = await camlyContract.approve(MULTISEND_CONTRACT, totalAmountWei);
         console.log("Approval TX sent:", approveTx.hash);
         
         toast.success("Approval sent! Waiting for confirmation... ⏳");
@@ -581,7 +590,7 @@ export default function FunWallet() {
 
       // Step 3: Prepare arrays for scatterToken
       setBulkProgressText("Preparing batch transaction... 📦");
-      const amounts = addresses.map(() => ethers.parseUnits(amount.toString(), decimals));
+      const amounts = Array(addresses.length).fill(amountPerWalletWei);
       
       console.log("Recipients array:", addresses);
       console.log("Amounts array:", amounts.map(a => a.toString()));
@@ -1375,9 +1384,9 @@ export default function FunWallet() {
                             </span></p>
                             <p>💰 Amount per address: <span className="font-black text-pink-400">{bulkAmount} CAMLY</span></p>
                             <p className="text-2xl">🚀 Total needed: <span className="font-black bg-gradient-to-r from-yellow-300 to-pink-400 bg-clip-text text-transparent">
-                              {parseFloat(bulkAmount) * (showValidation && validAddresses.length > 0 
-                                ? validAddresses.length 
-                                : bulkAddresses.split('\n').filter(a => a.trim()).length)} CAMLY
+                              {showValidation && validAddresses.length > 0 
+                                ? `${validAddresses.length} × ${bulkAmount} CAMLY`
+                                : `${bulkAddresses.split('\n').filter(a => a.trim()).length} × ${bulkAmount} CAMLY`}
                             </span></p>
                           </div>
                         </motion.div>
