@@ -90,6 +90,9 @@ export default function FunWallet() {
   const [bulkProgressText, setBulkProgressText] = useState("");
   const [estimatedGas, setEstimatedGas] = useState("0.000");
   const [currentGasPrice, setCurrentGasPrice] = useState("0");
+  const [validAddresses, setValidAddresses] = useState<string[]>([]);
+  const [invalidAddresses, setInvalidAddresses] = useState<string[]>([]);
+  const [showValidation, setShowValidation] = useState(false);
 
   useEffect(() => {
     checkConnection();
@@ -401,29 +404,70 @@ export default function FunWallet() {
     toast.success("Wallet disconnected! 👋");
   };
 
-  const handleBulkSendClick = () => {
-    const addresses = bulkAddresses.split('\n').map(addr => addr.trim()).filter(addr => addr);
+  const validateAddresses = () => {
+    const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
+    const MAX_ADDRESSES = 1000;
     
-    if (addresses.length === 0) {
-      toast.error("Please enter at least one address!");
+    // Split by newline and trim each address
+    const rawAddresses = bulkAddresses
+      .split('\n')
+      .map(addr => addr.trim())
+      .filter(addr => addr.length > 0); // Remove empty lines
+    
+    if (rawAddresses.length === 0) {
+      toast.error("⚠️ Please enter at least one address!");
+      return false;
+    }
+    
+    if (rawAddresses.length > MAX_ADDRESSES) {
+      toast.error(`⚠️ Maximum ${MAX_ADDRESSES} addresses allowed! You entered ${rawAddresses.length}`);
+      return false;
+    }
+    
+    const valid: string[] = [];
+    const invalid: string[] = [];
+    
+    // Validate each address
+    rawAddresses.forEach(addr => {
+      if (ADDRESS_REGEX.test(addr)) {
+        valid.push(addr);
+      } else {
+        invalid.push(addr);
+      }
+    });
+    
+    setValidAddresses(valid);
+    setInvalidAddresses(invalid);
+    setShowValidation(true);
+    
+    if (invalid.length > 0) {
+      toast.error(`❌ Found ${invalid.length} invalid address(es)! Check the list below.`);
+      return false;
+    }
+    
+    if (valid.length === 0) {
+      toast.error("❌ No valid wallets found! Add 0x... addresses");
+      return false;
+    }
+    
+    toast.success(`✅ All ${valid.length} addresses are valid!`);
+    return true;
+  };
+
+  const handleBulkSendClick = () => {
+    // Validate addresses first
+    if (!validateAddresses()) {
       return;
     }
-
+    
     const amount = parseFloat(bulkAmount);
     if (isNaN(amount) || amount <= 0) {
       toast.error("Please enter a valid amount!");
       return;
     }
 
-    for (const addr of addresses) {
-      if (!ethers.isAddress(addr)) {
-        toast.error(`Invalid address: ${addr}`);
-        return;
-      }
-    }
-
     // Calculate gas estimate for ultra-low-gas contract
-    calculateGasEstimate(addresses.length);
+    calculateGasEstimate(validAddresses.length);
     setShowConfirmModal(true);
   };
 
@@ -462,7 +506,8 @@ export default function FunWallet() {
   const handleBulkSend = async () => {
     setShowConfirmModal(false);
     
-    const addresses = bulkAddresses.split('\n').map(addr => addr.trim()).filter(addr => addr);
+    // Use validated addresses
+    const addresses = validAddresses;
     const amount = parseFloat(bulkAmount);
     const totalAmount = amount * addresses.length;
 
@@ -547,19 +592,35 @@ export default function FunWallet() {
       toast.info("Please confirm the batch airdrop in MetaMask... 🦊");
 
       const multisendContract = new ethers.Contract(MULTISEND_CONTRACT, MULTISEND_ABI, signer);
-      const scatterTx = await multisendContract.scatterToken(
-        camlyToken.contract,
-        addresses,
-        amounts
-      );
       
-      console.log("ScatterToken TX sent:", scatterTx.hash);
-      toast.success("🚀 Airdrop transaction sent! Waiting for confirmation...");
-      
-      setBulkProgress(70);
-      const receipt = await scatterTx.wait();
-      
-      console.log("ScatterToken TX confirmed:", receipt.hash);
+      let txHash = "";
+      try {
+        const scatterTx = await multisendContract.scatterToken(
+          camlyToken.contract,
+          addresses,
+          amounts
+        );
+        
+        console.log("ScatterToken TX sent:", scatterTx.hash);
+        txHash = scatterTx.hash;
+        toast.success("🚀 Airdrop transaction sent! Waiting for confirmation...");
+        
+        setBulkProgress(70);
+        const receipt = await scatterTx.wait();
+        
+        console.log("ScatterToken TX confirmed:", receipt.hash);
+      } catch (contractError: any) {
+        console.error("Contract call error:", contractError);
+        
+        // Handle specific contract errors
+        if (contractError.code === "BUFFER_OVERRUN") {
+          throw new Error("Contract call failed - invalid data. Please verify the contract address and try again.");
+        } else if (contractError.message?.includes("execution reverted")) {
+          throw new Error("Transaction reverted - check your token balance and allowance.");
+        } else {
+          throw contractError;
+        }
+      }
       setBulkProgress(100);
 
       // Record airdrop transaction in database
@@ -570,7 +631,7 @@ export default function FunWallet() {
         amount: totalAmount,
         token_type: "CAMLY",
         status: "completed",
-        transaction_hash: receipt.hash,
+        transaction_hash: txHash || "completed",
         notes: `Ultra-Low-Gas Airdrop to ${addresses.length} recipients - ${amount} CAMLY each - Batch #${batchId}`
       });
 
@@ -581,16 +642,24 @@ export default function FunWallet() {
       toast.success(`🎉 PERFECT! All ${addresses.length} airdrops successful in ONE transaction! 70% gas saved! 💰`);
       
       setBulkAddresses("");
+      setValidAddresses([]);
+      setInvalidAddresses([]);
+      setShowValidation(false);
       await getCamlyBalance(account!);
       await fetchTransactionHistory();
     } catch (error: any) {
       console.error("Bulk send error:", error);
+      
       if (error.code === 4001) {
-        toast.error("Transaction rejected by user");
+        toast.error("❌ Transaction rejected by user");
+      } else if (error.code === "BUFFER_OVERRUN") {
+        toast.error("❌ Airdrop failed: Invalid contract data. Please verify addresses and try again!");
       } else if (error.message?.includes("insufficient allowance")) {
-        toast.error("Insufficient allowance! Please try again.");
+        toast.error("❌ Insufficient allowance! Please try again.");
+      } else if (error.message?.includes("insufficient funds")) {
+        toast.error("❌ Insufficient CAMLY balance!");
       } else {
-        toast.error(`Airdrop failed: ${error.message || "Unknown error"}`);
+        toast.error(`❌ Airdrop failed: ${error.message || "Invalid data. Please check addresses!"}`);
       }
     } finally {
       setBulkSending(false);
@@ -1193,11 +1262,14 @@ export default function FunWallet() {
                       <div>
                         <label className="text-white font-bold mb-3 block flex items-center gap-2">
                           <span>📝 Wallet Addresses</span>
-                          <span className="text-xs text-white/40">(one per line)</span>
+                          <span className="text-xs text-white/40">(one per line, max 1000)</span>
                         </label>
                         <Textarea
                           value={bulkAddresses}
-                          onChange={(e) => setBulkAddresses(e.target.value)}
+                          onChange={(e) => {
+                            setBulkAddresses(e.target.value);
+                            setShowValidation(false); // Reset validation on change
+                          }}
                           placeholder="0x1234...
 0x5678...
 0x9abc..."
@@ -1209,6 +1281,59 @@ export default function FunWallet() {
                             boxShadow: 'inset 0 0 0 2px rgba(224,170,255,0.3)'
                           }}
                         />
+                        
+                        {/* Validate Button */}
+                        <Button
+                          onClick={validateAddresses}
+                          disabled={!bulkAddresses.trim()}
+                          className="mt-3 font-bold border-0"
+                          style={{
+                            background: 'linear-gradient(135deg, #00FFFF 0%, #0088FF 100%)',
+                            boxShadow: '0 0 20px rgba(0,255,255,0.5)'
+                          }}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          VALIDATE ADDRESSES
+                        </Button>
+                        
+                        {/* Validation Results */}
+                        {showValidation && (
+                          <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="mt-4 p-4 rounded-xl"
+                            style={{
+                              background: validAddresses.length > 0 && invalidAddresses.length === 0
+                                ? 'rgba(0,255,0,0.1)'
+                                : 'rgba(255,0,0,0.1)',
+                              border: validAddresses.length > 0 && invalidAddresses.length === 0
+                                ? '2px solid rgba(0,255,0,0.5)'
+                                : '2px solid rgba(255,0,0,0.5)',
+                            }}
+                          >
+                            <div className="space-y-2">
+                              {validAddresses.length > 0 && (
+                                <p className="text-green-400 font-bold">
+                                  ✅ Valid: {validAddresses.length} address(es)
+                                </p>
+                              )}
+                              {invalidAddresses.length > 0 && (
+                                <div>
+                                  <p className="text-red-400 font-bold mb-2">
+                                    ❌ Invalid: {invalidAddresses.length} address(es)
+                                  </p>
+                                  <div className="text-xs text-red-300 max-h-32 overflow-y-auto space-y-1">
+                                    {invalidAddresses.map((addr, idx) => (
+                                      <div key={idx} className="font-mono bg-red-900/20 p-1 rounded">
+                                        {addr || "(empty line)"}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
                       </div>
 
                       <div>
@@ -1243,9 +1368,17 @@ export default function FunWallet() {
                         >
                           <h3 className="text-xl font-black text-yellow-300 mb-3">📊 Airdrop Summary</h3>
                           <div className="space-y-2 text-white">
-                            <p>🎯 Recipients: <span className="font-black text-cyan-400">{bulkAddresses.split('\n').filter(a => a.trim()).length}</span></p>
+                            <p>🎯 Recipients: <span className="font-black text-cyan-400">
+                              {showValidation && validAddresses.length > 0 
+                                ? `${validAddresses.length} (validated)` 
+                                : bulkAddresses.split('\n').filter(a => a.trim()).length}
+                            </span></p>
                             <p>💰 Amount per address: <span className="font-black text-pink-400">{bulkAmount} CAMLY</span></p>
-                            <p className="text-2xl">🚀 Total needed: <span className="font-black bg-gradient-to-r from-yellow-300 to-pink-400 bg-clip-text text-transparent">{parseFloat(bulkAmount) * bulkAddresses.split('\n').filter(a => a.trim()).length} CAMLY</span></p>
+                            <p className="text-2xl">🚀 Total needed: <span className="font-black bg-gradient-to-r from-yellow-300 to-pink-400 bg-clip-text text-transparent">
+                              {parseFloat(bulkAmount) * (showValidation && validAddresses.length > 0 
+                                ? validAddresses.length 
+                                : bulkAddresses.split('\n').filter(a => a.trim()).length)} CAMLY
+                            </span></p>
                           </div>
                         </motion.div>
                       )}
@@ -1270,7 +1403,7 @@ export default function FunWallet() {
 
                       <Button
                         onClick={handleBulkSendClick}
-                        disabled={bulkSending || !bulkAddresses || !bulkAmount}
+                        disabled={bulkSending || !bulkAddresses || !bulkAmount || (showValidation && validAddresses.length === 0)}
                         className="w-full font-black text-2xl py-8 border-0 relative overflow-hidden group"
                         style={{
                           background: 'linear-gradient(135deg, #FFD700 0%, #FF1493 25%, #9D00FF 50%, #00FFFF 75%, #FFD700 100%)',
