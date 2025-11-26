@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CelebrationNotification } from "@/components/CelebrationNotification";
@@ -177,6 +178,8 @@ export default function FunWallet() {
     USDT: 0,
     FUN: 0
   });
+  const [priceChanges, setPriceChanges] = useState<{[key: string]: number}>({});
+  const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
     checkConnection();
@@ -210,7 +213,15 @@ export default function FunWallet() {
     if (account) {
       fetchTransactionHistory();
     }
+    fetchTokenPrices();
+    // Refresh prices every 5 minutes
+    const priceInterval = setInterval(fetchTokenPrices, 5 * 60 * 1000);
+    return () => clearInterval(priceInterval);
   }, [account]);
+
+  useEffect(() => {
+    fetchChartData(selectedToken.symbol);
+  }, [selectedToken]);
 
   const checkConnection = async () => {
     if (window.ethereum) {
@@ -321,23 +332,84 @@ export default function FunWallet() {
   };
 
   const fetchTokenPrices = async () => {
+    const fallbackPrices = {
+      BNB: 855,
+      CAMLY: 0.000004,
+      ETH: 2910,
+      USDT: 1,
+      FUN: 0.002
+    };
+
     try {
-      // Fetch prices from CoinGecko API
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin,ethereum,tether&vs_currencies=usd'
+      // Fetch main tokens (BNB, ETH, USDT, FUN)
+      const mainResponse = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin,ethereum,tether,funtoken&vs_currencies=usd&include_24hr_change=true'
       );
-      const data = await response.json();
       
-      setTokenPrices(prev => ({
-        ...prev,
-        BNB: data.binancecoin?.usd || 0,
-        ETH: data.ethereum?.usd || 0,
-        USDT: data.tether?.usd || 0,
-        CAMLY: 0.01, // Mock price for CAMLY
-        FUN: 0.05, // Mock price for FUN
-      }));
+      // Fetch CAMLY separately
+      const camlyResponse = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=camly-coin&vs_currencies=usd&include_24hr_change=true'
+      );
+
+      if (mainResponse.ok && camlyResponse.ok) {
+        const mainData = await mainResponse.json();
+        const camlyData = await camlyResponse.json();
+
+        const newPrices = {
+          BNB: mainData.binancecoin?.usd || fallbackPrices.BNB,
+          CAMLY: camlyData['camly-coin']?.usd || fallbackPrices.CAMLY,
+          ETH: mainData.ethereum?.usd || fallbackPrices.ETH,
+          USDT: mainData.tether?.usd || fallbackPrices.USDT,
+          FUN: mainData.funtoken?.usd || fallbackPrices.FUN
+        };
+
+        const changes = {
+          BNB: mainData.binancecoin?.usd_24h_change || 0,
+          CAMLY: camlyData['camly-coin']?.usd_24h_change || 0,
+          ETH: mainData.ethereum?.usd_24h_change || 0,
+          USDT: mainData.tether?.usd_24h_change || 0,
+          FUN: mainData.funtoken?.usd_24h_change || 0
+        };
+
+        setTokenPrices(newPrices);
+        setPriceChanges(changes);
+      } else {
+        throw new Error('API response not ok');
+      }
     } catch (error) {
-      console.error("Error fetching token prices:", error);
+      console.error('Error fetching token prices:', error);
+      setTokenPrices(fallbackPrices);
+      // Retry after 10 seconds
+      setTimeout(fetchTokenPrices, 10000);
+    }
+  };
+
+  const fetchChartData = async (tokenSymbol: string) => {
+    const coinIds: {[key: string]: string} = {
+      BNB: 'binancecoin',
+      CAMLY: 'camly-coin',
+      ETH: 'ethereum',
+      USDT: 'tether',
+      FUN: 'funtoken'
+    };
+
+    try {
+      const coinId = coinIds[tokenSymbol];
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=7`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const formattedData = data.prices.map((item: any) => ({
+          time: new Date(item[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          price: item[1]
+        }));
+        setChartData(formattedData);
+      }
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+      setChartData([]);
     }
   };
 
@@ -1251,6 +1323,15 @@ export default function FunWallet() {
                       )}
                     </motion.div>
                     <div className="font-black text-xs sm:text-sm">{token.symbol}</div>
+                    <div className="text-[10px] sm:text-xs font-bold mt-0.5 opacity-90">
+                      ${tokenPrices[token.symbol]?.toFixed(token.symbol === 'CAMLY' ? 6 : 2) || '0.00'}
+                    </div>
+                    {priceChanges[token.symbol] && Math.abs(priceChanges[token.symbol]) > 2 && (
+                      <span className={`text-[9px] sm:text-[10px] font-bold mt-0.5 ${priceChanges[token.symbol] > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {priceChanges[token.symbol] > 0 ? '↑' : '↓'}
+                        {Math.abs(priceChanges[token.symbol]).toFixed(1)}%
+                      </span>
+                    )}
                   </motion.button>
                 ))}
               </div>
@@ -1265,7 +1346,7 @@ export default function FunWallet() {
             >
               <Card className="border-2 border-primary/30 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3 sm:gap-4">
                       <motion.div
                         animate={{ rotate: 360 }}
@@ -1305,16 +1386,69 @@ export default function FunWallet() {
                         {tokenBalances[selectedToken.symbol] || "0.00"}
                       </motion.div>
                       <p className="text-xs sm:text-sm font-bold text-muted-foreground mt-1">
-                        ${(parseFloat(tokenBalances[selectedToken.symbol] || "0") * tokenPrices[selectedToken.symbol]).toFixed(2)} USD
+                        ≈ ${(parseFloat(tokenBalances[selectedToken.symbol] || "0") * tokenPrices[selectedToken.symbol]).toFixed(2)} USD
                       </p>
-                      <div className="flex items-center justify-end gap-1 mt-1">
-                        <span className="text-[10px] sm:text-xs text-muted-foreground">Giá:</span>
-                        <span className="text-xs sm:text-sm font-bold text-success">
-                          ${tokenPrices[selectedToken.symbol]?.toFixed(2) || "0.00"}
+                      <div className="flex items-center justify-end gap-2 mt-1">
+                        <span className="text-xs sm:text-sm font-bold text-primary">
+                          ${tokenPrices[selectedToken.symbol]?.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2) || "0.00"}
                         </span>
+                        {priceChanges[selectedToken.symbol] && Math.abs(priceChanges[selectedToken.symbol]) > 2 && (
+                          <span className={`text-xs font-bold flex items-center gap-0.5 ${priceChanges[selectedToken.symbol] > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                            {priceChanges[selectedToken.symbol] > 0 ? '↑' : '↓'}
+                            {Math.abs(priceChanges[selectedToken.symbol]).toFixed(2)}%
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
+
+                  {/* Price Chart */}
+                  {chartData.length > 0 && (
+                    <div className="mt-4 h-32 sm:h-48 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData}>
+                          <defs>
+                            <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                          <XAxis 
+                            dataKey="time" 
+                            stroke="hsl(var(--muted-foreground))" 
+                            fontSize={10}
+                            className="sm:text-xs"
+                          />
+                          <YAxis 
+                            stroke="hsl(var(--muted-foreground))" 
+                            fontSize={10}
+                            className="sm:text-xs"
+                            tickFormatter={(value) => `$${value.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2)}`}
+                          />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'hsl(var(--background))', 
+                              border: '2px solid hsl(var(--primary))',
+                              borderRadius: '12px',
+                              boxShadow: '0 0 20px rgba(139,92,246,0.5)',
+                              padding: '8px 12px'
+                            }}
+                            formatter={(value: any) => [`$${value.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2)}`, 'Giá']}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="price" 
+                            stroke="hsl(var(--primary))" 
+                            strokeWidth={3}
+                            dot={false}
+                            fill="url(#priceGradient)"
+                            className="drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]"
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -1391,6 +1525,14 @@ export default function FunWallet() {
                               boxShadow: `0 0 20px ${selectedNetwork.color}30, inset 0 0 0 1px ${selectedNetwork.color}40`
                             }}
                           />
+                          {sendAmount && parseFloat(sendAmount) > 0 && (
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-2 font-semibold">
+                              ≈ ${(parseFloat(sendAmount) * (tokenPrices[selectedToken.symbol] || 0)).toFixed(2)} USD
+                              <span className="ml-2 text-primary font-bold">
+                                @ ${tokenPrices[selectedToken.symbol]?.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2)}
+                              </span>
+                            </p>
+                          )}
                         </div>
                         <Button
                           onClick={handleSend}
