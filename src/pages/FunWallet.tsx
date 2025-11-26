@@ -98,6 +98,7 @@ export default function FunWallet() {
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationAmount, setCelebrationAmount] = useState(0);
+  const [celebrationToken, setCelebrationToken] = useState("CAMLY");
   const [sendAmount, setSendAmount] = useState("");
   const [sendTo, setSendTo] = useState("");
   const [sending, setSending] = useState(false);
@@ -365,6 +366,11 @@ export default function FunWallet() {
         
         toast.success(`${amount} ${selectedToken.symbol} sent successfully! 🎉`);
         
+        // Trigger celebration for normal send
+        setCelebrationAmount(amount);
+        setCelebrationToken(selectedToken.symbol);
+        setShowCelebration(true);
+        
         // Update CAMLY balance if that's what was sent
         if (selectedToken.symbol === "CAMLY") {
           await getCamlyBalance(account);
@@ -383,6 +389,11 @@ export default function FunWallet() {
         txHash = receipt.hash;
         
         toast.success("Transaction confirmed! 🎉");
+        
+        // Trigger celebration for native token send
+        setCelebrationAmount(amount);
+        setCelebrationToken(selectedToken.symbol);
+        setShowCelebration(true);
       }
 
       // Record transaction in database
@@ -1710,8 +1721,9 @@ export default function FunWallet() {
         {showCelebration && (
           <CelebrationNotification
             amount={celebrationAmount}
-            token={selectedToken.symbol}
+            token={celebrationToken}
             onComplete={() => setShowCelebration(false)}
+            duration={celebrationToken === "CAMLY" && celebrationAmount > 1000 ? 25000 : 15000}
           />
         )}
       </AnimatePresence>

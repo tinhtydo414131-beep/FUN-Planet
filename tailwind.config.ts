@@ -27,12 +27,10 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          dark: "hsl(var(--primary-dark))",
-          light: "hsl(var(--primary-light))",
+          glow: "hsl(var(--primary-glow))",
         },
         glow: {
           DEFAULT: "hsl(var(--glow))",
-          foreground: "hsl(var(--glow-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -167,10 +165,28 @@ export default {
         },
         "pulse-glow": {
           "0%, 100%": {
-            boxShadow: "0 0 20px hsl(176 76% 64% / 0.4), 0 0 40px hsl(292 93% 83% / 0.3), inset 0 0 20px hsl(240 100% 81% / 0.2)",
+            boxShadow: "0 0 20px hsl(280 100% 60% / 0.6), 0 0 40px hsl(190 100% 60% / 0.4), inset 0 0 20px hsl(280 100% 70% / 0.2)",
           },
           "50%": {
-            boxShadow: "0 0 40px hsl(176 76% 64% / 0.6), 0 0 80px hsl(292 93% 83% / 0.5), inset 0 0 30px hsl(240 100% 81% / 0.3)",
+            boxShadow: "0 0 40px hsl(280 100% 60% / 0.8), 0 0 80px hsl(190 100% 60% / 0.6), inset 0 0 30px hsl(280 100% 70% / 0.3)",
+          },
+        },
+        "neon-pulse": {
+          "0%, 100%": {
+            boxShadow: "0 0 10px hsl(280 100% 60% / 0.8), 0 0 20px hsl(190 100% 60% / 0.6)",
+            borderColor: "hsl(280 100% 60%)",
+          },
+          "50%": {
+            boxShadow: "0 0 20px hsl(280 100% 60% / 1), 0 0 40px hsl(190 100% 60% / 0.8)",
+            borderColor: "hsl(190 100% 60%)",
+          },
+        },
+        "golden-shimmer": {
+          "0%, 100%": {
+            backgroundPosition: "0% 50%",
+          },
+          "50%": {
+            backgroundPosition: "100% 50%",
           },
         },
       },
@@ -186,6 +202,8 @@ export default {
         "float-up": "float-up 15s linear infinite",
         "sparkle": "sparkle 3s ease-in-out infinite",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
+        "neon-pulse": "neon-pulse 2s ease-in-out infinite",
+        "golden-shimmer": "golden-shimmer 3s ease-in-out infinite",
       },
     },
   },
