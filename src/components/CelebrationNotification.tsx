@@ -7,11 +7,16 @@ interface CelebrationNotificationProps {
   amount: number;
   token: string;
   onComplete?: () => void;
+  duration?: number; // Optional duration in milliseconds (default: 25000)
 }
 
-export const CelebrationNotification = ({ amount, token, onComplete }: CelebrationNotificationProps) => {
+export const CelebrationNotification = ({ amount, token, onComplete, duration: customDuration }: CelebrationNotificationProps) => {
   const [show, setShow] = useState(true);
   const [showBadge, setShowBadge] = useState(false);
+  
+  // Use custom duration or default to 25000ms
+  const celebrationDuration = customDuration || 25000;
+  const badgeDuration = celebrationDuration * 2;
 
   useEffect(() => {
     // Vibration
@@ -44,8 +49,8 @@ export const CelebrationNotification = ({ amount, token, onComplete }: Celebrati
     setTimeout(playJackpotSound, 200);
     setTimeout(playJackpotSound, 400);
 
-    // Continuous confetti - 25 SECONDS OF FUN!
-    const duration = 25000;
+    // Continuous confetti with custom duration
+    const duration = celebrationDuration;
     const animationEnd = Date.now() + duration;
     
     const randomInRange = (min: number, max: number) => {
@@ -109,19 +114,19 @@ export const CelebrationNotification = ({ amount, token, onComplete }: Celebrati
       });
     }, 800);
 
-    // Main celebration ends after 25 seconds
+    // Main celebration ends after custom duration
     const mainTimeout = setTimeout(() => {
       setShow(false);
       setShowBadge(true);
       clearInterval(confettiInterval);
       clearInterval(fireworksInterval);
-    }, 25000);
+    }, celebrationDuration);
  
-    // Badge disappears after 50 seconds total (25 + 25)
+    // Badge disappears after double the celebration duration
     const badgeTimeout = setTimeout(() => {
       setShowBadge(false);
       onComplete?.();
-    }, 50000);
+    }, badgeDuration);
 
     return () => {
       clearTimeout(mainTimeout);
@@ -129,7 +134,7 @@ export const CelebrationNotification = ({ amount, token, onComplete }: Celebrati
       clearInterval(confettiInterval);
       clearInterval(fireworksInterval);
     };
-  }, [amount, token, onComplete]);
+  }, [amount, token, onComplete, celebrationDuration, badgeDuration]);
 
   return (
     <>
