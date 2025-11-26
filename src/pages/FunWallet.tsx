@@ -58,8 +58,8 @@ const MULTISEND_ABI = [
   "function approve(address token, uint256 amount)"
 ];
 
-// CAMLY uses 18 decimals for ultra-precise airdrops
-const CAMLY_DECIMALS = 18;
+// CAMLY uses 3 decimals (confirmed from BscScan: 0x0910320181889fefde0bb1ca63962b0a8882e413)
+const CAMLY_DECIMALS = 3;
 
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
