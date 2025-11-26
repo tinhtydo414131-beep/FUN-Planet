@@ -161,6 +161,22 @@ export default function FunWallet() {
   const [needsApproval, setNeedsApproval] = useState(false);
   const [approving, setApproving] = useState(false);
   const [approvalComplete, setApprovalComplete] = useState(false);
+  
+  // Token balances and prices
+  const [tokenBalances, setTokenBalances] = useState<{[key: string]: string}>({
+    BNB: "0",
+    CAMLY: "0",
+    ETH: "0",
+    USDT: "0",
+    FUN: "0"
+  });
+  const [tokenPrices, setTokenPrices] = useState<{[key: string]: number}>({
+    BNB: 0,
+    CAMLY: 0,
+    ETH: 0,
+    USDT: 0,
+    FUN: 0
+  });
 
   useEffect(() => {
     checkConnection();
@@ -262,9 +278,14 @@ export default function FunWallet() {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const balanceWei = await provider.getBalance(address);
       const balanceEth = ethers.formatEther(balanceWei);
-      setBalance(parseFloat(balanceEth).toFixed(6));
+      const formattedBalance = parseFloat(balanceEth).toFixed(6);
+      setBalance(formattedBalance);
+      
+      // Update BNB balance in tokenBalances
+      setTokenBalances(prev => ({ ...prev, BNB: formattedBalance }));
       
       await getCamlyBalance(address);
+      await fetchTokenPrices();
     } catch (error) {
       console.error("Error getting balance:", error);
     }
@@ -291,9 +312,32 @@ export default function FunWallet() {
       console.log("CAMLY Balance (formatted):", formatted);
       
       setCamlyBalance(parseFloat(formatted).toFixed(2));
+      setTokenBalances(prev => ({ ...prev, CAMLY: parseFloat(formatted).toFixed(2) }));
     } catch (error) {
       console.error("Error getting CAMLY balance:", error);
       setCamlyBalance("0.00");
+      setTokenBalances(prev => ({ ...prev, CAMLY: "0.00" }));
+    }
+  };
+
+  const fetchTokenPrices = async () => {
+    try {
+      // Fetch prices from CoinGecko API
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin,ethereum,tether&vs_currencies=usd'
+      );
+      const data = await response.json();
+      
+      setTokenPrices(prev => ({
+        ...prev,
+        BNB: data.binancecoin?.usd || 0,
+        ETH: data.ethereum?.usd || 0,
+        USDT: data.tether?.usd || 0,
+        CAMLY: 0.01, // Mock price for CAMLY
+        FUN: 0.05, // Mock price for FUN
+      }));
+    } catch (error) {
+      console.error("Error fetching token prices:", error);
     }
   };
 
@@ -1212,6 +1256,69 @@ export default function FunWallet() {
               </div>
             </motion.div>
 
+            {/* Selected Token Info Card */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.15 }}
+              className="mb-4 sm:mb-6"
+            >
+              <Card className="border-2 border-primary/30 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5 backdrop-blur-sm overflow-hidden">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                        className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center"
+                      >
+                        {selectedToken.image ? (
+                          <img 
+                            src={selectedToken.symbol === "CAMLY" && processedCoinImage ? processedCoinImage : selectedToken.image} 
+                            alt={selectedToken.symbol} 
+                            className="w-full h-full object-contain rounded-full" 
+                            style={{ 
+                              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',
+                              boxShadow: '0 0 20px rgba(0,0,0,0.2)'
+                            }} 
+                          />
+                        ) : (
+                          <span className="text-4xl sm:text-5xl">{selectedToken.emoji}</span>
+                        )}
+                      </motion.div>
+                      <div>
+                        <h3 className="text-xl sm:text-2xl font-black text-foreground mb-1">
+                          {selectedToken.name}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                          {selectedToken.symbol}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <motion.div
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                      >
+                        {tokenBalances[selectedToken.symbol] || "0.00"}
+                      </motion.div>
+                      <p className="text-xs sm:text-sm font-bold text-muted-foreground mt-1">
+                        ${(parseFloat(tokenBalances[selectedToken.symbol] || "0") * tokenPrices[selectedToken.symbol]).toFixed(2)} USD
+                      </p>
+                      <div className="flex items-center justify-end gap-1 mt-1">
+                        <span className="text-[10px] sm:text-xs text-muted-foreground">Giá:</span>
+                        <span className="text-xs sm:text-sm font-bold text-success">
+                          ${tokenPrices[selectedToken.symbol]?.toFixed(2) || "0.00"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            
             {/* Tabs for Normal Send and Bulk Send */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
