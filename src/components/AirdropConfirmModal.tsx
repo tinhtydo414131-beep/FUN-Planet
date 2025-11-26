@@ -10,6 +10,7 @@ interface AirdropConfirmModalProps {
   amountPerWallet: string;
   totalAmount: number;
   estimatedGas: string;
+  gasPrice: string;
 }
 
 export const AirdropConfirmModal = ({
@@ -19,8 +20,15 @@ export const AirdropConfirmModal = ({
   walletCount,
   amountPerWallet,
   totalAmount,
-  estimatedGas
+  estimatedGas,
+  gasPrice
 }: AirdropConfirmModalProps) => {
+  const gasCost = parseFloat(estimatedGas);
+  const isCheapGas = gasCost < 0.01;
+  const gasPriceNum = parseFloat(gasPrice);
+  const gasLevel = gasPriceNum < 0.1 ? "Ultra Low" : gasPriceNum < 0.3 ? "Low" : "Medium";
+  const gasColor = gasPriceNum < 0.1 ? "#00FF00" : gasPriceNum < 0.3 ? "#FFD700" : "#FFA500";
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -194,34 +202,97 @@ export const AirdropConfirmModal = ({
                   </div>
 
                   <div 
-                    className="p-4 rounded-2xl"
+                    className="p-4 rounded-2xl relative overflow-hidden"
                     style={{
-                      background: 'rgba(255,255,255,0.2)',
+                      background: isCheapGas 
+                        ? 'linear-gradient(135deg, rgba(0,255,100,0.3), rgba(0,212,255,0.3))' 
+                        : 'rgba(255,255,255,0.2)',
                       backdropFilter: 'blur(10px)',
-                      border: '2px solid rgba(255,255,255,0.3)'
+                      border: isCheapGas 
+                        ? '3px solid rgba(0,255,100,0.6)' 
+                        : '2px solid rgba(255,255,255,0.3)',
+                      boxShadow: isCheapGas 
+                        ? '0 0 30px rgba(0,255,100,0.4)' 
+                        : 'none'
                     }}
                   >
-                    <div className="flex justify-between items-center text-white">
+                    {isCheapGas && (
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute top-2 right-2"
+                      >
+                        <span className="text-2xl">✨</span>
+                      </motion.div>
+                    )}
+                    <div className="flex justify-between items-center text-white mb-2">
                       <span className="font-bold text-lg">⛽ Estimated gas:</span>
-                      <span className="font-black text-xl text-cyan-300">{estimatedGas} BNB</span>
+                      <span className={`font-black text-xl ${isCheapGas ? 'text-green-300' : 'text-cyan-300'}`}>
+                        {estimatedGas} BNB
+                      </span>
                     </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-white/80">Gas Price:</span>
+                      <div 
+                        className="px-3 py-1 rounded-full text-xs font-black"
+                        style={{
+                          background: `linear-gradient(135deg, ${gasColor}, ${gasColor}dd)`,
+                          boxShadow: `0 0 10px ${gasColor}80`
+                        }}
+                      >
+                        {gasLevel} ({gasPrice} Gwei)
+                      </div>
+                    </div>
+                    {isCheapGas && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2, type: "spring" }}
+                        className="mt-2 text-center"
+                      >
+                        <span className="text-green-300 font-black text-sm">
+                          ✅ Super Cheap! 70% savings! 💰
+                        </span>
+                      </motion.div>
+                    )}
                   </div>
                 </motion.div>
 
-                {/* Warning */}
+                {/* Warning or Success Message */}
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
                   className="mb-6 p-4 rounded-2xl flex items-start gap-3"
                   style={{
-                    background: 'rgba(255,165,0,0.2)',
-                    border: '2px solid rgba(255,165,0,0.4)'
+                    background: isCheapGas 
+                      ? 'rgba(0,255,100,0.2)' 
+                      : gasCost > 0.01 
+                        ? 'rgba(255,100,100,0.2)' 
+                        : 'rgba(255,165,0,0.2)',
+                    border: isCheapGas 
+                      ? '2px solid rgba(0,255,100,0.4)' 
+                      : gasCost > 0.01 
+                        ? '2px solid rgba(255,100,100,0.4)' 
+                        : '2px solid rgba(255,165,0,0.4)'
                   }}
                 >
-                  <AlertCircle className="w-6 h-6 text-yellow-300 flex-shrink-0 mt-1" />
+                  <AlertCircle 
+                    className={`w-6 h-6 flex-shrink-0 mt-1 ${
+                      isCheapGas ? 'text-green-300' : gasCost > 0.01 ? 'text-red-300' : 'text-yellow-300'
+                    }`} 
+                  />
                   <p className="text-white text-sm font-bold">
-                    This will send CAMLY to {walletCount} addresses. Make sure you have enough CAMLY and BNB for gas fees!
+                    {isCheapGas ? (
+                      <>Ultra-low gas with optimized contract! Perfect time to airdrop to {walletCount} addresses! 🚀</>
+                    ) : gasCost > 0.01 ? (
+                      <>⚠️ Gas cost is a bit high. Consider waiting for lower gas prices or reducing recipients.</>
+                    ) : (
+                      <>This will send CAMLY to {walletCount} addresses. Make sure you have enough CAMLY and BNB for gas fees!</>
+                    )}
                   </p>
                 </motion.div>
 

@@ -88,6 +88,8 @@ export default function FunWallet() {
   const [bulkProgress, setBulkProgress] = useState(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [bulkProgressText, setBulkProgressText] = useState("");
+  const [estimatedGas, setEstimatedGas] = useState("0.000");
+  const [currentGasPrice, setCurrentGasPrice] = useState("0");
 
   useEffect(() => {
     checkConnection();
@@ -420,7 +422,41 @@ export default function FunWallet() {
       }
     }
 
+    // Calculate gas estimate for ultra-low-gas contract
+    calculateGasEstimate(addresses.length);
     setShowConfirmModal(true);
+  };
+
+  const calculateGasEstimate = async (recipientCount: number) => {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const feeData = await provider.getFeeData();
+      const gasPriceInGwei = parseFloat(ethers.formatUnits(feeData.gasPrice || 0n, "gwei"));
+      
+      console.log("Current gas price:", gasPriceInGwei, "Gwei");
+      setCurrentGasPrice(gasPriceInGwei.toFixed(2));
+
+      // Ultra-low-gas multi-send contract calculation
+      const BASE_GAS = 65000;
+      const GAS_PER_RECIPIENT = 45000;
+      const totalGas = BASE_GAS + (GAS_PER_RECIPIENT * recipientCount);
+      
+      // Calculate cost in BNB
+      const gasCostBnb = (totalGas * gasPriceInGwei) / 1e9;
+      
+      console.log("Gas calculation:");
+      console.log("- Recipients:", recipientCount);
+      console.log("- Total gas:", totalGas);
+      console.log("- Cost:", gasCostBnb, "BNB");
+      
+      setEstimatedGas(gasCostBnb.toFixed(6));
+    } catch (error) {
+      console.error("Error calculating gas:", error);
+      // Fallback estimate
+      const fallbackGas = (65000 + (45000 * recipientCount)) * 0.05 / 1e9;
+      setEstimatedGas(fallbackGas.toFixed(6));
+      setCurrentGasPrice("0.05");
+    }
   };
 
   const handleBulkSend = async () => {
@@ -1313,7 +1349,8 @@ export default function FunWallet() {
         walletCount={bulkAddresses.split('\n').filter(a => a.trim()).length}
         amountPerWallet={bulkAmount}
         totalAmount={parseFloat(bulkAmount) * bulkAddresses.split('\n').filter(a => a.trim()).length}
-        estimatedGas="~0.008"
+        estimatedGas={estimatedGas}
+        gasPrice={currentGasPrice}
       />
 
       <AnimatePresence>
