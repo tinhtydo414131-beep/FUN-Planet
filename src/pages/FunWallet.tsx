@@ -16,6 +16,7 @@ import { ethers } from "ethers";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
+import camlyCoinImg from "@/assets/camly-coin.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +42,8 @@ const tokens = [
     symbol: "CAMLY", 
     name: "CAMLY COIN", 
     gradient: "from-pink-400 via-yellow-300 to-pink-500", 
-    emoji: "👑", 
+    emoji: "👑",
+    image: camlyCoinImg,
     special: true,
     contract: "0x0910320181889fefde0bb1ca63962b0a8882e413",
     verified: true
@@ -1096,7 +1098,7 @@ export default function FunWallet() {
                       className="mt-4 p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary-light"
                     >
                       <div className="flex items-center justify-center gap-2">
-                        <span className="text-3xl">👑</span>
+                        <img src={camlyCoinImg} alt="CAMLY Coin" className="w-8 h-8 object-contain" style={{ filter: 'drop-shadow(0 0 8px rgba(255,215,0,0.6))' }} />
                         <div>
                           <p className="text-xs text-muted-foreground">CAMLY COIN</p>
                           <p className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -1139,9 +1141,13 @@ export default function FunWallet() {
                     <motion.div
                       animate={selectedToken.symbol === token.symbol ? { rotate: 360 } : {}}
                       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="text-3xl mb-1"
+                      className="text-3xl mb-1 flex items-center justify-center"
                     >
-                      {token.emoji}
+                      {token.image ? (
+                        <img src={token.image} alt={token.symbol} className="w-10 h-10 object-contain" />
+                      ) : (
+                        token.emoji
+                      )}
                     </motion.div>
                     <div className="font-black text-sm">{token.symbol}</div>
                   </motion.button>
