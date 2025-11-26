@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Gamepad2, Users, MessageCircle, Trophy } from "lucide-react";
+import { Gamepad2, Users, MessageCircle, Trophy, Home } from "lucide-react";
 import { toast } from "sonner";
 import { WalletConnect } from "@/components/WalletConnect";
 
@@ -87,6 +87,19 @@ export default function Dashboard() {
       
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
+          {/* Back to Home Button */}
+          <div className="mb-8">
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              size="lg"
+              className="font-bold group"
+            >
+              <Home className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
+              <span>Về Trang Chính</span>
+            </Button>
+          </div>
+
           {/* Profile Header */}
           <Card className="mb-8 border-4 border-primary/30 shadow-xl bg-gradient-to-br from-background to-primary/5">
             <CardContent className="p-8">

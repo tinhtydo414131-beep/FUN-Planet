@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Trophy, Medal, Star } from "lucide-react";
+import { Trophy, Medal, Star, Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +18,7 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
+  const navigate = useNavigate();
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -73,6 +76,19 @@ export default function Leaderboard() {
       
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto max-w-5xl">
+          {/* Back to Home Button */}
+          <div className="mb-8">
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              size="lg"
+              className="font-bold group"
+            >
+              <Home className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
+              <span>Về Trang Chính</span>
+            </Button>
+          </div>
+
           <div className="text-center mb-12 space-y-4 animate-fade-in">
             <div className="inline-flex items-center justify-center gap-3 mb-4">
               <Trophy className="w-16 h-16 text-primary animate-bounce" />

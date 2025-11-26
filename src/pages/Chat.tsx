@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle, Send, Users } from "lucide-react";
+import { MessageCircle, Send, Users, Home } from "lucide-react";
 import { toast } from "sonner";
 
 interface ChatMessage {
@@ -217,6 +217,19 @@ export default function Chat() {
       
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto max-w-5xl">
+          {/* Back to Home Button */}
+          <div className="mb-8">
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              size="lg"
+              className="font-bold group"
+            >
+              <Home className="w-5 h-5 mr-2 text-primary group-hover:scale-110 transition-transform" />
+              <span>Về Trang Chính</span>
+            </Button>
+          </div>
+
           <div className="text-center mb-8 space-y-4 animate-fade-in">
             <h1 className="text-5xl md:text-6xl font-fredoka font-bold text-primary">
               Global Chat 💬
