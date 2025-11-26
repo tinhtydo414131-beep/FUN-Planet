@@ -1696,9 +1696,25 @@ export default function FunWallet() {
                           >
                             <ArrowDownLeft className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-300" />
                           </motion.div>
-                          <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-500 bg-clip-text text-transparent font-black">
-                            Receive
-                          </span>
+                          <motion.span 
+                            className="relative bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 bg-clip-text text-transparent font-black tracking-wider uppercase"
+                            style={{
+                              textShadow: '0 0 30px rgba(0,255,255,0.8), 0 0 60px rgba(0,136,255,0.6)',
+                              filter: 'drop-shadow(0 0 20px rgba(0,255,255,1))',
+                              backgroundSize: '200% auto'
+                            }}
+                            animate={{
+                              scale: [1, 1.05, 1],
+                              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            ✨ Receive ✨
+                          </motion.span>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4 sm:space-y-5">
