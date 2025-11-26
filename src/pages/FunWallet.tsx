@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CelebrationNotification } from "@/components/CelebrationNotification";
 import { toast } from "sonner";
 import { ethers } from "ethers";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { QRCodeSVG } from "qrcode.react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -643,6 +644,51 @@ export default function FunWallet() {
                       )}
                     </Button>
                   </div>
+
+                  {/* QR Code Section */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex justify-center mb-6"
+                  >
+                    <div 
+                      className="p-6 rounded-3xl relative"
+                      style={{
+                        background: 'rgba(255,255,255,0.95)',
+                        backdropFilter: 'blur(20px)',
+                        boxShadow: '0 0 60px rgba(0,255,255,0.6), 0 0 120px rgba(157,0,255,0.4), inset 0 0 30px rgba(255,255,255,0.8)',
+                        border: '3px solid rgba(0,255,255,0.3)'
+                      }}
+                    >
+                      <motion.div
+                        animate={{ 
+                          boxShadow: [
+                            '0 0 40px rgba(0,255,255,0.6)',
+                            '0 0 80px rgba(157,0,255,0.8)',
+                            '0 0 40px rgba(0,255,255,0.6)'
+                          ]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        className="absolute inset-0 rounded-3xl pointer-events-none"
+                      />
+                      <QRCodeSVG
+                        value={account}
+                        size={180}
+                        bgColor="#FFFFFF"
+                        fgColor="#1E0033"
+                        level="H"
+                        includeMargin={false}
+                        className="rounded-2xl relative z-10"
+                      />
+                      <div className="absolute -top-3 -right-3 bg-gradient-to-br from-cyan-400 to-purple-600 rounded-full p-2 shadow-2xl">
+                        <QrCode className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <p className="text-center text-sm text-white/60 mb-4 font-bold">
+                    📱 Scan QR to receive tokens
+                  </p>
 
                   {/* Balance */}
                   <div className="text-center mb-6">
