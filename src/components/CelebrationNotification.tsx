@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import shibaMascot from "@/assets/shiba-mascot.png";
 
 interface CelebrationNotificationProps {
   amount: number;
@@ -22,6 +21,16 @@ export const CelebrationNotification = ({ amount, token, onComplete, duration: c
     // Vibration
     if (navigator.vibrate) {
       navigator.vibrate([200, 100, 200, 100, 200]);
+    }
+
+    // Voice announcement "FUN AND RICH!!!"
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance("FUN AND RICH!!!");
+      utterance.rate = 0.9;
+      utterance.pitch = 1.2;
+      utterance.volume = 1;
+      utterance.lang = 'vi-VN'; // Prefer Vietnamese if available
+      speechSynthesis.speak(utterance);
     }
 
     // Play victory sound (using Web Audio API for synthetic sound)
@@ -67,7 +76,7 @@ export const CelebrationNotification = ({ amount, token, onComplete, duration: c
 
       const particleCount = 50;
       
-      // Golden confetti
+      // Golden cosmic confetti with glow
       confetti({
         particleCount,
         startVelocity: 30,
@@ -76,20 +85,22 @@ export const CelebrationNotification = ({ amount, token, onComplete, duration: c
           x: randomInRange(0.1, 0.9),
           y: Math.random() - 0.2
         },
-        colors: ['#FFD700', '#FFA500', '#FFFF00', '#FFE4B5', '#F0E68C']
+        colors: ['#FFD700', '#FFA500', '#FFFF00', '#C0C0C0', '#8B00FF', '#00D4FF'],
+        scalar: 1.5,
+        gravity: 0.8
       });
 
-      // Diamond sparkles
+      // Neon cosmic sparkles
       confetti({
-        particleCount: 20,
+        particleCount: 30,
         startVelocity: 25,
         spread: 360,
         origin: {
           x: randomInRange(0.1, 0.9),
           y: Math.random() - 0.2
         },
-        shapes: ['circle'],
-        colors: ['#FFFFFF', '#E0FFFF', '#B0E0E6', '#ADD8E6']
+        shapes: ['circle', 'square'],
+        colors: ['#FFFFFF', '#00D4FF', '#8B00FF', '#FFD700', '#FF00FF']
       });
     }, 200);
 
@@ -103,14 +114,16 @@ export const CelebrationNotification = ({ amount, token, onComplete, duration: c
       }
 
       confetti({
-        particleCount: 100,
+        particleCount: 120,
         startVelocity: 45,
         spread: 360,
         origin: {
           x: randomInRange(0.2, 0.8),
           y: randomInRange(0.3, 0.7)
         },
-        colors: ['#FF1493', '#00FFFF', '#FFD700', '#FF69B4', '#00FF00', '#FF4500']
+        colors: ['#FFD700', '#00FFFF', '#8B00FF', '#FF00FF', '#00FF00', '#FFA500'],
+        scalar: 1.8,
+        ticks: 300
       });
     }, 800);
 
@@ -147,53 +160,130 @@ export const CelebrationNotification = ({ amount, token, onComplete, duration: c
             transition={{ duration: 0.5 }}
             className="fixed inset-0 z-50 flex items-center justify-center"
             style={{
-              background: 'radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(138,43,226,0.8) 100%)',
-              backdropFilter: 'blur(10px)'
+              background: 'linear-gradient(135deg, #120038 0%, #8B00FF 50%, #00D4FF 100%)',
+              backdropFilter: 'blur(16px)'
             }}
           >
-            {/* Golden pulsing border */}
+            {/* Cosmic neon pulsing border */}
             <motion.div
               animate={{
                 boxShadow: [
-                  '0 0 20px 5px rgba(255,215,0,0.5)',
-                  '0 0 40px 10px rgba(255,215,0,0.8)',
-                  '0 0 20px 5px rgba(255,215,0,0.5)'
+                  '0 0 30px 5px rgba(139,0,255,0.6), 0 0 60px 10px rgba(0,212,255,0.4)',
+                  '0 0 60px 15px rgba(139,0,255,0.9), 0 0 90px 20px rgba(0,212,255,0.7)',
+                  '0 0 30px 5px rgba(139,0,255,0.6), 0 0 60px 10px rgba(0,212,255,0.4)'
                 ]
               }}
-              transition={{ duration: 1, repeat: Infinity }}
-              className="absolute inset-4 border-8 border-yellow-400 rounded-3xl pointer-events-none"
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="absolute inset-4 border-8 rounded-3xl pointer-events-none"
               style={{
-                background: 'linear-gradient(45deg, transparent 30%, rgba(255,215,0,0.3) 50%, transparent 70%)',
+                borderImage: 'linear-gradient(45deg, #8B00FF, #00D4FF, #FFD700, #8B00FF) 1',
+                background: 'linear-gradient(45deg, transparent 30%, rgba(139,0,255,0.2) 50%, transparent 70%)',
                 backgroundSize: '200% 200%',
                 animation: 'gradient-shift 2s ease infinite'
               }}
             />
 
-            {/* Mascot */}
-            <motion.img
-              src={shibaMascot}
-              alt="Shiba Mascot"
-              className="absolute bottom-10 left-10 w-48 h-48 z-10"
-              initial={{ x: -300, rotate: -45 }}
-              animate={{ 
-                x: 0, 
-                rotate: [0, -10, 10, -10, 10, 0],
-                y: [0, -20, 0, -10, 0]
+            {/* Screen shake effect */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              animate={{
+                x: [0, -2, 2, -2, 2, 0],
+                y: [0, -2, 2, -2, 2, 0]
               }}
-              transition={{ 
-                x: { duration: 0.5 },
-                rotate: { duration: 0.5, repeat: Infinity, repeatDelay: 0.5 },
-                y: { duration: 0.5, repeat: Infinity }
-              }}
+              transition={{ duration: 0.5, repeat: 2 }}
             />
 
+            {/* Shooting stars */}
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={`star-${i}`}
+                className="absolute w-1 h-1 bg-white rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 50}%`,
+                  boxShadow: '0 0 10px 2px rgba(255,255,255,0.8), 0 0 20px 4px rgba(0,212,255,0.6)'
+                }}
+                animate={{
+                  x: [0, Math.random() * 400 - 200],
+                  y: [0, Math.random() * 400],
+                  opacity: [1, 0],
+                  scale: [1, 0.5]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                  ease: "easeOut"
+                }}
+              />
+            ))}
+
+            {/* Nebula particles */}
+            {[...Array(30)].map((_, i) => (
+              <motion.div
+                key={`nebula-${i}`}
+                className="absolute rounded-full"
+                style={{
+                  width: `${Math.random() * 8 + 2}px`,
+                  height: `${Math.random() * 8 + 2}px`,
+                  background: `radial-gradient(circle, ${['#8B00FF', '#00D4FF', '#FFD700'][i % 3]} 0%, transparent 70%)`,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  filter: 'blur(1px)'
+                }}
+                animate={{
+                  y: [0, -30, 0],
+                  x: [0, Math.random() * 20 - 10, 0],
+                  opacity: [0.3, 0.8, 0.3],
+                  scale: [1, 1.5, 1]
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: i * 0.1
+                }}
+              />
+            ))}
+
             <div className="text-center z-10">
-              {/* Main text */}
+              {/* Galaxy particles rotating around text */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                {[...Array(12)].map((_, i) => (
+                  <motion.div
+                    key={`galaxy-${i}`}
+                    className="absolute w-3 h-3 rounded-full"
+                    style={{
+                      background: `radial-gradient(circle, ${['#FFD700', '#8B00FF', '#00D4FF'][i % 3]}, transparent)`,
+                      left: '50%',
+                      top: '50%',
+                      transformOrigin: '0 0',
+                      transform: `rotate(${i * 30}deg) translate(250px)`,
+                      boxShadow: `0 0 20px ${['#FFD700', '#8B00FF', '#00D4FF'][i % 3]}`
+                    }}
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.6, 1, 0.6]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: i * 0.2
+                    }}
+                  />
+                ))}
+              </motion.div>
+
+              {/* Main text with 3D cosmic effect */}
               <motion.h1
-                initial={{ scale: 0, rotate: -180 }}
+                initial={{ scale: 0, rotate: -180, z: -100 }}
                 animate={{ 
-                  scale: [1, 1.2, 1, 1.1, 1],
-                  rotate: 0
+                  scale: [1, 1.15, 1, 1.08, 1],
+                  rotate: 0,
+                  z: 0
                 }}
                 transition={{ 
                   duration: 0.6,
@@ -201,25 +291,28 @@ export const CelebrationNotification = ({ amount, token, onComplete, duration: c
                 }}
                 className="text-9xl font-black mb-8 relative"
                 style={{
-                  background: 'linear-gradient(45deg, #FFD700 0%, #FFA500 25%, #FFD700 50%, #FFFF00 75%, #FFD700 100%)',
-                  backgroundSize: '200% auto',
+                  background: 'linear-gradient(45deg, #FFD700 0%, #FFA500 25%, #00D4FF 50%, #8B00FF 75%, #FFD700 100%)',
+                  backgroundSize: '300% auto',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  filter: 'drop-shadow(0 0 30px rgba(255,215,0,0.8)) drop-shadow(0 0 60px rgba(255,215,0,0.6))',
-                  textShadow: '0 0 80px rgba(255,215,0,0.9)',
-                  animation: 'gradient-x 3s linear infinite'
+                  filter: 'drop-shadow(0 0 40px rgba(255,215,0,0.9)) drop-shadow(0 0 80px rgba(139,0,255,0.7)) drop-shadow(0 8px 16px rgba(0,0,0,0.5))',
+                  textShadow: '0 0 100px rgba(255,215,0,0.9), 0 0 60px rgba(0,212,255,0.8)',
+                  animation: 'gradient-x 3s linear infinite',
+                  transform: 'perspective(1000px) rotateX(5deg)',
+                  letterSpacing: '0.05em'
                 }}
               >
                 FUN AND RICH!!!
               </motion.h1>
 
-              {/* Amount */}
+              {/* Amount with cosmic 3D effect */}
               <motion.div
-                initial={{ scale: 0, y: 50 }}
+                initial={{ scale: 0, y: 50, z: -100 }}
                 animate={{ 
-                  scale: [1, 1.1, 1],
-                  y: 0
+                  scale: [1, 1.12, 1],
+                  y: 0,
+                  z: 0
                 }}
                 transition={{ 
                   delay: 0.3,
@@ -227,61 +320,72 @@ export const CelebrationNotification = ({ amount, token, onComplete, duration: c
                 }}
                 className="flex items-center justify-center gap-4 text-8xl font-black"
                 style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)',
-                  backgroundSize: '200% auto',
+                  background: 'linear-gradient(135deg, #FFD700 0%, #00D4FF 50%, #8B00FF 100%)',
+                  backgroundSize: '300% auto',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  filter: 'drop-shadow(0 10px 20px rgba(255,215,0,0.5))',
-                  animation: 'gradient-x 2s linear infinite'
+                  filter: 'drop-shadow(0 10px 30px rgba(255,215,0,0.7)) drop-shadow(0 0 60px rgba(0,212,255,0.6))',
+                  animation: 'gradient-x 2s linear infinite',
+                  transform: 'perspective(1000px) rotateX(3deg)',
+                  textShadow: '0 0 80px rgba(255,215,0,0.9)'
                 }}
               >
                 <span>+{amount}</span>
                 <span className="text-6xl">{token}</span>
               </motion.div>
 
-              {/* Particles explosion */}
+              {/* Cosmic particles explosion */}
               <motion.div
                 className="absolute inset-0 pointer-events-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                {[...Array(20)].map((_, i) => (
+                {[...Array(30)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className="absolute w-4 h-4 bg-yellow-400 rounded-full"
+                    className="absolute rounded-full"
                     style={{
+                      width: `${Math.random() * 12 + 4}px`,
+                      height: `${Math.random() * 12 + 4}px`,
+                      background: `radial-gradient(circle, ${['#FFD700', '#00D4FF', '#8B00FF', '#FF00FF'][i % 4]}, transparent)`,
                       left: '50%',
                       top: '50%',
-                      boxShadow: '0 0 20px rgba(255,215,0,0.8)'
+                      boxShadow: `0 0 30px ${['#FFD700', '#00D4FF', '#8B00FF', '#FF00FF'][i % 4]}`
                     }}
                     animate={{
-                      x: [0, (Math.random() - 0.5) * 400],
-                      y: [0, (Math.random() - 0.5) * 400],
+                      x: [0, (Math.random() - 0.5) * 500],
+                      y: [0, (Math.random() - 0.5) * 500],
                       scale: [1, 0],
-                      opacity: [1, 0]
+                      opacity: [1, 0],
+                      rotate: [0, Math.random() * 360]
                     }}
                     transition={{
-                      duration: 2,
+                      duration: 2.5,
                       repeat: Infinity,
-                      delay: i * 0.1
+                      delay: i * 0.1,
+                      ease: "easeOut"
                     }}
                   />
                 ))}
               </motion.div>
             </div>
 
-            {/* Flash effect */}
+            {/* Cosmic flash effect */}
             <motion.div
-              className="absolute inset-0 bg-yellow-300 pointer-events-none"
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(0,212,255,0.3) 50%, transparent 100%)'
+              }}
               animate={{
-                opacity: [0, 0.3, 0]
+                opacity: [0, 0.4, 0],
+                scale: [0.8, 1.2, 0.8]
               }}
               transition={{
-                duration: 0.5,
-                repeat: 5,
-                repeatDelay: 0.5
+                duration: 0.6,
+                repeat: 6,
+                repeatDelay: 0.4
               }}
             />
           </motion.div>
