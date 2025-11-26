@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield, QrCode } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield, QrCode, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CelebrationNotification } from "@/components/CelebrationNotification";
 import { AirdropConfirmModal } from "@/components/AirdropConfirmModal";
@@ -1100,17 +1100,32 @@ export default function FunWallet() {
       </div>
 
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-4xl relative z-10">
-        {/* Back to Home Button - Premium Design */}
+        {/* Navigation Buttons */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="mb-6 flex justify-center"
+          className="mb-6 flex items-center justify-center gap-3"
         >
+          {/* Back Button */}
+          <motion.button
+            onClick={() => navigate(-1)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-14 h-14 rounded-full font-bold flex items-center justify-center transition-all duration-300 shadow-2xl border-0"
+            style={{
+              background: 'linear-gradient(135deg, #9B5DE5 0%, #00F5FF 100%)',
+              boxShadow: '0 8px 32px rgba(0, 245, 255, 0.4), 0 4px 16px rgba(155, 93, 229, 0.3)',
+            }}
+          >
+            <ArrowLeft className="w-6 h-6 text-white" />
+          </motion.button>
+
+          {/* Home Button */}
           <motion.button
             onClick={() => navigate("/")}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
-            className="w-[90%] sm:w-[85%] max-w-md h-14 rounded-[28px] font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-2xl border-0"
+            className="flex-1 max-w-md h-14 rounded-[28px] font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-2xl border-0"
             style={{
               background: 'linear-gradient(135deg, #9B5DE5 0%, #00F5FF 100%)',
               boxShadow: '0 8px 32px rgba(0, 245, 255, 0.4), 0 4px 16px rgba(155, 93, 229, 0.3)',
