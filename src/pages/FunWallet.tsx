@@ -1100,27 +1100,29 @@ export default function FunWallet() {
       </div>
 
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-4xl relative z-10">
-        {/* Back to Home Button */}
+        {/* Back to Home Button - Premium Design */}
         <motion.div
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          className="mb-4 sm:mb-6"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="fixed bottom-6 left-0 right-0 z-50 px-4 sm:px-6 flex justify-center"
         >
-          <Button
+          <motion.button
             onClick={() => navigate("/")}
-            variant="outline"
-            className="border-0 font-bold text-base sm:text-lg px-5 sm:px-6 py-5 sm:py-3 h-auto sm:h-12 transition-all duration-300 group w-full sm:w-auto"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-[90%] sm:w-[85%] max-w-md h-14 rounded-[28px] font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-2xl border-0"
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 0 30px rgba(157,0,255,0.3), inset 0 0 20px rgba(255,255,255,0.1)',
+              background: 'linear-gradient(135deg, #9B5DE5 0%, #00F5FF 100%)',
+              boxShadow: '0 8px 32px rgba(0, 245, 255, 0.4), 0 4px 16px rgba(155, 93, 229, 0.3)',
+              fontSize: '19px',
+              letterSpacing: '0.5px',
+              fontWeight: 700,
+              color: '#FFFFFF'
             }}
           >
-            <Home className="w-5 h-5 sm:w-5 sm:h-5 mr-2 text-cyan-400 group-hover:scale-110 transition-transform" />
-            <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent text-base sm:text-base">
-              Về Trang Chính
-            </span>
-          </Button>
+            <Home className="w-7 h-7 text-white" />
+            <span>Về Trang Chủ</span>
+          </motion.button>
         </motion.div>
 
         {!account ? (
