@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
-import { Sparkles, RotateCcw, Trophy } from "lucide-react";
+import { Sparkles, RotateCcw } from "lucide-react";
 
 interface LilBlockBuddyProps {
   level: number;
@@ -138,11 +137,7 @@ const LilBlockBuddy = ({ level, onLevelComplete }: LilBlockBuddyProps) => {
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 p-4 flex items-center justify-center">
       <div className="max-w-2xl w-full space-y-6">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-2"
-        >
+        <div className="text-center space-y-2 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-fredoka font-bold bg-gradient-to-r from-primary via-accent to-glow bg-clip-text text-transparent">
             Lil Block Buddy 🧩
           </h1>
@@ -152,7 +147,7 @@ const LilBlockBuddy = ({ level, onLevelComplete }: LilBlockBuddyProps) => {
           <Badge variant="secondary" className="text-lg px-4 py-2">
             Level {level} • Grid {gridSize}x{gridSize}
           </Badge>
-        </motion.div>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
@@ -180,23 +175,19 @@ const LilBlockBuddy = ({ level, onLevelComplete }: LilBlockBuddyProps) => {
             }}
           >
             {tiles.map((num, index) => (
-              <motion.button
+              <button
                 key={index}
                 onClick={() => handleTileClick(index)}
                 disabled={num === 0 || isComplete}
-                className={`aspect-square rounded-xl text-2xl md:text-3xl font-fredoka font-bold shadow-lg transition-all ${
+                className={`aspect-square rounded-xl text-2xl md:text-3xl font-fredoka font-bold shadow-lg transition-all animate-fade-in ${
                   num === 0 
                     ? 'bg-background/50 cursor-default' 
-                    : `bg-gradient-to-br ${getTileColor(num)} text-white hover:scale-105 hover:shadow-xl cursor-pointer`
+                    : `bg-gradient-to-br ${getTileColor(num)} text-white hover:scale-105 hover:shadow-xl cursor-pointer active:scale-95`
                 }`}
-                whileHover={num !== 0 ? { scale: 1.05 } : {}}
-                whileTap={num !== 0 ? { scale: 0.95 } : {}}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.02 }}
+                style={{ animationDelay: `${index * 20}ms` }}
               >
                 {num !== 0 && num}
-              </motion.button>
+              </button>
             ))}
           </div>
         </Card>
@@ -216,11 +207,7 @@ const LilBlockBuddy = ({ level, onLevelComplete }: LilBlockBuddyProps) => {
 
         {/* Win message */}
         {isComplete && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center space-y-2"
-          >
+          <div className="text-center space-y-2 animate-scale-in">
             <div className="text-6xl">🎉</div>
             <h2 className="text-3xl font-fredoka font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Hoàn thành!
@@ -228,7 +215,7 @@ const LilBlockBuddy = ({ level, onLevelComplete }: LilBlockBuddyProps) => {
             <p className="text-lg text-muted-foreground">
               {moves} bước trong {formatTime(time)}
             </p>
-          </motion.div>
+          </div>
         )}
 
         {/* Tips */}

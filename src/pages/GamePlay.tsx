@@ -35,6 +35,7 @@ import SkyCastle from "@/components/games/SkyCastle";
 import PetParadise from "@/components/games/PetParadise";
 import MusicCreator from "@/components/games/MusicCreator";
 import FlowerField from "@/components/games/FlowerField";
+import LilBlockBuddy from "@/components/games/LilBlockBuddy";
 
 interface Game {
   id: string;
@@ -208,6 +209,7 @@ const GamePlay = () => {
       case "TreasureHunt": return <TreasureHunt {...gameProps} />;
       case "Platformer": return <Platformer {...gameProps} />;
       case "Racing": return <Racing {...gameProps} />;
+      case "LilBlockBuddy": return <LilBlockBuddy {...gameProps} />;
       
       default:
         return (
