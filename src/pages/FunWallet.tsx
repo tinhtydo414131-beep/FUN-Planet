@@ -1258,10 +1258,10 @@ export default function FunWallet() {
                         <img 
                           src={processedCoinImage || camlyCoinPro} 
                           alt="CAMLY Coin" 
-                          className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-full" 
+                          className="w-10 h-10 sm:w-12 sm:h-12 object-contain" 
                           style={{ 
-                            filter: 'drop-shadow(0 4px 12px rgba(255,215,0,0.5))',
-                            boxShadow: '0 0 20px rgba(255,215,0,0.3)'
+                            filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.9)) drop-shadow(0 0 40px rgba(255,165,0,0.6))',
+                            animation: 'pulse 2s ease-in-out infinite'
                           }} 
                         />
                         <div>
@@ -1312,10 +1312,10 @@ export default function FunWallet() {
                         <img 
                           src={token.symbol === "CAMLY" && processedCoinImage ? processedCoinImage : token.image} 
                           alt={token.symbol} 
-                          className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-full" 
+                          className="w-10 h-10 sm:w-12 sm:h-12 object-contain" 
                           style={{ 
-                            filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))',
-                            boxShadow: '0 0 12px rgba(0,0,0,0.15)'
+                            filter: 'drop-shadow(0 0 15px rgba(255,215,0,0.8)) drop-shadow(0 0 30px rgba(255,165,0,0.5))',
+                            animation: selectedToken.symbol === token.symbol ? 'pulse 2s ease-in-out infinite' : 'none'
                           }} 
                         />
                       ) : (
@@ -1357,10 +1357,10 @@ export default function FunWallet() {
                           <img 
                             src={selectedToken.symbol === "CAMLY" && processedCoinImage ? processedCoinImage : selectedToken.image} 
                             alt={selectedToken.symbol} 
-                            className="w-full h-full object-contain rounded-full" 
+                            className="w-full h-full object-contain" 
                             style={{ 
-                              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',
-                              boxShadow: '0 0 20px rgba(0,0,0,0.2)'
+                              filter: 'drop-shadow(0 0 25px rgba(255,215,0,0.9)) drop-shadow(0 0 50px rgba(255,165,0,0.6))',
+                              animation: 'pulse 2s ease-in-out infinite'
                             }} 
                           />
                         ) : (
