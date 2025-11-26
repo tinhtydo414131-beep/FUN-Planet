@@ -134,7 +134,8 @@ export default function FunWallet() {
   const [celebrationAmount, setCelebrationAmount] = useState(0);
   const [celebrationToken, setCelebrationToken] = useState("CAMLY");
   const [processedCoinImage, setProcessedCoinImage] = useState<string | null>(null);
-  const [showChart, setShowChart] = useState(true);
+  const [selectedChartCoin, setSelectedChartCoin] = useState<string | null>(null);
+  const [chartTimeframe, setChartTimeframe] = useState<'1H' | '4H' | '1D' | '1W' | '1M'>('1D');
 
   // Check for processed coin image on mount
   useEffect(() => {
@@ -221,8 +222,10 @@ export default function FunWallet() {
   }, [account]);
 
   useEffect(() => {
-    fetchChartData(selectedToken.symbol);
-  }, [selectedToken]);
+    if (selectedChartCoin) {
+      fetchChartData(selectedChartCoin, chartTimeframe);
+    }
+  }, [selectedChartCoin, chartTimeframe]);
 
   const checkConnection = async () => {
     if (window.ethereum) {
@@ -385,7 +388,7 @@ export default function FunWallet() {
     }
   };
 
-  const fetchChartData = async (tokenSymbol: string) => {
+  const fetchChartData = async (tokenSymbol: string, timeframe: string) => {
     const coinIds: {[key: string]: string} = {
       BNB: 'binancecoin',
       CAMLY: 'camly-coin',
@@ -394,23 +397,48 @@ export default function FunWallet() {
       FUN: 'funtoken'
     };
 
+    const daysMap: {[key: string]: string} = {
+      '1H': '1',
+      '4H': '1',
+      '1D': '1',
+      '1W': '7',
+      '1M': '30'
+    };
+
     try {
       const coinId = coinIds[tokenSymbol];
+      const days = daysMap[timeframe];
       const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=7`
+        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`
       );
 
       if (response.ok) {
         const data = await response.json();
-        const formattedData = data.prices.map((item: any) => ({
-          time: new Date(item[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        let formattedData = data.prices.map((item: any) => ({
+          time: new Date(item[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: timeframe === '1H' || timeframe === '4H' ? '2-digit' : undefined }),
           price: item[1]
         }));
+        
+        // Sample data based on timeframe
+        if (timeframe === '1H') {
+          formattedData = formattedData.slice(-12); // Last 12 points for 1H
+        } else if (timeframe === '4H') {
+          formattedData = formattedData.slice(-24); // Last 24 points for 4H
+        }
+        
         setChartData(formattedData);
       }
     } catch (error) {
       console.error('Error fetching chart data:', error);
       setChartData([]);
+    }
+  };
+
+  const handleCoinChartToggle = (tokenSymbol: string) => {
+    if (selectedChartCoin === tokenSymbol) {
+      setSelectedChartCoin(null);
+    } else {
+      setSelectedChartCoin(tokenSymbol);
     }
   };
 
@@ -1249,12 +1277,11 @@ export default function FunWallet() {
                       {selectedNetwork.symbol}
                     </p>
                     
-                    {/* CAMLY Balance Highlight - Click to toggle chart */}
+                    {/* CAMLY Balance Highlight */}
                     <motion.div
                       animate={{ scale: [1, 1.03, 1] }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      onClick={() => setShowChart(!showChart)}
-                      className="mt-3 sm:mt-4 p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary-light cursor-pointer hover:border-primary transition-colors"
+                      className="mt-3 sm:mt-4 p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary-light"
                     >
                       <div className="flex items-center justify-center gap-2 sm:gap-2">
                         <img 
@@ -1296,17 +1323,29 @@ export default function FunWallet() {
                 {tokens.map((token) => (
                   <motion.button
                     key={token.symbol}
-                    onClick={() => setSelectedToken(token)}
+                    onClick={() => {
+                      setSelectedToken(token);
+                      handleCoinChartToggle(token.symbol);
+                    }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-2 font-bold transition-all duration-300 snap-center min-w-[100px] sm:min-w-[120px] ${
-                      selectedToken.symbol === token.symbol 
-                        ? 'border-primary bg-gradient-to-br from-primary to-secondary text-white scale-105 shadow-[var(--shadow-button)]' 
+                    className={`flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl border-2 font-bold transition-all duration-300 snap-center min-w-[100px] sm:min-w-[120px] relative ${
+                      selectedChartCoin === token.symbol
+                        ? 'border-primary bg-gradient-to-br from-primary to-secondary text-white scale-105 shadow-[var(--shadow-button)] ring-4 ring-primary/30' 
+                        : selectedToken.symbol === token.symbol 
+                        ? 'border-primary/50 bg-gradient-to-br from-primary/20 to-secondary/20 text-foreground' 
                         : 'border-border bg-card/80 text-foreground opacity-70'
                     }`}
                   >
+                    {selectedChartCoin === token.symbol && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
+                      />
+                    )}
                     <motion.div
-                      animate={selectedToken.symbol === token.symbol ? { rotate: 360 } : {}}
+                      animate={selectedChartCoin === token.symbol ? { rotate: 360 } : {}}
                       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                       className="text-2xl sm:text-3xl mb-1 flex items-center justify-center"
                     >
@@ -1338,6 +1377,133 @@ export default function FunWallet() {
                 ))}
               </div>
             </motion.div>
+
+            {/* Price Chart Section */}
+            <AnimatePresence>
+              {selectedChartCoin && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="mb-4 sm:mb-6 overflow-hidden"
+                >
+                  <Card className="border-2 border-primary/40 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 backdrop-blur-sm overflow-hidden">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                            className="w-10 h-10 sm:w-12 sm:h-12"
+                          >
+                            {tokens.find(t => t.symbol === selectedChartCoin)?.image ? (
+                              <img 
+                                src={selectedChartCoin === "CAMLY" && processedCoinImage ? processedCoinImage : tokens.find(t => t.symbol === selectedChartCoin)?.image} 
+                                alt={selectedChartCoin} 
+                                className="w-full h-full object-contain" 
+                                style={{ 
+                                  filter: 'drop-shadow(0 0 20px rgba(139, 70, 255, 0.8))',
+                                  animation: 'pulse 2s ease-in-out infinite'
+                                }} 
+                              />
+                            ) : (
+                              <span className="text-3xl sm:text-4xl">{tokens.find(t => t.symbol === selectedChartCoin)?.emoji}</span>
+                            )}
+                          </motion.div>
+                          <div>
+                            <h3 className="text-lg sm:text-xl font-black text-foreground">
+                              {tokens.find(t => t.symbol === selectedChartCoin)?.name} Chart
+                            </h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                              Price: ${tokenPrices[selectedChartCoin]?.toFixed(selectedChartCoin === 'CAMLY' ? 6 : 2) || "0.00"}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* Timeframe Selector */}
+                        <div className="flex gap-1 sm:gap-2 bg-background/50 rounded-lg p-1">
+                          {(['1H', '4H', '1D', '1W', '1M'] as const).map((tf) => (
+                            <motion.button
+                              key={tf}
+                              onClick={() => setChartTimeframe(tf)}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded text-[10px] sm:text-xs font-bold transition-all ${
+                                chartTimeframe === tf
+                                  ? 'bg-primary text-white shadow-md'
+                                  : 'text-muted-foreground hover:text-foreground'
+                              }`}
+                            >
+                              {tf}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Chart */}
+                      {chartData.length > 0 ? (
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="h-48 sm:h-64 w-full"
+                        >
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={chartData}>
+                              <defs>
+                                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                              <XAxis 
+                                dataKey="time" 
+                                stroke="hsl(var(--muted-foreground))" 
+                                fontSize={10}
+                                tickMargin={8}
+                              />
+                              <YAxis 
+                                stroke="hsl(var(--muted-foreground))" 
+                                fontSize={10}
+                                tickFormatter={(value) => `$${value.toFixed(selectedChartCoin === 'CAMLY' ? 6 : 2)}`}
+                                width={60}
+                              />
+                              <Tooltip 
+                                contentStyle={{ 
+                                  background: 'hsl(var(--card))', 
+                                  border: '2px solid hsl(var(--primary))',
+                                  borderRadius: '12px',
+                                  padding: '12px',
+                                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                                }}
+                                labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
+                                itemStyle={{ color: 'hsl(var(--primary))' }}
+                                formatter={(value: any) => [`$${parseFloat(value).toFixed(selectedChartCoin === 'CAMLY' ? 6 : 2)}`, 'Price']}
+                              />
+                              <Line 
+                                type="monotone" 
+                                dataKey="price" 
+                                stroke="hsl(var(--primary))" 
+                                strokeWidth={3}
+                                fill="url(#chartGradient)"
+                                dot={false}
+                                activeDot={{ r: 6, fill: 'hsl(var(--primary))', strokeWidth: 2, stroke: '#fff' }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </motion.div>
+                      ) : (
+                        <div className="h-48 sm:h-64 flex items-center justify-center">
+                          <p className="text-muted-foreground">Loading chart data...</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Selected Token Info Card */}
             <motion.div
@@ -1403,64 +1569,6 @@ export default function FunWallet() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Price Chart */}
-                  <AnimatePresence>
-                    {showChart && chartData.length > 0 && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-4 h-32 sm:h-48 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={chartData}>
-                              <defs>
-                                <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                                </linearGradient>
-                              </defs>
-                              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                              <XAxis 
-                                dataKey="time" 
-                                stroke="hsl(var(--muted-foreground))" 
-                                fontSize={10}
-                                className="sm:text-xs"
-                              />
-                              <YAxis 
-                                stroke="hsl(var(--muted-foreground))" 
-                                fontSize={10}
-                                className="sm:text-xs"
-                                tickFormatter={(value) => `$${value.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2)}`}
-                              />
-                              <Tooltip 
-                                contentStyle={{ 
-                                  backgroundColor: 'hsl(var(--background))', 
-                                  border: '2px solid hsl(var(--primary))',
-                                  borderRadius: '12px',
-                                  boxShadow: '0 0 20px rgba(139,92,246,0.5)',
-                                  padding: '8px 12px'
-                                }}
-                                formatter={(value: any) => [`$${value.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2)}`, 'Giá']}
-                              />
-                              <Line 
-                                type="monotone" 
-                                dataKey="price" 
-                                stroke="hsl(var(--primary))" 
-                                strokeWidth={3}
-                                dot={false}
-                                fill="url(#priceGradient)"
-                                className="drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]"
-                              />
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </CardContent>
               </Card>
             </motion.div>
