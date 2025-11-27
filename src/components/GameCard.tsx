@@ -153,12 +153,15 @@ export const GameCard = ({ game }: GameCardProps) => {
 
   return (
     <Card className="group overflow-hidden border-3 border-primary/20 hover:border-primary transition-all duration-500 hover:shadow-[0_25px_60px_rgba(59,130,246,0.5)] animate-fade-in transform hover:-translate-y-4 hover:scale-105 h-full flex flex-col">
-      <div className="relative aspect-video overflow-hidden">
+      <div className="relative aspect-video overflow-hidden border-4 border-primary/30 shadow-[0_8px_24px_rgba(102,126,234,0.3),inset_0_2px_8px_rgba(255,255,255,0.2)]">
         {game.thumbnail_url && !imageError ? (
           <img 
             src={game.thumbnail_url} 
             alt={game.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:rotate-2"
+            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-115 group-hover:rotate-2 brightness-110 contrast-125 saturate-150 shadow-[inset_0_0_60px_rgba(0,0,0,0.3)] group-hover:brightness-125 group-hover:contrast-150 group-hover:saturate-[1.7]"
+            style={{
+              filter: 'contrast(1.25) saturate(1.5) brightness(1.1) drop-shadow(0 8px 16px rgba(0,0,0,0.4))'
+            }}
             onError={() => setImageError(true)}
           />
         ) : (
