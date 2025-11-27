@@ -22,19 +22,14 @@ export const BackgroundMusicPlayer = () => {
   const [currentTrack, setCurrentTrack] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Auto-play when user logs in
+  // Load saved volume on mount
   useEffect(() => {
     const savedVolume = localStorage.getItem("funplanet_music_volume");
     
     if (savedVolume) {
       setVolume(Number(savedVolume));
     }
-    
-    // Auto-play when user is authenticated
-    if (user && !isPlaying) {
-      setIsPlaying(true);
-    }
-  }, [user]);
+  }, []);
 
   // Update audio volume
   useEffect(() => {
