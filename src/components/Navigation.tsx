@@ -113,9 +113,10 @@ export const Navigation = () => {
             ) : (
               <Button 
                 onClick={() => navigate("/auth")}
-                className="font-fredoka font-bold text-lg px-6 py-6 bg-gradient-to-r from-primary to-secondary hover:shadow-lg transform hover:scale-110 transition-all"
+                className="font-fredoka font-bold text-lg px-8 py-7 gradient-animated text-white border-0 shadow-2xl transform hover:scale-110 transition-all rainbow-glow relative overflow-hidden"
               >
-                Login / Sign Up ✨
+                <Wallet className="w-6 h-6 mr-2 animate-pulse" />
+                <span className="relative z-10">Kết nối ví MetaMask 🦊</span>
               </Button>
             )}
           </div>
@@ -175,9 +176,10 @@ export const Navigation = () => {
             ) : (
               <Button 
                 onClick={() => navigate("/auth")}
-                className="font-fredoka font-bold text-base px-5 py-2 bg-gradient-to-r from-primary to-secondary rounded-[30px] hover:shadow-lg transition-all min-w-[110px]"
+                className="font-fredoka font-bold text-sm px-4 py-2 gradient-animated text-white border-0 rounded-full shadow-lg transition-all min-w-[120px] rainbow-glow"
               >
-                Đăng nhập
+                <Wallet className="w-4 h-4 mr-1 inline" />
+                Kết nối ví
               </Button>
             )}
           </div>
