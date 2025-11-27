@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { ImageCropDialog } from "./ImageCropDialog";
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -15,42 +16,62 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(currentAvatarUrl);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user) {
+      toast.error("Bạn cần đăng nhập để đổi avatar!");
+      return;
+    }
+
+    if (!event.target.files || event.target.files.length === 0) {
+      return;
+    }
+
+    const file = event.target.files[0];
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Vui lòng chọn file ảnh!");
+      return;
+    }
+
+    // Validate file size (max 5MB before crop)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Ảnh không được vượt quá 5MB!");
+      return;
+    }
+
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result as string);
+      setCropDialogOpen(true);
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input
+    event.target.value = '';
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
     try {
-      if (!user) {
-        toast.error("Bạn cần đăng nhập để đổi avatar!");
-        return;
-      }
-
-      if (!event.target.files || event.target.files.length === 0) {
-        return;
-      }
-
-      const file = event.target.files[0];
-
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error("Vui lòng chọn file ảnh!");
-        return;
-      }
-
-      // Validate file size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("Ảnh không được vượt quá 2MB!");
-        return;
-      }
-
       setUploading(true);
+      setCropDialogOpen(false);
+
+      if (!user) return;
 
       // Create unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/${Date.now()}.jpg`;
 
       // Upload to storage
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, croppedBlob, { 
+          upsert: true,
+          contentType: 'image/jpeg'
+        });
 
       if (uploadError) {
         throw uploadError;
@@ -79,50 +100,65 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
       toast.error(error.message || "Không thể upload avatar!");
     } finally {
       setUploading(false);
+      setSelectedImage(null);
     }
   };
 
   if (!user) return null;
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative group">
-        <Avatar className="w-24 h-24 border-4 border-primary/20">
-          <AvatarImage src={avatarUrl || undefined} />
-          <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-2xl">
-            {user.email?.charAt(0).toUpperCase() || '?'}
-          </AvatarFallback>
-        </Avatar>
-        
-        <label
-          htmlFor="avatar-upload"
-          className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-        >
-          {uploading ? (
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
-          ) : (
-            <Camera className="w-8 h-8 text-white" />
-          )}
-        </label>
-        
-        <input
-          id="avatar-upload"
-          type="file"
-          accept="image/*"
-          onChange={handleUpload}
-          disabled={uploading}
-          className="hidden"
-        />
+    <>
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative group">
+          <Avatar className="w-24 h-24 border-4 border-primary/20">
+            <AvatarImage src={avatarUrl || undefined} />
+            <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-2xl">
+              {user.email?.charAt(0).toUpperCase() || '?'}
+            </AvatarFallback>
+          </Avatar>
+          
+          <label
+            htmlFor="avatar-upload"
+            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            {uploading ? (
+              <Loader2 className="w-8 h-8 text-white animate-spin" />
+            ) : (
+              <Camera className="w-8 h-8 text-white" />
+            )}
+          </label>
+          
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            disabled={uploading}
+            className="hidden"
+          />
+        </div>
+
+        <div className="text-center">
+          <p className="text-sm font-comic text-muted-foreground">
+            Click vào avatar để đổi ảnh
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            JPG, PNG hoặc GIF (tối đa 5MB)
+          </p>
+        </div>
       </div>
 
-      <div className="text-center">
-        <p className="text-sm font-comic text-muted-foreground">
-          Click vào avatar để đổi ảnh
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          JPG, PNG hoặc GIF (tối đa 2MB)
-        </p>
-      </div>
-    </div>
+      {selectedImage && (
+        <ImageCropDialog
+          open={cropDialogOpen}
+          imageUrl={selectedImage}
+          onCropComplete={handleCropComplete}
+          onClose={() => {
+            setCropDialogOpen(false);
+            setSelectedImage(null);
+          }}
+        />
+      )}
+    </>
   );
 };
