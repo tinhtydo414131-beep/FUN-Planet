@@ -184,28 +184,45 @@
   }
 }
 
+@layer components {
+  /* Dropdown menu improvements for mobile */
+  [data-radix-popper-content-wrapper] {
+    z-index: 9999 !important;
+  }
+  
+  .dropdown-content {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+  }
+}
+
 /* Mobile Perfection - 320px to 480px */
 @media (max-width: 480px) {
   /* Clean white background */
   body {
     background: hsl(0, 0%, 100%);
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Typography optimization for mobile */
   html {
     font-size: 16px;
     line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
   }
 
-  /* Touch target optimization - minimum 48px */
+  /* Touch target optimization - minimum 44px for better UX */
   button, a, input, select, textarea {
-    min-height: 48px;
+    min-height: 44px;
   }
 
   /* Prevent text overflow */
   h1, h2, h3, h4, h5, h6, p, span {
     word-wrap: break-word;
     overflow-wrap: break-word;
+    hyphens: auto;
   }
 
   /* Mobile spacing improvements */
@@ -217,6 +234,33 @@
   /* Card spacing on mobile */
   .card {
     margin-bottom: 1rem;
+  }
+
+  /* Prevent zoom on input focus (iOS) */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  /* Better touch feedback */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fix viewport height on mobile browsers */
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
   }
 }
 
