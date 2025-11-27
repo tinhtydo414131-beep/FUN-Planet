@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { Gamepad2, Users, MessageCircle, Trophy, ArrowLeft, Loader2 } from "lucide-react";
+import { Gamepad2, Users, MessageCircle, Trophy, ArrowLeft, Loader2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface PublicProfileData {
@@ -57,6 +57,15 @@ export default function PublicProfile() {
     }
   };
 
+  const handleShareProfile = () => {
+    const profileUrl = `${window.location.origin}/profile/${userId}`;
+    navigator.clipboard.writeText(profileUrl).then(() => {
+      toast.success("Đã copy link profile! 🎉");
+    }).catch(() => {
+      toast.error("Không thể copy link!");
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 flex items-center justify-center">
@@ -99,15 +108,25 @@ export default function PublicProfile() {
       
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto max-w-5xl">
-          {/* Back Button */}
-          <Button
-            onClick={() => navigate(-1)}
-            variant="outline"
-            className="mb-6 font-fredoka"
-          >
-            <ArrowLeft className="mr-2 w-4 h-4" />
-            Quay lại
-          </Button>
+          {/* Back Button and Share Button */}
+          <div className="flex items-center justify-between mb-6">
+            <Button
+              onClick={() => navigate(-1)}
+              variant="outline"
+              className="font-fredoka"
+            >
+              <ArrowLeft className="mr-2 w-4 h-4" />
+              Quay lại
+            </Button>
+            <Button
+              onClick={handleShareProfile}
+              variant="default"
+              className="font-fredoka"
+            >
+              <Share2 className="mr-2 w-4 h-4" />
+              Chia sẻ Profile
+            </Button>
+          </div>
 
           {/* Profile Header */}
           <Card className="mb-8 border-4 border-primary/30 shadow-xl bg-gradient-to-br from-background to-primary/5">
