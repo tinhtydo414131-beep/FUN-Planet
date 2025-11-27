@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BackgroundMusicPlayer } from "@/components/BackgroundMusicPlayer";
+import { Web3Provider } from "@/providers/Web3Provider";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
 import GamePlay from "./pages/GamePlay";
@@ -23,29 +24,31 @@ const queryClient = new QueryClient();
 // Force rebuild to clear Vite HMR cache and fix React hooks error
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BackgroundMusicPlayer />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/games" element={<Games />} />
-          <Route path="/game/:gameId" element={<GamePlay />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/nexus-leaderboard" element={<NexusLeaderboard />} />
-          <Route path="/wallet" element={<FunWallet />} />
-          <Route path="/friends" element={<Friends />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/music" element={<MusicLibrary />} />
-          <Route path="/public-music" element={<PublicMusic />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <Web3Provider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BackgroundMusicPlayer />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/games" element={<Games />} />
+            <Route path="/game/:gameId" element={<GamePlay />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/nexus-leaderboard" element={<NexusLeaderboard />} />
+            <Route path="/wallet" element={<FunWallet />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/music" element={<MusicLibrary />} />
+            <Route path="/public-music" element={<PublicMusic />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </Web3Provider>
   </QueryClientProvider>
 );
 
