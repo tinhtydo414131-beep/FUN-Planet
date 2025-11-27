@@ -5,7 +5,8 @@ import { GameCard } from "@/components/GameCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Home } from "lucide-react";
+import { Search, Home, ArrowUpDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface Game {
@@ -28,6 +29,7 @@ const Games = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [sortBy, setSortBy] = useState<string>('popular');
   
   const categories = [
     { id: 'all', label: 'All Games 🎮', emoji: '🎮' },
@@ -44,7 +46,7 @@ const Games = () => {
 
   useEffect(() => {
     filterGames();
-  }, [games, selectedCategory, searchQuery]);
+  }, [games, selectedCategory, searchQuery, sortBy]);
 
   const fetchGames = async () => {
     try {
@@ -82,7 +84,23 @@ const Games = () => {
       );
     }
 
-    setFilteredGames(filtered);
+    // Sort games
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'popular':
+          return (b.total_plays || 0) - (a.total_plays || 0);
+        case 'liked':
+          return (b.total_likes || 0) - (a.total_likes || 0);
+        case 'az':
+          return a.title.localeCompare(b.title);
+        case 'za':
+          return b.title.localeCompare(a.title);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredGames(sorted);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -167,6 +185,25 @@ const Games = () => {
                 <span className="hidden xs:inline">{category.label}</span>
               </Button>
             ))}
+          </div>
+
+          {/* Sort Options */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 sm:mb-12">
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="w-5 h-5 text-primary" />
+              <span className="font-fredoka font-bold text-primary text-sm sm:text-base">Sắp xếp:</span>
+            </div>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[200px] sm:w-[250px] font-comic border-2 border-primary/30 focus:border-primary rounded-xl">
+                <SelectValue placeholder="Chọn cách sắp xếp" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="popular" className="font-comic">🔥 Phổ biến nhất</SelectItem>
+                <SelectItem value="liked" className="font-comic">❤️ Được yêu thích nhất</SelectItem>
+                <SelectItem value="az" className="font-comic">🔤 Tên A-Z</SelectItem>
+                <SelectItem value="za" className="font-comic">🔤 Tên Z-A</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Games Grid - Mobile Optimized */}
