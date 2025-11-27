@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameLevel } from "@/hooks/useGameLevel";
 import { LevelSelector } from "@/components/LevelSelector";
+import { FlowerFieldLevelSelector } from "@/components/FlowerFieldLevelSelector";
 import confetti from "canvas-confetti";
 
 // Import all game components
@@ -285,13 +286,23 @@ const GamePlay = () => {
 
             <div className="w-full">
               {showLevelSelector && !gameStarted ? (
-                <LevelSelector
-                  highestLevelCompleted={highestLevelCompleted}
-                  currentLevel={currentLevel}
-                  onLevelSelect={setCurrentLevel}
-                  onStartGame={handleStartGame}
-                  getCoinReward={getCoinReward}
-                />
+                game.component_name === "FlowerField" ? (
+                  <FlowerFieldLevelSelector
+                    highestLevelCompleted={highestLevelCompleted}
+                    currentLevel={currentLevel}
+                    onLevelSelect={setCurrentLevel}
+                    onStartGame={handleStartGame}
+                    getCoinReward={getCoinReward}
+                  />
+                ) : (
+                  <LevelSelector
+                    highestLevelCompleted={highestLevelCompleted}
+                    currentLevel={currentLevel}
+                    onLevelSelect={setCurrentLevel}
+                    onStartGame={handleStartGame}
+                    getCoinReward={getCoinReward}
+                  />
+                )
               ) : (
                 renderGame()
               )}
