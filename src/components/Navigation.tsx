@@ -132,6 +132,10 @@ export const Navigation = () => {
                     <MessageCircle className="mr-2 h-5 w-5 text-primary" />
                     <span>Chat 💬</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/recently-played")} className="font-fredoka cursor-pointer hover:bg-accent/10">
+                    <Gamepad2 className="mr-2 h-5 w-5 text-accent" />
+                    <span>Recently Played 🕐</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/wallet")} className="font-fredoka cursor-pointer hover:bg-yellow-500/10">
                     <Wallet className="mr-2 h-5 w-5 text-yellow-500" />
                     <span>FUN Wallet 💰</span>
@@ -204,6 +208,10 @@ export const Navigation = () => {
                   <DropdownMenuItem onClick={() => navigate("/chat")} className="font-fredoka cursor-pointer hover:bg-primary/10">
                     <MessageCircle className="mr-2 h-5 w-5 text-primary" />
                     <span>Chat 💬</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/recently-played")} className="font-fredoka cursor-pointer hover:bg-accent/10">
+                    <Gamepad2 className="mr-2 h-5 w-5 text-accent" />
+                    <span>Recently Played 🕐</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/wallet")} className="font-fredoka cursor-pointer hover:bg-yellow-500/10">
                     <Wallet className="mr-2 h-5 w-5 text-yellow-500" />

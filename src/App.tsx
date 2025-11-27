@@ -20,6 +20,7 @@ import FunWallet from "./pages/FunWallet";
 import MusicLibrary from "./pages/MusicLibrary";
 import PublicMusic from "./pages/PublicMusic";
 import WalletGuide from "./pages/WalletGuide";
+import RecentlyPlayed from "./pages/RecentlyPlayed";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/music" element={<MusicLibrary />} />
             <Route path="/public-music" element={<PublicMusic />} />
             <Route path="/wallet-guide" element={<WalletGuide />} />
+            <Route path="/recently-played" element={<RecentlyPlayed />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
