@@ -24,40 +24,56 @@ export const CelebrationNotification = ({ amount, token, tokenImage, onComplete,
       navigator.vibrate([200, 100, 200, 100, 200]);
     }
 
-    // Voice announcement "FUN AND RICH!!!"
+    // Voice announcement "RICH" 5 times with excitement
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance("FUN AND RICH!!!");
-      utterance.rate = 0.9;
-      utterance.pitch = 1.2;
-      utterance.volume = 1;
-      utterance.lang = 'vi-VN';
-      speechSynthesis.speak(utterance);
+      const speakRich = (delay: number, pitch: number) => {
+        setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance("RICH!");
+          utterance.rate = 1.2;
+          utterance.pitch = pitch;
+          utterance.volume = 1;
+          utterance.lang = 'en-US';
+          speechSynthesis.speak(utterance);
+        }, delay);
+      };
+
+      // Say "RICH" 5 times with increasing pitch for excitement
+      speakRich(0, 1.0);
+      speakRich(400, 1.1);
+      speakRich(800, 1.2);
+      speakRich(1200, 1.3);
+      speakRich(1600, 1.5);
     }
 
     // Play victory sound (using Web Audio API for synthetic sound)
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     
-    // Jackpot sound
-    const playJackpotSound = () => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.5);
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
+    // Exciting sound effect for each "RICH"
+    const playRichSound = (delay: number, frequency: number) => {
+      setTimeout(() => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.5, audioContext.currentTime + 0.3);
+        
+        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+      }, delay);
     };
 
-    playJackpotSound();
-    setTimeout(playJackpotSound, 200);
-    setTimeout(playJackpotSound, 400);
+    // Play 5 exciting sounds synchronized with voice
+    playRichSound(0, 600);
+    playRichSound(400, 700);
+    playRichSound(800, 800);
+    playRichSound(1200, 900);
+    playRichSound(1600, 1000);
 
     // Continuous confetti with custom duration
     const duration = celebrationDuration;
@@ -164,7 +180,7 @@ export const CelebrationNotification = ({ amount, token, tokenImage, onComplete,
                   duration: 0.5,
                   scale: { repeat: Infinity, duration: 1.5 }
                 }}
-                className="text-8xl md:text-9xl font-black mb-8 relative"
+                className="text-7xl md:text-8xl font-black mb-8 relative"
                 style={{
                   color: '#FFD700',
                   textShadow: '0 0 40px rgba(0,242,255,0.8), 0 0 80px rgba(0,242,255,0.5), 0 4px 20px rgba(0,0,0,0.3)',
@@ -172,7 +188,7 @@ export const CelebrationNotification = ({ amount, token, tokenImage, onComplete,
                   letterSpacing: '0.05em'
                 }}
               >
-                FUN AND RICH!!!
+                💰 RICH! RICH! RICH! 💰
               </motion.h1>
 
               {/* Amount display */}
