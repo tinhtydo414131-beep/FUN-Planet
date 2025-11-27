@@ -6,66 +6,36 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Gamepad2, User, Wallet } from "lucide-react";
-import { ethers } from "ethers";
-
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { web3Modal } from '@/lib/web3';
 
 export default function Auth() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
 
-  useEffect(() => {
-    checkWalletConnection();
-  }, []);
-
-  const checkWalletConnection = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          setWalletAddress(accounts[0]);
-        }
-      } catch (error) {
-        console.error("Error checking wallet:", error);
-      }
+  const openWalletModal = async () => {
+    try {
+      await web3Modal.open();
+    } catch (error) {
+      console.error("Error opening wallet modal:", error);
+      toast.error("Không thể mở modal chọn ví!");
     }
   };
 
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      toast.error("Vui lòng cài đặt MetaMask để tiếp tục! 🦊");
-      window.open("https://metamask.io/download/", "_blank");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-
-      const address = accounts[0];
-      setWalletAddress(address);
-      toast.success("Đã kết nối ví thành công! 🎉");
-    } catch (error: any) {
-      console.error("Error connecting wallet:", error);
-      toast.error("Không thể kết nối ví! Vui lòng thử lại!");
-    } finally {
-      setLoading(false);
-    }
+  const handleDisconnect = () => {
+    disconnect();
+    toast.success("Đã ngắt kết nối ví!");
   };
 
   const handleWalletAuth = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!walletAddress) {
-      toast.error("Vui lòng kết nối ví MetaMask trước!");
+    if (!address) {
+      toast.error("Vui lòng kết nối ví trước!");
       return;
     }
 
@@ -78,14 +48,14 @@ export default function Auth() {
 
     try {
       // Tạo email giả từ wallet address để dùng với Supabase Auth
-      const walletEmail = `${walletAddress.toLowerCase()}@wallet.funplanet`;
-      const walletPassword = walletAddress.toLowerCase();
+      const walletEmail = `${address.toLowerCase()}@wallet.funplanet`;
+      const walletPassword = address.toLowerCase();
 
       // Kiểm tra xem user đã tồn tại chưa
       const { data: existingProfile } = await supabase
         .from("profiles")
         .select("*")
-        .eq("wallet_address", walletAddress.toLowerCase())
+        .eq("wallet_address", address.toLowerCase())
         .single();
 
       if (existingProfile) {
@@ -112,7 +82,7 @@ export default function Auth() {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
               username: username,
-              wallet_address: walletAddress.toLowerCase(),
+              wallet_address: address.toLowerCase(),
             },
           },
         });
@@ -125,7 +95,7 @@ export default function Auth() {
           // Cập nhật wallet address trong profile
           await supabase
             .from("profiles")
-            .update({ wallet_address: walletAddress.toLowerCase() })
+            .update({ wallet_address: address.toLowerCase() })
             .eq("id", data.user!.id);
 
           toast.success("🎊 Chào mừng bạn đến với FUN Planet!");
@@ -159,21 +129,31 @@ export default function Auth() {
 
         <CardContent className="space-y-6">
           {/* Wallet Connection Status */}
-          {walletAddress ? (
+          {isConnected && address ? (
             <div className="p-4 bg-accent/10 border-2 border-accent/30 rounded-xl">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-accent to-secondary rounded-full flex items-center justify-center">
-                  <Wallet className="w-6 h-6 text-white" />
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-accent to-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                    <Wallet className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-comic text-muted-foreground">Ví đã kết nối</p>
+                    <p className="font-mono text-xs truncate">{address}</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-comic text-muted-foreground">Ví đã kết nối</p>
-                  <p className="font-mono text-xs truncate">{walletAddress}</p>
-                </div>
+                <Button
+                  onClick={handleDisconnect}
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs flex-shrink-0"
+                >
+                  Đổi ví
+                </Button>
               </div>
             </div>
           ) : (
             <Button
-              onClick={connectWallet}
+              onClick={openWalletModal}
               disabled={loading}
               className="w-full text-lg font-bold py-6 border-0 transform hover:scale-[1.02] transition-all duration-300 shadow-lg"
               style={{
@@ -184,12 +164,12 @@ export default function Auth() {
               }}
             >
               <Wallet className="w-5 h-5 mr-3" />
-              Kết nối ví MetaMask 🦊
+              Kết nối ví 🔗
             </Button>
           )}
 
           {/* Login Form */}
-          {walletAddress && (
+          {isConnected && address && (
             <form onSubmit={handleWalletAuth} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative">
@@ -224,7 +204,7 @@ export default function Auth() {
           {/* Info */}
           <div className="p-4 bg-muted/30 rounded-xl">
             <p className="text-sm font-comic text-muted-foreground text-center">
-              🔒 Mỗi ví MetaMask tạo một tài khoản duy nhất. Bạn có thể đổi ví để chuyển tài khoản!
+              🔒 Hỗ trợ nhiều loại ví: MetaMask, WalletConnect, Coinbase Wallet, Trust Wallet, và nhiều hơn nữa!
             </p>
           </div>
         </CardContent>
