@@ -159,7 +159,7 @@ export const FlowerFieldLevelSelector = ({
                 >
                   🌻
                 </motion.span>
-                <h2 className="text-[48px] sm:text-6xl font-fredoka font-black bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,105,180,0.6)] animate-pulse">
+                <h2 className="text-[48px] sm:text-6xl font-fredoka font-black bg-gradient-to-r from-pink-400 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,105,180,0.8)] animate-pulse">
                   Chọn Level
                 </h2>
                 <motion.span
@@ -200,8 +200,8 @@ export const FlowerFieldLevelSelector = ({
                     className={cn(
                       "relative flex flex-col items-center justify-center rounded-full transition-all duration-500",
                       "w-[130px] h-[130px] sm:w-[150px] sm:h-[150px]",
-                      unlocked && "bg-gradient-to-br from-pink-400 via-purple-500 to-cyan-400 shadow-[0_8px_35px_rgba(236,72,153,0.6),0_0_60px_rgba(168,85,247,0.5),inset_0_3px_20px_rgba(255,255,255,0.4)] hover:shadow-[0_12px_50px_rgba(236,72,153,0.8),0_0_90px_rgba(168,85,247,0.7)] hover:scale-110",
-                      selected && unlocked && "scale-115 animate-pulse shadow-[0_0_70px_rgba(236,72,153,0.9),0_0_110px_rgba(168,85,247,0.7)]",
+                      unlocked && "bg-gradient-to-br from-pink-300 via-fuchsia-400 to-cyan-300 shadow-[0_8px_35px_rgba(236,72,153,0.7),0_0_60px_rgba(168,85,247,0.6),inset_0_3px_20px_rgba(255,255,255,0.6)] hover:shadow-[0_12px_50px_rgba(236,72,153,0.9),0_0_90px_rgba(168,85,247,0.8)] hover:scale-110",
+                      selected && unlocked && "scale-115 animate-pulse shadow-[0_0_80px_rgba(236,72,153,1),0_0_120px_rgba(168,85,247,0.9)]",
                       !unlocked && "bg-gradient-to-br from-gray-300 to-gray-200 cursor-not-allowed opacity-40"
                     )}
                   >
@@ -211,10 +211,10 @@ export const FlowerFieldLevelSelector = ({
                       <>
                         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent opacity-60 animate-pulse" />
                         <motion.div 
-                          className="absolute -inset-2 rounded-full bg-gradient-to-r from-pink-400/50 via-purple-400/50 to-cyan-400/50 blur-xl"
+                          className="absolute -inset-2 rounded-full bg-gradient-to-r from-pink-300/60 via-fuchsia-300/60 to-cyan-300/60 blur-xl"
                           animate={{ 
                             scale: [1, 1.1, 1],
-                            opacity: [0.5, 0.8, 0.5]
+                            opacity: [0.6, 0.9, 0.6]
                           }}
                           transition={{ duration: 2, repeat: Infinity }}
                         />
@@ -380,7 +380,7 @@ export const FlowerFieldLevelSelector = ({
                 <Button
                   onClick={onStartGame}
                   size="lg"
-                  className="w-full sm:w-auto font-fredoka font-black text-3xl sm:text-4xl px-16 sm:px-20 py-10 sm:py-12 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 hover:from-pink-600 hover:via-purple-600 hover:to-cyan-500 shadow-[0_10px_40px_rgba(236,72,153,0.6),0_0_60px_rgba(168,85,247,0.5)] hover:shadow-[0_15px_60px_rgba(236,72,153,0.8),0_0_100px_rgba(168,85,247,0.7)] transform transition-all duration-300 rounded-[40px] border-4 border-white/50 text-white"
+                  className="w-full sm:w-auto font-fredoka font-black text-3xl sm:text-4xl px-16 sm:px-20 py-10 sm:py-12 bg-gradient-to-r from-pink-400 via-fuchsia-400 to-cyan-300 hover:from-pink-500 hover:via-fuchsia-500 hover:to-cyan-400 shadow-[0_10px_40px_rgba(236,72,153,0.8),0_0_60px_rgba(168,85,247,0.7)] hover:shadow-[0_15px_60px_rgba(236,72,153,1),0_0_100px_rgba(168,85,247,0.9)] transform transition-all duration-300 rounded-[40px] border-4 border-white/50 text-white"
                 >
                   <motion.span
                     animate={{ rotate: [0, 10, -10, 0] }}
