@@ -129,7 +129,7 @@ export default function Auth() {
             Chào mừng đến FUN Planet! 🎮
           </CardTitle>
           <CardDescription className="text-lg font-comic">
-            Kết nối ví MetaMask để bắt đầu chơi game!
+            Kết nối ví crypto để bắt đầu chơi game và kiếm tiền!
           </CardDescription>
         </CardHeader>
 
@@ -158,14 +158,41 @@ export default function Auth() {
               </div>
             </div>
           ) : (
-            <Button
-              onClick={openWalletModal}
-              disabled={loading}
-              className="w-full text-lg font-bold py-6 border-0 transform hover:scale-[1.02] transition-all duration-300 shadow-lg gradient-animated text-white"
-            >
-              <Wallet className="w-5 h-5 mr-3" />
-              Kết nối ví 🔗
-            </Button>
+            <div className="space-y-4">
+              {/* Main Connect Button */}
+              <Button
+                onClick={openWalletModal}
+                disabled={loading}
+                className="w-full text-lg font-bold py-8 border-0 transform hover:scale-[1.02] transition-all duration-300 shadow-lg gradient-animated text-white rainbow-glow relative overflow-hidden group"
+              >
+                <Wallet className="w-6 h-6 mr-3 animate-pulse" />
+                <span className="relative z-10">Chọn Ví để Kết Nối 🔗</span>
+              </Button>
+              
+              {/* Wallet Options Info */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-xl text-center">
+                  <div className="text-2xl mb-1">🦊</div>
+                  <p className="text-xs font-bold font-fredoka text-orange-900">MetaMask</p>
+                  <p className="text-[10px] font-comic text-orange-700">Ưu tiên</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl text-center">
+                  <div className="text-2xl mb-1">💙</div>
+                  <p className="text-xs font-bold font-fredoka text-blue-900">Coinbase</p>
+                  <p className="text-[10px] font-comic text-blue-700">Wallet</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-cyan-50 to-cyan-100 border-2 border-cyan-200 rounded-xl text-center">
+                  <div className="text-2xl mb-1">💎</div>
+                  <p className="text-xs font-bold font-fredoka text-cyan-900">Trust</p>
+                  <p className="text-[10px] font-comic text-cyan-700">Wallet</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl text-center">
+                  <div className="text-2xl mb-1">🌈</div>
+                  <p className="text-xs font-bold font-fredoka text-purple-900">Và nhiều</p>
+                  <p className="text-[10px] font-comic text-purple-700">ví khác</p>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Login Form */}
@@ -196,9 +223,15 @@ export default function Auth() {
           )}
 
           {/* Info */}
-          <div className="p-4 bg-muted/30 rounded-xl">
-            <p className="text-sm font-comic text-muted-foreground text-center">
-              🔒 Hỗ trợ nhiều loại ví: MetaMask, WalletConnect, Coinbase Wallet, Trust Wallet, và nhiều hơn nữa!
+          <div className="p-4 bg-muted/30 rounded-xl space-y-2">
+            <p className="text-sm font-comic text-muted-foreground text-center font-bold">
+              🔒 Hỗ trợ nhiều loại ví crypto
+            </p>
+            <p className="text-xs font-comic text-muted-foreground text-center">
+              MetaMask (ưu tiên) • Coinbase Wallet • Trust Wallet • Rainbow • WalletConnect • Rabby và nhiều ví khác
+            </p>
+            <p className="text-xs font-comic text-muted-foreground text-center mt-2 pt-2 border-t border-border">
+              📱 Hoạt động trên cả <span className="font-bold text-primary">Web</span> và <span className="font-bold text-secondary">Mobile</span>
             </p>
           </div>
         </CardContent>
