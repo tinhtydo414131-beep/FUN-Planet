@@ -1,13 +1,16 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Pause, Download, Save, Music, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Download, Save, Music, Volume2, VolumeX, Upload, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface MusicTrack {
   id: string;
@@ -15,6 +18,9 @@ interface MusicTrack {
   artist: string;
   src: string;
   duration: string;
+  isUserUpload?: boolean;
+  userId?: string;
+  storagePath?: string;
 }
 
 const PUBLIC_TRACKS: MusicTrack[] = [
@@ -43,6 +49,14 @@ export default function PublicMusic() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+  
+  // Upload state
+  const [userTracks, setUserTracks] = useState<MusicTrack[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadArtist, setUploadArtist] = useState("");
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
 
   const handlePlayPause = (track: MusicTrack) => {
     if (currentTrack?.id === track.id) {
@@ -146,6 +160,152 @@ export default function PublicMusic() {
     }
   };
 
+  // Load user uploaded tracks
+  const loadUserTracks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_music')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const tracks: MusicTrack[] = data.map(music => {
+        const { data: urlData } = supabase.storage
+          .from('music')
+          .getPublicUrl(music.storage_path);
+
+        return {
+          id: music.id,
+          title: music.title,
+          artist: music.artist || 'Người dùng',
+          src: urlData.publicUrl,
+          duration: music.duration || '0:00',
+          isUserUpload: true,
+          userId: music.user_id,
+          storagePath: music.storage_path
+        };
+      });
+
+      setUserTracks(tracks);
+    } catch (error) {
+      console.error('Error loading user tracks:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadUserTracks();
+  }, []);
+
+  // Handle file upload
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.includes('audio/mpeg') && !file.name.endsWith('.mp3')) {
+      toast.error("Chỉ chấp nhận file MP3");
+      return;
+    }
+
+    setUploadFile(file);
+    setUploadTitle(file.name.replace('.mp3', ''));
+  };
+
+  const handleUpload = async () => {
+    if (!user || !uploadFile || !uploadTitle) {
+      toast.error("Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const filePath = `${user.id}/${Date.now()}-${uploadFile.name}`;
+      
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from('music')
+        .upload(filePath, uploadFile);
+
+      if (uploadError) throw uploadError;
+
+      // Get audio duration
+      const audio = new Audio();
+      const audioDuration = await new Promise<string>((resolve) => {
+        audio.src = URL.createObjectURL(uploadFile);
+        audio.onloadedmetadata = () => {
+          const minutes = Math.floor(audio.duration / 60);
+          const seconds = Math.floor(audio.duration % 60);
+          resolve(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+        };
+      });
+
+      // Save metadata to database
+      const { error: dbError } = await supabase
+        .from('user_music')
+        .insert({
+          user_id: user.id,
+          title: uploadTitle,
+          artist: uploadArtist || user.email?.split('@')[0],
+          storage_path: filePath,
+          file_size: uploadFile.size,
+          duration: audioDuration
+        });
+
+      if (dbError) throw dbError;
+
+      toast.success("Đã tải nhạc lên thành công!");
+      setUploadDialogOpen(false);
+      setUploadTitle("");
+      setUploadArtist("");
+      setUploadFile(null);
+      loadUserTracks();
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error("Không thể tải nhạc lên");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDeleteTrack = async (track: MusicTrack) => {
+    if (!user || !track.isUserUpload || track.userId !== user.id) {
+      toast.error("Bạn không có quyền xóa bài nhạc này");
+      return;
+    }
+
+    if (!confirm("Bạn có chắc muốn xóa bài nhạc này?")) return;
+
+    try {
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
+        .from('music')
+        .remove([track.storagePath!]);
+
+      if (storageError) throw storageError;
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('user_music')
+        .delete()
+        .eq('id', track.id);
+
+      if (dbError) throw dbError;
+
+      toast.success("Đã xóa bài nhạc");
+      loadUserTracks();
+      
+      if (currentTrack?.id === track.id) {
+        setCurrentTrack(null);
+        setIsPlaying(false);
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error("Không thể xóa bài nhạc");
+    }
+  };
+
+  const allTracks = [...PUBLIC_TRACKS, ...userTracks];
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -159,6 +319,68 @@ export default function PublicMusic() {
             <p className="text-lg md:text-xl text-muted-foreground font-comic">
               Nghe, tải về và lưu trữ những bản nhạc yêu thích
             </p>
+            
+            {user && (
+              <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="mt-6 bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all text-lg px-8 py-6 rounded-full">
+                    <Upload className="w-5 h-5 mr-2" />
+                    Tải Nhạc Lên
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle className="font-fredoka text-2xl text-primary">
+                      Tải Nhạc MP3 Lên
+                    </DialogTitle>
+                    <DialogDescription>
+                      Chia sẻ bài nhạc yêu thích của bạn với mọi người
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="upload-file">File MP3</Label>
+                      <Input
+                        id="upload-file"
+                        type="file"
+                        accept="audio/mpeg,.mp3"
+                        onChange={handleFileSelect}
+                        disabled={uploading}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Tên bài hát *</Label>
+                      <Input
+                        id="title"
+                        value={uploadTitle}
+                        onChange={(e) => setUploadTitle(e.target.value)}
+                        placeholder="Nhập tên bài hát"
+                        disabled={uploading}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="artist">Nghệ sĩ</Label>
+                      <Input
+                        id="artist"
+                        value={uploadArtist}
+                        onChange={(e) => setUploadArtist(e.target.value)}
+                        placeholder="Nhập tên nghệ sĩ (tùy chọn)"
+                        disabled={uploading}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      onClick={handleUpload}
+                      disabled={uploading || !uploadFile || !uploadTitle}
+                      className="bg-gradient-to-r from-primary to-secondary"
+                    >
+                      {uploading ? "Đang tải lên..." : "Tải Lên"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
 
           {/* Music Player */}
@@ -232,12 +454,12 @@ export default function PublicMusic() {
                 Danh Sách Nhạc
               </CardTitle>
               <CardDescription className="text-base">
-                {PUBLIC_TRACKS.length} bài hát có sẵn
+                {allTracks.length} bài hát ({PUBLIC_TRACKS.length} công khai + {userTracks.length} từ cộng đồng)
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {PUBLIC_TRACKS.map((track) => (
+                {allTracks.map((track) => (
                   <div
                     key={track.id}
                     className={`flex items-center justify-between p-6 border-4 rounded-2xl transition-all ${
@@ -280,16 +502,30 @@ export default function PublicMusic() {
                         <Download className="w-5 h-5 text-primary" />
                       </Button>
 
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => handleSaveToLibrary(track)}
-                        className="border-3 border-secondary/30 hover:border-secondary hover:bg-secondary/10"
-                        title="Lưu vào thư viện"
-                        disabled={!user}
-                      >
-                        <Save className="w-5 h-5 text-secondary" />
-                      </Button>
+                      {!track.isUserUpload && (
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleSaveToLibrary(track)}
+                          className="border-3 border-secondary/30 hover:border-secondary hover:bg-secondary/10"
+                          title="Lưu vào thư viện"
+                          disabled={!user}
+                        >
+                          <Save className="w-5 h-5 text-secondary" />
+                        </Button>
+                      )}
+
+                      {track.isUserUpload && user && track.userId === user.id && (
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleDeleteTrack(track)}
+                          className="border-3 border-destructive/30 hover:border-destructive hover:bg-destructive/10"
+                          title="Xóa bài nhạc"
+                        >
+                          <Trash2 className="w-5 h-5 text-destructive" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -433,6 +433,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_music: {
+        Row: {
+          artist: string | null
+          created_at: string
+          duration: string | null
+          file_size: number | null
+          id: string
+          storage_path: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          artist?: string | null
+          created_at?: string
+          duration?: string | null
+          file_size?: number | null
+          id?: string
+          storage_path: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          artist?: string | null
+          created_at?: string
+          duration?: string | null
+          file_size?: number | null
+          id?: string
+          storage_path?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_nexus_stats: {
         Row: {
           created_at: string | null
