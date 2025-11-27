@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Pause, Download, Save, Music, Volume2, VolumeX, Upload, Trash2 } from "lucide-react";
+import { Play, Pause, Download, Save, Music, Volume2, VolumeX, Upload, Trash2, Send, Share2, Link2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -304,6 +304,30 @@ export default function PublicMusic() {
     }
   };
 
+  const handleShareTelegram = (track: MusicTrack) => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?track=${encodeURIComponent(track.id)}`;
+    const text = `🎵 ${track.title} - ${track.artist}`;
+    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
+    window.open(telegramUrl, '_blank');
+    toast.success("Đang mở Telegram để chia sẻ");
+  };
+
+  const handleShareFacebook = (track: MusicTrack) => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?track=${encodeURIComponent(track.id)}`;
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    window.open(facebookUrl, '_blank', 'width=600,height=400');
+    toast.success("Đang mở Facebook để chia sẻ");
+  };
+
+  const handleCopyLink = (track: MusicTrack) => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?track=${encodeURIComponent(track.id)}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      toast.success("Đã sao chép link chia sẻ!");
+    }).catch(() => {
+      toast.error("Không thể sao chép link");
+    });
+  };
+
   const allTracks = [...PUBLIC_TRACKS, ...userTracks];
 
   return (
@@ -492,6 +516,36 @@ export default function PublicMusic() {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0 ml-4">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleShareTelegram(track)}
+                        className="border-3 border-primary/30 hover:border-primary hover:bg-primary/10"
+                        title="Chia sẻ qua Telegram"
+                      >
+                        <Send className="w-5 h-5 text-primary" />
+                      </Button>
+
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleShareFacebook(track)}
+                        className="border-3 border-primary/30 hover:border-primary hover:bg-primary/10"
+                        title="Chia sẻ lên Facebook"
+                      >
+                        <Share2 className="w-5 h-5 text-primary" />
+                      </Button>
+
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleCopyLink(track)}
+                        className="border-3 border-primary/30 hover:border-primary hover:bg-primary/10"
+                        title="Sao chép link"
+                      >
+                        <Link2 className="w-5 h-5 text-primary" />
+                      </Button>
+
                       <Button
                         size="icon"
                         variant="outline"
