@@ -83,49 +83,41 @@ export const FlowerFieldLevelSelector = ({
             <div className="absolute top-6 left-8 w-6 h-6 bg-white/60 rounded-full blur-sm" />
             <div className="absolute top-10 right-10 w-4 h-4 bg-white/50 rounded-full blur-sm" />
             
-            {/* BIG SPARKLING EYES - Human proportions (32% from top) */}
+            {/* BIG SPARKLING EYES */}
             <motion.div 
-              className="absolute top-[32%] left-[22%] sm:top-[32%] sm:left-[28%]"
+              className="absolute top-[35%] left-[22%] sm:top-12 sm:left-10"
               animate={{ scaleY: [1, 0.1, 1] }}
               transition={{ duration: 4, repeat: Infinity, repeatDelay: 3 }}
             >
-              <div className="relative w-6 h-7 sm:w-7 sm:h-8 bg-black rounded-full">
-                <div className="absolute top-1 left-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-pulse" />
+              <div className="relative w-5 h-6 sm:w-6 sm:h-7 bg-black rounded-full">
+                <div className="absolute top-1 left-1 w-2 h-2 bg-white rounded-full animate-pulse" />
               </div>
             </motion.div>
             <motion.div 
-              className="absolute top-[32%] right-[22%] sm:top-[32%] sm:right-[28%]"
+              className="absolute top-[35%] right-[22%] sm:top-12 sm:right-10"
               animate={{ scaleY: [1, 0.1, 1] }}
               transition={{ duration: 4, repeat: Infinity, repeatDelay: 3 }}
             >
-              <div className="relative w-6 h-7 sm:w-7 sm:h-8 bg-black rounded-full">
-                <div className="absolute top-1 right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-pulse" />
+              <div className="relative w-5 h-6 sm:w-6 sm:h-7 bg-black rounded-full">
+                <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse" />
               </div>
             </motion.div>
             
-            {/* Cute little nose - Middle of face (48% from top) */}
-            <div className="absolute top-[48%] left-1/2 -translate-x-1/2 w-2.5 h-4 sm:w-4 sm:h-5 bg-orange-700 rounded-full" />
+            {/* Cute little nose */}
+            <div className="absolute top-[52%] sm:top-[54%] left-1/2 -translate-x-1/2 w-2 h-3 sm:w-3 sm:h-4 bg-orange-700 rounded-full" />
             
-            {/* BIG HAPPY SMILE - Lower face (62% from top) */}
+            {/* BIG HAPPY SMILE - Toe toét */}
             <motion.div 
-              className="absolute top-[62%] left-1/2 -translate-x-1/2 w-16 h-10 sm:w-22 sm:h-13 border-b-[5px] sm:border-b-[7px] border-black rounded-b-full"
+              className="absolute bottom-[22%] sm:bottom-8 left-1/2 -translate-x-1/2 w-14 h-9 sm:w-20 sm:h-12 border-b-[5px] border-black rounded-b-full"
               animate={{ 
                 scaleX: [1, 1.15, 1],
                 scaleY: [1, 1.1, 1]
               }}
               transition={{ duration: 2.5, repeat: Infinity }}
             />
-            {/* Rosy cheeks - Aligned with nose (46% from top) */}
-            <motion.div 
-              className="absolute top-[46%] left-[16%] w-5 h-5 sm:w-7 sm:h-7 bg-pink-400 rounded-full opacity-70"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-            />
-            <motion.div 
-              className="absolute top-[46%] right-[16%] w-5 h-5 sm:w-7 sm:h-7 bg-pink-400 rounded-full opacity-70"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: 0.2 }}
-            />
+            {/* Smile corners - rosy cheeks effect */}
+            <div className="absolute bottom-[28%] sm:bottom-10 left-[15%] w-4 h-2 sm:w-5 sm:h-3 bg-pink-400/60 rounded-full blur-sm" />
+            <div className="absolute bottom-[28%] sm:bottom-10 right-[15%] w-4 h-2 sm:w-5 sm:h-3 bg-pink-400/60 rounded-full blur-sm" />
             
             {/* SUN RAYS - 12 rays */}
             {[...Array(12)].map((_, i) => (
@@ -433,9 +425,9 @@ export const FlowerFieldLevelSelector = ({
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <Card 
-            className="relative p-10 sm:p-12 border-4 border-white/40 bg-white/20 backdrop-blur-xl rounded-[60px] shadow-[0_20px_80px_rgba(0,212,255,0.4),0_0_100px_rgba(107,70,193,0.3),inset_0_2px_40px_rgba(255,255,255,0.4)]"
+            className="relative p-10 sm:p-12 border-4 border-white/40 bg-white/10 backdrop-blur-2xl rounded-[60px] shadow-[0_20px_80px_rgba(255,105,180,0.3),0_0_100px_rgba(147,51,234,0.2),inset_0_2px_40px_rgba(255,255,255,0.4)]"
             style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(107,70,193,0.15) 50%, rgba(0,212,255,0.2) 100%)',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,192,203,0.2) 50%, rgba(218,112,214,0.15) 100%)',
             }}
           >
             {/* Falling flowers decoration - from title */}
@@ -494,8 +486,8 @@ export const FlowerFieldLevelSelector = ({
               </p>
             </motion.div>
 
-            {/* Level Grid - Perfect Diamond Grid */}
-            <div className="level-grid">
+            {/* Level Grid - 5 columns */}
+            <div className="grid grid-cols-5 gap-x-6 gap-y-8 mb-12 justify-items-center max-w-[900px] mx-auto">
               {levels.map((level, index) => {
                 const unlocked = isLevelUnlocked(level);
                 const completed = level <= highestLevelCompleted;
@@ -511,77 +503,143 @@ export const FlowerFieldLevelSelector = ({
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 + index * 0.08, duration: 0.5 }}
                     whileHover={unlocked ? { 
-                      scale: 1.1,
-                      transition: { duration: 0.3 }
+                      scale: 1.18,
+                      rotate: [0, -5, 5, -5, 0],
+                      transition: { duration: 0.4 }
                     } : {}}
+                    onHoverStart={() => {
+                      // Flower bloom effect on hover - handled by CSS
+                    }}
                     whileTap={unlocked ? { scale: 0.95 } : {}}
                     className={cn(
-                      "level-btn relative group",
-                      !unlocked && "!bg-gray-400/50 !border-gray-500/50 cursor-not-allowed opacity-50",
-                      selected && unlocked && "ring-4 ring-yellow-300 ring-offset-4 ring-offset-transparent shadow-[0_20px_60px_rgba(0,212,255,0.6),0_0_80px_rgba(102,126,234,0.5)]"
+                      "relative flex flex-col items-center justify-center rounded-full transition-all duration-500 group",
+                      "w-[130px] h-[130px] sm:w-[150px] sm:h-[150px]",
+                      "border-4 border-white/30",
+                      unlocked && "bg-gradient-to-br from-pink-300 via-fuchsia-400 to-cyan-300 shadow-[0_8px_35px_rgba(236,72,153,0.7),0_0_60px_rgba(168,85,247,0.6),inset_0_3px_20px_rgba(255,255,255,0.6)] hover:shadow-[0_15px_60px_rgba(236,72,153,1),0_0_100px_rgba(168,85,247,0.9),0_0_40px_rgba(255,255,255,0.8)] hover:scale-110 hover:border-white/60",
+                      selected && unlocked && "scale-115 animate-pulse shadow-[0_0_80px_rgba(236,72,153,1),0_0_120px_rgba(168,85,247,0.9)]",
+                      !unlocked && "bg-gradient-to-br from-gray-300 to-gray-200 cursor-not-allowed opacity-40"
                     )}
                   >
 
-                    {/* Glowing aura for selected */}
-                    {selected && unlocked && (
-                      <motion.div 
-                        className="absolute inset-0 rounded-full bg-yellow-300/50 blur-xl"
-                        animate={{ 
-                          scale: [1, 1.2, 1],
-                          opacity: [0.5, 0.8, 0.5]
-                        }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
+                    {/* Glowing aura for all levels */}
+                    {unlocked && (
+                      <>
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent opacity-60 animate-pulse" />
+                        <motion.div 
+                          className="absolute -inset-2 rounded-full bg-gradient-to-r from-pink-300/60 via-fuchsia-300/60 to-cyan-300/60 blur-xl"
+                          animate={{ 
+                            scale: [1, 1.1, 1],
+                            opacity: [0.6, 0.9, 0.6]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                      </>
+                    )}
+
+                    {/* Flower border around levels - blooms on hover */}
+                    {unlocked ? (
+                      <>
+                        <motion.div 
+                          className="absolute -top-3 -left-3 text-2xl sm:text-3xl transition-all duration-300 group-hover:text-4xl group-hover:sm:text-5xl"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        >
+                          🌸
+                        </motion.div>
+                        <motion.div 
+                          className="absolute -top-3 -right-3 text-2xl sm:text-3xl transition-all duration-300 group-hover:text-4xl group-hover:sm:text-5xl"
+                          animate={{ rotate: -360 }}
+                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        >
+                          🌺
+                        </motion.div>
+                        <motion.div 
+                          className="absolute -bottom-3 -left-3 text-2xl sm:text-3xl transition-all duration-300 group-hover:text-4xl group-hover:sm:text-5xl"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        >
+                          🌻
+                        </motion.div>
+                        <motion.div 
+                          className="absolute -bottom-3 -right-3 text-2xl sm:text-3xl transition-all duration-300 group-hover:text-4xl group-hover:sm:text-5xl"
+                          animate={{ rotate: -360 }}
+                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        >
+                          🌷
+                        </motion.div>
+                        {/* Extra flowers on sides - appear on hover */}
+                        <motion.div 
+                          className="absolute top-1/2 -left-4 text-2xl opacity-0 group-hover:opacity-100 transition-all duration-300"
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          🌹
+                        </motion.div>
+                        <motion.div 
+                          className="absolute top-1/2 -right-4 text-2xl opacity-0 group-hover:opacity-100 transition-all duration-300"
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                        >
+                          💐
+                        </motion.div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="absolute -top-3 -left-3 text-xl sm:text-2xl opacity-30">🌸</div>
+                        <div className="absolute -top-3 -right-3 text-xl sm:text-2xl opacity-30">🌺</div>
+                        <div className="absolute -bottom-3 -left-3 text-xl sm:text-2xl opacity-30">🌻</div>
+                        <div className="absolute -bottom-3 -right-3 text-xl sm:text-2xl opacity-30">🌷</div>
+                      </>
                     )}
 
                     {/* Level number */}
                     <div className={cn(
-                      "level-number relative z-10",
-                      !unlocked && "text-gray-500"
+                      "text-[64px] sm:text-[72px] font-fredoka font-black leading-none mb-1 relative z-10",
+                      unlocked ? "text-white drop-shadow-[0_6px_12px_rgba(0,0,0,0.6)]" : "text-gray-400"
                     )}>
                       {level}
                     </div>
 
                     {/* Lock icon */}
                     {!unlocked && (
-                      <span className="text-3xl">🔒</span>
+                      <Lock className="w-8 h-8 text-gray-500 mt-2" />
                     )}
 
                     {/* Coin reward */}
                     {unlocked && (
-                      <span className="text-sm font-poppins font-bold text-white/95 relative z-10 drop-shadow-md mt-1">
-                        +{coinReward} 💰
-                      </span>
+                      <motion.div 
+                        className="flex items-center justify-center gap-1 font-comic font-black text-white drop-shadow-[0_3px_6px_rgba(0,0,0,0.7)] mt-1 relative z-10"
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        <span className="text-[18px] sm:text-[20px]">+{coinReward}</span>
+                        <motion.span 
+                          className="text-[26px] sm:text-[30px]"
+                          animate={{ rotate: [0, 10, -10, 0] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          🪙
+                        </motion.span>
+                      </motion.div>
                     )}
 
                     {/* Completion star */}
                     {completed && (
-                      <motion.span 
-                        className="absolute -top-2 -right-2 text-3xl z-20"
-                        animate={{ rotate: [0, 360], scale: [1, 1.2, 1] }}
-                        transition={{ duration: 3, repeat: Infinity }}
+                      <motion.div
+                        className="absolute -top-3 -right-3 z-20"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.8 + index * 0.08, type: "spring" }}
                       >
-                        ⭐
-                      </motion.span>
+                        <Star className="w-10 h-10 fill-yellow-300 text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,1)] animate-pulse" />
+                      </motion.div>
                     )}
 
                     {/* Sparkles for selected */}
                     {selected && unlocked && (
                       <>
-                        <motion.span 
-                          className="absolute -top-3 -left-3 text-2xl"
-                          animate={{ rotate: 360, scale: [1, 1.5, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          ✨
-                        </motion.span>
-                        <motion.span 
-                          className="absolute -bottom-3 -right-3 text-2xl"
-                          animate={{ rotate: -360, scale: [1, 1.5, 1] }}
-                          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                        >
-                          ✨
-                        </motion.span>
+                        <Sparkles className="absolute top-2 right-2 w-6 h-6 text-yellow-300 animate-pulse" />
+                        <Sparkles className="absolute bottom-2 left-2 w-6 h-6 text-pink-300 animate-pulse" />
                       </>
                     )}
                   </motion.button>
@@ -652,7 +710,7 @@ export const FlowerFieldLevelSelector = ({
                 <Button
                   onClick={onStartGame}
                   size="lg"
-                  className="w-full sm:w-auto font-poppins font-black text-3xl sm:text-4xl px-16 sm:px-20 py-10 sm:py-12 bg-gradient-to-br from-[#6B46C1] via-[#9F7AEA] via-[#00D4FF] via-[#4FD1C7] via-[#3B82F6] to-[#00D4FF] shadow-[0_12px_40px_rgba(0,212,255,0.4),0_0_60px_rgba(107,70,193,0.3),inset_0_4px_12px_rgba(255,255,255,0.3)] hover:shadow-[0_20px_60px_rgba(0,212,255,0.6),0_0_80px_rgba(107,70,193,0.5),0_0_40px_rgba(255,255,255,0.8)] transform transition-all duration-300 rounded-2xl border-[3px] border-[rgba(0,212,255,0.8)] text-white"
+                  className="w-full sm:w-auto font-fredoka font-black text-3xl sm:text-4xl px-16 sm:px-20 py-10 sm:py-12 bg-gradient-to-r from-pink-400 via-fuchsia-400 to-cyan-300 hover:from-pink-500 hover:via-fuchsia-500 hover:to-cyan-400 shadow-[0_10px_40px_rgba(236,72,153,0.8),0_0_60px_rgba(168,85,247,0.7)] hover:shadow-[0_15px_60px_rgba(236,72,153,1),0_0_100px_rgba(168,85,247,0.9)] transform transition-all duration-300 rounded-[40px] border-4 border-white/50 text-white"
                 >
                   <motion.span
                     animate={{ rotate: [0, 10, -10, 0] }}
