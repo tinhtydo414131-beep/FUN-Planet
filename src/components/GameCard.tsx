@@ -79,20 +79,21 @@ export const GameCard = ({ game }: GameCardProps) => {
   const checkIfLiked = async () => {
     if (!user) return;
 
-    try {
-      const { data, error } = await supabase
-        .from("game_ratings")
-        .select("id")
-        .eq("game_id", game.id)
-        .eq("user_id", user.id)
-        .eq("liked", true)
-        .single();
+    const { data, error } = await supabase
+      .from("game_ratings")
+      .select("id")
+      .eq("game_id", game.id)
+      .eq("user_id", user.id)
+      .eq("liked", true)
+      .maybeSingle();
 
-      if (data) {
-        setLiked(true);
-      }
-    } catch (error: any) {
-      // No rating found
+    if (error) {
+      console.error("Error checking if liked:", error);
+      return;
+    }
+
+    if (data) {
+      setLiked(true);
     }
   };
 
