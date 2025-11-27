@@ -26,19 +26,18 @@ export const LevelSelector = ({
   };
 
   return (
-    <div className="w-[94vw] max-w-[420px] mx-auto my-3">
-      <Card className="border-0 rounded-[32px] bg-card shadow-[0_10px_30px_hsla(262,100%,64%,0.15)] px-4 py-5 overflow-hidden">
-        <div className="text-center mb-6 space-y-2">
-          <h2 className="text-[36px] sm:text-4xl font-fredoka font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            Chọn Level 🎮
-          </h2>
-          <p className="text-[16px] sm:text-lg font-comic text-muted-foreground">
-            Hoàn thành level để mở level tiếp theo!
-          </p>
-        </div>
+    <Card className="p-5 sm:p-8 border-0 bg-transparent shadow-none">
+      <div className="text-center mb-5 space-y-2">
+        <h2 className="text-[32px] sm:text-4xl font-fredoka font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          Chọn Level 🎮
+        </h2>
+        <p className="text-[16px] sm:text-lg font-comic text-muted-foreground">
+          Hoàn thành level để mở level tiếp theo!
+        </p>
+      </div>
 
-        {/* Mobile: 3 columns exactly using CSS Grid */}
-        <div className="level-grid mb-8">
+      {/* Mobile: 3 columns, Tablet+: 5 columns */}
+      <div className="grid grid-cols-3 md:grid-cols-5 gap-x-3 gap-y-4 mb-6 justify-items-center">
         {levels.map((level) => {
           const unlocked = isLevelUnlocked(level);
           const completed = level <= highestLevelCompleted;
@@ -51,16 +50,16 @@ export const LevelSelector = ({
               onClick={() => unlocked && onLevelSelect(level)}
               disabled={!unlocked}
               className={cn(
-                "level-button flex flex-col items-center justify-center overflow-hidden transition-all",
-                unlocked && "level-button-unlocked",
-                !unlocked && "level-button-locked cursor-not-allowed opacity-60",
-                selected && unlocked && "border-[3px] border-[#00F2FF] shadow-[0_0_30px_rgba(0,242,255,0.5),0_8px_20px_rgba(139,70,255,0.4)]",
-                level === 10 && "level-button-last"
+                "relative flex flex-col items-center justify-center rounded-[28px] transition-all group",
+                "w-[108px] h-[108px] sm:w-[120px] sm:h-[120px] md:w-[140px] md:h-[140px]",
+                selected && unlocked && "bg-gradient-to-br from-[#8B46FF] via-secondary to-[#00F2FF] border-[4px] border-[#00F2FF] shadow-[0_0_30px_rgba(0,242,255,0.5),0_8px_20px_rgba(139,70,255,0.4)] scale-105",
+                !selected && unlocked && "bg-gradient-to-br from-[#8B46FF] to-[#00F2FF] border-[2px] border-white/50 shadow-[0_4px_15px_rgba(139,70,255,0.3)] hover:scale-105 hover:shadow-[0_6px_20px_rgba(139,70,255,0.4)]",
+                !unlocked && "bg-white border-[2px] border-gray-300 cursor-not-allowed opacity-60"
               )}
             >
               {/* Level number */}
               <div className={cn(
-                "text-[42px] font-fredoka font-bold leading-none",
+                "text-[56px] sm:text-[56px] md:text-[60px] font-fredoka font-bold leading-none mb-0.5",
                 unlocked ? "text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" : "text-gray-500"
               )}>
                 {level}
@@ -68,22 +67,22 @@ export const LevelSelector = ({
 
               {/* Status icon for locked levels */}
               {!unlocked && (
-                <Lock className="w-5 h-5 text-gray-400 mt-1" />
+                <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground mt-1" />
               )}
 
               {/* Coin reward - Compact and centered under number */}
               {unlocked && (
                 <div className="flex items-center justify-center gap-0.5 font-comic font-bold text-white drop-shadow-md mt-1">
-                  <span className="text-[18px]">+{coinReward}</span>
-                  <span className="text-[18px]">🪙</span>
+                  <span className="text-[15px] sm:text-[16px]">+{coinReward}</span>
+                  <span className="text-[22px] sm:text-[24px]">🪙</span>
                 </div>
               )}
             </button>
           );
         })}
-        </div>
+      </div>
 
-        <div className="flex flex-col items-center gap-3 sm:gap-4 p-5 sm:p-6 bg-gradient-to-br from-primary/8 to-secondary/8 rounded-[24px] border-2 sm:border-3 border-primary/20 mt-2">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 p-5 sm:p-6 bg-gradient-to-br from-primary/8 to-secondary/8 rounded-[24px] border-2 sm:border-3 border-primary/20 mt-2">
         <div className="text-center space-y-1">
           <p className="text-[24px] sm:text-2xl font-fredoka font-bold text-primary">
             Level {currentLevel}
@@ -103,8 +102,7 @@ export const LevelSelector = ({
         >
           Bắt Đầu Chơi! 🚀
         </Button>
-        </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 };
