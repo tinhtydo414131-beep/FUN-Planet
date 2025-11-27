@@ -83,41 +83,49 @@ export const FlowerFieldLevelSelector = ({
             <div className="absolute top-6 left-8 w-6 h-6 bg-white/60 rounded-full blur-sm" />
             <div className="absolute top-10 right-10 w-4 h-4 bg-white/50 rounded-full blur-sm" />
             
-            {/* BIG SPARKLING EYES */}
+            {/* BIG SPARKLING EYES - Human proportions (32% from top) */}
             <motion.div 
-              className="absolute top-[35%] left-[22%] sm:top-12 sm:left-10"
+              className="absolute top-[32%] left-[22%] sm:top-[32%] sm:left-[28%]"
               animate={{ scaleY: [1, 0.1, 1] }}
               transition={{ duration: 4, repeat: Infinity, repeatDelay: 3 }}
             >
-              <div className="relative w-5 h-6 sm:w-6 sm:h-7 bg-black rounded-full">
-                <div className="absolute top-1 left-1 w-2 h-2 bg-white rounded-full animate-pulse" />
+              <div className="relative w-6 h-7 sm:w-7 sm:h-8 bg-black rounded-full">
+                <div className="absolute top-1 left-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-pulse" />
               </div>
             </motion.div>
             <motion.div 
-              className="absolute top-[35%] right-[22%] sm:top-12 sm:right-10"
+              className="absolute top-[32%] right-[22%] sm:top-[32%] sm:right-[28%]"
               animate={{ scaleY: [1, 0.1, 1] }}
               transition={{ duration: 4, repeat: Infinity, repeatDelay: 3 }}
             >
-              <div className="relative w-5 h-6 sm:w-6 sm:h-7 bg-black rounded-full">
-                <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse" />
+              <div className="relative w-6 h-7 sm:w-7 sm:h-8 bg-black rounded-full">
+                <div className="absolute top-1 right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full animate-pulse" />
               </div>
             </motion.div>
             
-            {/* Cute little nose */}
-            <div className="absolute top-[52%] sm:top-[54%] left-1/2 -translate-x-1/2 w-2 h-3 sm:w-3 sm:h-4 bg-orange-700 rounded-full" />
+            {/* Cute little nose - Middle of face (48% from top) */}
+            <div className="absolute top-[48%] left-1/2 -translate-x-1/2 w-2.5 h-4 sm:w-4 sm:h-5 bg-orange-700 rounded-full" />
             
-            {/* BIG HAPPY SMILE - Toe toét */}
+            {/* BIG HAPPY SMILE - Lower face (62% from top) */}
             <motion.div 
-              className="absolute bottom-[22%] sm:bottom-8 left-1/2 -translate-x-1/2 w-14 h-9 sm:w-20 sm:h-12 border-b-[5px] border-black rounded-b-full"
+              className="absolute top-[62%] left-1/2 -translate-x-1/2 w-16 h-10 sm:w-22 sm:h-13 border-b-[5px] sm:border-b-[7px] border-black rounded-b-full"
               animate={{ 
                 scaleX: [1, 1.15, 1],
                 scaleY: [1, 1.1, 1]
               }}
               transition={{ duration: 2.5, repeat: Infinity }}
             />
-            {/* Smile corners - rosy cheeks effect */}
-            <div className="absolute bottom-[28%] sm:bottom-10 left-[15%] w-4 h-2 sm:w-5 sm:h-3 bg-pink-400/60 rounded-full blur-sm" />
-            <div className="absolute bottom-[28%] sm:bottom-10 right-[15%] w-4 h-2 sm:w-5 sm:h-3 bg-pink-400/60 rounded-full blur-sm" />
+            {/* Rosy cheeks - Aligned with nose (46% from top) */}
+            <motion.div 
+              className="absolute top-[46%] left-[16%] w-5 h-5 sm:w-7 sm:h-7 bg-pink-400 rounded-full opacity-70"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+            />
+            <motion.div 
+              className="absolute top-[46%] right-[16%] w-5 h-5 sm:w-7 sm:h-7 bg-pink-400 rounded-full opacity-70"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: 0.2 }}
+            />
             
             {/* SUN RAYS - 12 rays */}
             {[...Array(12)].map((_, i) => (
