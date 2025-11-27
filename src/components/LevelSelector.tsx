@@ -67,41 +67,49 @@ export const LevelSelector = ({
           ))}
         </div>
         
-        {/* Sun face */}
+        {/* Sun face - HUMAN-LIKE PROPORTIONS */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400 shadow-[0_0_60px_rgba(255,200,0,0.8)]">
-          {/* Sparkling eyes */}
-          <div className="absolute top-[35%] left-[30%] w-5 h-5 sm:w-7 sm:h-7 bg-white rounded-full shadow-lg">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-gray-800 rounded-full">
+          {/* Eyes - Positioned at 32% from top (upper third of face) */}
+          <div className="absolute top-[32%] left-[28%] w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full shadow-lg">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-5 sm:h-5 bg-gray-900 rounded-full">
               <motion.div 
-                className="absolute top-1 left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full"
+                className="absolute top-1 left-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
             </div>
           </div>
-          <div className="absolute top-[35%] right-[30%] w-5 h-5 sm:w-7 sm:h-7 bg-white rounded-full shadow-lg">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-gray-800 rounded-full">
+          <div className="absolute top-[32%] right-[28%] w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full shadow-lg">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-5 sm:h-5 bg-gray-900 rounded-full">
               <motion.div 
-                className="absolute top-1 left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full"
+                className="absolute top-1 left-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 0.1 }}
               />
             </div>
           </div>
           
-          {/* Nose */}
-          <div className="absolute top-[52%] left-1/2 transform -translate-x-1/2 w-2 h-3 sm:w-3 sm:h-4 bg-orange-500 rounded-full" />
+          {/* Nose - Positioned at 48% from top (middle of face) */}
+          <div className="absolute top-[48%] left-1/2 transform -translate-x-1/2 w-2.5 h-4 sm:w-4 sm:h-5 bg-orange-500 rounded-full shadow-md" />
           
-          {/* Big smile */}
+          {/* Big bright smile - Positioned at 62% from top (lower third) */}
           <motion.div 
-            className="absolute bottom-[28%] left-1/2 transform -translate-x-1/2 w-16 h-10 sm:w-20 sm:h-12 border-b-4 sm:border-b-[6px] border-orange-600 rounded-b-full"
-            animate={{ scaleX: [1, 1.05, 1] }}
+            className="absolute top-[62%] left-1/2 transform -translate-x-1/2 w-20 h-12 sm:w-24 sm:h-14 border-b-[5px] sm:border-b-[7px] border-orange-700 rounded-b-full"
+            animate={{ scaleX: [1, 1.08, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
           
-          {/* Rosy cheeks */}
-          <div className="absolute top-[48%] left-[15%] w-5 h-5 sm:w-7 sm:h-7 bg-red-300 rounded-full opacity-60" />
-          <div className="absolute top-[48%] right-[15%] w-5 h-5 sm:w-7 sm:h-7 bg-red-300 rounded-full opacity-60" />
+          {/* Rosy cheeks - Aligned with nose level */}
+          <motion.div 
+            className="absolute top-[46%] left-[16%] w-6 h-6 sm:w-8 sm:h-8 bg-red-300 rounded-full opacity-70"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+          />
+          <motion.div 
+            className="absolute top-[46%] right-[16%] w-6 h-6 sm:w-8 sm:h-8 bg-red-300 rounded-full opacity-70"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity, delay: 0.2 }}
+          />
         </div>
       </motion.div>
 
