@@ -152,7 +152,7 @@ export const GameCard = ({ game }: GameCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden border-3 sm:border-4 border-primary/20 hover:border-primary transition-all duration-500 hover:shadow-[0_25px_60px_rgba(59,130,246,0.5)] animate-fade-in transform hover:-translate-y-3 sm:hover:-translate-y-6 hover:scale-105">
+    <Card className="group overflow-hidden border-2 sm:border-3 border-primary/20 hover:border-primary transition-all duration-500 hover:shadow-[0_15px_30px_rgba(59,130,246,0.3)] sm:hover:shadow-[0_25px_60px_rgba(59,130,246,0.5)] animate-fade-in transform hover:-translate-y-1 sm:hover:-translate-y-3 hover:scale-[1.02] sm:hover:scale-105">
       <div className="relative aspect-video overflow-hidden">
         {game.thumbnail_url && !imageError ? (
           <img 
@@ -207,8 +207,8 @@ export const GameCard = ({ game }: GameCardProps) => {
         </div>
       </div>
       
-      <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-        <h3 className="text-lg sm:text-2xl font-fredoka font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+      <CardContent className="p-3 sm:p-6 space-y-2 sm:space-y-4">
+        <h3 className="text-base sm:text-2xl font-fredoka font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
           {game.title}
         </h3>
         <p className="text-muted-foreground text-xs sm:text-sm font-comic line-clamp-2">
@@ -217,9 +217,9 @@ export const GameCard = ({ game }: GameCardProps) => {
 
         <div className="flex gap-2">
           <Link to={`/game/${game.id}`} className="flex-1">
-            <Button className="w-full group/btn font-fredoka font-bold text-sm sm:text-base py-4 sm:py-6 bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all rounded-[20px] sm:rounded-2xl">
+            <Button className="w-full group/btn font-fredoka font-bold text-xs sm:text-base py-3 sm:py-6 bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all rounded-[16px] sm:rounded-2xl">
               Play Now! 🎮
-              <Play className="ml-2 w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover/btn:scale-125" />
+              <Play className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover/btn:scale-125" />
             </Button>
           </Link>
 
@@ -227,7 +227,7 @@ export const GameCard = ({ game }: GameCardProps) => {
             variant="outline"
             size="icon"
             onClick={handleLike}
-            className={`border-3 sm:border-4 transition-all transform hover:scale-110 min-w-[48px] min-h-[48px] rounded-[16px] sm:rounded-2xl ${
+            className={`border-2 sm:border-3 transition-all transform hover:scale-110 w-[40px] h-[40px] sm:min-w-[48px] sm:min-h-[48px] rounded-[12px] sm:rounded-2xl ${
               liked 
                 ? 'bg-red-500 border-red-500 hover:bg-red-600 hover:border-red-600' 
                 : 'border-primary/30 hover:border-red-500 hover:bg-red-500/10'
@@ -241,7 +241,7 @@ export const GameCard = ({ game }: GameCardProps) => {
               <Button
                 variant="outline"
                 size="icon"
-                className="border-3 sm:border-4 border-accent/30 hover:border-accent hover:bg-accent/10 transition-all transform hover:scale-110 min-w-[48px] min-h-[48px] rounded-[16px] sm:rounded-2xl"
+                className="border-2 sm:border-3 border-accent/30 hover:border-accent hover:bg-accent/10 transition-all transform hover:scale-110 w-[40px] h-[40px] sm:min-w-[48px] sm:min-h-[48px] rounded-[12px] sm:rounded-2xl"
               >
                 <Info className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
               </Button>
