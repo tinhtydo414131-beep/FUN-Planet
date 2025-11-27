@@ -1227,7 +1227,7 @@ export default function FunWallet() {
               animate={{ y: 0, opacity: 1 }}
               className="mb-6 sm:mb-8"
             >
-              <Card className="border border-border rounded-2xl overflow-hidden relative bg-card/90 backdrop-blur-sm shadow-[var(--shadow-card)]">
+              <Card className="gradient-border rounded-2xl overflow-hidden relative bg-white backdrop-blur-sm shadow-2xl">
                 <CardContent className="p-4 sm:p-6 md:p-8">
                   {/* Header with Network Selector */}
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
@@ -1444,7 +1444,7 @@ export default function FunWallet() {
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="mb-4 sm:mb-6 overflow-hidden"
                 >
-                  <Card className="border-2 border-primary/40 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 backdrop-blur-sm overflow-hidden">
+                  <Card className="gradient-border rounded-2xl bg-white backdrop-blur-sm overflow-hidden shadow-2xl">
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
@@ -1568,7 +1568,7 @@ export default function FunWallet() {
               transition={{ delay: 0.15 }}
               className="mb-4 sm:mb-6"
             >
-              <Card className="border-2 border-primary/30 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5 backdrop-blur-sm overflow-hidden">
+              <Card className="gradient-border rounded-2xl bg-white backdrop-blur-sm overflow-hidden shadow-2xl">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3 sm:gap-4">
@@ -1668,7 +1668,7 @@ export default function FunWallet() {
                 <TabsContent value="send">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     {/* Send Card */}
-                    <Card className="border border-primary-light rounded-xl sm:rounded-2xl bg-card/90 backdrop-blur-sm">
+                    <Card className="gradient-border rounded-2xl bg-white backdrop-blur-sm shadow-2xl">
                       <CardHeader className="pb-3 sm:pb-6">
                         <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-primary">
                           <Send className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -1739,11 +1739,7 @@ export default function FunWallet() {
                     </Card>
 
                     {/* Receive Card */}
-                    <Card className="relative overflow-hidden border-0 rounded-xl sm:rounded-2xl" style={{
-                      background: 'linear-gradient(135deg, rgba(0,255,255,0.2) 0%, rgba(0,136,255,0.2) 100%)',
-                      backdropFilter: 'blur(30px)',
-                      boxShadow: '0 8px 32px 0 rgba(0,255,255,0.5), inset 0 0 0 3px rgba(0,255,255,0.6)'
-                    }}>
+                    <Card className="gradient-border rounded-2xl bg-white backdrop-blur-sm shadow-2xl relative overflow-hidden">
                       <CardHeader className="pb-3 sm:pb-6">
                         <CardTitle className="flex items-center gap-2 text-2xl sm:text-3xl">
                           <motion.div
@@ -1828,11 +1824,7 @@ export default function FunWallet() {
 
                 {/* Bulk Send/Airdrop Tab */}
                 <TabsContent value="bulk">
-                  <Card className="border-0 relative overflow-hidden rounded-xl sm:rounded-2xl" style={{
-                    background: 'rgba(123,44,191,0.2)',
-                    backdropFilter: 'blur(40px)',
-                    boxShadow: '0 8px 32px 0 rgba(224,170,255,0.5), inset 0 0 0 3px rgba(224,170,255,0.4)'
-                  }}>
+                  <Card className="gradient-border rounded-2xl bg-white backdrop-blur-sm shadow-2xl relative overflow-hidden">
                     <CardHeader className="pb-3 sm:pb-6">
                       <CardTitle className="flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl md:text-3xl">
                         <motion.div
@@ -2107,11 +2099,7 @@ export default function FunWallet() {
 
                 {/* Transaction History Tab */}
                 <TabsContent value="history">
-                  <Card className="border-0 relative overflow-hidden rounded-xl sm:rounded-2xl" style={{
-                    background: 'rgba(0,136,255,0.2)',
-                    backdropFilter: 'blur(40px)',
-                    boxShadow: '0 8px 32px 0 rgba(0,212,255,0.5), inset 0 0 0 3px rgba(0,212,255,0.4)'
-                  }}>
+                  <Card className="gradient-border rounded-2xl bg-white backdrop-blur-sm shadow-2xl relative overflow-hidden">
                     <CardHeader className="pb-3 sm:pb-6">
                       <CardTitle className="flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl md:text-3xl">
                         <motion.div
