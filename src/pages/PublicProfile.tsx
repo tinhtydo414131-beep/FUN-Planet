@@ -20,16 +20,43 @@ interface PublicProfileData {
   leaderboard_score: number;
 }
 
+interface FavoriteGame {
+  game_id: string;
+  games: {
+    id: string;
+    title: string;
+    thumbnail_url: string | null;
+    genre: string;
+  };
+}
+
+interface RecentGame {
+  game_id: string;
+  highest_level_completed: number;
+  total_stars: number;
+  updated_at: string;
+  games: {
+    id: string;
+    title: string;
+    thumbnail_url: string | null;
+    genre: string;
+  };
+}
+
 export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<PublicProfileData | null>(null);
+  const [favoriteGames, setFavoriteGames] = useState<FavoriteGame[]>([]);
+  const [recentGames, setRecentGames] = useState<RecentGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     if (userId) {
       fetchProfile();
+      fetchFavoriteGames();
+      fetchRecentGames();
     }
   }, [userId]);
 
@@ -54,6 +81,57 @@ export default function PublicProfile() {
       setNotFound(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFavoriteGames = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("game_ratings")
+        .select(`
+          game_id,
+          games:game_id (
+            id,
+            title,
+            thumbnail_url,
+            genre
+          )
+        `)
+        .eq("user_id", userId)
+        .eq("liked", true)
+        .limit(6);
+
+      if (error) throw error;
+      setFavoriteGames(data as FavoriteGame[] || []);
+    } catch (error: any) {
+      console.error("Error fetching favorite games:", error);
+    }
+  };
+
+  const fetchRecentGames = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("game_progress")
+        .select(`
+          game_id,
+          highest_level_completed,
+          total_stars,
+          updated_at,
+          games:game_id (
+            id,
+            title,
+            thumbnail_url,
+            genre
+          )
+        `)
+        .eq("user_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      setRecentGames(data as RecentGame[] || []);
+    } catch (error: any) {
+      console.error("Error fetching recent games:", error);
     }
   };
 
@@ -218,6 +296,81 @@ export default function PublicProfile() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Favorite Games */}
+          {favoriteGames.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-3xl font-fredoka font-bold text-primary mb-6 flex items-center gap-2">
+                ❤️ Trò chơi yêu thích
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {favoriteGames.map((item) => (
+                  <Card 
+                    key={item.game_id}
+                    className="border-2 border-primary/30 hover:border-primary transition-all hover:shadow-lg transform hover:scale-105 cursor-pointer overflow-hidden"
+                    onClick={() => navigate(`/game/${item.game_id}`)}
+                  >
+                    <div className="relative aspect-video">
+                      <img
+                        src={item.games.thumbnail_url || '/placeholder.svg'}
+                        alt={item.games.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-fredoka font-bold text-lg text-primary mb-1">
+                        {item.games.title}
+                      </h3>
+                      <p className="text-sm font-comic text-muted-foreground capitalize">
+                        {item.games.genre}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recently Played Games */}
+          {recentGames.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-3xl font-fredoka font-bold text-primary mb-6 flex items-center gap-2">
+                🎯 Đã chơi gần đây
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recentGames.map((item) => (
+                  <Card 
+                    key={item.game_id}
+                    className="border-2 border-accent/30 hover:border-accent transition-all hover:shadow-lg transform hover:scale-105 cursor-pointer overflow-hidden"
+                    onClick={() => navigate(`/game/${item.game_id}`)}
+                  >
+                    <div className="relative aspect-video">
+                      <img
+                        src={item.games.thumbnail_url || '/placeholder.svg'}
+                        alt={item.games.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-fredoka font-bold text-lg text-primary mb-2">
+                        {item.games.title}
+                      </h3>
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-sm font-comic">
+                          <span className="text-muted-foreground">Level:</span>
+                          <span className="font-bold text-primary">{item.highest_level_completed}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm font-comic">
+                          <span className="text-muted-foreground">Sao:</span>
+                          <span className="font-bold text-accent">⭐ {item.total_stars}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Info Box */}
           <div className="mt-8 p-6 bg-primary/5 border-2 border-primary/20 rounded-2xl text-center">
