@@ -1152,10 +1152,10 @@ export default function FunWallet() {
                   </div>
                 )}
                 <div>
-                  <p className="text-foreground font-bold text-base drop-shadow-sm">
+                  <p className="text-white font-bold text-sm">
                     Hi {user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0]} 👋
                   </p>
-                  <p className="text-foreground/70 text-sm font-medium">{user.email}</p>
+                  <p className="text-white/60 text-xs">{user.email}</p>
                 </div>
               </div>
               <Button
@@ -1270,11 +1270,11 @@ export default function FunWallet() {
               <Wallet className="w-16 h-16 sm:w-20 sm:h-20 text-white" />
             </motion.div>
             
-            <h1 className="text-5xl sm:text-7xl font-black mb-4 sm:mb-5 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent leading-tight drop-shadow-[0_2px_8px_rgba(139,70,255,0.5)]">
+            <h1 className="text-4xl sm:text-6xl font-black mb-3 sm:mb-4 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent leading-tight">
               FUN WALLET
             </h1>
             
-            <p className="text-xl sm:text-3xl text-foreground mb-8 sm:mb-10 font-black px-2 drop-shadow-sm">
+            <p className="text-lg sm:text-2xl text-white/80 mb-6 sm:mb-8 font-bold px-2">
               Connect your MetaMask to start having FUN! 🚀
             </p>
             
@@ -1345,7 +1345,7 @@ export default function FunWallet() {
 
                   {/* Address */}
                   <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-                    <p className="text-sm sm:text-base text-foreground font-mono font-bold">
+                    <p className="text-xs sm:text-sm text-muted-foreground font-mono">
                       {account.slice(0, 6)}...{account.slice(-4)}
                     </p>
                     <Button
@@ -1386,7 +1386,7 @@ export default function FunWallet() {
                     </div>
                   </motion.div>
 
-                  <p className="text-center text-sm sm:text-base text-foreground mb-3 sm:mb-4 font-bold">
+                  <p className="text-center text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 font-bold">
                     📱 Scan QR to receive tokens
                   </p>
 
@@ -1420,8 +1420,8 @@ export default function FunWallet() {
                           }} 
                         />
                         <div>
-                          <p className="text-xs sm:text-sm text-foreground font-bold">CAMLY COIN</p>
-                          <p className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground">CAMLY COIN</p>
+                          <p className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                             {camlyBalance}
                           </p>
                         </div>
@@ -1429,7 +1429,7 @@ export default function FunWallet() {
                           <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-success" />
                         )}
                       </div>
-                      <p className="text-xs sm:text-sm text-foreground/70 font-medium mt-1 sm:mt-2">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-2">
                         Contract: {tokens.find(t => t.symbol === "CAMLY")?.contract?.slice(0, 10)}...
                       </p>
                     </motion.div>
@@ -1489,8 +1489,8 @@ export default function FunWallet() {
                         token.emoji
                       )}
                     </motion.div>
-                    <div className="font-black text-sm sm:text-base">{token.symbol}</div>
-                    <div className="text-xs sm:text-sm font-bold mt-0.5">
+                    <div className="font-black text-xs sm:text-sm">{token.symbol}</div>
+                    <div className="text-[10px] sm:text-xs font-bold mt-0.5 opacity-90">
                       ${tokenPrices[token.symbol]?.toFixed(token.symbol === 'CAMLY' ? 6 : 2) || '0.00'}
                     </div>
                     {priceChanges[token.symbol] && Math.abs(priceChanges[token.symbol]) > 2 && (
@@ -1538,10 +1538,10 @@ export default function FunWallet() {
                             )}
                           </motion.div>
                           <div>
-                            <h3 className="text-xl sm:text-2xl font-black text-foreground">
+                            <h3 className="text-lg sm:text-xl font-black text-foreground">
                               {tokens.find(t => t.symbol === selectedChartCoin)?.name} Chart
                             </h3>
-                            <p className="text-sm sm:text-base text-foreground/80 font-bold">
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium">
                               Price: ${tokenPrices[selectedChartCoin]?.toFixed(selectedChartCoin === 'CAMLY' ? 6 : 2) || "0.00"}
                             </p>
                           </div>
@@ -1662,10 +1662,10 @@ export default function FunWallet() {
                         )}
                       </motion.div>
                       <div>
-                        <h3 className="text-2xl sm:text-3xl font-black text-foreground mb-1">
+                        <h3 className="text-xl sm:text-2xl font-black text-foreground mb-1">
                           {selectedToken.name}
                         </h3>
-                        <p className="text-sm sm:text-base text-foreground/70 font-bold">
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium">
                           {selectedToken.symbol}
                         </p>
                       </div>
@@ -1679,11 +1679,11 @@ export default function FunWallet() {
                       >
                         {tokenBalances[selectedToken.symbol] || "0.00"}
                       </motion.div>
-                      <p className="text-sm sm:text-base font-bold text-foreground/80 mt-1">
+                      <p className="text-xs sm:text-sm font-bold text-muted-foreground mt-1">
                         ≈ ${(parseFloat(tokenBalances[selectedToken.symbol] || "0") * tokenPrices[selectedToken.symbol]).toFixed(2)} USD
                       </p>
                       <div className="flex items-center justify-end gap-2 mt-1">
-                        <span className="text-sm sm:text-base font-bold text-primary">
+                        <span className="text-xs sm:text-sm font-bold text-primary">
                           ${tokenPrices[selectedToken.symbol]?.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2) || "0.00"}
                         </span>
                         {priceChanges[selectedToken.symbol] && Math.abs(priceChanges[selectedToken.symbol]) > 2 && (
@@ -1747,7 +1747,7 @@ export default function FunWallet() {
                       </CardHeader>
                       <CardContent className="space-y-3 sm:space-y-4">
                         <div>
-                          <label className="text-sm sm:text-base text-foreground mb-2 block font-bold">Recipient Address</label>
+                          <label className="text-xs sm:text-sm text-muted-foreground mb-2 block font-medium">Recipient Address</label>
                           <Input
                             type="text"
                             inputMode="text"
@@ -1779,7 +1779,7 @@ export default function FunWallet() {
                             }}
                           />
                           {sendAmount && parseFloat(sendAmount) > 0 && (
-                            <p className="text-sm sm:text-base text-foreground/80 mt-2 font-bold">
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-2 font-semibold">
                               ≈ ${(parseFloat(sendAmount) * (tokenPrices[selectedToken.symbol] || 0)).toFixed(2)} USD
                               <span className="ml-2 text-primary font-bold">
                                 @ ${tokenPrices[selectedToken.symbol]?.toFixed(selectedToken.symbol === 'CAMLY' ? 6 : 2)}
@@ -1836,7 +1836,7 @@ export default function FunWallet() {
                           backdropFilter: 'blur(20px)',
                           boxShadow: '0 4px 20px rgba(0,255,255,0.3)'
                         }}>
-                          <p className="text-sm sm:text-base text-foreground/80 mb-3 sm:mb-4 font-bold uppercase tracking-wider">
+                          <p className="text-xs sm:text-sm text-white/70 mb-3 sm:mb-4 font-bold uppercase tracking-wider">
                             💎 Your Wallet Address
                           </p>
                           <motion.p 
@@ -1919,15 +1919,15 @@ export default function FunWallet() {
                           LAUNCH AIRDROP CAMLY 👑
                         </span>
                       </CardTitle>
-                      <p className="text-foreground/70 text-sm sm:text-base mt-2 font-bold">
+                      <p className="text-white/60 text-xs sm:text-sm mt-2">
                         Send CAMLY tokens to multiple addresses at once! Perfect for rewarding your community ✨
                       </p>
                     </CardHeader>
                     <CardContent className="space-y-4 sm:space-y-6">
                       <div>
-                        <label className="text-foreground font-bold mb-2 sm:mb-3 block flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-base sm:text-lg">
+                        <label className="text-white font-bold mb-2 sm:mb-3 block flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm sm:text-base">
                           <span>📝 Wallet Addresses</span>
-                          <span className="text-xs sm:text-sm text-foreground/60 font-medium">(one per line, max 1000)</span>
+                          <span className="text-[10px] sm:text-xs text-white/40">(one per line, max 1000)</span>
                         </label>
                         <Textarea
                           value={bulkAddresses}
@@ -2003,7 +2003,7 @@ export default function FunWallet() {
                       </div>
 
                       <div>
-                        <label className="text-foreground font-bold mb-2 sm:mb-3 block text-base sm:text-lg">
+                        <label className="text-white font-bold mb-2 sm:mb-3 block text-sm sm:text-base">
                           💎 Amount of CAMLY per Address
                         </label>
                         <Input
@@ -2036,8 +2036,8 @@ export default function FunWallet() {
                             boxShadow: '0 0 40px rgba(255,215,0,0.3)'
                           }}
                         >
-                          <h3 className="text-xl sm:text-2xl font-black text-yellow-400 mb-2 sm:mb-3 drop-shadow-md">📊 Airdrop Summary</h3>
-                          <div className="space-y-1.5 sm:space-y-2 text-foreground text-base sm:text-lg font-bold">
+                          <h3 className="text-lg sm:text-xl font-black text-yellow-300 mb-2 sm:mb-3">📊 Airdrop Summary</h3>
+                          <div className="space-y-1.5 sm:space-y-2 text-white text-sm sm:text-base">
                             <p>🎯 Recipients: <span className="font-black text-cyan-400">
                               {showValidation && validAddresses.length > 0 
                                 ? `${validAddresses.length} (validated)` 
@@ -2059,7 +2059,7 @@ export default function FunWallet() {
                           animate={{ scale: 1, opacity: 1 }}
                           className="space-y-2 sm:space-y-3"
                         >
-                          <p className="text-foreground font-black text-xl sm:text-2xl text-center">
+                          <p className="text-white font-black text-lg sm:text-xl text-center">
                             ✨ {bulkProgressText || `Airdropping... ${bulkProgress}%`}
                           </p>
                           <Progress value={bulkProgress} className="h-5 sm:h-6" style={{
@@ -2193,7 +2193,7 @@ export default function FunWallet() {
                           TRANSACTION HISTORY 📜
                         </span>
                       </CardTitle>
-                      <p className="text-foreground/70 text-sm sm:text-base mt-2 font-bold">
+                      <p className="text-white/60 text-xs sm:text-sm mt-2">
                         View all your past transactions, airdrops, and token transfers ✨
                       </p>
                     </CardHeader>
