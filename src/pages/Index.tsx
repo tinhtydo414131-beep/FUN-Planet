@@ -93,7 +93,7 @@ const Index = () => {
             <h2 className="text-4xl md:text-5xl font-fredoka font-bold text-primary">
               Why Kids Love Us! 💖
             </h2>
-            <p className="text-xl font-comic text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl font-comic text-foreground/80 font-bold max-w-2xl mx-auto">
               Everything you need for the best gaming experience!
             </p>
           </div>
@@ -120,7 +120,7 @@ const Index = () => {
                   <h3 className="text-2xl font-fredoka font-bold text-foreground mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-muted-foreground font-comic text-lg">
+                  <p className="text-foreground/90 font-comic text-lg font-bold">
                     {feature.description}
                   </p>
                 </div>
@@ -137,7 +137,7 @@ const Index = () => {
             <h2 className="text-4xl md:text-5xl font-fredoka font-bold text-primary">
               Game Categories 🎨
             </h2>
-            <p className="text-xl font-comic text-muted-foreground">
+            <p className="text-xl font-comic text-foreground/80 font-bold">
               Pick your favorite type of game to play!
             </p>
           </div>
@@ -178,7 +178,7 @@ const Index = () => {
             <h2 className="text-4xl md:text-5xl font-fredoka font-bold text-primary">
               Ready to Start Playing? 🚀
             </h2>
-            <p className="text-xl font-comic text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl font-comic text-foreground/90 font-bold max-w-2xl mx-auto">
               Join thousands of kids having fun, making friends, and earning rewards!
             </p>
             {!user ? (
