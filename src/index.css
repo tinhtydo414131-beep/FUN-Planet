@@ -68,11 +68,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-fredoka;
+    @apply bg-background text-foreground font-rajdhani;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-fredoka font-bold;
+    @apply font-space font-bold tracking-tight;
   }
 
   @keyframes breathing {

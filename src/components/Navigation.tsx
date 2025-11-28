@@ -62,7 +62,7 @@ export const Navigation = () => {
               <div className="p-2 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg group-hover:shadow-xl transition-all">
                 <Gamepad2 className="w-8 h-8 text-white" />
               </div>
-              <span className="text-2xl font-fredoka font-black bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              <span className="text-2xl font-orbitron font-black bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-wider">
                 FUN Planet
               </span>
             </NavLink>
@@ -71,19 +71,19 @@ export const Navigation = () => {
             <div className="flex items-center gap-4">
               <NavLink 
                 to="/" 
-                className="px-4 py-2 rounded-xl font-fredoka font-bold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                className="px-4 py-2 rounded-xl font-space font-semibold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
               >
                 Home
               </NavLink>
               <NavLink 
                 to="/games" 
-                className="px-4 py-2 rounded-xl font-fredoka font-bold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                className="px-4 py-2 rounded-xl font-space font-semibold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
               >
                 All Games
               </NavLink>
               <NavLink 
                 to="/public-music" 
-                className="px-4 py-2 rounded-xl font-fredoka font-bold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                className="px-4 py-2 rounded-xl font-space font-semibold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
               >
                 Nhạc MP3
               </NavLink>
@@ -143,7 +143,7 @@ export const Navigation = () => {
             <div className="p-1.5 bg-gradient-to-br from-primary to-secondary rounded-lg shadow-md">
               <Gamepad2 className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-fredoka font-black bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            <span className="text-lg font-orbitron font-black bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-wide">
               FUN Planet
             </span>
           </NavLink>

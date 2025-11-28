@@ -29,7 +29,7 @@ export const Hero = () => {
         <div className="text-center space-y-6 sm:space-y-8 animate-fade-in">
           <div className="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full border-2 border-primary/30 shadow-lg">
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary animate-pulse" />
-            <span className="font-comic text-sm sm:text-lg font-bold text-primary">Welcome to FUN Planet! 🎉</span>
+            <span className="font-space text-sm sm:text-lg font-bold text-primary">Welcome to FUN Planet! 🎉</span>
           </div>
 
           <div className="flex items-center justify-center gap-3 sm:gap-6 md:gap-8">
@@ -39,7 +39,7 @@ export const Hero = () => {
               className="w-12 h-12 sm:w-20 sm:h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 animate-spin" 
               style={{ animationDuration: '10s' }}
             />
-            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-fredoka font-black">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider">
               <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-scale-in">
                 FUN Planet
               </span>
@@ -52,7 +52,7 @@ export const Hero = () => {
             />
           </div>
 
-          <p className="text-base sm:text-xl md:text-2xl text-muted-foreground font-comic max-w-3xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-xl md:text-2xl text-muted-foreground font-rajdhani font-medium max-w-3xl mx-auto leading-relaxed px-4">
             🌍 Build Your Planet – Play & Earn Joy! 🎮 Create your dream world with fun games and amazing rewards! 🌟
           </p>
 
@@ -64,11 +64,11 @@ export const Hero = () => {
                 placeholder="Search for your favorite game... 🔍"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 sm:pl-14 pr-24 sm:pr-32 py-6 sm:py-8 text-base sm:text-lg font-comic border-4 border-primary/60 focus:border-primary rounded-2xl shadow-lg hover:shadow-xl transition-all touch-manipulation"
+                className="pl-10 sm:pl-14 pr-24 sm:pr-32 py-6 sm:py-8 text-base sm:text-lg font-rajdhani font-medium border-4 border-primary/60 focus:border-primary rounded-2xl shadow-lg hover:shadow-xl transition-all touch-manipulation"
               />
               <Button 
                 type="submit"
-                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-fredoka font-bold px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-base bg-gradient-to-r from-primary to-secondary hover:shadow-lg transform hover:scale-105 transition-all"
+                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-base bg-gradient-to-r from-primary to-secondary hover:shadow-lg transform hover:scale-105 transition-all"
               >
                 Search 🚀
               </Button>

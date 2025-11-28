@@ -14,9 +14,12 @@ export default {
     },
     extend: {
       fontFamily: {
+        'space': ['Space Grotesk', 'sans-serif'],
+        'rajdhani': ['Rajdhani', 'sans-serif'],
+        'orbitron': ['Orbitron', 'sans-serif'],
         'fredoka': ['Fredoka', 'sans-serif'],
         'comic': ['Comic Neue', 'cursive'],
-        'sans': ["Poppins", "sans-serif"],
+        'sans': ['Space Grotesk', 'Rajdhani', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
