@@ -51,8 +51,8 @@ export const MobileBottomNav = () => {
                 )}
               </div>
               <span className={cn(
-                "text-[10px] font-fredoka font-semibold transition-all",
-                active && "scale-105"
+                "text-[11px] font-fredoka font-black transition-all",
+                active ? "text-primary scale-105" : "text-foreground/90"
               )}>
                 {item.label}
               </span>
