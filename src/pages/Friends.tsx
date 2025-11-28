@@ -7,13 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, UserPlus, Search, MessageCircle, CheckCircle, XCircle, Home, Send, Coins, Eye, History, Trophy } from "lucide-react";
+import { Users, UserPlus, Search, MessageCircle, CheckCircle, XCircle, Home, Send, Coins, Eye, History, Trophy, MoreVertical, UserMinus, Ban } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { JoyBot } from "@/components/JoyBot";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface Friend {
   id: string;
@@ -67,6 +69,8 @@ export default function Friends() {
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [viewingFriend, setViewingFriend] = useState<Friend | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [unfriendDialogOpen, setUnfriendDialogOpen] = useState(false);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -388,6 +392,130 @@ export default function Friends() {
     }
   };
 
+  const handleUnfriend = async () => {
+    if (!selectedFriend || !user) return;
+
+    try {
+      // Get current friend counts
+      const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("total_friends")
+        .eq("id", user.id)
+        .single();
+
+      const { data: friendProfile } = await supabase
+        .from("profiles")
+        .select("total_friends")
+        .eq("id", selectedFriend.id)
+        .single();
+
+      // Delete both directions of friendship
+      const { error: error1 } = await supabase
+        .from("friends")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("friend_id", selectedFriend.id);
+
+      if (error1) throw error1;
+
+      const { error: error2 } = await supabase
+        .from("friends")
+        .delete()
+        .eq("user_id", selectedFriend.id)
+        .eq("friend_id", user.id);
+
+      if (error2) throw error2;
+
+      // Update friend counts
+      if (userProfile) {
+        await supabase
+          .from("profiles")
+          .update({ total_friends: Math.max(0, (userProfile.total_friends || 0) - 1) })
+          .eq("id", user.id);
+      }
+
+      if (friendProfile) {
+        await supabase
+          .from("profiles")
+          .update({ total_friends: Math.max(0, (friendProfile.total_friends || 0) - 1) })
+          .eq("id", selectedFriend.id);
+      }
+
+      toast.success(`Unfriended ${selectedFriend.username}`);
+      setUnfriendDialogOpen(false);
+      setSelectedFriend(null);
+      await fetchFriends();
+    } catch (error: any) {
+      console.error("Unfriend error:", error);
+      toast.error("Failed to unfriend user. Please try again.");
+    }
+  };
+
+  const handleBlock = async () => {
+    if (!selectedFriend || !user) return;
+
+    try {
+      // Get current friend counts
+      const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("total_friends")
+        .eq("id", user.id)
+        .single();
+
+      const { data: friendProfile } = await supabase
+        .from("profiles")
+        .select("total_friends")
+        .eq("id", selectedFriend.id)
+        .single();
+
+      // Add to blocked list
+      const { error: blockError } = await supabase
+        .from("blocked_users")
+        .insert({
+          user_id: user.id,
+          blocked_user_id: selectedFriend.id,
+        });
+
+      if (blockError) throw blockError;
+
+      // Remove friendship (both directions)
+      await supabase
+        .from("friends")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("friend_id", selectedFriend.id);
+
+      await supabase
+        .from("friends")
+        .delete()
+        .eq("user_id", selectedFriend.id)
+        .eq("friend_id", user.id);
+
+      // Update friend counts
+      if (userProfile) {
+        await supabase
+          .from("profiles")
+          .update({ total_friends: Math.max(0, (userProfile.total_friends || 0) - 1) })
+          .eq("id", user.id);
+      }
+
+      if (friendProfile) {
+        await supabase
+          .from("profiles")
+          .update({ total_friends: Math.max(0, (friendProfile.total_friends || 0) - 1) })
+          .eq("id", selectedFriend.id);
+      }
+
+      toast.success(`Blocked ${selectedFriend.username}`);
+      setBlockDialogOpen(false);
+      setSelectedFriend(null);
+      await fetchFriends();
+    } catch (error: any) {
+      console.error("Block error:", error);
+      toast.error("Failed to block user. Please try again.");
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -566,12 +694,11 @@ export default function Friends() {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="flex gap-2">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => viewProfile(friend)}
-                              className="font-fredoka font-bold border-2 hover:bg-primary/10"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -579,18 +706,44 @@ export default function Friends() {
                               size="sm"
                               variant="outline"
                               onClick={() => navigate("/chat")}
-                              className="font-fredoka font-bold border-2 hover:bg-accent/10"
                             >
                               <MessageCircle className="h-4 w-4" />
                             </Button>
                             <Button
                               size="sm"
                               onClick={() => openSendDialog(friend)}
-                              className="font-fredoka font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90"
                             >
-                              <Send className="mr-1 h-4 w-4" />
                               CAMLY
                             </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="ghost">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedFriend(friend);
+                                    setUnfriendDialogOpen(true);
+                                  }}
+                                  className="text-orange-600 cursor-pointer"
+                                >
+                                  <UserMinus className="h-4 w-4 mr-2" />
+                                  Unfriend
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedFriend(friend);
+                                    setBlockDialogOpen(true);
+                                  }}
+                                  className="text-red-600 cursor-pointer"
+                                >
+                                  <Ban className="h-4 w-4 mr-2" />
+                                  Block
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </motion.div>
                       ))}
@@ -847,6 +1000,51 @@ export default function Friends() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Unfriend Confirmation Dialog */}
+      <AlertDialog open={unfriendDialogOpen} onOpenChange={setUnfriendDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-fredoka text-2xl">Unfriend {selectedFriend?.username}?</AlertDialogTitle>
+            <AlertDialogDescription className="font-comic">
+              Are you sure you want to remove {selectedFriend?.username} from your friends list? 
+              You can always send them a friend request again later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-fredoka font-bold">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleUnfriend} 
+              className="font-fredoka font-bold bg-orange-600 hover:bg-orange-700"
+            >
+              Unfriend
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Block Confirmation Dialog */}
+      <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-fredoka text-2xl">Block {selectedFriend?.username}?</AlertDialogTitle>
+            <AlertDialogDescription className="font-comic">
+              Are you sure you want to block {selectedFriend?.username}? They will be removed from your 
+              friends list and won't be able to send you friend requests or messages.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-fredoka font-bold">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleBlock} 
+              className="font-fredoka font-bold bg-red-600 hover:bg-red-700"
+            >
+              Block User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <JoyBot position="bottom-left" />
     </motion.div>
   );
