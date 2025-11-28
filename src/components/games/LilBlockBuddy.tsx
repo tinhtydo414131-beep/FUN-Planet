@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import confetti from "canvas-confetti";
-import { Sparkles, RotateCcw, ArrowLeft, Volume2, VolumeX } from "lucide-react";
+import { Sparkles, RotateCcw, ArrowLeft, Volume2, VolumeX, Wand2 } from "lucide-react";
 
 interface LilBlockBuddyProps {
   level: number;
@@ -21,14 +21,19 @@ const LilBlockBuddy = ({ level, onLevelComplete, onBack }: LilBlockBuddyProps) =
   const [isPlaying, setIsPlaying] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const [isAutoSolving, setIsAutoSolving] = useState(false);
   
   const audioContextRef = useRef<AudioContext | null>(null);
+  const autoSolveIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Khởi tạo Audio Context
   useEffect(() => {
     audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     return () => {
       audioContextRef.current?.close();
+      if (autoSolveIntervalRef.current) {
+        clearInterval(autoSolveIntervalRef.current);
+      }
     };
   }, []);
 
@@ -203,6 +208,113 @@ const LilBlockBuddy = ({ level, onLevelComplete, onBack }: LilBlockBuddyProps) =
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Tính Manhattan distance cho A* heuristic
+  const getManhattanDistance = (tiles: number[]): number => {
+    let distance = 0;
+    for (let i = 0; i < tiles.length; i++) {
+      if (tiles[i] === 0) continue;
+      const currentRow = Math.floor(i / gridSize);
+      const currentCol = i % gridSize;
+      const targetRow = Math.floor((tiles[i] - 1) / gridSize);
+      const targetCol = (tiles[i] - 1) % gridSize;
+      distance += Math.abs(currentRow - targetRow) + Math.abs(currentCol - targetCol);
+    }
+    return distance;
+  };
+
+  // Tìm đường giải bằng A*
+  const solvePuzzle = (): number[] => {
+    interface Node {
+      tiles: number[];
+      moves: number[];
+      cost: number;
+      heuristic: number;
+    }
+
+    const start: Node = {
+      tiles: [...tiles],
+      moves: [],
+      cost: 0,
+      heuristic: getManhattanDistance(tiles),
+    };
+
+    const openSet: Node[] = [start];
+    const visited = new Set<string>();
+
+    while (openSet.length > 0) {
+      // Sắp xếp theo f = cost + heuristic
+      openSet.sort((a, b) => (a.cost + a.heuristic) - (b.cost + b.heuristic));
+      const current = openSet.shift()!;
+
+      const stateKey = current.tiles.join(',');
+      if (visited.has(stateKey)) continue;
+      visited.add(stateKey);
+
+      if (checkComplete(current.tiles)) {
+        return current.moves;
+      }
+
+      const emptyIndex = current.tiles.indexOf(0);
+      const validMoves = getValidMoves(emptyIndex, gridSize);
+
+      for (const moveIndex of validMoves) {
+        const newTiles = [...current.tiles];
+        [newTiles[emptyIndex], newTiles[moveIndex]] = [newTiles[moveIndex], newTiles[emptyIndex]];
+
+        const newNode: Node = {
+          tiles: newTiles,
+          moves: [...current.moves, moveIndex],
+          cost: current.cost + 1,
+          heuristic: getManhattanDistance(newTiles),
+        };
+
+        openSet.push(newNode);
+      }
+
+      // Giới hạn số node để tránh treo
+      if (visited.size > 10000) {
+        return [];
+      }
+    }
+
+    return [];
+  };
+
+  // Tự động giải puzzle
+  const handleAutoSolve = () => {
+    if (isAutoSolving) {
+      setIsAutoSolving(false);
+      if (autoSolveIntervalRef.current) {
+        clearInterval(autoSolveIntervalRef.current);
+        autoSolveIntervalRef.current = null;
+      }
+      return;
+    }
+
+    setIsAutoSolving(true);
+    const solution = solvePuzzle();
+
+    if (solution.length === 0) {
+      setIsAutoSolving(false);
+      return;
+    }
+
+    let stepIndex = 0;
+    autoSolveIntervalRef.current = setInterval(() => {
+      if (stepIndex >= solution.length) {
+        setIsAutoSolving(false);
+        if (autoSolveIntervalRef.current) {
+          clearInterval(autoSolveIntervalRef.current);
+          autoSolveIntervalRef.current = null;
+        }
+        return;
+      }
+
+      handleTileClick(solution[stepIndex]);
+      stepIndex++;
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 p-4 flex items-center justify-center">
       <div className="max-w-2xl w-full space-y-6">
@@ -290,7 +402,7 @@ const LilBlockBuddy = ({ level, onLevelComplete, onBack }: LilBlockBuddyProps) =
         </Card>
 
         {/* Controls */}
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 flex-wrap">
           {onBack && (
             <Button
               onClick={onBack}
@@ -307,9 +419,20 @@ const LilBlockBuddy = ({ level, onLevelComplete, onBack }: LilBlockBuddyProps) =
             variant="outline"
             size="lg"
             className="font-fredoka font-bold border-2 hover:scale-105 transition-all"
+            disabled={isAutoSolving}
           >
             <RotateCcw className="mr-2 h-5 w-5" />
             Reset
+          </Button>
+          <Button
+            onClick={handleAutoSolve}
+            variant={isAutoSolving ? "default" : "outline"}
+            size="lg"
+            className="font-fredoka font-bold border-2 hover:scale-105 transition-all"
+            disabled={isComplete}
+          >
+            <Wand2 className="mr-2 h-5 w-5" />
+            {isAutoSolving ? "Dừng" : "Tự động giải"}
           </Button>
         </div>
 
