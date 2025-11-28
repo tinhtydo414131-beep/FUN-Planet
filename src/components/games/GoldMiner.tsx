@@ -43,15 +43,51 @@ export const GoldMiner = ({ level, onLevelComplete, onBack }: GoldMinerProps) =>
   const [powerUps, setPowerUps] = useState<{ hammer: number; bomb: number }>({ hammer: 0, bomb: 0 });
   const [activePowerUp, setActivePowerUp] = useState<PowerUpType>(null);
   const [explosionEffect, setExplosionEffect] = useState<{ x: number; y: number } | null>(null);
+  const [combo, setCombo] = useState(0);
+  const [comboMultiplier, setComboMultiplier] = useState(1);
+  const [lastClickTime, setLastClickTime] = useState<number>(Date.now());
+  const [showComboText, setShowComboText] = useState(false);
 
   const targetValue = level * 200;
   const maxClicks = level * 30;
+  const comboTimeout = 2000; // 2 seconds to maintain combo
 
   useEffect(() => {
     if (totalValue >= targetValue) {
       onLevelComplete();
     }
   }, [totalValue, targetValue, onLevelComplete]);
+
+  // Combo timer - reset combo if too much time passes
+  useEffect(() => {
+    const checkComboTimeout = setInterval(() => {
+      const timeSinceLastClick = Date.now() - lastClickTime;
+      if (timeSinceLastClick > comboTimeout && combo > 0) {
+        setCombo(0);
+        setComboMultiplier(1);
+        toast.info("💔 Combo bị mất!");
+      }
+    }, 100);
+
+    return () => clearInterval(checkComboTimeout);
+  }, [lastClickTime, combo, comboTimeout]);
+
+  // Calculate combo multiplier based on combo count
+  useEffect(() => {
+    if (combo >= 50) {
+      setComboMultiplier(5);
+    } else if (combo >= 30) {
+      setComboMultiplier(4);
+    } else if (combo >= 20) {
+      setComboMultiplier(3);
+    } else if (combo >= 10) {
+      setComboMultiplier(2);
+    } else if (combo >= 5) {
+      setComboMultiplier(1.5);
+    } else {
+      setComboMultiplier(1);
+    }
+  }, [combo]);
 
   const getRandomItem = (): MineItem => {
     const random = Math.random() * 100;
@@ -74,6 +110,42 @@ export const GoldMiner = ({ level, onLevelComplete, onBack }: GoldMinerProps) =>
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    // Update combo
+    const currentTime = Date.now();
+    const timeSinceLastClick = currentTime - lastClickTime;
+    
+    if (timeSinceLastClick <= comboTimeout) {
+      const newCombo = combo + 1;
+      setCombo(newCombo);
+      setLastClickTime(currentTime);
+      
+      // Show combo milestone messages
+      if (newCombo === 5) {
+        toast.success("🔥 Combo x1.5!");
+        setShowComboText(true);
+        setTimeout(() => setShowComboText(false), 1000);
+      } else if (newCombo === 10) {
+        toast.success("⚡ Combo x2!");
+        setShowComboText(true);
+        setTimeout(() => setShowComboText(false), 1000);
+      } else if (newCombo === 20) {
+        toast.success("💫 Combo x3!");
+        setShowComboText(true);
+        setTimeout(() => setShowComboText(false), 1000);
+      } else if (newCombo === 30) {
+        toast.success("🌟 Combo x4!");
+        setShowComboText(true);
+        setTimeout(() => setShowComboText(false), 1000);
+      } else if (newCombo === 50) {
+        toast.success("👑 MEGA COMBO x5!");
+        setShowComboText(true);
+        setTimeout(() => setShowComboText(false), 1000);
+      }
+    } else {
+      setCombo(1);
+      setLastClickTime(currentTime);
+    }
 
     // Show explosion effect
     if (activePowerUp) {
@@ -127,11 +199,25 @@ export const GoldMiner = ({ level, onLevelComplete, onBack }: GoldMinerProps) =>
       totalValueGained += itemInfo.value;
     }
 
+    // Apply combo multiplier to value gained
+    const multipliedValue = Math.floor(totalValueGained * comboMultiplier);
+    const bonusValue = multipliedValue - totalValueGained;
+
     setMinedItems([...minedItems, ...newItems]);
-    setTotalValue(totalValue + totalValueGained);
+    setTotalValue(totalValue + multipliedValue);
     setClicks(clicks + 1);
     setNextId(nextId + miningArea);
-    setLastItem(totalValueGained > 0 ? `+${totalValueGained} 💰` : "");
+    
+    if (multipliedValue > 0) {
+      if (bonusValue > 0) {
+        setLastItem(`+${totalValueGained} 💰 (Combo: +${bonusValue})`);
+      } else {
+        setLastItem(`+${totalValueGained} 💰`);
+      }
+    } else {
+      setLastItem("");
+    }
+    
     setActivePowerUp(null);
 
     // Remove items after animation
@@ -163,6 +249,10 @@ export const GoldMiner = ({ level, onLevelComplete, onBack }: GoldMinerProps) =>
     setPowerUps({ hammer: 0, bomb: 0 });
     setActivePowerUp(null);
     setExplosionEffect(null);
+    setCombo(0);
+    setComboMultiplier(1);
+    setLastClickTime(Date.now());
+    setShowComboText(false);
   };
 
   const progressPercentage = Math.min((totalValue / targetValue) * 100, 100);
@@ -172,8 +262,25 @@ export const GoldMiner = ({ level, onLevelComplete, onBack }: GoldMinerProps) =>
     <Card className="p-6 space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Level {level}</h2>
-        <div className="text-lg font-bold text-yellow-500">
-          💰 {totalValue} / {targetValue}
+        <div className="flex items-center gap-3">
+          {combo > 0 && (
+            <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+              combo >= 50 ? "bg-purple-500" :
+              combo >= 30 ? "bg-red-500" :
+              combo >= 20 ? "bg-orange-500" :
+              combo >= 10 ? "bg-yellow-500" :
+              "bg-blue-500"
+            } text-white font-bold animate-pulse`}>
+              <span className="text-lg">🔥</span>
+              <span>{combo}x</span>
+              {comboMultiplier > 1 && (
+                <span className="text-sm ml-1">({comboMultiplier}x)</span>
+              )}
+            </div>
+          )}
+          <div className="text-lg font-bold text-yellow-500">
+            💰 {totalValue} / {targetValue}
+          </div>
         </div>
       </div>
 
@@ -234,6 +341,17 @@ export const GoldMiner = ({ level, onLevelComplete, onBack }: GoldMinerProps) =>
           </span>
         </Button>
       </div>
+
+      {/* Combo Milestone Text */}
+      {showComboText && (
+        <div className="text-center text-3xl font-bold animate-bounce">
+          {combo >= 50 ? "👑 MEGA COMBO!" :
+           combo >= 30 ? "🌟 SUPER COMBO!" :
+           combo >= 20 ? "💫 GREAT COMBO!" :
+           combo >= 10 ? "⚡ COMBO!" :
+           "🔥 COMBO START!"}
+        </div>
+      )}
 
       {activePowerUp && (
         <div className="text-center text-lg font-bold text-orange-500 animate-pulse">
@@ -345,9 +463,13 @@ export const GoldMiner = ({ level, onLevelComplete, onBack }: GoldMinerProps) =>
       </div>
 
       {/* Power-up Info */}
-      <div className="text-center text-xs text-muted-foreground bg-secondary/10 p-3 rounded-lg">
-        <p className="font-bold mb-1">💡 Power-ups:</p>
+      <div className="text-center text-xs text-muted-foreground bg-secondary/10 p-3 rounded-lg space-y-1">
+        <p className="font-bold mb-1">💡 Hướng dẫn:</p>
         <p>🔨 Búa Lớn: Đào 3x3 khu vực | 💣 Bom: Đào 5x5 khu vực</p>
+        <p className="text-orange-500 font-bold">
+          🔥 Combo: 5→x1.5 | 10→x2 | 20→x3 | 30→x4 | 50→x5
+        </p>
+        <p className="text-blue-500">⏱️ Đào liên tục trong 2 giây để giữ combo!</p>
       </div>
 
       <div className="flex gap-2">
