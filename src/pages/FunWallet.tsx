@@ -1082,10 +1082,10 @@ export default function FunWallet() {
                   </div>
                 )}
                 <div>
-                  <p className="text-white font-bold text-sm">
+                  <p className="text-foreground font-black text-sm">
                     Hi {user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0]} 👋
                   </p>
-                  <p className="text-white/60 text-xs">{user.email}</p>
+                  <p className="text-foreground/90 text-xs font-bold">{user.email}</p>
                 </div>
               </div>
               <Button
@@ -1096,7 +1096,7 @@ export default function FunWallet() {
                 }}
                 variant="ghost"
                 size="sm"
-                className="text-white/80 hover:text-white hover:bg-white/10"
+                className="text-foreground hover:text-foreground hover:bg-muted"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -1204,7 +1204,7 @@ export default function FunWallet() {
               FUN WALLET
             </h1>
             
-            <p className="text-lg sm:text-2xl text-white/80 mb-6 sm:mb-8 font-bold px-2">
+            <p className="text-lg sm:text-2xl text-foreground mb-6 sm:mb-8 font-black px-2">
               Connect your MetaMask to start having FUN! 🚀
             </p>
             
@@ -1838,11 +1838,11 @@ export default function FunWallet() {
                         >
                           <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
                         </motion.div>
-                        <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 bg-clip-text text-transparent font-black leading-tight">
+                        <span className="text-foreground font-black leading-tight">
                           LAUNCH AIRDROP CAMLY 👑
                         </span>
                       </CardTitle>
-                      <p className="text-white/90 text-xs sm:text-sm mt-2 font-black">
+                      <p className="text-foreground text-xs sm:text-sm mt-2 font-black">
                         Send CAMLY tokens to multiple addresses at once! Perfect for rewarding your community ✨
                       </p>
                     </CardHeader>
@@ -1863,9 +1863,8 @@ export default function FunWallet() {
                           onFocus={() => console.log("🔵 Focus bulk addresses textarea")}
                           placeholder={`0x1234...\n0x5678...\n0x9abc...`}
                           rows={6}
-                          className="border-0 text-white placeholder:text-white/30 font-mono text-xs sm:text-sm px-4 sm:px-3 py-3 sm:py-2 touch-manipulation"
+                          className="border-0 text-foreground placeholder:text-foreground/30 font-mono text-xs sm:text-sm px-4 sm:px-3 py-3 sm:py-2 touch-manipulation bg-white"
                           style={{
-                            background: 'rgba(255,255,255,0.05)',
                             backdropFilter: 'blur(10px)',
                             boxShadow: 'inset 0 0 0 2px rgba(224,170,255,0.3)'
                           }}
@@ -1938,9 +1937,8 @@ export default function FunWallet() {
                             setApprovalComplete(false);
                           }}
                           placeholder="1000"
-                          className="border-0 text-white text-xl sm:text-2xl font-black placeholder:text-white/30 h-14 sm:h-12 px-4 sm:px-3"
+                          className="border-0 text-foreground text-xl sm:text-2xl font-black placeholder:text-foreground/30 h-14 sm:h-12 px-4 sm:px-3 bg-white"
                           style={{
-                            background: 'rgba(255,255,255,0.05)',
                             backdropFilter: 'blur(10px)',
                             boxShadow: 'inset 0 0 0 2px rgba(224,170,255,0.3)'
                           }}
@@ -1959,15 +1957,15 @@ export default function FunWallet() {
                             boxShadow: '0 0 40px rgba(255,215,0,0.3)'
                           }}
                         >
-                          <h3 className="text-lg sm:text-xl font-black text-yellow-300 mb-2 sm:mb-3">📊 Airdrop Summary</h3>
-                          <div className="space-y-1.5 sm:space-y-2 text-white text-sm sm:text-base">
-                            <p>🎯 Recipients: <span className="font-black text-cyan-400">
+                          <h3 className="text-lg sm:text-xl font-black text-foreground mb-2 sm:mb-3">📊 Airdrop Summary</h3>
+                          <div className="space-y-1.5 sm:space-y-2 text-foreground text-sm sm:text-base">
+                            <p>🎯 Recipients: <span className="font-black text-foreground">
                               {showValidation && validAddresses.length > 0 
                                 ? `${validAddresses.length} (validated)` 
                                 : bulkAddresses.split('\n').filter(a => a.trim()).length}
                             </span></p>
-                            <p>💰 Amount per address: <span className="font-black text-pink-400">{bulkAmount} CAMLY</span></p>
-                            <p className="text-xl sm:text-2xl">🚀 Total needed: <span className="font-black bg-gradient-to-r from-yellow-300 to-pink-400 bg-clip-text text-transparent">
+                            <p>💰 Amount per address: <span className="font-black text-foreground">{bulkAmount} CAMLY</span></p>
+                            <p className="text-xl sm:text-2xl">🚀 Total needed: <span className="font-black text-foreground">
                               {showValidation && validAddresses.length > 0 
                                 ? `${validAddresses.length} × ${bulkAmount} CAMLY`
                                 : `${bulkAddresses.split('\n').filter(a => a.trim()).length} × ${bulkAmount} CAMLY`}
@@ -1982,13 +1980,13 @@ export default function FunWallet() {
                           animate={{ scale: 1, opacity: 1 }}
                           className="space-y-2 sm:space-y-3"
                         >
-                          <p className="text-white font-black text-lg sm:text-xl text-center">
+                          <p className="text-foreground font-black text-lg sm:text-xl text-center">
                             ✨ {bulkProgressText || `Airdropping... ${bulkProgress}%`}
                           </p>
                           <Progress value={bulkProgress} className="h-5 sm:h-6" style={{
                             background: 'rgba(255,255,255,0.2)',
                           }} />
-                          <p className="text-cyan-400 text-center text-xl sm:text-2xl font-black animate-pulse">
+                          <p className="text-foreground text-center text-xl sm:text-2xl font-black animate-pulse">
                             {bulkProgress}% Complete
                           </p>
                         </motion.div>
@@ -2112,11 +2110,11 @@ export default function FunWallet() {
                         >
                           <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-400" />
                         </motion.div>
-                        <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 bg-clip-text text-transparent font-black leading-tight">
+                        <span className="text-foreground font-black leading-tight">
                           TRANSACTION HISTORY 📜
                         </span>
                       </CardTitle>
-                      <p className="text-white/60 text-xs sm:text-sm mt-2">
+                      <p className="text-foreground text-xs sm:text-sm mt-2 font-bold">
                         View all your past transactions, airdrops, and token transfers ✨
                       </p>
                     </CardHeader>
