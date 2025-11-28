@@ -108,7 +108,7 @@ const CATEGORIES = [
 ];
 
 export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
-  const { playClick, playSuccess, playPop } = useGameAudio();
+  const { playClick, playSuccess, playPop, playJump, playScore, startBackgroundMusic, stopBackgroundMusic, isMusicEnabled, isSoundEnabled, toggleMusic, toggleSound } = useGameAudio();
   const [joyStars, setJoyStars] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('veggies');
   const [selectedCharacter, setSelectedCharacter] = useState<Character>(CHARACTERS[0]);
@@ -122,6 +122,14 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
   const [showGallery, setShowGallery] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const plateRef = useRef<HTMLDivElement>(null);
+
+  // Start background music on mount
+  useEffect(() => {
+    startBackgroundMusic();
+    return () => {
+      stopBackgroundMusic();
+    };
+  }, []);
 
   // Load saved progress
   useEffect(() => {
@@ -170,7 +178,33 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
 
   const handleDragStart = (ingredient: Ingredient) => {
     setDraggedItem(ingredient);
-    playClick();
+    playClick(); // Pickup sound
+  };
+
+  const playToolSound = (toolId: string) => {
+    // Different sounds for different tools
+    switch (toolId) {
+      case 'chop':
+        playPop(); // Sharp chop sound
+        break;
+      case 'boil':
+        playJump(); // Bubbling sound
+        break;
+      case 'fry':
+        playScore(); // Sizzle sound
+        break;
+      case 'bake':
+        playClick(); // Oven ding
+        break;
+      case 'blend':
+        playJump(); // Whirring sound
+        break;
+      case 'grill':
+        playScore(); // Grilling sound
+        break;
+      default:
+        playPop();
+    }
   };
 
   const handleToolDrop = (tool: Tool) => {
@@ -185,7 +219,7 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
       };
       setPlateItems(prev => [...prev, newItem]);
       setDraggedItem(null);
-      playPop();
+      playToolSound(tool.id); // Play specific tool sound
       
       // Particle effect
       confetti({
@@ -202,10 +236,17 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
   const serveDish = () => {
     if (plateItems.length === 0) {
       toast.info('Add some ingredients first!');
+      playClick();
       return;
     }
 
+    // Happy eating sound
     playSuccess();
+    
+    // Additional celebration sounds
+    setTimeout(() => playJump(), 200);
+    setTimeout(() => playScore(), 400);
+    setTimeout(() => playPop(), 600);
     setShowReaction(true);
 
     // Calculate stars based on creativity
@@ -245,13 +286,14 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
 
   const resetKitchen = () => {
     setPlateItems([]);
-    playClick();
+    playClick(); // Clean sweep sound
     confetti({
       particleCount: 50,
       spread: 60,
       origin: { y: 0.6 },
       colors: ['#87CEEB', '#FFD700'],
     });
+    toast.success('Kitchen sparkle clean! ✨');
   };
 
   const unlockedIngredients = ingredients.filter(i => i.unlocked && i.category === selectedCategory);
@@ -323,10 +365,31 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <Button variant="outline" onClick={onBack} className="gap-2">
-          <Home className="w-5 h-5" />
-          Home
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={onBack} className="gap-2">
+            <Home className="w-5 h-5" />
+            Home
+          </Button>
+          
+          {/* Audio Controls */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleMusic}
+            title={isMusicEnabled ? "Mute Music" : "Play Music"}
+          >
+            <span className="text-xl">{isMusicEnabled ? "🎵" : "🔇"}</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleSound}
+            title={isSoundEnabled ? "Mute Sounds" : "Play Sounds"}
+          >
+            <span className="text-xl">{isSoundEnabled ? "🔊" : "🔈"}</span>
+          </Button>
+        </div>
         
         <Badge variant="secondary" className="text-xl px-6 py-3 gap-2">
           <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
@@ -361,7 +424,8 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
                 size="lg"
                 onClick={() => {
                   setSelectedCharacter(char);
-                  playClick();
+                  playClick(); // Character selection sound
+                  toast.success(`${char.name} is ready to eat! 🎉`);
                 }}
                 className="text-4xl h-auto py-4 px-6 flex flex-col gap-2"
               >
@@ -388,7 +452,7 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
                   size="sm"
                   onClick={() => {
                     setSelectedCategory(cat.id);
-                    playClick();
+                    playClick(); // Category switch sound
                   }}
                   className="gap-1"
                 >
@@ -405,6 +469,7 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
                   key={ingredient.id}
                   draggable
                   onDragStart={() => handleDragStart(ingredient)}
+                  onClick={() => playClick()} // Click feedback
                   className="bg-card border-2 border-border rounded-xl p-4 cursor-grab active:cursor-grabbing hover:border-primary transition-all hover:scale-110"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -424,12 +489,13 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
               <div className="grid grid-cols-3 gap-3">
                 {tools.filter(t => t.unlocked).map(tool => (
                   <motion.div
-                    key={tool.id}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => handleToolDrop(tool)}
-                    className="bg-gradient-to-br from-orange-400 to-pink-400 rounded-xl p-4 cursor-pointer hover:scale-110 transition-all border-4 border-orange-500"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    whileTap={{ scale: 0.95 }}
+                  key={tool.id}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleToolDrop(tool)}
+                  onClick={() => playClick()} // Tool hover sound
+                  className="bg-gradient-to-br from-orange-400 to-pink-400 rounded-xl p-4 cursor-pointer hover:scale-110 transition-all border-4 border-orange-500"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.95 }}
                   >
                     <div className="text-5xl text-center">{tool.emoji}</div>
                     <p className="text-xs text-center mt-2 font-bold text-white">{tool.name}</p>
