@@ -72,7 +72,7 @@ export const Hero = () => {
             }
           }}
         >
-          <source src="/videos/hero-background.mp4" type="video/mp4" />
+          <source src="/videos/hero-funplanet-user.mp4" type="video/mp4" />
         </video>
         {/* Subtle overlay for better text readability but keep video visible */}
         <div className="absolute inset-0 bg-black/25" />
