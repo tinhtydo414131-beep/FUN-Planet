@@ -97,13 +97,26 @@ const Index = () => {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background-green relative overflow-hidden pb-safe"
+      className="min-h-screen relative overflow-hidden pb-safe"
       initial="initial"
       animate="animate"
       exit="exit"
       variants={pageVariants}
       transition={pageTransition}
     >
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover -z-10"
+      >
+        <source src="/videos/homepage-bg.mp4" type="video/mp4" />
+      </video>
+      {/* Overlay for better content readability */}
+      <div className="fixed inset-0 bg-black/30 -z-10" />
+      
       <Navigation />
       <Hero />
       
