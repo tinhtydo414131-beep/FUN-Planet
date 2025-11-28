@@ -453,17 +453,14 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
                       initial={{ scale: 0, opacity: 0, y: -50 }}
                       animate={{ 
                         scale: 1, 
-                        opacity: 1, 
-                        y: 0,
-                        x: `${item.x}%`,
-                        y: `${item.y}%`,
+                        opacity: 1,
                       }}
                       exit={{ scale: 0, opacity: 0 }}
                       className="absolute text-4xl"
                       style={{ 
-                        left: `${item.x}%`, 
-                        top: `${item.y}%`,
-                        transform: `translate(-50%, -50%) rotate(${index * 15}deg)`,
+                        left: `calc(${item.x}% - 20px)`, 
+                        top: `calc(${item.y}% - 20px)`,
+                        transform: `rotate(${index * 15}deg)`,
                       }}
                     >
                       {item.emoji}
