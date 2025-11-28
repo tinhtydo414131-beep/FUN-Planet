@@ -7,21 +7,21 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 20%;
+    --foreground: 0 0% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card-foreground: 0 0% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover-foreground: 0 0% 5%;
     --primary: 262 100% 64%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 262 100% 87%;
     --secondary: 186 100% 50%;
     --secondary-foreground: 0 0% 100%;
     --accent: 186 100% 50%;
-    --accent-foreground: 0 0% 20%;
+    --accent-foreground: 0 0% 5%;
     --success: 186 100% 50%;
     --muted: 270 100% 95%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 25%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 262 100% 87%;
@@ -41,20 +41,20 @@
 
   .dark {
     --background: 0 0% 100%;
-    --foreground: 0 0% 20%;
+    --foreground: 0 0% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card-foreground: 0 0% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover-foreground: 0 0% 5%;
     --primary: 262 100% 64%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 262 100% 87%;
     --secondary: 186 100% 50%;
     --secondary-foreground: 0 0% 100%;
     --muted: 270 100% 95%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 25%;
     --accent: 186 100% 50%;
-    --accent-foreground: 0 0% 20%;
+    --accent-foreground: 0 0% 5%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 262 100% 87%;
@@ -68,11 +68,15 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-rajdhani;
+    @apply bg-background text-foreground font-rajdhani font-medium;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-space font-bold tracking-tight;
+    @apply font-space font-black tracking-tight text-foreground;
+  }
+  
+  p, span, div {
+    @apply text-foreground;
   }
 
   @keyframes breathing {
