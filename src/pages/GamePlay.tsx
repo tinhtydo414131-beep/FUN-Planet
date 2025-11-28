@@ -37,6 +37,7 @@ import MusicCreator from "@/components/games/MusicCreator";
 import FlowerField from "@/components/games/FlowerField";
 import LilBlockBuddy from "@/components/games/LilBlockBuddy";
 import { Game2048Nexus } from "@/components/games/Game2048Nexus";
+import { HappyKitchenJoy } from "@/components/games/HappyKitchenJoy";
 
 interface Game {
   id: string;
@@ -211,6 +212,7 @@ const GamePlay = () => {
       case "Racing": return <Racing {...gameProps} />;
       case "LilBlockBuddy": return <LilBlockBuddy {...gameProps} />;
       case "Game2048Nexus": return <Game2048Nexus {...gameProps} />;
+      case "HappyKitchenJoy": return <HappyKitchenJoy onBack={handleBackToLevelSelect} />;
       
       default:
         return (
@@ -285,7 +287,7 @@ const GamePlay = () => {
             </div>
 
             <div className="w-full">
-              {showLevelSelector && !gameStarted ? (
+              {showLevelSelector && !gameStarted && game.component_name !== "HappyKitchenJoy" ? (
                 game.component_name === "FlowerField" ? (
                   <FlowerFieldLevelSelector
                     highestLevelCompleted={highestLevelCompleted}
