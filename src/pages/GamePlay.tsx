@@ -38,6 +38,7 @@ import FlowerField from "@/components/games/FlowerField";
 import LilBlockBuddy from "@/components/games/LilBlockBuddy";
 import { Game2048Nexus } from "@/components/games/Game2048Nexus";
 import { HappyKitchenJoy } from "@/components/games/HappyKitchenJoy";
+import { CookingMama } from "@/components/games/CookingMama";
 
 interface Game {
   id: string;
@@ -213,6 +214,7 @@ const GamePlay = () => {
       case "LilBlockBuddy": return <LilBlockBuddy {...gameProps} />;
       case "Game2048Nexus": return <Game2048Nexus {...gameProps} />;
       case "HappyKitchenJoy": return <HappyKitchenJoy onBack={handleBackToLevelSelect} />;
+      case "CookingMama": return <CookingMama />;
       
       default:
         return (
@@ -287,7 +289,7 @@ const GamePlay = () => {
             </div>
 
             <div className="w-full">
-              {showLevelSelector && !gameStarted && game.component_name !== "HappyKitchenJoy" ? (
+              {showLevelSelector && !gameStarted && game.component_name !== "HappyKitchenJoy" && game.component_name !== "CookingMama" ? (
                 game.component_name === "FlowerField" ? (
                   <FlowerFieldLevelSelector
                     highestLevelCompleted={highestLevelCompleted}
