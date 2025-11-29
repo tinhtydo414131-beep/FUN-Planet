@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Pause, Download, Save, Music, Volume2, VolumeX, Upload, Trash2, Send, Share2, Link2, ListMusic, Plus, Filter, CheckCircle, XCircle, Clock, Heart, Moon, Brain, Sparkles } from "lucide-react";
+import { Play, Pause, Download, Save, Music, Volume2, VolumeX, Upload, Trash2, Send, Share2, Link2, ListMusic, Plus, Filter, CheckCircle, XCircle, Clock, Heart, Moon, Brain, Sparkles, Search } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -106,6 +106,7 @@ export default function PublicMusic() {
 
   // Filter state
   const [selectedGenre, setSelectedGenre] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handlePlayPause = (track: MusicTrack) => {
     if (currentTrack?.id === track.id) {
@@ -695,9 +696,17 @@ export default function PublicMusic() {
 
   const allTracks = [...PUBLIC_TRACKS, ...userTracks];
   
-  const filteredTracks = selectedGenre === "all" 
-    ? allTracks 
-    : allTracks.filter(track => track.genre === selectedGenre);
+  const filteredTracks = allTracks.filter(track => {
+    // Filter by genre
+    const genreMatch = selectedGenre === "all" || track.genre === selectedGenre;
+    
+    // Filter by search query (title or artist)
+    const searchMatch = searchQuery.trim() === "" || 
+      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      track.artist.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return genreMatch && searchMatch;
+  });
 
   const displayTracks = selectedPlaylist ? playlistTracks : filteredTracks;
 
@@ -936,24 +945,37 @@ export default function PublicMusic() {
             <TabsContent value="all" className="space-y-4">
               <Card className="border-4 border-primary/30">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <CardTitle className="font-fredoka text-2xl">
                       Thư Viện Nhạc ({filteredTracks.length})
                     </CardTitle>
-                    <div className="flex items-center gap-2">
-                      <Filter className="w-4 h-4 text-muted-foreground" />
-                      <Select value={selectedGenre} onValueChange={setSelectedGenre}>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {GENRES.map(genre => (
-                            <SelectItem key={genre.value} value={genre.value}>
-                              {genre.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                      {/* Search Bar */}
+                      <div className="relative flex-1 sm:flex-none sm:min-w-[240px]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Tìm tên bài hát hoặc nghệ sĩ..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10 border-2 border-primary/30"
+                        />
+                      </div>
+                      {/* Genre Filter */}
+                      <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-muted-foreground" />
+                        <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {GENRES.map(genre => (
+                              <SelectItem key={genre.value} value={genre.value}>
+                                {genre.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
@@ -961,7 +983,12 @@ export default function PublicMusic() {
                   {filteredTracks.length === 0 ? (
                     <div className="text-center py-12">
                       <Music className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-                      <p className="text-lg text-muted-foreground">Không có bài hát nào</p>
+                      <p className="text-lg text-muted-foreground">
+                        {searchQuery.trim() !== "" 
+                          ? `Không tìm thấy bài hát nào với "${searchQuery}"`
+                          : "Không có bài hát nào"
+                        }
+                      </p>
                     </div>
                   ) : (
                     filteredTracks.map((track) => (
