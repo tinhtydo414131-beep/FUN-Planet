@@ -72,8 +72,8 @@ export const Navigation = () => {
               <NavLink 
                 to="/home"
               >
-                <Button variant="default" className="font-space font-semibold flex items-center justify-center">
-                  <Home className="w-4 h-4 mr-2 inline-block" />
+                <Button variant="default" className="font-space font-semibold h-10">
+                  <Home className="w-4 h-4" />
                   Landing
                 </Button>
               </NavLink>
