@@ -221,6 +221,16 @@ export default {
             backgroundPosition: "100% 50%",
           },
         },
+        "slow-pulse": {
+          "0%, 100%": {
+            opacity: "1",
+            filter: "brightness(1)",
+          },
+          "50%": {
+            opacity: "0.85",
+            filter: "brightness(1.15)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -238,6 +248,7 @@ export default {
         "golden-shimmer": "golden-shimmer 12s ease-in-out infinite",
         "diamond-light": "diamond-light 15s ease-in-out infinite",
         "gradient-shift": "gradient-shift 4s ease-in-out infinite",
+        "slow-pulse": "slow-pulse 3s ease-in-out infinite",
       },
     },
   },
