@@ -9,7 +9,6 @@ import { Progress } from "@/components/ui/progress";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield, QrCode, ArrowLeft, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { CelebrationNotification } from "@/components/CelebrationNotification";
 import { AirdropConfirmModal } from "@/components/AirdropConfirmModal";
 import { TransactionHistory } from "@/components/TransactionHistory";
 
@@ -130,9 +129,6 @@ export default function FunWallet() {
   const [networkName, setNetworkName] = useState("BNB Chain");
   const [selectedNetwork, setSelectedNetwork] = useState(networks[1]);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [celebrationAmount, setCelebrationAmount] = useState(0);
-  const [celebrationToken, setCelebrationToken] = useState("CAMLY");
   const [processedCoinImage, setProcessedCoinImage] = useState<string | null>(null);
   const [selectedChartCoin, setSelectedChartCoin] = useState<string | null>(null);
   const [chartTimeframe, setChartTimeframe] = useState<'1H' | '4H' | '1D' | '1W' | '1M'>('1D');
@@ -582,11 +578,6 @@ export default function FunWallet() {
         
         toast.success(`${amount} ${selectedToken.symbol} sent successfully! 🎉`);
         
-        // Trigger celebration for normal send
-        setCelebrationAmount(amount);
-        setCelebrationToken(selectedToken.symbol);
-        setShowCelebration(true);
-        
         // Update CAMLY balance if that's what was sent
         if (selectedToken.symbol === "CAMLY") {
           await getCamlyBalance(account);
@@ -605,11 +596,6 @@ export default function FunWallet() {
         txHash = receipt.hash;
         
         toast.success("Transaction confirmed! 🎉");
-        
-        // Trigger celebration for native token send
-        setCelebrationAmount(amount);
-        setCelebrationToken(selectedToken.symbol);
-        setShowCelebration(true);
       }
 
       // Record transaction in database
@@ -785,11 +771,6 @@ export default function FunWallet() {
       
       setNeedsApproval(false);
       setApprovalComplete(true);
-      
-      // Trigger mini celebration
-      setCelebrationAmount(parseFloat(bulkAmount) * validAddresses.length);
-      setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 3000); // Short 3s celebration
       
     } catch (error: any) {
       console.error("Approval error:", error);
@@ -1006,10 +987,6 @@ export default function FunWallet() {
         transaction_hash: txHash || "completed",
         notes: `Ultra-Low-Gas Airdrop to ${addresses.length} recipients - ${amount} CAMLY each - Batch #${batchId}`
       });
-
-      // Trigger 10-second celebration!
-      setCelebrationAmount(totalAmount);
-      setShowCelebration(true);
 
       toast.success(`🎉 FUN AND RICH!!! All ${addresses.length} airdrops successful in ONE transaction! 💰✨`);
       
@@ -1814,13 +1791,12 @@ export default function FunWallet() {
                         <div className="text-center">
                           <Button
                             onClick={() => {
-                              setCelebrationAmount(0.042);
-                              setShowCelebration(true);
+                              toast.success("Test celebration feature removed");
                             }}
                             variant="outline"
                             className="text-sm sm:text-base border-2 border-primary/50 text-foreground hover:bg-primary/20 h-10 sm:h-12 font-black px-6"
                           >
-                            Test Celebration 🎉
+                            Test Feature ✨
                           </Button>
                         </div>
                       </CardContent>
@@ -2141,21 +2117,6 @@ export default function FunWallet() {
         gasPrice={currentGasPrice}
       />
 
-      <AnimatePresence>
-        {showCelebration && (
-          <CelebrationNotification
-            amount={celebrationAmount}
-            token={celebrationToken}
-            tokenImage={
-              celebrationToken === "CAMLY" 
-                ? (processedCoinImage || camlyCoinPro)
-                : tokens.find(t => t.symbol === celebrationToken)?.image
-            }
-            onComplete={() => setShowCelebration(false)}
-            duration={celebrationToken === "CAMLY" && celebrationAmount > 1000 ? 25000 : 15000}
-          />
-        )}
-      </AnimatePresence>
 
 
       <style>{`
