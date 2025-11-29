@@ -7,7 +7,6 @@ import { BackgroundMusicPlayer } from "@/components/BackgroundMusicPlayer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Web3Provider } from "@/providers/Web3Provider";
 import { AnimatePresence } from "framer-motion";
-import HonorBoard from "./pages/HonorBoard";
 import Index from "./pages/Index";
 import Home from "./pages/Home";
 import Games from "./pages/Games";
@@ -40,7 +39,6 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Index />} />
-        <Route path="/honor-board" element={<HonorBoard />} />
         <Route path="/games" element={<Games />} />
         <Route path="/game/:gameId" element={<GamePlay />} />
         <Route path="/auth" element={<Auth />} />
