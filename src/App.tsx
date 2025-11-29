@@ -8,7 +8,6 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Web3Provider } from "@/providers/Web3Provider";
 import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
-import Home from "./pages/Home";
 import Games from "./pages/Games";
 import GamePlay from "./pages/GamePlay";
 import Auth from "./pages/Auth";
@@ -37,8 +36,7 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Index />} />
+        <Route path="/" element={<Index />} />
         <Route path="/games" element={<Games />} />
         <Route path="/game/:gameId" element={<GamePlay />} />
         <Route path="/auth" element={<Auth />} />
