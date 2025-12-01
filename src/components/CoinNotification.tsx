@@ -1,0 +1,202 @@
+import { useEffect, useState, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { motion, AnimatePresence } from "framer-motion";
+import { Coins, Sparkles } from "lucide-react";
+import confetti from "canvas-confetti";
+
+interface CoinNotification {
+  id: string;
+  type: "camly_coin" | "wallet";
+  amount: number;
+  tokenType?: string;
+  description?: string;
+  timestamp: number;
+}
+
+export function CoinNotification() {
+  const [notifications, setNotifications] = useState<CoinNotification[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Initialize audio
+    audioRef.current = new Audio("/audio/coin-reward.mp3");
+    audioRef.current.volume = 0.5;
+
+    const setupSubscriptions = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Subscribe to Camly Coin transactions
+      const camlyCoinChannel = supabase
+        .channel("camly_coin_notifications")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "camly_coin_transactions",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            const transaction = payload.new;
+            if (transaction.amount > 0) {
+              showNotification({
+                id: transaction.id,
+                type: "camly_coin",
+                amount: transaction.amount,
+                description: transaction.description,
+                timestamp: Date.now(),
+              });
+            }
+          }
+        )
+        .subscribe();
+
+      // Subscribe to wallet transactions (receiving)
+      const walletChannel = supabase
+        .channel("wallet_notifications")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "wallet_transactions",
+            filter: `to_user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            const transaction = payload.new;
+            if (transaction.status === "completed" || transaction.status === "pending") {
+              showNotification({
+                id: transaction.id,
+                type: "wallet",
+                amount: transaction.amount,
+                tokenType: transaction.token_type,
+                description: transaction.notes,
+                timestamp: Date.now(),
+              });
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(camlyCoinChannel);
+        supabase.removeChannel(walletChannel);
+      };
+    };
+
+    const cleanup = setupSubscriptions();
+
+    return () => {
+      cleanup.then((cleanupFn) => cleanupFn?.());
+    };
+  }, []);
+
+  const showNotification = (notification: CoinNotification) => {
+    // Play sound
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(console.error);
+    }
+
+    // Trigger confetti
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#FFD700", "#FFA500", "#FF6347"],
+    });
+
+    // Add notification
+    setNotifications((prev) => [...prev, notification]);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+    }, 5000);
+  };
+
+  return (
+    <div className="fixed top-20 right-4 z-50 space-y-2 pointer-events-none">
+      <AnimatePresence>
+        {notifications.map((notification) => (
+          <motion.div
+            key={notification.id}
+            initial={{ opacity: 0, x: 100, scale: 0.8 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 100, scale: 0.8 }}
+            className="pointer-events-auto"
+          >
+            <div className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-2xl shadow-2xl p-4 min-w-[280px] border-4 border-white">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <motion.div
+                    animate={{
+                      rotate: [0, 10, -10, 10, 0],
+                      scale: [1, 1.2, 1, 1.2, 1],
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      repeat: Infinity,
+                      repeatDelay: 1,
+                    }}
+                  >
+                    <Coins className="w-10 h-10 text-white drop-shadow-lg" />
+                  </motion.div>
+                  <motion.div
+                    className="absolute -top-1 -right-1"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      rotate: [0, 180, 360],
+                    }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                    }}
+                  >
+                    <Sparkles className="w-4 h-4 text-yellow-200" />
+                  </motion.div>
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <motion.p
+                      className="text-2xl font-fredoka font-bold text-white drop-shadow-md"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    >
+                      +{notification.amount.toLocaleString()}
+                    </motion.p>
+                    <span className="text-lg font-bold text-white/90">
+                      {notification.type === "camly_coin"
+                        ? "Camly Coins"
+                        : notification.tokenType || "Tokens"}
+                    </span>
+                  </div>
+                  {notification.description && (
+                    <p className="text-sm text-white/80 font-comic mt-1">
+                      {notification.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Animated shine effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-2xl"
+                initial={{ x: "-100%" }}
+                animate={{ x: "200%" }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatDelay: 2,
+                }}
+              />
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
