@@ -4,8 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Trophy, Flame, Medal, Crown, Zap, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Trophy, Flame, Medal, Crown, Zap, Users, Send } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ComboPeriodTimer } from "@/components/ComboPeriodTimer";
 import { ComboPrizeNotification } from "@/components/ComboPrizeNotification";
@@ -23,10 +23,12 @@ interface ComboRecord {
   profiles: {
     username: string;
     avatar_url: string | null;
+    wallet_address: string | null;
   };
 }
 
 const ComboLeaderboard = () => {
+  const navigate = useNavigate();
   const [dailyRecords, setDailyRecords] = useState<ComboRecord[]>([]);
   const [weeklyRecords, setWeeklyRecords] = useState<ComboRecord[]>([]);
   const [monthlyRecords, setMonthlyRecords] = useState<ComboRecord[]>([]);
@@ -36,6 +38,11 @@ const ComboLeaderboard = () => {
   const [liveViewers, setLiveViewers] = useState(0);
   const channelRef = useRef<any>(null);
   const presenceChannelRef = useRef<any>(null);
+
+  const shortenAddress = (address: string | null) => {
+    if (!address) return null;
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   useEffect(() => {
     fetchLeaderboards();
@@ -92,13 +99,13 @@ const ComboLeaderboard = () => {
             // Fetch profile data for the new record
             const { data: profile } = await supabase
               .from('profiles')
-              .select('username, avatar_url')
+              .select('username, avatar_url, wallet_address')
               .eq('id', record.user_id)
               .single();
 
             const recordWithProfile = {
               ...record,
-              profiles: profile || { username: 'Unknown', avatar_url: null }
+              profiles: profile || { username: 'Unknown', avatar_url: null, wallet_address: null }
             };
 
             // Highlight new entry with animation
@@ -200,7 +207,7 @@ const ComboLeaderboard = () => {
           const userIds = data.data.map((record: any) => record.user_id);
           const { data: profiles } = await supabase
             .from("profiles")
-            .select("id, username, avatar_url")
+            .select("id, username, avatar_url, wallet_address")
             .in("id", userIds);
 
           const profilesMap = new Map(
@@ -212,6 +219,7 @@ const ComboLeaderboard = () => {
             profiles: profilesMap.get(record.user_id) || {
               username: "Unknown",
               avatar_url: null,
+              wallet_address: null,
             },
           }));
         }
@@ -341,24 +349,43 @@ const LeaderboardContent = ({ records }: { records: ComboRecord[] }) => {
                   <p className="font-fredoka font-bold text-lg truncate">
                     {record.profiles.username}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    Level {record.level_achieved} • {record.total_value.toLocaleString()} 💰
-                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-sm text-muted-foreground">
+                      Level {record.level_achieved} • {record.total_value.toLocaleString()} 💰
+                    </p>
+                    {record.profiles.wallet_address && (
+                      <span className="text-xs font-mono text-muted-foreground/80">
+                        {shortenAddress(record.profiles.wallet_address)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Combo Score */}
-              <div className="flex-shrink-0 text-right">
-                <div
-                  className={`text-3xl font-bold ${getComboColor(
-                    record.highest_combo
-                  )}`}
-                >
-                  {record.highest_combo}x
-                </div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
-                  <Flame className="w-3 h-3" />
-                  COMBO
+              {/* Transfer & Combo Score */}
+              <div className="flex items-center gap-3">
+                {record.profiles.wallet_address && (
+                  <Button
+                    size="sm"
+                    onClick={() => navigate(`/wallet?to=${record.profiles.wallet_address}`)}
+                    className="h-8 flex-shrink-0"
+                  >
+                    <Send className="w-4 h-4 mr-1" />
+                    Transfer
+                  </Button>
+                )}
+                <div className="flex-shrink-0 text-right">
+                  <div
+                    className={`text-3xl font-bold ${getComboColor(
+                      record.highest_combo
+                    )}`}
+                  >
+                    {record.highest_combo}x
+                  </div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
+                    <Flame className="w-3 h-3" />
+                    COMBO
+                  </div>
                 </div>
               </div>
             </div>
