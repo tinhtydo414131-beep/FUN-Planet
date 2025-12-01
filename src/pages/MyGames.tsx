@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Upload, Clock, CheckCircle, XCircle, Trash2 } from "lucide-react";
+import { Upload, Clock, CheckCircle, XCircle, Trash2, Home } from "lucide-react";
 
 interface UploadedGame {
   id: string;
@@ -174,6 +174,16 @@ const MyGames = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 py-8 px-4">
       <div className="max-w-6xl mx-auto">
+        <Button
+          onClick={() => window.location.href = '/'}
+          variant="outline"
+          size="lg"
+          className="mb-6 font-bold"
+        >
+          <Home className="w-5 h-5 mr-2 text-primary" />
+          Back to Home
+        </Button>
+        
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">My Games</h1>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Clock, Shield } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Shield, Home } from "lucide-react";
 
 interface PendingGame {
   id: string;
@@ -148,6 +148,16 @@ const AdminReview = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 py-8 px-4">
       <div className="max-w-6xl mx-auto">
+        <Button
+          onClick={() => window.location.href = '/'}
+          variant="outline"
+          size="lg"
+          className="mb-6 font-bold"
+        >
+          <Home className="w-5 h-5 mr-2 text-primary" />
+          Back to Home
+        </Button>
+        
         <div className="flex items-center gap-3 mb-8">
           <div className="p-3 bg-primary/10 rounded-xl">
             <Shield className="w-8 h-8 text-primary" />
