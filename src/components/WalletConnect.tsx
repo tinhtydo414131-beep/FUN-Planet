@@ -78,9 +78,26 @@ export const WalletConnect = () => {
     if (!user) return;
 
     try {
+      // Check if this is first time connecting wallet
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("wallet_address, wallet_balance")
+        .eq("id", user.id)
+        .single();
+
+      const isFirstConnection = !profile?.wallet_address;
+
+      // Update wallet address and add bonus if first time
+      const updates: any = { wallet_address: address };
+      
+      if (isFirstConnection) {
+        updates.wallet_balance = (profile?.wallet_balance || 0) + 50000;
+        toast.success("🎉 First wallet connection bonus: +50,000 Camly Coins!");
+      }
+
       const { error } = await supabase
         .from("profiles")
-        .update({ wallet_address: address })
+        .update(updates)
         .eq("id", user.id);
 
       if (error) throw error;
