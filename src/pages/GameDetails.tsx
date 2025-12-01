@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Star, Send, Loader2, Trash2, Edit2, Download } from "lucide-react";
+import { ArrowLeft, Star, Send, Loader2, Trash2, Edit2, Download, Reply } from "lucide-react";
 import { z } from "zod";
 import {
   AlertDialog,
@@ -56,10 +56,12 @@ interface GameComment {
   comment: string;
   user_id: string;
   created_at: string;
+  parent_id: string | null;
   profiles: {
     username: string;
     avatar_url: string | null;
   };
+  replies?: GameComment[];
 }
 
 export default function GameDetails() {
@@ -76,6 +78,7 @@ export default function GameDetails() {
   const [submitting, setSubmitting] = useState(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -135,7 +138,29 @@ export default function GameDetails() {
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      setComments(data as any);
+      // Organize comments into threads
+      const commentsMap = new Map<string, GameComment>();
+      const topLevelComments: GameComment[] = [];
+      
+      // First pass: create map of all comments
+      data.forEach((comment: any) => {
+        commentsMap.set(comment.id, { ...comment, replies: [] });
+      });
+      
+      // Second pass: organize into threads
+      data.forEach((comment: any) => {
+        const commentObj = commentsMap.get(comment.id)!;
+        if (comment.parent_id) {
+          const parent = commentsMap.get(comment.parent_id);
+          if (parent) {
+            parent.replies!.push(commentObj);
+          }
+        } else {
+          topLevelComments.push(commentObj);
+        }
+      });
+      
+      setComments(topLevelComments);
     }
   };
 
@@ -195,10 +220,12 @@ export default function GameDetails() {
             game_id: id!,
             user_id: user.id,
             comment: validated.comment,
+            parent_id: replyingTo,
           });
 
         if (error) throw error;
-        toast.success("Comment posted!");
+        toast.success(replyingTo ? "Reply posted!" : "Comment posted!");
+        setReplyingTo(null);
       }
 
       setCommentText("");
@@ -365,10 +392,18 @@ export default function GameDetails() {
             {/* Comment Form */}
             {user && (
               <div className="space-y-2">
+                {(replyingTo || editingComment) && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Reply className="h-4 w-4" />
+                    <span>
+                      {editingComment ? "Editing comment" : `Replying to comment`}
+                    </span>
+                  </div>
+                )}
                 <Textarea
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Write a comment..."
+                  placeholder={replyingTo ? "Write a reply..." : "Write a comment..."}
                   rows={3}
                   maxLength={1000}
                   className="resize-none"
@@ -378,11 +413,12 @@ export default function GameDetails() {
                     {commentText.length}/1000
                   </span>
                   <div className="flex gap-2">
-                    {editingComment && (
+                    {(editingComment || replyingTo) && (
                       <Button
                         variant="outline"
                         onClick={() => {
                           setEditingComment(null);
+                          setReplyingTo(null);
                           setCommentText("");
                         }}
                       >
@@ -399,7 +435,7 @@ export default function GameDetails() {
                       ) : (
                         <>
                           <Send className="h-4 w-4 mr-2" />
-                          {editingComment ? "Update" : "Post"}
+                          {editingComment ? "Update" : replyingTo ? "Reply" : "Post"}
                         </>
                       )}
                     </Button>
@@ -416,44 +452,110 @@ export default function GameDetails() {
                 </p>
               ) : (
                 comments.map((comment) => (
-                  <Card key={comment.id} className="border-muted">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-semibold">
-                              {comment.profiles.username}
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                              {new Date(comment.created_at).toLocaleDateString()}
-                            </span>
+                  <div key={comment.id} className="space-y-3">
+                    <Card className="border-muted">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-semibold">
+                                {comment.profiles.username}
+                              </span>
+                              <span className="text-sm text-muted-foreground">
+                                {new Date(comment.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-sm mb-3">{comment.comment}</p>
+                            {user && !comment.parent_id && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setReplyingTo(comment.id);
+                                  setCommentText("");
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className="text-xs h-auto py-1 px-2"
+                              >
+                                <Reply className="h-3 w-3 mr-1" />
+                                Reply
+                              </Button>
+                            )}
                           </div>
-                          <p className="text-sm">{comment.comment}</p>
+                          {user?.id === comment.user_id && (
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setEditingComment(comment.id);
+                                  setReplyingTo(null);
+                                  setCommentText(comment.comment);
+                                }}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setCommentToDelete(comment.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                        {user?.id === comment.user_id && (
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => {
-                                setEditingComment(comment.id);
-                                setCommentText(comment.comment);
-                              }}
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => setCommentToDelete(comment.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
+                      </CardContent>
+                    </Card>
+                    
+                    {/* Replies */}
+                    {comment.replies && comment.replies.length > 0 && (
+                      <div className="ml-8 space-y-3 border-l-2 border-muted pl-4">
+                        {comment.replies.map((reply) => (
+                          <Card key={reply.id} className="border-muted bg-muted/30">
+                            <CardContent className="p-3">
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Reply className="h-3 w-3 text-muted-foreground" />
+                                    <span className="font-semibold text-sm">
+                                      {reply.profiles.username}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {new Date(reply.created_at).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm">{reply.comment}</p>
+                                </div>
+                                {user?.id === reply.user_id && (
+                                  <div className="flex gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        setEditingComment(reply.id);
+                                        setReplyingTo(null);
+                                        setCommentText(reply.comment);
+                                      }}
+                                    >
+                                      <Edit2 className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => setCommentToDelete(reply.id)}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
-                    </CardContent>
-                  </Card>
+                    )}
+                  </div>
                 ))
               )}
             </div>
