@@ -10,7 +10,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ChevronDown, ExternalLink, Home, Send, Zap, Shield, QrCode, ArrowLeft, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AirdropConfirmModal } from "@/components/AirdropConfirmModal";
-import { TransactionHistory } from "@/components/TransactionHistory";
+import { OnChainTransactionHistory } from "@/components/OnChainTransactionHistory";
 
 import { toast } from "sonner";
 import { ethers } from "ethers";
@@ -521,30 +521,32 @@ export default function FunWallet() {
         .from("wallet_transactions")
         .select("*")
         .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`)
+        .not("transaction_hash", "is", null)
         .order("created_at", { ascending: false })
         .limit(50);
 
       if (error) throw error;
 
       const formattedTxs = data?.map(tx => {
-        // Determine transaction type from transaction_type field and user position
         const isAirdrop = tx.transaction_type === 'airdrop';
-        const isSender = tx.from_user_id === user.id;
         
         return {
           id: tx.id,
-          type: isAirdrop ? 'airdrop' : (isSender ? 'send' : 'receive'),
+          transaction_hash: tx.transaction_hash,
           amount: tx.amount,
           token_type: tx.token_type || "BNB",
           status: tx.status || "completed",
           created_at: tx.created_at || new Date().toISOString(),
-          transaction_hash: tx.transaction_hash,
+          transaction_type: isAirdrop ? 'airdrop' : 'transfer',
           notes: tx.notes,
-          recipients_count: tx.recipients_count
+          recipients_count: tx.recipients_count,
+          gas_fee: tx.gas_fee,
+          from_user_id: tx.from_user_id,
+          to_user_id: tx.to_user_id
         };
       }) || [];
 
-      console.log('📊 Fetched transactions:', formattedTxs);
+      console.log('📊 Fetched on-chain transactions:', formattedTxs);
       setTransactions(formattedTxs);
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -2110,7 +2112,7 @@ export default function FunWallet() {
                       </p>
                     </CardHeader>
                     <CardContent className="px-3 sm:px-6">
-                      <TransactionHistory transactions={transactions} />
+                      <OnChainTransactionHistory transactions={transactions} currentUserId={user?.id} />
                     </CardContent>
                   </Card>
                 </TabsContent>
