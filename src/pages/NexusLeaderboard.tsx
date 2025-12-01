@@ -3,8 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Trophy, Medal, Award, TrendingUp, Calendar } from "lucide-react";
+import { Trophy, Medal, Award, TrendingUp, Calendar, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
+import { Button } from "@/components/ui/button";
 
 interface LeaderboardEntry {
   id: string;
@@ -12,16 +14,24 @@ interface LeaderboardEntry {
   highest_tile: number;
   level_reached: number;
   created_at: string;
+  user_id: string;
   profiles: {
     username: string;
     avatar_url: string | null;
+    wallet_address: string | null;
   };
 }
 
 export default function NexusLeaderboard() {
+  const navigate = useNavigate();
   const [weeklyLeaderboard, setWeeklyLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [alltimeLeaderboard, setAlltimeLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const shortenAddress = (address: string | null) => {
+    if (!address) return null;
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   useEffect(() => {
     loadLeaderboards();
@@ -45,9 +55,11 @@ export default function NexusLeaderboard() {
         highest_tile,
         level_reached,
         created_at,
+        user_id,
         profiles:user_id (
           username,
-          avatar_url
+          avatar_url,
+          wallet_address
         )
       `)
       .eq('week_start', weekStart)
@@ -63,9 +75,11 @@ export default function NexusLeaderboard() {
         highest_tile,
         level_reached,
         created_at,
+        user_id,
         profiles:user_id (
           username,
-          avatar_url
+          avatar_url,
+          wallet_address
         )
       `)
       .order('score', { ascending: false })
@@ -108,7 +122,7 @@ export default function NexusLeaderboard() {
                 <div className="font-semibold text-lg truncate">
                   {entry.profiles?.username || 'Anonymous'}
                 </div>
-                <div className="flex gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
+                <div className="flex gap-2 mt-1 text-xs text-muted-foreground flex-wrap items-center">
                   <Badge variant="secondary" className="text-xs">
                     <TrendingUp className="w-3 h-3 mr-1" />
                     Level {entry.level_reached}
@@ -116,14 +130,31 @@ export default function NexusLeaderboard() {
                   <Badge variant="outline" className="text-xs">
                     Best: {entry.highest_tile}
                   </Badge>
+                  {entry.profiles?.wallet_address && (
+                    <span className="font-mono text-xs">
+                      {shortenAddress(entry.profiles.wallet_address)}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <div className="text-right flex-shrink-0">
-                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                  {entry.score.toLocaleString()}
+              <div className="flex items-center gap-3">
+                {entry.profiles?.wallet_address && (
+                  <Button
+                    size="sm"
+                    onClick={() => navigate(`/wallet?to=${entry.profiles.wallet_address}`)}
+                    className="h-8 flex-shrink-0"
+                  >
+                    <Send className="w-4 h-4 mr-1" />
+                    Transfer
+                  </Button>
+                )}
+                <div className="text-right flex-shrink-0">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                    {entry.score.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">points</div>
                 </div>
-                <div className="text-xs text-muted-foreground">points</div>
               </div>
             </div>
           </Card>

@@ -3,7 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Trophy, Medal, Star, Home } from "lucide-react";
+import { Trophy, Medal, Star, Home, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ interface LeaderboardEntry {
   total_plays: number;
   total_likes: number;
   total_friends: number;
+  wallet_address: string | null;
 }
 
 export default function Leaderboard() {
@@ -30,7 +31,7 @@ export default function Leaderboard() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, username, leaderboard_score, total_plays, total_likes, total_friends")
+        .select("id, username, leaderboard_score, total_plays, total_likes, total_friends, wallet_address")
         .order("leaderboard_score", { ascending: false })
         .limit(100);
 
@@ -42,6 +43,11 @@ export default function Leaderboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const shortenAddress = (address: string | null) => {
+    if (!address) return null;
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   const getRankIcon = (rank: number) => {
@@ -184,14 +190,33 @@ export default function Leaderboard() {
 
                     <div className="flex-1">
                       <p className="font-fredoka font-bold text-lg text-foreground">{leader.username}</p>
-                      <p className="text-sm font-comic text-muted-foreground">
-                        🎮 {leader.total_plays} plays • ❤️ {leader.total_likes} likes • 👥 {leader.total_friends} friends
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-comic text-muted-foreground">
+                          🎮 {leader.total_plays} plays • ❤️ {leader.total_likes} likes • 👥 {leader.total_friends} friends
+                        </p>
+                        {leader.wallet_address && (
+                          <span className="text-xs font-mono text-muted-foreground/80">
+                            {shortenAddress(leader.wallet_address)}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-3xl font-fredoka font-bold text-primary">{leader.leaderboard_score}</p>
-                      <p className="text-sm font-comic text-muted-foreground">points</p>
+                    <div className="flex items-center gap-3">
+                      {leader.wallet_address && (
+                        <Button
+                          size="sm"
+                          onClick={() => navigate(`/wallet?to=${leader.wallet_address}`)}
+                          className="h-8"
+                        >
+                          <Send className="w-4 h-4 mr-1" />
+                          Transfer
+                        </Button>
+                      )}
+                      <div className="text-right">
+                        <p className="text-3xl font-fredoka font-bold text-primary">{leader.leaderboard_score}</p>
+                        <p className="text-sm font-comic text-muted-foreground">points</p>
+                      </div>
                     </div>
                   </div>
                 ))}
