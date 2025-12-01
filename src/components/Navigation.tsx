@@ -1,4 +1,4 @@
-import { Gamepad2, User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Upload, Shield } from "lucide-react";
+import { Gamepad2, User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings } from "lucide-react";
 import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -76,12 +76,6 @@ export const Navigation = () => {
                 Play Games
               </NavLink>
               <NavLink 
-                to="/community-games" 
-                className="px-4 py-2 rounded-xl font-space font-semibold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
-              >
-                Community Games
-              </NavLink>
-              <NavLink 
                 to="/public-music" 
                 className="px-4 py-2 rounded-xl font-space font-semibold text-foreground hover:text-primary hover:bg-primary/10 transition-all"
               >
@@ -104,10 +98,6 @@ export const Navigation = () => {
                     <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                       <User className="mr-2 h-4 w-4" />
                       Dashboard
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/my-games")}>
-                      <Upload className="mr-2 h-4 w-4" />
-                      My Games
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/wallet")}>
                       <Wallet className="mr-2 h-4 w-4" />
@@ -165,10 +155,6 @@ export const Navigation = () => {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => navigate("/my-games")}>
-                  <Upload className="mr-2 h-4 w-4" />
-                  My Games
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/wallet")}>
                   <Wallet className="mr-2 h-4 w-4" />
                   Fun Wallet

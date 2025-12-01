@@ -27,10 +27,6 @@ import ResetPassword from "./pages/ResetPassword";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 import ComboLeaderboard from "./pages/ComboLeaderboard";
-import UploadGame from "./pages/UploadGame";
-import AdminReview from "./pages/AdminReview";
-import CommunityGames from "./pages/CommunityGames";
-import MyGames from "./pages/MyGames";
 
 const queryClient = new QueryClient();
 
@@ -59,10 +55,6 @@ const AnimatedRoutes = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/install" element={<Install />} />
         <Route path="/combo-leaderboard" element={<ComboLeaderboard />} />
-        <Route path="/upload-game" element={<UploadGame />} />
-        <Route path="/admin-review" element={<AdminReview />} />
-        <Route path="/community-games" element={<CommunityGames />} />
-        <Route path="/my-games" element={<MyGames />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
