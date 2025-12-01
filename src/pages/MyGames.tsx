@@ -126,7 +126,7 @@ export default function MyGames() {
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background p-4">
       <div className="container max-w-6xl mx-auto py-8">
         <Button
-          variant="ghost"
+          variant="outline"
           onClick={() => navigate('/dashboard')}
           className="mb-4"
         >
