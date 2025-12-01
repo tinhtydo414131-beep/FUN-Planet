@@ -18,6 +18,7 @@ export const Navigation = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -31,15 +32,16 @@ export const Navigation = () => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, username")
         .eq("id", user.id)
         .single();
 
       if (!error && data) {
         setAvatarUrl(data.avatar_url);
+        setUsername(data.username);
       }
     } catch (error) {
-      console.error("Error fetching avatar:", error);
+      console.error("Error fetching profile:", error);
     }
   };
 
@@ -92,6 +94,11 @@ export const Navigation = () => {
                           {user?.email?.[0]?.toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
+                      {username && (
+                        <span className="font-space font-semibold text-foreground">
+                          {username}
+                        </span>
+                      )}
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
@@ -152,6 +159,11 @@ export const Navigation = () => {
                       {user?.email?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
+                  {username && (
+                    <span className="font-space font-semibold text-foreground text-sm">
+                      {username}
+                    </span>
+                  )}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
