@@ -1755,27 +1755,10 @@ export default function FunWallet() {
                         <Button
                           onClick={handleSend}
                           disabled={sending}
-                          className="w-full font-black text-lg sm:text-xl py-6 sm:py-6 h-auto border-0 relative overflow-hidden group"
-                          style={{
-                            background: 'linear-gradient(135deg, #FF1493 0%, #9D00FF 50%, #00FFFF 100%)',
-                            backgroundSize: '200% auto',
-                            boxShadow: '0 0 40px rgba(255,20,147,0.8)'
-                          }}
+                          className="w-full font-black text-lg sm:text-xl py-6 h-auto"
+                          size="lg"
                         >
-                          <motion.div
-                            animate={{
-                              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                            }}
-                            transition={{ duration: 3, repeat: Infinity }}
-                            className="absolute inset-0"
-                            style={{
-                              background: 'linear-gradient(135deg, #FF1493 0%, #9D00FF 50%, #00FFFF 100%)',
-                              backgroundSize: '200% auto'
-                            }}
-                          />
-                          <span className="relative z-10">
-                            {sending ? "SENDING..." : "SEND NOW ⚡"}
-                          </span>
+                          {sending ? "SENDING..." : "SEND NOW ⚡"}
                         </Button>
                       </CardContent>
                     </Card>
@@ -1819,28 +1802,12 @@ export default function FunWallet() {
                           >
                             <Button
                               onClick={copyAddress}
-                              className="w-full font-black text-xl sm:text-2xl py-7 sm:py-8 h-auto border-0 relative overflow-hidden group"
-                              style={{
-                                background: 'linear-gradient(135deg, #00FFFF 0%, #0099FF 50%, #00FFFF 100%)',
-                                backgroundSize: '200% auto',
-                                boxShadow: '0 0 50px rgba(0,255,255,0.9), 0 0 30px rgba(0,153,255,0.6)'
-                              }}
+                              className="w-full font-black text-xl sm:text-2xl py-7 h-auto"
+                              size="lg"
+                              variant="secondary"
                             >
-                              <motion.div
-                                animate={{
-                                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                                }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                                className="absolute inset-0"
-                                style={{
-                                  background: 'linear-gradient(135deg, #00FFFF 0%, #0099FF 50%, #00FFFF 100%)',
-                                  backgroundSize: '200% auto'
-                                }}
-                              />
-                              <span className="relative z-10 flex items-center justify-center gap-3">
-                                <Copy className="w-6 h-6 sm:w-7 sm:h-7" />
-                                {copied ? "✨ COPIED! ✨" : "📋 COPY ADDRESS 🔥"}
-                              </span>
+                              <Copy className="w-6 h-6 sm:w-7 sm:h-7" />
+                              {copied ? "✨ COPIED! ✨" : "📋 COPY ADDRESS 🔥"}
                             </Button>
                           </motion.div>
                         </div>
@@ -1851,7 +1818,7 @@ export default function FunWallet() {
                               toast.success("Test celebration feature removed");
                             }}
                             variant="outline"
-                            className="text-sm sm:text-base border-2 border-primary/50 text-foreground hover:bg-primary/20 h-10 sm:h-12 font-black px-6"
+                            className="text-sm sm:text-base h-10 sm:h-12 font-black px-6"
                           >
                             Test Feature ✨
                           </Button>
@@ -1908,11 +1875,8 @@ export default function FunWallet() {
                         <Button
                           onClick={validateAddresses}
                           disabled={!bulkAddresses.trim()}
-                          className="mt-3 font-bold border-0 w-full sm:w-auto py-5 sm:py-2 h-auto sm:h-10 text-base sm:text-sm"
-                          style={{
-                            background: 'linear-gradient(135deg, #00FFFF 0%, #0088FF 100%)',
-                            boxShadow: '0 0 20px rgba(0,255,255,0.5)'
-                          }}
+                          className="mt-3 font-bold w-full sm:w-auto text-base sm:text-sm"
+                          variant="secondary"
                         >
                           <CheckCircle className="w-4 h-4 mr-2" />
                           VALIDATE ADDRESSES
@@ -2035,38 +1999,21 @@ export default function FunWallet() {
                           <Button
                             onClick={handleApprove}
                             disabled={approving}
-                            className="w-full font-black text-lg sm:text-xl md:text-2xl py-6 sm:py-7 md:py-8 mb-4 border-0 relative overflow-hidden h-auto"
-                            style={{
-                              background: 'linear-gradient(135deg, #9D00FF 0%, #FF1493 50%, #00FFFF 100%)',
-                              backgroundSize: '200% auto',
-                              boxShadow: '0 0 60px rgba(157,0,255,0.8), 0 0 100px rgba(255,20,147,0.5)'
-                            }}
+                            className="w-full font-black text-lg sm:text-xl md:text-2xl py-6 sm:py-7 mb-4 h-auto"
+                            size="lg"
                           >
-                            <motion.div
-                              animate={{
-                                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                              }}
-                              transition={{ duration: 3, repeat: Infinity }}
-                              className="absolute inset-0"
-                              style={{
-                                background: 'linear-gradient(135deg, #9D00FF 0%, #FF1493 50%, #00FFFF 100%)',
-                                backgroundSize: '200% auto'
-                              }}
-                            />
-                            <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3">
-                              {approving ? (
-                                <>
-                                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
-                                    🔓
-                                  </motion.div>
-                                  <span>APPROVING...</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span>🔓 APPROVE CAMLY FOR AIRDROP 🔓</span>
-                                </>
-                              )}
-                            </span>
+                            {approving ? (
+                              <>
+                                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
+                                  🔓
+                                </motion.div>
+                                <span>APPROVING...</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>🔓 APPROVE CAMLY FOR AIRDROP 🔓</span>
+                              </>
+                            )}
                           </Button>
                         </motion.div>
                       )}
@@ -2092,42 +2039,25 @@ export default function FunWallet() {
                       <Button
                         onClick={handleBulkSendClick}
                         disabled={bulkSending || !bulkAddresses || !bulkAmount || (showValidation && validAddresses.length === 0) || (showValidation && needsApproval)}
-                        className="w-full font-black text-lg sm:text-xl md:text-2xl py-6 sm:py-7 md:py-8 border-0 relative overflow-hidden group h-auto"
-                        style={{
-                          background: 'linear-gradient(135deg, #FFD700 0%, #FF1493 25%, #9D00FF 50%, #00FFFF 75%, #FFD700 100%)',
-                          backgroundSize: '300% auto',
-                          boxShadow: '0 0 60px rgba(255,215,0,0.8), 0 0 100px rgba(255,20,147,0.5)'
-                        }}
+                        className="w-full font-black text-lg sm:text-xl md:text-2xl py-6 sm:py-7 h-auto"
+                        size="lg"
                       >
-                        <motion.div
-                          animate={{
-                            backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                          }}
-                          transition={{ duration: 5, repeat: Infinity }}
-                          className="absolute inset-0"
-                          style={{
-                            background: 'linear-gradient(135deg, #FFD700 0%, #FF1493 25%, #9D00FF 50%, #00FFFF 75%, #FFD700 100%)',
-                            backgroundSize: '300% auto'
-                          }}
-                        />
-                        <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3">
-                          {bulkSending ? (
-                            <>
-                              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
-                                🚀
-                              </motion.div>
-                              <span className="text-base sm:text-xl md:text-2xl">SENDING AIRDROP...</span>
-                            </>
-                          ) : (showValidation && needsApproval) ? (
-                            <>
-                              <span className="text-base sm:text-xl md:text-2xl">🔒 APPROVE FIRST TO UNLOCK 🔒</span>
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-base sm:text-xl md:text-2xl">🎁 SEND TO ALL 🎁</span>
-                            </>
-                          )}
-                        </span>
+                        {bulkSending ? (
+                          <>
+                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
+                              🚀
+                            </motion.div>
+                            <span className="text-base sm:text-xl md:text-2xl">SENDING AIRDROP...</span>
+                          </>
+                        ) : (showValidation && needsApproval) ? (
+                          <>
+                            <span className="text-base sm:text-xl md:text-2xl">🔒 APPROVE FIRST TO UNLOCK 🔒</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-base sm:text-xl md:text-2xl">🎁 SEND TO ALL 🎁</span>
+                          </>
+                        )}
                       </Button>
                     </CardContent>
                   </Card>
