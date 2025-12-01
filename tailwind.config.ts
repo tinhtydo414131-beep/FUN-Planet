@@ -247,6 +247,32 @@ export default {
             filter: "hue-rotate(-30deg)",
           },
         },
+        "rainbow-spectrum": {
+          "0%": {
+            filter: "hue-rotate(0deg) saturate(1.5) brightness(1.2)",
+          },
+          "14%": {
+            filter: "hue-rotate(51deg) saturate(1.6) brightness(1.25)",
+          },
+          "28%": {
+            filter: "hue-rotate(102deg) saturate(1.7) brightness(1.3)",
+          },
+          "42%": {
+            filter: "hue-rotate(153deg) saturate(1.6) brightness(1.25)",
+          },
+          "57%": {
+            filter: "hue-rotate(204deg) saturate(1.8) brightness(1.35)",
+          },
+          "71%": {
+            filter: "hue-rotate(255deg) saturate(1.7) brightness(1.3)",
+          },
+          "85%": {
+            filter: "hue-rotate(306deg) saturate(1.6) brightness(1.25)",
+          },
+          "100%": {
+            filter: "hue-rotate(360deg) saturate(1.5) brightness(1.2)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -266,6 +292,7 @@ export default {
         "gradient-shift": "gradient-shift 4s ease-in-out infinite",
         "slow-pulse": "slow-pulse 3s ease-in-out infinite",
         "crystal-shimmer": "crystal-shimmer 5s ease-in-out infinite",
+        "rainbow-spectrum": "rainbow-spectrum 4s linear infinite",
       },
     },
   },
