@@ -130,17 +130,20 @@ const GamePlay = () => {
         .update({ total_plays: game.total_plays + 1 })
         .eq("id", game.id);
 
-      // Update user profile plays
+      // Update user profile plays and award Camly Coins
       const { data: profile } = await supabase
         .from("profiles")
-        .select("total_plays")
+        .select("total_plays, wallet_balance")
         .eq("id", user.id)
         .single();
 
       if (profile) {
         await supabase
           .from("profiles")
-          .update({ total_plays: (profile.total_plays || 0) + 1 })
+          .update({ 
+            total_plays: (profile.total_plays || 0) + 1,
+            wallet_balance: (profile.wallet_balance || 0) + 10000
+          })
           .eq("id", user.id);
       }
     } catch (error) {
