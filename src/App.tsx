@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { BackgroundMusicPlayer } from "@/components/BackgroundMusicPlayer";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Web3Provider } from "@/providers/Web3Provider";
+import { CoinNotification } from "@/components/CoinNotification";
 import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
@@ -80,6 +81,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <CoinNotification />
         <BackgroundMusicPlayer />
         <BrowserRouter>
           <MobileBottomNav />
