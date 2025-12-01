@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Upload, Gamepad2, ArrowLeft } from "lucide-react";
+import { Upload, Gamepad2, ArrowLeft, Home } from "lucide-react";
 
 const CATEGORIES = [
   { value: "action", label: "Action" },
@@ -143,14 +143,22 @@ const UploadGame = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        <Button
-          onClick={() => navigate(-1)}
-          variant="ghost"
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
+        <div className="flex gap-2 mb-4">
+          <Button
+            onClick={() => navigate(-1)}
+            variant="ghost"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+          <Button
+            onClick={() => navigate('/')}
+            variant="outline"
+          >
+            <Home className="w-4 h-4 mr-2" />
+            Home
+          </Button>
+        </div>
 
         <Card className="p-8 shadow-xl border-2 border-primary/20">
           <div className="flex items-center gap-3 mb-6">

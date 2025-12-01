@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Play, Search, TrendingUp, Clock, Star, Download, X } from "lucide-react";
+import { Play, Search, TrendingUp, Clock, Star, Download, X, Home } from "lucide-react";
 
 interface CommunityGame {
   id: string;
@@ -166,6 +166,16 @@ const CommunityGames = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 py-8 px-4">
       <div className="max-w-7xl mx-auto">
+        <Button
+          onClick={() => window.location.href = '/'}
+          variant="outline"
+          size="lg"
+          className="mb-6 font-bold"
+        >
+          <Home className="w-5 h-5 mr-2 text-primary" />
+          Back to Home
+        </Button>
+        
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Community Games</h1>
           <p className="text-muted-foreground">Play games created by our community!</p>
