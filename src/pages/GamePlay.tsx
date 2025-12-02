@@ -385,7 +385,7 @@ const GamePlay = () => {
       <Navigation />
       <LiveComboNotifications />
       
-      <section className="pt-24 pb-12 px-4">
+      <section className="pt-24 pb-24 md:pb-12 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="mb-8 flex items-center justify-between animate-fade-in">
             <Link to="/games">
