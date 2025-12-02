@@ -181,7 +181,12 @@ export default function FunWallet() {
   const [chartData, setChartData] = useState<any[]>([]);
 
   // Enable real-time transaction notifications
-  useTransactionNotifications(user?.id);
+  useTransactionNotifications(user?.id, {
+    onNewTransaction: () => {
+      // Refresh transaction history when new transaction is received
+      fetchTransactionHistory();
+    }
+  });
 
   useEffect(() => {
     checkConnection();
