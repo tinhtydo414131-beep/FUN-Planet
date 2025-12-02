@@ -139,10 +139,10 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <h4 className="font-semibold text-sm text-white">
+                        <h4 className="font-semibold text-base text-white">
                           {tx.transaction_type === 'airdrop' ? 'Airdrop' : isReceive ? 'Receive' : 'Send'}
                         </h4>
-                        <div className={`font-bold text-sm ${
+                        <div className={`font-bold text-base ${
                           isReceive ? 'text-green-400' : 'text-white'
                         }`}>
                           {isReceive ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} {tx.token_type}
@@ -150,21 +150,21 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-xs text-white/50">
+                        <div className="flex items-center gap-2 text-sm text-white/70">
                           <span>{formatTime(txDate)}</span>
                           {tx.status === 'completed' ? (
-                            <span className="flex items-center gap-1 text-green-400">
-                              <CheckCircle className="w-3 h-3" />
+                            <span className="flex items-center gap-1 text-green-400 font-medium">
+                              <CheckCircle className="w-3.5 h-3.5" />
                               Confirmed
                             </span>
                           ) : tx.status === 'failed' ? (
-                            <span className="flex items-center gap-1 text-red-400">
-                              <XCircle className="w-3 h-3" />
+                            <span className="flex items-center gap-1 text-red-400 font-medium">
+                              <XCircle className="w-3.5 h-3.5" />
                               Failed
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 text-yellow-400">
-                              <Clock className="w-3 h-3" />
+                            <span className="flex items-center gap-1 text-yellow-400 font-medium">
+                              <Clock className="w-3.5 h-3.5" />
                               Pending
                             </span>
                           )}
@@ -186,14 +186,14 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
 
                       {/* Gas Fee */}
                       {tx.gas_fee && Number(tx.gas_fee) > 0 && (
-                        <div className="mt-2 text-xs text-white/40">
+                        <div className="mt-2 text-sm text-white/60">
                           Gas: {Number(tx.gas_fee).toFixed(6)} BNB
                         </div>
                       )}
 
                       {/* Notes */}
                       {tx.notes && (
-                        <div className="mt-2 text-xs text-white/50 italic">
+                        <div className="mt-2 text-sm text-white/70 italic">
                           {tx.notes}
                         </div>
                       )}
@@ -201,7 +201,7 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                       {/* Transaction Hash */}
                       {tx.transaction_hash && (
                         <div className="mt-2 flex items-center gap-2">
-                          <span className="text-xs text-white/40 font-mono truncate flex-1">
+                          <span className="text-sm text-white/60 font-mono truncate flex-1">
                             {tx.transaction_hash.slice(0, 10)}...{tx.transaction_hash.slice(-8)}
                           </span>
                           <Button

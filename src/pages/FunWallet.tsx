@@ -645,12 +645,13 @@ export default function FunWallet() {
       const { data: recipientProfile } = await supabase
         .from("profiles")
         .select("id")
-        .eq("wallet_address", normalizedRecipient)
+        .ilike("wallet_address", normalizedRecipient)
         .maybeSingle();
 
       console.log('💾 Recording transaction:', {
         from: user?.id,
         to: recipientProfile?.id,
+        recipientAddress: normalizedRecipient,
         amount,
         token: selectedToken.symbol,
         hash: txHash
