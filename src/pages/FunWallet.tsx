@@ -1066,27 +1066,50 @@ export default function FunWallet() {
         // Record airdrop transaction in database
         const batchId = new Date().getTime();
         
-        console.log('💾 Recording airdrop transaction:', {
+        console.log('💾 Recording airdrop transactions for each recipient:', {
           from: user?.id,
-          amount: totalAmount,
+          amount: amount,
           recipients: addresses.length,
           hash: txHash
         });
         
-        const { error: insertError } = await supabase.from("wallet_transactions").insert({
-          from_user_id: user?.id,
-          to_user_id: null,
-          amount: totalAmount,
-          token_type: "CAMLY",
-          transaction_type: "airdrop",
-          recipients_count: addresses.length,
-          status: "completed",
-          transaction_hash: txHash,
-          notes: `Ultra-Low-Gas Airdrop - ${amount} CAMLY each - Batch #${batchId}`
+        // Get user IDs for all recipient addresses
+        const { data: recipientProfiles } = await supabase
+          .from('profiles')
+          .select('id, wallet_address')
+          .in('wallet_address', addresses.map(addr => addr.toLowerCase()));
+        
+        console.log('Found recipient profiles:', recipientProfiles);
+        
+        // Create a map of address to user_id
+        const addressToUserId = new Map(
+          recipientProfiles?.map(p => [p.wallet_address?.toLowerCase(), p.id]) || []
+        );
+        
+        // Create individual transaction records for each recipient
+        const transactionRecords = addresses.map((recipientAddress) => {
+          const recipientUserId = addressToUserId.get(recipientAddress.toLowerCase());
+          
+          return {
+            from_user_id: user?.id,
+            to_user_id: recipientUserId || null, // Set to_user_id if found, null otherwise
+            amount: amount, // Individual amount per recipient
+            token_type: "CAMLY",
+            transaction_type: "airdrop",
+            status: "completed",
+            transaction_hash: txHash,
+            notes: `Ultra-Low-Gas Airdrop - Batch #${batchId}`
+          };
         });
+        
+        const { error: insertError } = await supabase
+          .from("wallet_transactions")
+          .insert(transactionRecords);
 
         if (insertError) {
-          console.error("Error recording airdrop transaction:", insertError);
+          console.error("Error recording airdrop transactions:", insertError);
+        } else {
+          console.log(`✅ Created ${transactionRecords.length} transaction records`);
         }
 
         toast.success(`🎉 FUN AND RICH!!! All ${addresses.length} airdrops successful in ONE transaction! 💰✨`);
