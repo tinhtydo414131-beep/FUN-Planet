@@ -178,16 +178,37 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-lg text-white">
                           {tx.transaction_type === 'airdrop' ? 'Airdrop' : isReceive ? 'Receive' : 'Send'}
                         </h4>
-                        <div className={`font-bold text-lg ${
+                        <div className={`font-bold text-xl ${
                           isReceive ? 'text-green-400' : 'text-white'
                         }`}>
                           {isReceive ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} {tx.token_type}
                         </div>
                       </div>
+
+                      {/* Transaction Hash - Moved up */}
+                      {tx.transaction_hash && (
+                        <div className="mb-2 flex items-center gap-2 bg-blue-500/10 rounded px-2 py-1">
+                          <span className="text-sm text-blue-300 font-mono truncate flex-1">
+                            {tx.transaction_hash}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyHash(tx.transaction_hash)}
+                            className="h-6 w-6 p-0 hover:bg-white/10"
+                          >
+                            {copiedHash === tx.transaction_hash ? (
+                              <Check className="w-3.5 h-3.5 text-green-400" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5 text-blue-300" />
+                            )}
+                          </Button>
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-base text-white/80">
@@ -224,38 +245,10 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                         )}
                       </div>
 
-                      {/* Gas Fee */}
-                      {tx.gas_fee && Number(tx.gas_fee) > 0 && (
-                        <div className="mt-2 text-base text-white/70">
-                          Gas: {Number(tx.gas_fee).toFixed(6)} BNB
-                        </div>
-                      )}
-
                       {/* Notes */}
                       {tx.notes && (
                         <div className="mt-2 text-base text-white/80 italic">
                           {tx.notes}
-                        </div>
-                      )}
-
-                      {/* Transaction Hash */}
-                      {tx.transaction_hash && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="text-base text-white/70 font-mono truncate flex-1">
-                            {tx.transaction_hash.slice(0, 10)}...{tx.transaction_hash.slice(-8)}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyHash(tx.transaction_hash)}
-                            className="h-8 w-8 p-0 hover:bg-white/10"
-                          >
-                            {copiedHash === tx.transaction_hash ? (
-                              <Check className="w-4 h-4 text-green-400" />
-                            ) : (
-                              <Copy className="w-4 h-4 text-white/50" />
-                            )}
-                          </Button>
                         </div>
                       )}
                     </div>
