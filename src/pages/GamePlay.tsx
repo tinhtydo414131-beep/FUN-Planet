@@ -4,11 +4,12 @@ import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Zap, RotateCcw } from "lucide-react";
+import { ArrowLeft, Zap, RotateCcw, Maximize, Minimize } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameLevel } from "@/hooks/useGameLevel";
 import { useIsLandscape } from "@/hooks/use-mobile";
+import { useFullscreen } from "@/hooks/useFullscreen";
 import { LevelSelector } from "@/components/LevelSelector";
 import { FlowerFieldLevelSelector } from "@/components/FlowerFieldLevelSelector";
 import { DailyChallengeCard } from "@/components/DailyChallengeCard";
@@ -74,6 +75,7 @@ const GamePlay = () => {
   const { gameId } = useParams();
   const { user } = useAuth();
   const isLandscape = useIsLandscape();
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
   const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLevelSelector, setShowLevelSelector] = useState(true);
@@ -404,8 +406,28 @@ const GamePlay = () => {
               {game?.title || 'Game'}
             </span>
           </div>
-          <div className="w-8" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleFullscreen}
+            className="text-white hover:bg-white/20 font-fredoka font-bold h-8 px-3"
+            title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          >
+            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+          </Button>
         </div>
+      )}
+      
+      {!isLandscape && gameStarted && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleFullscreen}
+          className="md:hidden fixed bottom-20 right-4 z-40 bg-primary/90 hover:bg-primary text-white shadow-lg rounded-full w-12 h-12 animate-scale-in"
+          title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+        >
+          {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+        </Button>
       )}
       
       <section className={isLandscape ? "pt-12 pb-2 px-2" : "pt-24 pb-24 md:pb-12 px-4"}>
