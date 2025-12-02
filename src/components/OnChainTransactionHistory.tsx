@@ -31,6 +31,11 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
   const [displayCount, setDisplayCount] = useState(10);
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
+  // Calculate transaction stats
+  const receivedTxs = transactions.filter(tx => currentUserId && tx.to_user_id === currentUserId);
+  const sentTxs = transactions.filter(tx => currentUserId && tx.from_user_id === currentUserId);
+  const airdropTxs = transactions.filter(tx => tx.transaction_type === 'airdrop');
+
   // Format time intelligently
   const formatTime = (date: Date) => {
     if (isToday(date)) {
@@ -93,8 +98,15 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
           </div>
         </motion.div>
         <h3 className="text-white text-xl font-bold mb-2">No on-chain transactions yet</h3>
-        <p className="text-white/50 text-sm mb-4">Your blockchain transaction history will appear here</p>
-        <p className="text-white/40 text-xs">Make a transfer or airdrop to see it in action! 🚀</p>
+        <p className="text-white/60 text-sm mb-4">Your blockchain transaction history will appear here</p>
+        <div className="max-w-md mx-auto space-y-2 text-left bg-white/5 rounded-lg p-4 mt-4">
+          <p className="text-white/70 text-sm">📥 <strong>Received transactions</strong> will automatically appear here when:</p>
+          <ul className="text-white/60 text-xs space-y-1 ml-6 list-disc">
+            <li>You've connected your wallet at least once</li>
+            <li>Someone sends tokens to your wallet address</li>
+          </ul>
+        </div>
+        <p className="text-white/40 text-xs mt-4">Make a transfer or airdrop to see it in action! 🚀</p>
       </motion.div>
     );
   }
@@ -102,8 +114,36 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
   const displayedTransactions = transactions.slice(0, displayCount);
 
   return (
-    <ScrollArea className="h-[600px] pr-2">
-      <div className="space-y-1">
+    <div className="space-y-4">
+      {/* Transaction Stats Summary */}
+      {transactions.length > 0 && (
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="bg-green-500/10 rounded-lg p-3 border border-green-500/20">
+            <div className="flex items-center gap-2 mb-1">
+              <ArrowDownLeft className="w-4 h-4 text-green-400" />
+              <span className="text-white/60 text-xs">Received</span>
+            </div>
+            <p className="text-white font-bold text-lg">{receivedTxs.length}</p>
+          </div>
+          <div className="bg-red-500/10 rounded-lg p-3 border border-red-500/20">
+            <div className="flex items-center gap-2 mb-1">
+              <ArrowUpRight className="w-4 h-4 text-red-400" />
+              <span className="text-white/60 text-xs">Sent</span>
+            </div>
+            <p className="text-white font-bold text-lg">{sentTxs.length}</p>
+          </div>
+          <div className="bg-orange-500/10 rounded-lg p-3 border border-orange-500/20">
+            <div className="flex items-center gap-2 mb-1">
+              <Users className="w-4 h-4 text-orange-400" />
+              <span className="text-white/60 text-xs">Airdrops</span>
+            </div>
+            <p className="text-white font-bold text-lg">{airdropTxs.length}</p>
+          </div>
+        </div>
+      )}
+
+      <ScrollArea className="h-[600px] pr-2">
+        <div className="space-y-1">
         {displayedTransactions.map((tx, index) => {
           const isSend = currentUserId && tx.from_user_id === currentUserId;
           const isReceive = currentUserId && tx.to_user_id === currentUserId;
@@ -244,5 +284,6 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
         )}
       </div>
     </ScrollArea>
+    </div>
   );
 };
