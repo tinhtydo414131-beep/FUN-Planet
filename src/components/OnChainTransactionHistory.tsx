@@ -182,14 +182,9 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                         <h4 className="font-semibold text-lg text-white">
                           {tx.transaction_type === 'airdrop' ? 'Airdrop' : isReceive ? 'Receive' : 'Send'}
                         </h4>
-                        <div className={`font-bold text-xl ${
-                          isReceive ? 'text-green-400' : 'text-white'
-                        }`}>
-                          {isReceive ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} {tx.token_type}
-                        </div>
                       </div>
 
-                      {/* Transaction Hash - Moved up */}
+                      {/* Transaction Hash */}
                       {tx.transaction_hash && (
                         <div className="mb-2 flex items-center gap-2 bg-blue-500/10 rounded px-2 py-1">
                           <span className="text-sm text-blue-300 font-mono truncate flex-1">
@@ -210,7 +205,7 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2 text-base text-white/80">
                           <span>{formatTime(txDate)}</span>
                           {tx.status === 'completed' ? (
@@ -244,6 +239,16 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                           </Button>
                         )}
                       </div>
+
+                      {/* Amount Display - Prominent */}
+                      <div className={`inline-block px-3 py-1.5 rounded-lg font-bold text-lg ${
+                        isReceive 
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                          : 'bg-blue-500/20 text-white border border-blue-500/30'
+                      }`}>
+                        {isReceive ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} {tx.token_type}
+                      </div>
+
 
                       {/* Notes */}
                       {tx.notes && (
