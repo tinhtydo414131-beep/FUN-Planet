@@ -642,19 +642,21 @@ export default function FunWallet() {
 
       // Look up recipient user by wallet address (case-insensitive)
       const normalizedRecipient = sendTo.toLowerCase();
-      const { data: recipientProfile } = await supabase
+      const { data: recipientProfile, error: lookupError } = await supabase
         .from("profiles")
-        .select("id")
+        .select("id, username, wallet_address")
         .ilike("wallet_address", normalizedRecipient)
         .maybeSingle();
 
       console.log('💾 Recording transaction:', {
         from: user?.id,
         to: recipientProfile?.id,
+        toUsername: recipientProfile?.username,
         recipientAddress: normalizedRecipient,
         amount,
         token: selectedToken.symbol,
-        hash: txHash
+        hash: txHash,
+        lookupError
       });
 
       // Record transaction in database
@@ -666,10 +668,16 @@ export default function FunWallet() {
         transaction_hash: txHash,
         transaction_type: 'transfer',
         status: "completed",
+        notes: recipientProfile ? `Sent to @${recipientProfile.username}` : `Sent to ${sendTo.slice(0, 10)}...`
       });
 
       if (insertError) {
         console.error("Error recording transaction:", insertError);
+        toast.error("Transaction sent but failed to record history");
+      } else if (recipientProfile) {
+        console.log('✅ Transaction recorded for both sender and receiver');
+      } else {
+        console.log('⚠️ Recipient not registered - transaction recorded for sender only');
       }
 
       setSendAmount("");
