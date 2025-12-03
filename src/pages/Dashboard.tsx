@@ -5,9 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Gamepad2, Users, MessageCircle, Trophy, Home, Coins, History, Upload } from "lucide-react";
+import { Gamepad2, Users, MessageCircle, Trophy, Home, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { WalletConnect } from "@/components/WalletConnect";
 import { AvatarUpload } from "@/components/AvatarUpload";
 import { JoyBot } from "@/components/JoyBot";
 
@@ -16,8 +15,6 @@ interface Profile {
   username: string;
   email: string;
   avatar_url: string | null;
-  wallet_address: string | null;
-  wallet_balance: number;
   total_plays: number;
   total_likes: number;
   total_friends: number;
@@ -115,11 +112,6 @@ export default function Dashboard() {
                     {profile.username} 🎮
                   </h1>
                   <p className="text-xl text-muted-foreground font-comic">{profile.email}</p>
-                  {profile.wallet_address && (
-                    <p className="text-sm text-muted-foreground mt-2 font-mono">
-                      🔗 {profile.wallet_address.slice(0, 6)}...{profile.wallet_address.slice(-4)}
-                    </p>
-                  )}
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground font-comic mb-2">Leaderboard Rank</p>
@@ -177,9 +169,6 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Wallet Section */}
-          <WalletConnect />
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">

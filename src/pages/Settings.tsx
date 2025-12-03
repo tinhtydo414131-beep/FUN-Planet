@@ -43,7 +43,6 @@ interface ProfileData {
   bio: string | null;
   avatar_url: string | null;
   email: string;
-  wallet_address: string | null;
   created_at: string;
 }
 
@@ -97,7 +96,7 @@ export default function Settings() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("username, bio, avatar_url, email, wallet_address, created_at")
+        .select("username, bio, avatar_url, email, created_at")
         .eq("id", user?.id)
         .single();
 
@@ -423,24 +422,6 @@ export default function Settings() {
                     Email không thể thay đổi
                   </p>
                 </div>
-
-                {/* Wallet Address (Read-only) */}
-                {profile.wallet_address && (
-                  <div className="space-y-2">
-                    <Label className="text-base font-fredoka text-foreground">
-                      Địa chỉ ví 🔗
-                    </Label>
-                    <Input
-                      type="text"
-                      value={profile.wallet_address}
-                      disabled
-                      className="bg-muted/50 cursor-not-allowed font-mono text-sm"
-                    />
-                    <p className="text-xs text-muted-foreground font-comic">
-                      Địa chỉ ví không thể thay đổi
-                    </p>
-                  </div>
-                )}
 
                 {/* Username */}
                 <div className="space-y-2">
