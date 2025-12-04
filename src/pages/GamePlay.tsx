@@ -65,14 +65,16 @@ import { LibraryKeeper } from "@/components/games/LibraryKeeper";
 import { RestaurantChef } from "@/components/games/RestaurantChef";
 import { ThemeParkBuilder } from "@/components/games/ThemeParkBuilder";
 import { GoldMiner } from "@/components/games/GoldMiner";
+import { GoldMiner3D } from "@/components/games/GoldMiner3D";
 import { GoldHookMaster } from "@/components/games/GoldHookMaster";
 import { Snake } from "@/components/games/Snake";
+import { Snake3D } from "@/components/games/Snake3D";
 import { TicTacToe } from "@/components/games/TicTacToe";
 import { RockPaperScissors } from "@/components/games/RockPaperScissors";
 import { WhackAMole } from "@/components/games/WhackAMole";
 import { Sudoku } from "@/components/games/Sudoku";
 import { FlappyBird } from "@/components/games/FlappyBird";
-import { Snake3D } from "@/components/games/Snake3D";
+import { MazeRunner3D } from "@/components/games/MazeRunner3D";
 
 interface Game {
   id: string;
@@ -317,6 +319,8 @@ const GamePlay = () => {
         return <ThemeParkBuilder {...gameProps} />;
       case "GoldMiner":
       case "gold-miner":
+        return <GoldMiner3D {...gameProps} />;
+      case "GoldMiner2D":
         return <GoldMiner {...gameProps} />;
       case "GoldHookMaster":
       case "gold-hook-master":
@@ -325,7 +329,8 @@ const GamePlay = () => {
       // Exploration & Adventure Games
       case "SpaceExplorer": return <SpaceExplorer {...gameProps} />;
       case "OceanExplorer": return <OceanExplorer {...gameProps} />;
-      case "MazeRunner": return <MazeRunner {...gameProps} />;
+      case "MazeRunner": return <MazeRunner3D {...gameProps} />;
+      case "MazeRunner2D": return <MazeRunner {...gameProps} />;
       case "TreasureHunt": return <TreasureHunt {...gameProps} />;
       case "Platformer": return <Platformer {...gameProps} />;
       case "Racing": return <Racing {...gameProps} />;
