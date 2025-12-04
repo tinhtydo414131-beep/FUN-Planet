@@ -25,6 +25,7 @@ import { MessageSearchModal } from "@/components/MessageSearchModal";
 import { MessageActionsMenu, MessageEditInput } from "@/components/MessageActions";
 import { useMessageActions } from "@/hooks/useMessageActions";
 import { ChatFileUpload, ChatAttachment } from "@/components/ChatFileUpload";
+import { ForwardMessageModal } from "@/components/ForwardMessageModal";
 
 interface Friend {
   id: string;
@@ -90,6 +91,8 @@ export default function Messages() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showForwardModal, setShowForwardModal] = useState(false);
+  const [messageToForward, setMessageToForward] = useState<Message | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Message edit/delete actions
@@ -604,6 +607,23 @@ export default function Messages() {
     }
   };
 
+  const handleForwardMessage = (messageId: string) => {
+    const msg = messages.find(m => m.id === messageId);
+    if (msg) {
+      setMessageToForward(msg);
+      setShowForwardModal(true);
+    }
+  };
+
+  const getForwardConversations = () => {
+    return conversations.map(conv => ({
+      roomId: conv.roomId,
+      name: conv.isGroup ? (conv.groupName || "Group Chat") : (conv.friend?.username || "Unknown"),
+      avatarUrl: conv.isGroup ? null : conv.friend?.avatar_url,
+      isGroup: conv.isGroup,
+    }));
+  };
+
   const getConversationDisplayName = (conv: Conversation) => {
     if (conv.isGroup) {
       return conv.groupName || "Group Chat";
@@ -840,14 +860,15 @@ export default function Messages() {
                                 </p>
                               )}
                               <div className="relative flex items-center gap-1">
-                                {/* Edit/Delete menu for own messages */}
-                                {msg.sender_id === user?.id && editingMessageId !== msg.id && (
-                                  <div className="order-first">
+                                {/* Message actions menu */}
+                                {editingMessageId !== msg.id && (
+                                  <div className={msg.sender_id === user?.id ? "order-first" : "order-last"}>
                                     <MessageActionsMenu
                                       messageId={msg.id}
                                       isOwn={msg.sender_id === user?.id}
                                       onEdit={handleEditMessage}
                                       onDelete={handleDeleteMessage}
+                                      onForward={handleForwardMessage}
                                     />
                                   </div>
                                 )}
@@ -1033,6 +1054,24 @@ export default function Messages() {
         userId={user?.id}
         onSelectResult={handleSearchResult}
       />
+
+      {/* Forward Message Modal */}
+      {user && selectedConversation && (
+        <ForwardMessageModal
+          open={showForwardModal}
+          onOpenChange={setShowForwardModal}
+          message={messageToForward ? {
+            text: messageToForward.message,
+            attachmentUrl: messageToForward.attachment_url,
+            attachmentType: messageToForward.attachment_type,
+            attachmentName: messageToForward.attachment_name,
+            senderName: messageToForward.sender?.username,
+          } : null}
+          conversations={getForwardConversations()}
+          userId={user.id}
+          currentRoomId={selectedConversation.roomId}
+        />
+      )}
     </div>
   );
 }

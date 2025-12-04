@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -17,19 +18,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MoreVertical, Pencil, Trash2, Check, X } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, Check, X, Forward } from "lucide-react";
 
 interface MessageActionsProps {
   messageId: string;
   isOwn: boolean;
   onEdit: (messageId: string) => void;
   onDelete: (messageId: string) => void;
+  onForward: (messageId: string) => void;
 }
 
-export function MessageActionsMenu({ messageId, isOwn, onEdit, onDelete }: MessageActionsProps) {
+export function MessageActionsMenu({ messageId, isOwn, onEdit, onDelete, onForward }: MessageActionsProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  if (!isOwn) return null;
 
   return (
     <>
@@ -44,17 +44,26 @@ export function MessageActionsMenu({ messageId, isOwn, onEdit, onDelete }: Messa
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onEdit(messageId)} className="gap-2">
-            <Pencil className="w-4 h-4" />
-            Edit
+          <DropdownMenuItem onClick={() => onForward(messageId)} className="gap-2">
+            <Forward className="w-4 h-4" />
+            Forward
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setShowDeleteDialog(true)}
-            className="gap-2 text-destructive focus:text-destructive"
-          >
-            <Trash2 className="w-4 h-4" />
-            Delete
-          </DropdownMenuItem>
+          {isOwn && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onEdit(messageId)} className="gap-2">
+                <Pencil className="w-4 h-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setShowDeleteDialog(true)}
+                className="gap-2 text-destructive focus:text-destructive"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
