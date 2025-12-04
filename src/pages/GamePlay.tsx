@@ -72,6 +72,7 @@ import { RockPaperScissors } from "@/components/games/RockPaperScissors";
 import { WhackAMole } from "@/components/games/WhackAMole";
 import { Sudoku } from "@/components/games/Sudoku";
 import { FlappyBird } from "@/components/games/FlappyBird";
+import { Snake3D } from "@/components/games/Snake3D";
 
 interface Game {
   id: string;
@@ -342,6 +343,8 @@ const GamePlay = () => {
       // Classic & Arcade Games
       case "Snake":
       case "snake":
+        return <Snake3D {...gameProps} />;
+      case "Snake2D":
         return <Snake {...gameProps} />;
       case "TicTacToe":
       case "tic-tac-toe":
