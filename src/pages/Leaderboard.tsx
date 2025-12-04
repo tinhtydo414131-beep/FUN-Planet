@@ -107,72 +107,72 @@ export default function Leaderboard() {
             </Button>
           </div>
 
-          <div className="text-center mb-12 space-y-4 animate-fade-in">
-            <div className="inline-flex items-center justify-center gap-3 mb-4">
-              <Trophy className="w-16 h-16 text-primary animate-bounce" />
-              <h1 className="text-5xl md:text-6xl font-fredoka font-bold text-primary">
+          <div className="text-center mb-8 sm:mb-12 space-y-3 sm:space-y-4 animate-fade-in">
+            <div className="inline-flex items-center justify-center gap-2 sm:gap-3 mb-2 sm:mb-4">
+              <Trophy className="w-8 h-8 sm:w-16 sm:h-16 text-primary animate-bounce" />
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-fredoka font-bold text-primary">
                 Kids Ranking! 🏆
               </h1>
-              <Trophy className="w-16 h-16 text-secondary animate-bounce" style={{ animationDelay: '0.2s' }} />
+              <Trophy className="w-8 h-8 sm:w-16 sm:h-16 text-secondary animate-bounce hidden sm:block" style={{ animationDelay: '0.2s' }} />
             </div>
-            <p className="text-xl text-muted-foreground font-comic max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-muted-foreground font-comic max-w-2xl mx-auto px-4">
               See who's the top player! Keep playing to climb the ranks! 🌟
             </p>
           </div>
 
           {/* Top 3 Podium */}
           {leaders.length >= 3 && (
-            <div className="grid grid-cols-3 gap-4 mb-12 max-w-4xl mx-auto">
-              {/* 2nd Place */}
-              <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                <Card className="border-4 border-gray-400 shadow-xl transform hover:scale-105 transition-all">
-                  <CardContent className="p-6 text-center">
-                    <div className="flex justify-center mb-3">
-                      <Medal className="w-12 h-12 text-gray-400" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12 max-w-4xl mx-auto">
+              {/* 1st Place - Shows first on mobile */}
+              <div className="animate-fade-in order-first sm:order-2">
+                <Card className="border-4 border-yellow-500 shadow-2xl transform hover:scale-105 transition-all bg-gradient-to-br from-yellow-50 to-yellow-100">
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <div className="flex justify-center mb-2 sm:mb-3">
+                      <Trophy className="w-10 h-10 sm:w-16 sm:h-16 text-yellow-500 animate-pulse" />
                     </div>
-                    <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                      {leaders[1].username[0].toUpperCase()}
+                    <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-2 sm:mb-3 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-2xl sm:text-4xl font-bold text-white shadow-2xl">
+                      {leaders[0].username[0].toUpperCase()}
                     </div>
-                    <p className="font-fredoka font-bold text-xl text-foreground mb-1">{leaders[1].username}</p>
-                    <p className="text-3xl font-fredoka font-bold text-gray-500">{leaders[1].leaderboard_score}</p>
-                    <p className="text-sm font-comic text-muted-foreground">points</p>
+                    <p className="font-fredoka font-bold text-lg sm:text-2xl text-foreground mb-1 truncate">{leaders[0].username}</p>
+                    <p className="text-2xl sm:text-4xl font-fredoka font-bold text-yellow-600">{leaders[0].leaderboard_score}</p>
+                    <p className="text-xs sm:text-sm font-comic text-muted-foreground">points</p>
+                    <div className="mt-2 sm:mt-3">
+                      <span className="px-3 sm:px-4 py-1 bg-yellow-500 text-white font-fredoka font-bold rounded-full text-xs sm:text-sm">👑 Champion!</span>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* 1st Place */}
-              <div className="animate-fade-in">
-                <Card className="border-4 border-yellow-500 shadow-2xl transform hover:scale-105 transition-all bg-gradient-to-br from-yellow-50 to-yellow-100">
-                  <CardContent className="p-6 text-center">
-                    <div className="flex justify-center mb-3">
-                      <Trophy className="w-16 h-16 text-yellow-500 animate-pulse" />
+              {/* 2nd Place */}
+              <div className="sm:mt-8 animate-fade-in order-2 sm:order-1" style={{ animationDelay: '0.2s' }}>
+                <Card className="border-4 border-gray-400 shadow-xl transform hover:scale-105 transition-all">
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <div className="flex justify-center mb-2 sm:mb-3">
+                      <Medal className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" />
                     </div>
-                    <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-4xl font-bold text-white shadow-2xl">
-                      {leaders[0].username[0].toUpperCase()}
+                    <div className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-xl sm:text-3xl font-bold text-white shadow-lg">
+                      {leaders[1].username[0].toUpperCase()}
                     </div>
-                    <p className="font-fredoka font-bold text-2xl text-foreground mb-1">{leaders[0].username}</p>
-                    <p className="text-4xl font-fredoka font-bold text-yellow-600">{leaders[0].leaderboard_score}</p>
-                    <p className="text-sm font-comic text-muted-foreground">points</p>
-                    <div className="mt-3">
-                      <span className="px-4 py-1 bg-yellow-500 text-white font-fredoka font-bold rounded-full text-sm">👑 Champion!</span>
-                    </div>
+                    <p className="font-fredoka font-bold text-base sm:text-xl text-foreground mb-1 truncate">{leaders[1].username}</p>
+                    <p className="text-xl sm:text-3xl font-fredoka font-bold text-gray-500">{leaders[1].leaderboard_score}</p>
+                    <p className="text-xs sm:text-sm font-comic text-muted-foreground">points</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* 3rd Place */}
-              <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <div className="sm:mt-8 animate-fade-in order-3" style={{ animationDelay: '0.4s' }}>
                 <Card className="border-4 border-orange-600 shadow-xl transform hover:scale-105 transition-all">
-                  <CardContent className="p-6 text-center">
-                    <div className="flex justify-center mb-3">
-                      <Medal className="w-12 h-12 text-orange-600" />
+                  <CardContent className="p-4 sm:p-6 text-center">
+                    <div className="flex justify-center mb-2 sm:mb-3">
+                      <Medal className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600" />
                     </div>
-                    <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+                    <div className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-3 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-xl sm:text-3xl font-bold text-white shadow-lg">
                       {leaders[2].username[0].toUpperCase()}
                     </div>
-                    <p className="font-fredoka font-bold text-xl text-foreground mb-1">{leaders[2].username}</p>
-                    <p className="text-3xl font-fredoka font-bold text-orange-600">{leaders[2].leaderboard_score}</p>
-                    <p className="text-sm font-comic text-muted-foreground">points</p>
+                    <p className="font-fredoka font-bold text-base sm:text-xl text-foreground mb-1 truncate">{leaders[2].username}</p>
+                    <p className="text-xl sm:text-3xl font-fredoka font-bold text-orange-600">{leaders[2].leaderboard_score}</p>
+                    <p className="text-xs sm:text-sm font-comic text-muted-foreground">points</p>
                   </CardContent>
                 </Card>
               </div>
@@ -180,69 +180,75 @@ export default function Leaderboard() {
           )}
 
           {/* Full Leaderboard */}
-          <Card className="border-4 border-primary/30 shadow-2xl">
-            <CardContent className="p-6">
-              <div className="space-y-3">
+          <Card className="border-2 sm:border-4 border-primary/30 shadow-2xl">
+            <CardContent className="p-3 sm:p-6">
+              <div className="space-y-2 sm:space-y-3">
                 {leaders.map((leader, index) => (
                   <div
                     key={leader.id}
-                    className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all hover:shadow-lg transform hover:scale-102 ${
+                    className={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 transition-all hover:shadow-lg ${
                       index < 3 ? 'bg-gradient-to-r ' + getRankColor(index + 1) + ' bg-opacity-10 border-current' : 'bg-muted/30 border-border hover:border-primary'
                     }`}
                   >
-                    <div className="flex items-center justify-center w-12 h-12 font-fredoka font-bold text-2xl">
-                      {index < 3 ? getRankIcon(index + 1) : `#${index + 1}`}
-                    </div>
-                    
-                    <Avatar className="w-14 h-14 border-2 border-primary/30">
-                      <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white font-fredoka font-bold text-xl">
-                        {leader.username[0].toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    {/* Mobile: Top row with rank, avatar, name, score */}
+                    <div className="flex items-center gap-3 w-full">
+                      <div className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 font-fredoka font-bold text-lg sm:text-2xl shrink-0">
+                        {index < 3 ? getRankIcon(index + 1) : `#${index + 1}`}
+                      </div>
+                      
+                      <Avatar className="w-10 h-10 sm:w-14 sm:h-14 border-2 border-primary/30 shrink-0">
+                        <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white font-fredoka font-bold text-base sm:text-xl">
+                          {leader.username[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
 
-                    <div className="flex-1">
-                      <p className="font-fredoka font-bold text-lg text-foreground">{leader.username}</p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-comic text-muted-foreground">
-                          🎮 {leader.total_plays} plays • ❤️ {leader.total_likes} likes • 👥 {leader.total_friends} friends
+                      <div className="flex-1 min-w-0">
+                        <p className="font-fredoka font-bold text-base sm:text-lg text-foreground truncate">{leader.username}</p>
+                        <p className="text-xs sm:text-sm font-comic text-muted-foreground truncate">
+                          🎮 {leader.total_plays} • ❤️ {leader.total_likes} • 👥 {leader.total_friends}
                         </p>
-                        {leader.wallet_address && (
-                          <TooltipProvider>
-                            <div className="flex items-center gap-1">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span className="text-xs font-mono text-muted-foreground/80 cursor-help">
-                                    {shortenAddress(leader.wallet_address)}
-                                  </span>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="font-mono text-xs">{leader.wallet_address}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className={`h-5 w-5 p-0 transition-colors duration-200 ${
-                                  copiedAddress === leader.wallet_address
-                                    ? 'text-green-500'
-                                    : ''
-                                }`}
-                                onClick={() => copyToClipboard(leader.wallet_address!)}
-                              >
-                                {copiedAddress === leader.wallet_address ? (
-                                  <Check className="w-3 h-3" />
-                                ) : (
-                                  <Copy className="w-3 h-3" />
-                                )}
-                              </Button>
-                            </div>
-                          </TooltipProvider>
-                        )}
+                      </div>
+
+                      {/* Score - visible on all sizes */}
+                      <div className="text-right shrink-0">
+                        <p className="text-xl sm:text-3xl font-fredoka font-bold text-primary">{leader.leaderboard_score}</p>
+                        <p className="text-xs sm:text-sm font-comic text-muted-foreground">points</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      {leader.wallet_address && (
+                    {/* Mobile: Bottom row with wallet & transfer */}
+                    {leader.wallet_address && (
+                      <div className="flex items-center justify-between gap-2 pl-11 sm:pl-0 sm:ml-auto">
+                        <TooltipProvider>
+                          <div className="flex items-center gap-1">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="text-xs font-mono text-muted-foreground/80 cursor-help">
+                                  {shortenAddress(leader.wallet_address)}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="font-mono text-xs">{leader.wallet_address}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className={`h-5 w-5 p-0 transition-colors duration-200 ${
+                                copiedAddress === leader.wallet_address
+                                  ? 'text-green-500'
+                                  : ''
+                              }`}
+                              onClick={() => copyToClipboard(leader.wallet_address!)}
+                            >
+                              {copiedAddress === leader.wallet_address ? (
+                                <Check className="w-3 h-3" />
+                              ) : (
+                                <Copy className="w-3 h-3" />
+                              )}
+                            </Button>
+                          </div>
+                        </TooltipProvider>
                         <Button
                           size="sm"
                           onClick={() => {
@@ -252,17 +258,13 @@ export default function Leaderboard() {
                             });
                             setTransferModalOpen(true);
                           }}
-                          className="h-8"
+                          className="h-7 sm:h-8 text-xs sm:text-sm"
                         >
-                          <Send className="w-4 h-4 mr-1" />
+                          <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                           Transfer
                         </Button>
-                      )}
-                      <div className="text-right">
-                        <p className="text-3xl font-fredoka font-bold text-primary">{leader.leaderboard_score}</p>
-                        <p className="text-sm font-comic text-muted-foreground">points</p>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
