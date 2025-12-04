@@ -154,6 +154,7 @@ export function TransferModal({ open, onOpenChange, recipientAddress, recipientU
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="CAMLY">🪙 CAMLY</SelectItem>
                 <SelectItem value="ETH">ETH</SelectItem>
                 <SelectItem value="USDT">USDT</SelectItem>
                 <SelectItem value="BNB">BNB</SelectItem>
