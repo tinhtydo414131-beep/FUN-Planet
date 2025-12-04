@@ -31,7 +31,12 @@ import { SimonSays } from "@/components/games/SimonSays";
 import { TriviaQuiz } from "@/components/games/TriviaQuiz";
 import { MazeRunner } from "@/components/games/MazeRunner";
 import { TreasureHunt } from "@/components/games/TreasureHunt";
+import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
 import { Platformer } from "@/components/games/Platformer";
+import { Platformer3D } from "@/components/games/Platformer3D";
+import { Racing3D } from "@/components/games/Racing3D";
+import { BalloonPop3D } from "@/components/games/BalloonPop3D";
+import { ColorMatch3D } from "@/components/games/ColorMatch3D";
 import { Racing } from "@/components/games/Racing";
 import PlanetBuilder from "@/components/games/PlanetBuilder";
 import HappinessGarden from "@/components/games/HappinessGarden";
@@ -331,9 +336,13 @@ const GamePlay = () => {
       case "OceanExplorer": return <OceanExplorer {...gameProps} />;
       case "MazeRunner": return <MazeRunner3D {...gameProps} />;
       case "MazeRunner2D": return <MazeRunner {...gameProps} />;
-      case "TreasureHunt": return <TreasureHunt {...gameProps} />;
-      case "Platformer": return <Platformer {...gameProps} />;
-      case "Racing": return <Racing {...gameProps} />;
+      case "TreasureHunt": return <TreasureHunt3D {...gameProps} />;
+      case "TreasureHunt2D": return <TreasureHunt {...gameProps} />;
+      case "Platformer": return <Platformer3D {...gameProps} />;
+      case "Platformer2D": return <Platformer {...gameProps} />;
+      case "Racing": return <Racing3D {...gameProps} />;
+      case "BalloonPop": return <BalloonPop3D {...gameProps} />;
+      case "ColorMatch": return <ColorMatch3D {...gameProps} />;
       case "LilBlockBuddy": return <LilBlockBuddy {...gameProps} />;
       case "Game2048Nexus": 
       case "2048-nexus":
