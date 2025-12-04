@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle, Send, ArrowLeft, Smile, Users, Circle, Coins, Bell, Plus } from "lucide-react";
+import { MessageCircle, Send, ArrowLeft, Smile, Users, Circle, Coins, Bell, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -21,6 +21,9 @@ import { TypingIndicator } from "@/components/TypingIndicator";
 import { ReadReceipt } from "@/components/ReadReceipt";
 import { useReadReceipts, useReadReceiptSubscription } from "@/hooks/useReadReceipts";
 import { CreateGroupChatModal } from "@/components/CreateGroupChatModal";
+import { MessageSearchModal } from "@/components/MessageSearchModal";
+import { MessageActionsMenu, MessageEditInput } from "@/components/MessageActions";
+import { useMessageActions } from "@/hooks/useMessageActions";
 
 interface Friend {
   id: string;
@@ -82,7 +85,19 @@ export default function Messages() {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Message edit/delete actions
+  const {
+    editingMessageId,
+    editContent,
+    setEditContent,
+    startEditing,
+    cancelEditing,
+    saveEdit,
+    deleteMessage,
+  } = useMessageActions(user?.id);
 
   const { typingUsers, startTyping, stopTyping } = useTypingIndicator(
     selectedConversation?.roomId || null
@@ -429,12 +444,27 @@ export default function Messages() {
           filter: `room_id=eq.${roomId}`
         },
         (payload) => {
-          // Update read status in real-time
+          // Update message content and read status in real-time
           setMessages(prev =>
             prev.map(msg =>
-              msg.id === payload.new.id ? { ...msg, is_read: payload.new.is_read } : msg
+              msg.id === payload.new.id 
+                ? { ...msg, message: payload.new.message, is_read: payload.new.is_read } 
+                : msg
             )
           );
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "chat_messages",
+          filter: `room_id=eq.${roomId}`
+        },
+        (payload) => {
+          // Remove deleted message in real-time
+          setMessages(prev => prev.filter(msg => msg.id !== payload.old.id));
         }
       )
       .subscribe();
@@ -532,6 +562,27 @@ export default function Messages() {
     fetchConversations();
   };
 
+  const handleSearchResult = (roomId: string) => {
+    const conv = conversations.find(c => c.roomId === roomId);
+    if (conv) {
+      setSelectedConversation(conv);
+    }
+  };
+
+  const handleEditMessage = (messageId: string) => {
+    const msg = messages.find(m => m.id === messageId);
+    if (msg) {
+      startEditing(messageId, msg.message);
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    const success = await deleteMessage(messageId);
+    if (success) {
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+    }
+  };
+
   const getConversationDisplayName = (conv: Conversation) => {
     if (conv.isGroup) {
       return conv.groupName || "Group Chat";
@@ -582,13 +633,22 @@ export default function Messages() {
                 Messages 💬
               </h1>
             </div>
-            <Button
-              onClick={() => setShowCreateGroupModal(true)}
-              className="gap-2 bg-gradient-to-r from-primary to-secondary"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">New Group</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setShowSearchModal(true)}
+                variant="outline"
+                size="icon"
+              >
+                <Search className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={() => setShowCreateGroupModal(true)}
+                className="gap-2 bg-gradient-to-r from-primary to-secondary"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">New Group</span>
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[calc(100vh-200px)]">
@@ -758,18 +818,48 @@ export default function Messages() {
                                   {msg.sender?.username}
                                 </p>
                               )}
-                              <div className="relative">
-                                <div
-                                  className={`px-4 py-2 rounded-2xl ${
-                                    msg.sender_id === user?.id
-                                      ? "bg-gradient-to-r from-primary to-secondary text-white rounded-br-sm"
-                                      : "bg-muted rounded-bl-sm"
-                                  }`}
-                                >
-                                  <p className="text-sm">{msg.message}</p>
-                                </div>
+                              <div className="relative flex items-center gap-1">
+                                {/* Edit/Delete menu for own messages */}
+                                {msg.sender_id === user?.id && editingMessageId !== msg.id && (
+                                  <div className="order-first">
+                                    <MessageActionsMenu
+                                      messageId={msg.id}
+                                      isOwn={msg.sender_id === user?.id}
+                                      onEdit={handleEditMessage}
+                                      onDelete={handleDeleteMessage}
+                                    />
+                                  </div>
+                                )}
+                                
+                                {editingMessageId === msg.id ? (
+                                  <MessageEditInput
+                                    value={editContent}
+                                    onChange={setEditContent}
+                                    onSave={async () => {
+                                      const success = await saveEdit();
+                                      if (success) {
+                                        setMessages(prev =>
+                                          prev.map(m =>
+                                            m.id === msg.id ? { ...m, message: editContent } : m
+                                          )
+                                        );
+                                      }
+                                    }}
+                                    onCancel={cancelEditing}
+                                  />
+                                ) : (
+                                  <div
+                                    className={`px-4 py-2 rounded-2xl ${
+                                      msg.sender_id === user?.id
+                                        ? "bg-gradient-to-r from-primary to-secondary text-white rounded-br-sm"
+                                        : "bg-muted rounded-bl-sm"
+                                    }`}
+                                  >
+                                    <p className="text-sm">{msg.message}</p>
+                                  </div>
+                                )}
                                 <div className={`absolute top-1/2 -translate-y-1/2 ${
-                                  msg.sender_id === user?.id ? "-left-8" : "-right-8"
+                                  msg.sender_id === user?.id ? "-left-16" : "-right-8"
                                 }`}>
                                   <AddReactionButton onReact={(emoji) => handleReaction(msg.id, emoji)} />
                                 </div>
@@ -896,6 +986,14 @@ export default function Messages() {
           onGroupCreated={handleGroupCreated}
         />
       )}
+
+      {/* Message Search Modal */}
+      <MessageSearchModal
+        open={showSearchModal}
+        onOpenChange={setShowSearchModal}
+        userId={user?.id}
+        onSelectResult={handleSearchResult}
+      />
     </div>
   );
 }
