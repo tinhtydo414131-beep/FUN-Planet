@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, Send, Copy, Check } from "lucide-react";
+import { Loader2, Send, Copy, Check, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -22,6 +22,25 @@ export function TransferModal({ open, onOpenChange, recipientAddress, recipientU
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [camlyBalance, setCamlyBalance] = useState<number>(0);
+  const [loadingBalance, setLoadingBalance] = useState(true);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      setLoadingBalance(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from("web3_rewards")
+          .select("camly_balance")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setCamlyBalance(data?.camly_balance || 0);
+      }
+      setLoadingBalance(false);
+    };
+    if (open) fetchBalance();
+  }, [open]);
 
   const copyAddress = () => {
     navigator.clipboard.writeText(recipientAddress);
@@ -129,6 +148,17 @@ export function TransferModal({ open, onOpenChange, recipientAddress, recipientU
                 </Button>
               </div>
             </div>
+          </div>
+
+          {/* Your Balance */}
+          <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20">
+            <div className="flex items-center gap-2">
+              <Wallet className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">Your CAMLY Balance</span>
+            </div>
+            <span className="font-bold text-primary">
+              {loadingBalance ? "..." : camlyBalance.toLocaleString()} 🪙
+            </span>
           </div>
 
           {/* Amount Input */}
