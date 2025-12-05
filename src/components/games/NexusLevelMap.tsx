@@ -22,16 +22,7 @@ export const NexusLevelMap: React.FC<NexusLevelMapProps> = ({
   
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-fredoka font-bold text-primary mb-2">
-          🎮 2048 Nexus Levels
-        </h2>
-        <p className="text-muted-foreground font-comic">
-          Select a level to play! Each level needs {'{level × 200}'} points to complete.
-        </p>
-      </div>
-      
-      <ScrollArea className="h-[400px] md:h-[500px] rounded-xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/30 p-4">
+      <ScrollArea className="h-[500px] md:h-[600px] rounded-xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/30 p-4">
         <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 md:gap-3 p-2">
           {levels.map((level) => {
             const isUnlocked = level <= highestUnlocked;
@@ -77,21 +68,6 @@ export const NexusLevelMap: React.FC<NexusLevelMapProps> = ({
           })}
         </div>
       </ScrollArea>
-      
-      <div className="flex justify-center gap-4 mt-4 text-sm font-comic">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-gradient-to-br from-green-400 to-emerald-500" />
-          <span>Completed</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-gradient-to-br from-primary to-accent" />
-          <span>Available</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-muted border border-muted-foreground/30" />
-          <span>Locked</span>
-        </div>
-      </div>
     </div>
   );
 };
