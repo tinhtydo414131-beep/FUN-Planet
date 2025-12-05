@@ -200,69 +200,33 @@ serve(async (req) => {
         );
       }
 
-      // Check if user exists with this wallet
+      // Check if user exists with this wallet in profiles
       const { data: existingProfile } = await supabase
         .from('profiles')
         .select('id, username, email')
         .eq('wallet_address', normalizedAddress)
         .single();
 
-      if (existingProfile) {
-        // User exists - sign them in
-        const email = existingProfile.email;
-        
-        // Generate a secure password from wallet + nonce for this session
-        const sessionPassword = await generateSessionPassword(normalizedAddress, nonce);
-        
-        // Try to sign in
-        const { data: signInData, error: signInError } = await supabase.auth.admin.generateLink({
-          type: 'magiclink',
-          email: email,
-        });
+      // Also check if user exists in auth by wallet email (old registration method)
+      const walletEmail = `${normalizedAddress}@wallet.funplanet`;
+      const { data: authUsers } = await supabase.auth.admin.listUsers();
+      const existingAuthUser = authUsers.users.find(u => u.email === walletEmail);
 
-        if (signInError) {
-          console.error('Sign in error:', signInError);
-          // Fallback: update password and sign in
-          const { data: authUser } = await supabase.auth.admin.listUsers();
-          const user = authUser.users.find(u => u.email === email);
-          
-          if (user) {
-            await supabase.auth.admin.updateUserById(user.id, { password: sessionPassword });
-            
-            // Create a custom session
-            const { data: session, error: sessionError } = await supabase.auth.admin.generateLink({
-              type: 'magiclink',
-              email: email,
-            });
-            
-            if (!sessionError && session) {
-              return new Response(
-                JSON.stringify({ 
-                  success: true, 
-                  isNewUser: false,
-                  userId: user.id,
-                  email: email,
-                  token: session.properties?.hashed_token,
-                  action_link: session.properties?.action_link
-                }),
-                { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-              );
-            }
-          }
-        }
-
+      if (existingProfile || existingAuthUser) {
+        // User exists - this is a returning user, use login flow
+        console.log('Existing user found, returning for login flow');
         return new Response(
           JSON.stringify({ 
             success: true, 
             isNewUser: false,
-            userId: existingProfile.id,
-            email: email,
-            action_link: signInData?.properties?.action_link
+            walletAddress: normalizedAddress,
+            verified: true
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       } else {
         // New user - need to register
+        console.log('New wallet user, proceeding to registration');
         return new Response(
           JSON.stringify({ 
             success: true, 
