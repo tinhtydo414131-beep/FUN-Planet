@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Wallet, Coins, Trophy, Zap, Award, Share2, ArrowLeft } from "lucide-react";
+import { Wallet, Trophy, Zap, Award, Share2, ArrowLeft } from "lucide-react";
 import { haptics } from "@/utils/haptics";
 import confetti from "canvas-confetti";
+import camlyCoinIcon from "@/assets/camly-coin-notification.png";
 
 interface Game2048NexusProps {
   level?: number;
@@ -286,7 +287,7 @@ export const Game2048Nexus = ({
 
             <Card className="px-4 py-2 bg-background/50 backdrop-blur border-accent/20">
               <div className="flex items-center gap-2">
-                <Coins className="w-5 h-5 text-yellow-500" />
+                <img src={camlyCoinIcon} alt="Camly Coin" className="w-6 h-6" />
                 <div className="text-left">
                   <div className="text-xs text-muted-foreground">Camly coin</div>
                   <div className="text-lg font-bold">{nexusTokens}</div>
