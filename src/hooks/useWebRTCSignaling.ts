@@ -355,12 +355,29 @@ export function useWebRTCSignaling() {
     }
   }, [user, setupPeerConnection, subscribeToSignals, cleanup]);
 
-  const endCall = useCallback(async () => {
+  const endCall = useCallback(async (qualityStats?: {
+    avgBitrate?: number;
+    avgPacketLoss?: number;
+    avgLatency?: number;
+    quality?: string;
+  }, durationSeconds?: number) => {
     if (currentCall) {
       console.log("[WebRTC] Ending call:", currentCall.id);
+      const updateData: Record<string, unknown> = { 
+        status: "completed", 
+        ended_at: new Date().toISOString() 
+      };
+      
+      if (qualityStats) {
+        updateData.quality_stats = qualityStats;
+      }
+      if (durationSeconds !== undefined) {
+        updateData.duration_seconds = durationSeconds;
+      }
+      
       await supabase
         .from("video_calls")
-        .update({ status: "ended", ended_at: new Date().toISOString() })
+        .update(updateData)
         .eq("id", currentCall.id);
     }
     setCurrentCall(null);

@@ -150,7 +150,17 @@ export function VideoCall({
 
   const handleEndCall = async () => {
     setCallStatus("ended");
-    await endCall();
+    
+    // Prepare quality stats for saving
+    const avgQualityStats = callDuration > 0 && qualityStats ? {
+      avgBitrate: qualityStats.audioBitrate + qualityStats.videoBitrate,
+      avgPacketLoss: (qualityStats.audioPacketLoss + qualityStats.videoPacketLoss) / 2,
+      avgLatency: qualityStats.roundTripTime,
+      quality: qualityStats.quality.charAt(0).toUpperCase() + qualityStats.quality.slice(1),
+    } : undefined;
+    
+    await endCall(avgQualityStats, callDuration);
+    
     if (durationInterval.current) {
       clearInterval(durationInterval.current);
     }

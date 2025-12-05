@@ -39,6 +39,7 @@ import Profile from "./pages/Profile";
 import FindFriends from "./pages/FindFriends";
 import Messages from "./pages/Messages";
 import Feed from "./pages/Feed";
+import CallHistory from "./pages/CallHistory";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const AnimatedRoutes = () => {
         <Route path="/find-friends" element={<FindFriends />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/feed" element={<Feed />} />
+        <Route path="/call-history" element={<CallHistory />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
