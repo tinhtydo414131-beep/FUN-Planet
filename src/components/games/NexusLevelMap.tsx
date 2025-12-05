@@ -22,23 +22,7 @@ export const NexusLevelMap: React.FC<NexusLevelMapProps> = ({
   
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="text-center mb-6">
-        <h2 className="text-3xl md:text-4xl font-fredoka font-bold text-primary mb-3">
-          🎮 Start
-        </h2>
-        <div className="bg-muted/50 rounded-xl p-4 mb-4 text-left max-w-md mx-auto">
-          <h3 className="font-fredoka font-semibold text-foreground mb-2">How to Play:</h3>
-          <ul className="text-sm text-muted-foreground space-y-1 font-comic">
-            <li>• Swipe or use arrow keys to move tiles</li>
-            <li>• When two tiles with the same number touch, they merge into one</li>
-            <li>• Reach the target score to complete each level</li>
-            <li>• Each level needs {'{level × 200}'} points</li>
-            <li>• Complete levels to unlock the next one!</li>
-          </ul>
-        </div>
-      </div>
-      
-      <ScrollArea className="h-[400px] md:h-[500px] rounded-xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/30 p-4">
+      <ScrollArea className="h-[500px] md:h-[600px] rounded-xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/30 p-4">
         <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 md:gap-3 p-2">
           {levels.map((level) => {
             const isUnlocked = level <= highestUnlocked;
