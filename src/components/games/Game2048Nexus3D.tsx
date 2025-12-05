@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text, Environment, Html, Float } from '@react-three/drei';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { ArrowLeft, RotateCcw, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { haptics } from '@/utils/haptics';
 
 interface Game2048Nexus3DProps {
   level?: number;
@@ -149,7 +150,21 @@ export const Game2048Nexus3D: React.FC<Game2048Nexus3DProps> = ({
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const targetTile = 2048 + (level - 1) * 1024;
+  
+  // Use refs to avoid stale closures
+  const gridRef = useRef<Grid>(grid);
+  const scoreRef = useRef(score);
+  const gameOverRef = useRef(gameOver);
+  const wonRef = useRef(won);
+  
+  useEffect(() => {
+    gridRef.current = grid;
+    scoreRef.current = score;
+    gameOverRef.current = gameOver;
+    wonRef.current = won;
+  }, [grid, score, gameOver, won]);
 
   function initializeGrid(size: number): Grid {
     const newGrid: Grid = Array(size).fill(null).map(() => Array(size).fill(null));
@@ -271,8 +286,46 @@ export const Game2048Nexus3D: React.FC<Game2048Nexus3DProps> = ({
     setWon(false);
   };
 
+  // Touch handlers for swipe gestures
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    setTouchStart({ x: touch.clientX, y: touch.clientY });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStart.x;
+    const deltaY = touch.clientY - touchStart.y;
+    const minSwipeDistance = 30;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (Math.abs(deltaX) > minSwipeDistance) {
+        haptics.light();
+        move(deltaX > 0 ? 'right' : 'left');
+      }
+    } else {
+      if (Math.abs(deltaY) > minSwipeDistance) {
+        haptics.light();
+        move(deltaY > 0 ? 'down' : 'up');
+      }
+    }
+
+    setTouchStart(null);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+  };
+
   return (
-    <div className="w-full h-[500px] md:h-[600px] relative">
+    <div 
+      className="w-full h-[500px] md:h-[600px] relative touch-none"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
+    >
       <div className="absolute top-2 left-2 right-2 z-10 flex justify-between items-center">
         <Button variant="outline" size="sm" onClick={onBack} className="font-fredoka">
           <ArrowLeft className="w-4 h-4 mr-1" /> Back
@@ -310,14 +363,45 @@ export const Game2048Nexus3D: React.FC<Game2048Nexus3DProps> = ({
         </Suspense>
       </Canvas>
 
-      {/* Touch controls */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 grid grid-cols-3 gap-1 md:hidden">
+      {/* Mobile Direction Controls */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 grid grid-cols-3 gap-2 md:hidden">
         <div />
-        <Button size="sm" onClick={() => move('up')} className="font-fredoka">↑</Button>
+        <Button 
+          size="lg" 
+          onClick={() => { haptics.light(); move('up'); }} 
+          className="aspect-square bg-gradient-to-br from-primary/80 to-accent/80"
+        >
+          <ChevronUp className="w-6 h-6" />
+        </Button>
         <div />
-        <Button size="sm" onClick={() => move('left')} className="font-fredoka">←</Button>
-        <Button size="sm" onClick={() => move('down')} className="font-fredoka">↓</Button>
-        <Button size="sm" onClick={() => move('right')} className="font-fredoka">→</Button>
+        <Button 
+          size="lg" 
+          onClick={() => { haptics.light(); move('left'); }} 
+          className="aspect-square bg-gradient-to-br from-primary/80 to-accent/80"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </Button>
+        <Button 
+          size="lg" 
+          onClick={() => { haptics.light(); move('down'); }} 
+          className="aspect-square bg-gradient-to-br from-primary/80 to-accent/80"
+        >
+          <ChevronDown className="w-6 h-6" />
+        </Button>
+        <Button 
+          size="lg" 
+          onClick={() => { haptics.light(); move('right'); }} 
+          className="aspect-square bg-gradient-to-br from-primary/80 to-accent/80"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </Button>
+      </div>
+      
+      {/* Swipe hint for mobile */}
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 text-center md:hidden">
+        <p className="text-xs text-muted-foreground bg-background/80 px-3 py-1 rounded-full">
+          👆 Swipe or tap buttons to move
+        </p>
       </div>
     </div>
   );
