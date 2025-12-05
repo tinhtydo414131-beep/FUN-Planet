@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle, Send, ArrowLeft, Smile, Users, Circle, Coins, Bell, Plus, Search, Phone, Video, MoreVertical, Image, Paperclip, Info } from "lucide-react";
+import { MessageCircle, Send, ArrowLeft, Smile, Users, Circle, Coins, Bell, Plus, Search, Phone, Video, MoreVertical, Image, Paperclip, Info, History } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -849,6 +849,15 @@ export default function Messages() {
                     Chats
                   </h1>
                   <div className="flex items-center gap-1">
+                    <Button
+                      onClick={() => navigate("/call-history")}
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-full hover:bg-primary/10"
+                      title="Call History"
+                    >
+                      <History className="w-5 h-5" />
+                    </Button>
                     <Button
                       onClick={() => setShowSearchModal(true)}
                       variant="ghost"
