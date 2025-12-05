@@ -145,7 +145,8 @@ export default function Auth() {
         setStep("register");
         toast.info("🎉 Ví đã được xác thực! Vui lòng chọn tên người dùng.");
       } else {
-        // Existing user - complete login
+        // Existing user - complete login with signature
+        toast.info("🔐 Đang đăng nhập...");
         await completeWalletLogin(signature);
       }
     } catch (error: any) {
