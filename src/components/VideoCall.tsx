@@ -13,6 +13,8 @@ import {
   Minimize2,
 } from "lucide-react";
 import { useWebRTCSignaling } from "@/hooks/useWebRTCSignaling";
+import { useCallQualityStats } from "@/hooks/useCallQualityStats";
+import { CallQualityIndicator } from "@/components/CallQualityIndicator";
 
 interface VideoCallProps {
   isOpen: boolean;
@@ -47,6 +49,7 @@ export function VideoCall({
 
   const {
     connectionState,
+    peerConnection,
     startCall,
     answerCall,
     endCall,
@@ -54,6 +57,9 @@ export function VideoCall({
     toggleMute,
     toggleVideo,
   } = useWebRTCSignaling();
+
+  // Call quality monitoring
+  const qualityStats = useCallQualityStats(peerConnection);
 
   const handleRemoteStream = (stream: MediaStream) => {
     console.log("[VideoCall] Remote stream received");
@@ -224,6 +230,14 @@ export function VideoCall({
               </div>
             )}
 
+            {/* Call Quality Indicator */}
+            {callStatus === "connected" && (
+              <CallQualityIndicator 
+                stats={qualityStats} 
+                isVideoCall={callType === "video"} 
+              />
+            )}
+
             {/* Local Video PIP */}
             {callType === "video" && !isVideoOff && (
               <div className="absolute bottom-4 right-4 w-32 h-24 rounded-lg overflow-hidden border-2 border-white/30 bg-black">
@@ -248,9 +262,9 @@ export function VideoCall({
               {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
             </Button>
 
-            {/* Call Status Indicator */}
+            {/* Call Duration (for video calls when connected) */}
             {callStatus === "connected" && callType === "video" && (
-              <div className="absolute top-4 left-4 bg-black/50 px-3 py-1 rounded-full">
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/50 px-3 py-1 rounded-full">
                 <p className="text-white text-sm">{formatDuration(callDuration)}</p>
               </div>
             )}
