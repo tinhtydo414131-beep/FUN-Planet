@@ -56,7 +56,6 @@ const Tile3D = ({ value, position, gridSize }: { value: number; position: [numbe
           color={textColor}
           anchorX="center"
           anchorY="middle"
-          font="/fonts/fredoka.woff"
         >
           {value}
         </Text>
