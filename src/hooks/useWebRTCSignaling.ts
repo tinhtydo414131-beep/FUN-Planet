@@ -403,6 +403,7 @@ export function useWebRTCSignaling() {
     connectionState,
     localStream: localStreamRef.current,
     remoteStream: remoteStreamRef.current,
+    peerConnection: peerConnectionRef.current,
     startCall,
     answerCall,
     endCall,
