@@ -2,3 +2,15 @@ project_id = "epcjxoacajoaidglrvai"
 
 [functions.telegram-music-bot]
 verify_jwt = false
+
+[functions.achievement-nft-metadata]
+verify_jwt = false
+
+[functions.reset-combo-periods]
+verify_jwt = false
+
+[functions.rotate-daily-challenge]
+verify_jwt = false
+
+[functions.watch-camly-transfers]
+verify_jwt = false
