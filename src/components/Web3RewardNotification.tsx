@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Coins, Sparkles, X } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import camlyCoinWeb3 from '@/assets/camly-coin-web3.png';
 
 interface Web3RewardNotificationProps {
   isOpen: boolean;
@@ -159,9 +160,11 @@ export const Web3RewardNotification = ({
                       ease: 'linear',
                     }}
                   >
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
-                      <Coins className="w-10 h-10 text-white drop-shadow-lg" />
-                    </div>
+                    <img 
+                      src={camlyCoinWeb3} 
+                      alt="Camly Coin" 
+                      className="w-20 h-20 drop-shadow-2xl"
+                    />
                     
                     {/* Sparkle effects */}
                     <motion.div
