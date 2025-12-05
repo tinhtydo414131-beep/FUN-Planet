@@ -846,6 +846,38 @@ export default function Settings() {
 
               <Separator />
 
+              {/* Notification Position */}
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <Label className="text-base font-fredoka text-foreground">
+                    Vị trí thông báo
+                  </Label>
+                  <p className="text-sm text-muted-foreground font-comic">
+                    Chọn vị trí hiển thị thông báo trên màn hình
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'top-right', label: 'Trên phải', icon: '↗️' },
+                    { value: 'top-left', label: 'Trên trái', icon: '↖️' },
+                    { value: 'bottom-right', label: 'Dưới phải', icon: '↘️' },
+                    { value: 'bottom-left', label: 'Dưới trái', icon: '↙️' },
+                  ].map((pos) => (
+                    <Button
+                      key={pos.value}
+                      variant={preferences.position === pos.value ? "default" : "outline"}
+                      onClick={() => updatePreferences({ position: pos.value as 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' })}
+                      disabled={!preferences.enabled}
+                      className="h-12 text-sm font-comic"
+                    >
+                      {pos.icon} {pos.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
               {/* Reset Button */}
               <Button
                 onClick={() => {

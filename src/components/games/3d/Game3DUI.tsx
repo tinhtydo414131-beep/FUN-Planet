@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { 
-  Coins, Heart, Star, Pause, Play, Home, 
+  Heart, Star, Pause, Play, Home, 
   RotateCcw, Volume2, VolumeX, Maximize, Minimize,
   Trophy, Flame, Zap, Settings
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import camlyCoinIcon from "@/assets/camly-coin-notification.png";
 
 // 3D Game HUD Overlay
 interface Game3DHUDProps {
@@ -70,7 +71,7 @@ export function Game3DHUD({
           
           {/* Coins */}
           <Badge className="bg-yellow-500/80 backdrop-blur-sm text-white border-0 shadow-lg">
-            <Coins className="h-3 w-3 mr-1" />
+            <img src={camlyCoinIcon} alt="Camly Coin" className="h-4 w-4 mr-1" />
             +{coins.toLocaleString()}
           </Badge>
         </div>
@@ -241,7 +242,7 @@ export function Game3DTutorial({
         {/* Rewards */}
         <div className="mb-4 p-3 rounded-lg bg-yellow-500/20 border border-yellow-500/30">
           <h3 className="text-yellow-300 font-semibold mb-2 flex items-center gap-2">
-            <Coins className="h-4 w-4" /> Phần thưởng
+            <img src={camlyCoinIcon} alt="Camly Coin" className="h-5 w-5" /> Phần thưởng
           </h3>
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
@@ -371,7 +372,7 @@ export function Game3DGameOver({
         <div className="mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <Coins className="h-5 w-5 text-yellow-500" />
+              <img src={camlyCoinIcon} alt="Camly Coin" className="h-6 w-6" />
               Camly Coin
             </span>
             <Badge className="bg-yellow-500 text-white text-lg">

@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 
+export type NotificationPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+
 export interface NotificationPreferences {
   enabled: boolean;
   soundEnabled: boolean;
   volume: number;
   confettiEnabled: boolean;
   animationsEnabled: boolean;
+  position: NotificationPosition;
 }
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
@@ -14,6 +17,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   volume: 50,
   confettiEnabled: true,
   animationsEnabled: true,
+  position: 'top-right',
 };
 
 const STORAGE_KEY = "coin_notification_preferences";

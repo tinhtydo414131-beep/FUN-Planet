@@ -169,15 +169,38 @@ export function CoinNotification() {
     }, 5000);
   };
 
+  const getPositionClasses = () => {
+    switch (preferences.position) {
+      case 'top-left':
+        return 'top-16 sm:top-20 left-2 sm:left-4 right-2 sm:right-auto';
+      case 'bottom-right':
+        return 'bottom-20 sm:bottom-24 right-2 sm:right-4 left-2 sm:left-auto';
+      case 'bottom-left':
+        return 'bottom-20 sm:bottom-24 left-2 sm:left-4 right-2 sm:right-auto';
+      case 'top-right':
+      default:
+        return 'top-16 sm:top-20 right-2 sm:right-4 left-2 sm:left-auto';
+    }
+  };
+
+  const getAnimationDirection = () => {
+    if (preferences.position.includes('left')) {
+      return { initial: { x: -100 }, exit: { x: -100 } };
+    }
+    return { initial: { x: 100 }, exit: { x: 100 } };
+  };
+
   return (
-    <div className="fixed top-16 sm:top-20 right-2 sm:right-4 left-2 sm:left-auto z-50 space-y-2 pointer-events-none">
+    <div className={`fixed ${getPositionClasses()} z-50 space-y-2 pointer-events-none`}>
       <AnimatePresence>
-        {notifications.map((notification) => (
+        {notifications.map((notification) => {
+          const animDir = getAnimationDirection();
+          return (
           <motion.div
             key={notification.id}
-            initial={preferences.animationsEnabled ? { opacity: 0, x: 100, scale: 0.8 } : { opacity: 1, x: 0, scale: 1 }}
+            initial={preferences.animationsEnabled ? { opacity: 0, ...animDir.initial, scale: 0.8 } : { opacity: 1, x: 0, scale: 1 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={preferences.animationsEnabled ? { opacity: 0, x: 100, scale: 0.8 } : { opacity: 0 }}
+            exit={preferences.animationsEnabled ? { opacity: 0, ...animDir.exit, scale: 0.8 } : { opacity: 0 }}
             className="pointer-events-auto"
           >
             <div className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-2xl shadow-2xl p-3 sm:p-4 min-w-0 sm:min-w-[280px] border-4 border-white">
@@ -248,7 +271,8 @@ export function CoinNotification() {
               />
             </div>
           </motion.div>
-        ))}
+          );
+        })}
       </AnimatePresence>
     </div>
   );
