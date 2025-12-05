@@ -1673,8 +1673,10 @@ export type Database = {
           callee_id: string
           caller_id: string
           created_at: string
+          duration_seconds: number | null
           ended_at: string | null
           id: string
+          quality_stats: Json | null
           started_at: string | null
           status: string
         }
@@ -1683,8 +1685,10 @@ export type Database = {
           callee_id: string
           caller_id: string
           created_at?: string
+          duration_seconds?: number | null
           ended_at?: string | null
           id?: string
+          quality_stats?: Json | null
           started_at?: string | null
           status?: string
         }
@@ -1693,8 +1697,10 @@ export type Database = {
           callee_id?: string
           caller_id?: string
           created_at?: string
+          duration_seconds?: number | null
           ended_at?: string | null
           id?: string
+          quality_stats?: Json | null
           started_at?: string | null
           status?: string
         }
