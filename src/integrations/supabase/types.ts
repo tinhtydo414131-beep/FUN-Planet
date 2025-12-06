@@ -2475,6 +2475,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_room_member: {
+        Args: { p_room_id: string; p_user_id: string }
+        Returns: boolean
+      }
       update_wallet_balance: {
         Args: { p_amount: number; p_operation?: string; p_user_id: string }
         Returns: number
