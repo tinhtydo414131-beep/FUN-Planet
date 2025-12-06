@@ -547,7 +547,7 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
           </motion.div>
         )}
 
-        {/* Achievement Progress - Grid Layout */}
+        {/* Achievement Progress - Horizontal Layout */}
         <motion.div 
           className="mt-5"
           initial={{ opacity: 0 }}
@@ -556,29 +556,26 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
         >
           <h3 className="text-base font-bold text-center mb-3 text-foreground">Tiến độ thành tích</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-medium text-foreground text-xs md:text-sm">🎮 10 game</span>
-                <span className="text-[10px] md:text-xs text-muted-foreground">{stats.gamesUploaded}/10</span>
-              </div>
-              <Progress value={Math.min((stats.gamesUploaded / 10) * 100, 100)} className="h-1.5 md:h-2" />
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-2 md:p-3 shadow-md text-center">
+              <div className="text-lg md:text-xl mb-1">🎮</div>
+              <p className="font-bold text-foreground text-sm md:text-base">10</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">game</p>
+              <p className="text-[10px] text-muted-foreground mt-1">{stats.gamesUploaded}/10</p>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-medium text-foreground text-xs md:text-sm">🕹️ 100 lượt chơi</span>
-                <span className="text-[10px] md:text-xs text-muted-foreground">{stats.gamesPlayed}/100</span>
-              </div>
-              <Progress value={Math.min((stats.gamesPlayed / 100) * 100, 100)} className="h-1.5 md:h-2" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-2 md:p-3 shadow-md text-center">
+              <div className="text-lg md:text-xl mb-1">🕹️</div>
+              <p className="font-bold text-foreground text-sm md:text-base">100</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">lượt chơi</p>
+              <p className="text-[10px] text-muted-foreground mt-1">{stats.gamesPlayed}/100</p>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-medium text-foreground text-xs md:text-sm">👥 50 bạn bè</span>
-                <span className="text-[10px] md:text-xs text-muted-foreground">{profile.total_friends}/50</span>
-              </div>
-              <Progress value={Math.min((profile.total_friends / 50) * 100, 100)} className="h-1.5 md:h-2" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-2 md:p-3 shadow-md text-center">
+              <div className="text-lg md:text-xl mb-1">👥</div>
+              <p className="font-bold text-foreground text-sm md:text-base">50</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">bạn bè</p>
+              <p className="text-[10px] text-muted-foreground mt-1">{profile.total_friends}/50</p>
             </div>
           </div>
         </motion.div>
