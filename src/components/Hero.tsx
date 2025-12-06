@@ -58,25 +58,24 @@ export const Hero = () => {
             />
             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider">
               <span 
-                className="bg-gradient-to-b from-yellow-200 via-yellow-400 to-amber-600 bg-clip-text text-transparent"
+                className="bg-gradient-to-b from-cyan-200 via-blue-400 to-purple-600 bg-clip-text text-transparent"
                 style={{
                   textShadow: `
-                    0 1px 0 hsl(40, 60%, 50%),
-                    0 2px 0 hsl(40, 60%, 45%),
-                    0 3px 0 hsl(40, 60%, 40%),
-                    0 4px 0 hsl(40, 60%, 35%),
-                    0 5px 0 hsl(40, 60%, 30%),
+                    0 1px 0 hsl(260, 70%, 60%),
+                    0 2px 0 hsl(260, 70%, 55%),
+                    0 3px 0 hsl(260, 70%, 50%),
+                    0 4px 0 hsl(260, 70%, 45%),
+                    0 5px 0 hsl(260, 70%, 40%),
                     0 6px 1px rgba(0,0,0,.1),
-                    0 0 5px rgba(0,0,0,.1),
+                    0 0 5px rgba(100,150,255,.3),
                     0 1px 3px rgba(0,0,0,.3),
                     0 3px 5px rgba(0,0,0,.2),
-                    0 5px 10px rgba(0,0,0,.25),
+                    0 5px 10px rgba(100,100,255,.25),
                     0 10px 10px rgba(0,0,0,.2),
-                    0 20px 20px rgba(0,0,0,.15),
-                    2px 2px 4px rgba(255,255,255,0.3) inset
+                    0 20px 20px rgba(100,50,200,.15)
                   `,
-                  WebkitTextStroke: '1px rgba(180, 130, 50, 0.5)',
-                  filter: 'drop-shadow(0 0 20px rgba(255, 200, 100, 0.5))'
+                  WebkitTextStroke: '1px rgba(150, 100, 255, 0.4)',
+                  filter: 'drop-shadow(0 0 25px rgba(150, 100, 255, 0.6))'
                 }}
               >
                 FUN PLANET
