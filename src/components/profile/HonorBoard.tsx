@@ -231,49 +231,80 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
   const top3Users = filteredUsers.slice(0, 3);
   const restUsers = filteredUsers.slice(3);
 
+  // ============= DỮ LIỆU CHO RANK BAR (6 ô nằm ngang) =============
   const honorItems = [
     {
+      key: "H",
       icon: Crown,
-      label: "Hạng của bạn",
+      label: "Hạng",
       value: `#${userRank || "—"}`,
       color: "from-yellow-400 to-orange-500",
-      bgColor: "bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30"
+      bgColor: "bg-gradient-to-b from-yellow-300 to-orange-400"
     },
     {
+      key: "T",
       icon: Coins,
-      label: "Tổng thu nhập",
+      label: "CAMLY",
       value: stats.totalIncome.toLocaleString(),
-      suffix: "CAMLY",
       color: "from-purple-500 to-pink-500",
-      bgColor: "bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30"
+      bgColor: "bg-gradient-to-b from-purple-400 to-purple-600"
     },
     {
+      key: "G",
       icon: Upload,
-      label: "Game đã upload",
+      label: "Game",
       value: stats.gamesUploaded.toString(),
       color: "from-green-400 to-emerald-500",
-      bgColor: "bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30"
+      bgColor: "bg-gradient-to-b from-green-300 to-green-500"
     },
     {
+      key: "B",
       icon: Users,
       label: "Bạn bè",
       value: profile.total_friends.toString(),
       color: "from-blue-400 to-cyan-500",
-      bgColor: "bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30"
+      bgColor: "bg-gradient-to-b from-blue-300 to-cyan-500"
     },
     {
+      key: "N",
       icon: Music,
       label: "Nhạc",
       value: stats.musicUploaded.toString(),
       color: "from-pink-400 to-rose-500",
-      bgColor: "bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30"
+      bgColor: "bg-gradient-to-b from-pink-300 to-pink-500"
     },
     {
+      key: "L",
       icon: Gamepad2,
       label: "Lượt chơi",
       value: stats.gamesPlayed.toString(),
       color: "from-violet-400 to-purple-500",
-      bgColor: "bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30"
+      bgColor: "bg-gradient-to-b from-violet-400 to-purple-500"
+    }
+  ];
+
+  // ============= DỮ LIỆU CHO TIẾN ĐỘ THÀNH TÍCH (3 ô nằm ngang) =============
+  const progressItems = [
+    {
+      icon: Gamepad2,
+      label: "game",
+      target: 10,
+      current: stats.gamesUploaded,
+      color: "text-purple-500"
+    },
+    {
+      icon: Gamepad2,
+      label: "lượt chơi",
+      target: 100,
+      current: stats.gamesPlayed,
+      color: "text-red-500"
+    },
+    {
+      icon: Users,
+      label: "bạn bè",
+      target: 50,
+      current: profile.total_friends,
+      color: "text-blue-500"
     }
   ];
 
@@ -487,47 +518,49 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
         </motion.div>
       )}
 
-      {/* Your Honor Stats Section - Grid Layout */}
+      {/* ============= PHẦN THÀNH TÍCH CỦA BẠN - LAYOUT NGANG ============= */}
       <motion.div 
-        className="mt-12"
+        className="mt-10"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        <h2 className="text-xl md:text-2xl font-bold text-center mb-5 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent flex items-center justify-center gap-2">
-          <Medal className="w-6 h-6 text-purple-500" />
+        {/* Header thành tích */}
+        <h2 className="text-lg md:text-xl font-bold text-center mb-4 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent flex items-center justify-center gap-2">
+          <Medal className="w-5 h-5 text-purple-500" />
           Thành tích của bạn
         </h2>
         
-        {/* Responsive grid for stats */}
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
+        {/* ============= RANK BAR - 6 Ô NẰM NGANG ============= */}
+        {/* Cho phép scroll ngang trên mobile, grid 6 cột trên desktop */}
+        <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide md:grid md:grid-cols-6 md:overflow-visible">
           {honorItems.map((item, index) => (
             <motion.div
-              key={item.label}
+              key={item.key}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
               whileHover={{ scale: 1.05, y: -2 }}
+              className="flex-shrink-0 w-[72px] md:w-auto"
             >
-              <Card className={`h-full ${item.bgColor} border border-transparent hover:border-purple-300 dark:hover:border-purple-600 transition-all shadow-md hover:shadow-lg`}>
-                <CardContent className="p-2 md:p-3 text-center">
-                  <div className={`w-8 h-8 md:w-10 md:h-10 mx-auto mb-1 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm`}>
-                    <item.icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                  </div>
-                  <p className="text-[10px] md:text-xs text-muted-foreground font-medium truncate">{item.label}</p>
-                  <p className={`text-sm md:text-base font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}>
-                    {item.value}
-                  </p>
-                  {item.suffix && (
-                    <p className="text-[8px] md:text-[10px] text-muted-foreground">{item.suffix}</p>
-                  )}
-                </CardContent>
-              </Card>
+              {/* Card thành tích với gradient */}
+              <div className={`${item.bgColor} rounded-xl p-2 md:p-3 text-center shadow-md hover:shadow-lg transition-all h-full`}>
+                {/* Icon trên cùng */}
+                <div className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-1 rounded-lg bg-white/30 flex items-center justify-center">
+                  <item.icon className="w-4 h-4 md:w-5 md:h-5 text-white drop-shadow" />
+                </div>
+                {/* Chữ key (H, T, G, B, N, L) */}
+                <p className="text-white font-bold text-lg md:text-xl drop-shadow">{item.key}</p>
+                {/* Giá trị */}
+                <p className="text-white/90 text-xs md:text-sm font-semibold truncate">{item.value}</p>
+                {/* Label */}
+                <p className="text-white/70 text-[9px] md:text-[10px] truncate">{item.label}</p>
+              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Claim Rewards Button */}
+        {/* Nút nhận thưởng */}
         {stats.unclaimedRewards > 0 && (
           <motion.div 
             className="mt-4 text-center"
@@ -547,7 +580,7 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
           </motion.div>
         )}
 
-        {/* Achievement Progress - Horizontal Layout */}
+        {/* ============= TIẾN ĐỘ THÀNH TÍCH - 3 Ô NẰM NGANG ============= */}
         <motion.div 
           className="mt-5"
           initial={{ opacity: 0 }}
@@ -556,27 +589,31 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
         >
           <h3 className="text-base font-bold text-center mb-3 text-foreground">Tiến độ thành tích</h3>
           
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-2 md:p-3 shadow-md text-center">
-              <div className="text-lg md:text-xl mb-1">🎮</div>
-              <p className="font-bold text-foreground text-sm md:text-base">10</p>
-              <p className="text-[10px] md:text-xs text-muted-foreground">game</p>
-              <p className="text-[10px] text-muted-foreground mt-1">{stats.gamesUploaded}/10</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-2 md:p-3 shadow-md text-center">
-              <div className="text-lg md:text-xl mb-1">🕹️</div>
-              <p className="font-bold text-foreground text-sm md:text-base">100</p>
-              <p className="text-[10px] md:text-xs text-muted-foreground">lượt chơi</p>
-              <p className="text-[10px] text-muted-foreground mt-1">{stats.gamesPlayed}/100</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-2 md:p-3 shadow-md text-center">
-              <div className="text-lg md:text-xl mb-1">👥</div>
-              <p className="font-bold text-foreground text-sm md:text-base">50</p>
-              <p className="text-[10px] md:text-xs text-muted-foreground">bạn bè</p>
-              <p className="text-[10px] text-muted-foreground mt-1">{profile.total_friends}/50</p>
-            </div>
+          {/* 3 ô tiến độ luôn nằm ngang */}
+          <div className="grid grid-cols-3 gap-2 md:gap-3">
+            {progressItems.map((item, index) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 + index * 0.1 }}
+                whileHover={{ scale: 1.03 }}
+                className="bg-white dark:bg-gray-800 rounded-xl p-2 md:p-3 shadow-md text-center"
+              >
+                {/* Icon */}
+                <div className={`w-8 h-8 md:w-10 md:h-10 mx-auto mb-1 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center ${item.color}`}>
+                  <item.icon className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                {/* Số target */}
+                <p className="font-bold text-foreground text-base md:text-lg">{item.target}</p>
+                {/* Label */}
+                <p className="text-[10px] md:text-xs text-muted-foreground">{item.label}</p>
+                {/* Progress text */}
+                <p className="text-[9px] md:text-[10px] text-muted-foreground mt-1 bg-gray-100 dark:bg-gray-700 rounded-full px-2 py-0.5 inline-block">
+                  {item.current}/{item.target}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </motion.div>
