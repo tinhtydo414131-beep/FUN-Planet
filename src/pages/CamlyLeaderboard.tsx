@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Trophy, Coins, Flame, Medal, Crown, Users } from 'lucide-react';
+import { ArrowLeft, Trophy, Coins, Medal, Crown, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
@@ -13,12 +13,9 @@ import { ReferralLeaderboard } from '@/components/ReferralLeaderboard';
 
 interface LeaderboardEntry {
   user_id: string;
+  username: string;
+  avatar_url: string | null;
   camly_balance: number;
-  daily_streak: number;
-  profiles: {
-    username: string;
-    avatar_url: string | null;
-  } | null;
 }
 
 export default function CamlyLeaderboard() {
@@ -34,19 +31,10 @@ export default function CamlyLeaderboard() {
 
   const fetchLeaderboard = async () => {
     try {
+      // Use the secure camly_leaderboard view that only exposes safe data
       const { data, error } = await supabase
-        .from('web3_rewards')
-        .select(`
-          user_id,
-          camly_balance,
-          daily_streak,
-          profiles (
-            username,
-            avatar_url
-          )
-        `)
-        .order('camly_balance', { ascending: false })
-        .limit(50);
+        .from('camly_leaderboard')
+        .select('*');
 
       if (error) throw error;
 
@@ -149,7 +137,7 @@ export default function CamlyLeaderboard() {
           <TabsContent value="camly">
             <Card>
               <CardHeader className="pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-                <CardTitle className="text-base sm:text-lg">Top 50 Earners</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Top 100 Earners</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 px-2 sm:px-6 pb-3 sm:pb-6">
                 {loading ? (
@@ -178,24 +166,18 @@ export default function CamlyLeaderboard() {
 
                         {/* Avatar */}
                         <Avatar className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-border shrink-0">
-                          <AvatarImage src={entry.profiles?.avatar_url || undefined} />
+                          <AvatarImage src={entry.avatar_url || undefined} />
                           <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs sm:text-sm">
-                            {entry.profiles?.username?.[0]?.toUpperCase() || '?'}
+                            {entry.username?.[0]?.toUpperCase() || '?'}
                           </AvatarFallback>
                         </Avatar>
 
                         {/* Username */}
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm sm:text-base truncate">
-                            {entry.profiles?.username || 'Anonymous'}
+                            {entry.username || 'Anonymous'}
                             {isCurrentUser && <span className="text-primary ml-1">(You)</span>}
                           </p>
-                          {entry.daily_streak > 0 && (
-                            <p className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1">
-                              <Flame className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-500" />
-                              {entry.daily_streak}-day streak
-                            </p>
-                          )}
                         </div>
 
                         {/* Balance */}
