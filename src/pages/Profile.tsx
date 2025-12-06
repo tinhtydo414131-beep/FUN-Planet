@@ -14,7 +14,9 @@ import {
   ArrowUpRight, ArrowDownLeft, Settings, LogOut, Share2,
   Sparkles, Flame, Calendar, History, Camera, MapPin,
   ThumbsUp, MessageSquare, MoreHorizontal, Image as ImageIcon,
-  Video, Smile, Send, Heart, UserPlus, Phone
+  Video, Smile, Send, Heart, UserPlus, Phone, Plus,
+  Bookmark, Flag, Bell, Gift, ShoppingBag, Newspaper,
+  PlayCircle, Store, Globe, Zap, Star, Music, Film
 } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarUpload } from "@/components/AvatarUpload";
@@ -27,6 +29,140 @@ import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { useReferral } from "@/hooks/useReferral";
 import { motion, AnimatePresence } from "framer-motion";
 import camlyCoinPro from "@/assets/camly-coin-pro.png";
+
+// Facebook-style Feature Button Component
+const FeatureButton = ({ 
+  icon: Icon, 
+  label, 
+  onClick, 
+  gradient, 
+  badge 
+}: { 
+  icon: any; 
+  label: string; 
+  onClick: () => void; 
+  gradient?: string;
+  badge?: number;
+}) => (
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    onClick={onClick}
+    className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-muted transition-all group relative"
+  >
+    <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg ${
+      gradient || 'bg-gradient-to-br from-primary to-secondary'
+    }`}>
+      <Icon className="w-6 h-6 text-white" />
+    </div>
+    {badge && badge > 0 && (
+      <span className="absolute top-1 right-1 min-w-[20px] h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+        {badge > 99 ? '99+' : badge}
+      </span>
+    )}
+    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+      {label}
+    </span>
+  </motion.button>
+);
+
+// Story Card Component
+const StoryCard = ({ 
+  imageUrl, 
+  username, 
+  isAdd, 
+  avatarUrl,
+  onClick 
+}: { 
+  imageUrl?: string; 
+  username: string; 
+  isAdd?: boolean; 
+  avatarUrl?: string;
+  onClick: () => void;
+}) => (
+  <motion.button
+    whileHover={{ scale: 1.03 }}
+    whileTap={{ scale: 0.97 }}
+    onClick={onClick}
+    className="relative w-28 h-48 rounded-xl overflow-hidden flex-shrink-0 shadow-lg group"
+  >
+    <div className={`absolute inset-0 ${
+      isAdd 
+        ? 'bg-gradient-to-b from-muted to-muted/80' 
+        : 'bg-gradient-to-b from-primary/60 via-secondary/40 to-accent/60'
+    }`} />
+    
+    {isAdd ? (
+      <>
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-background" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <Avatar className="w-16 h-16 border-4 border-background shadow-lg mb-2">
+            <AvatarImage src={avatarUrl || ""} />
+            <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-xl">
+              {username?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center -mt-6 border-4 border-background">
+            <Plus className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-xs font-semibold mt-4 px-2 text-center">Create Story</span>
+        </div>
+      </>
+    ) : (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute top-3 left-3">
+          <div className="w-10 h-10 rounded-full border-4 border-primary bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <span className="text-white font-bold text-sm">
+              {username?.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        </div>
+        <div className="absolute bottom-3 left-3 right-3">
+          <span className="text-white text-xs font-semibold drop-shadow-lg">
+            {username}
+          </span>
+        </div>
+      </>
+    )}
+    
+    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+  </motion.button>
+);
+
+// Reaction Button Component
+const ReactionButton = ({ 
+  icon: Icon, 
+  label, 
+  count, 
+  active, 
+  activeColor, 
+  onClick 
+}: { 
+  icon: any; 
+  label: string; 
+  count?: number; 
+  active?: boolean; 
+  activeColor?: string;
+  onClick: () => void;
+}) => (
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.9 }}
+    onClick={onClick}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+      active 
+        ? `${activeColor || 'text-primary'} bg-primary/10` 
+        : 'text-muted-foreground hover:bg-muted'
+    }`}
+  >
+    <Icon className={`w-5 h-5 ${active ? 'fill-current' : ''}`} />
+    <span className="font-medium text-sm">{label}</span>
+    {count !== undefined && count > 0 && (
+      <span className="text-xs bg-muted px-1.5 rounded-full">{count}</span>
+    )}
+  </motion.button>
+);
 
 interface Profile {
   id: string;
@@ -506,6 +642,89 @@ export default function Profile() {
 
           {/* Center Content - Posts/Feed */}
           <div className="lg:col-span-5 space-y-4">
+            
+            {/* Stories Section */}
+            <Card className="shadow-sm overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                  {/* Create Story */}
+                  <StoryCard
+                    isAdd
+                    username={profile.username}
+                    avatarUrl={profile.avatar_url || ""}
+                    onClick={() => toast.info("Story feature coming soon!")}
+                  />
+                  {/* Friend Stories */}
+                  {friends.slice(0, 4).map((friend) => (
+                    <StoryCard
+                      key={friend.id}
+                      username={friend.username}
+                      avatarUrl={friend.avatar_url}
+                      onClick={() => toast.info(`Viewing ${friend.username}'s story`)}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Facebook-style Feature Buttons Grid */}
+            <Card className="shadow-sm">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-4 gap-1">
+                  <FeatureButton
+                    icon={Gamepad2}
+                    label="Games"
+                    gradient="bg-gradient-to-br from-blue-500 to-indigo-600"
+                    onClick={() => navigate('/games')}
+                  />
+                  <FeatureButton
+                    icon={Users}
+                    label="Friends"
+                    gradient="bg-gradient-to-br from-green-500 to-emerald-600"
+                    badge={3}
+                    onClick={() => navigate('/friends')}
+                  />
+                  <FeatureButton
+                    icon={MessageCircle}
+                    label="Chat"
+                    gradient="bg-gradient-to-br from-purple-500 to-pink-600"
+                    badge={5}
+                    onClick={() => navigate('/chat')}
+                  />
+                  <FeatureButton
+                    icon={Trophy}
+                    label="Rank"
+                    gradient="bg-gradient-to-br from-yellow-500 to-orange-600"
+                    onClick={() => navigate('/camly-leaderboard')}
+                  />
+                  <FeatureButton
+                    icon={Music}
+                    label="Music"
+                    gradient="bg-gradient-to-br from-pink-500 to-rose-600"
+                    onClick={() => navigate('/music')}
+                  />
+                  <FeatureButton
+                    icon={Store}
+                    label="Market"
+                    gradient="bg-gradient-to-br from-teal-500 to-cyan-600"
+                    onClick={() => toast.info("Marketplace coming soon!")}
+                  />
+                  <FeatureButton
+                    icon={PlayCircle}
+                    label="Watch"
+                    gradient="bg-gradient-to-br from-red-500 to-pink-600"
+                    onClick={() => toast.info("Watch feature coming soon!")}
+                  />
+                  <FeatureButton
+                    icon={Gift}
+                    label="Rewards"
+                    gradient="bg-gradient-to-br from-amber-500 to-yellow-600"
+                    onClick={() => navigate('/rewards-history')}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Create Post */}
             <Card className="shadow-sm">
               <CardContent className="p-4">
@@ -524,17 +743,111 @@ export default function Profile() {
                   />
                 </div>
                 <div className="flex justify-around mt-3 pt-3 border-t">
-                  <Button variant="ghost" className="flex-1 gap-2 text-red-500">
+                  <Button variant="ghost" className="flex-1 gap-2 text-red-500 hover:bg-red-500/10">
                     <Video className="w-5 h-5" />
-                    Live Video
+                    <span className="hidden sm:inline">Live Video</span>
                   </Button>
-                  <Button variant="ghost" className="flex-1 gap-2 text-green-500">
+                  <Button variant="ghost" className="flex-1 gap-2 text-green-500 hover:bg-green-500/10">
                     <ImageIcon className="w-5 h-5" />
-                    Photo
+                    <span className="hidden sm:inline">Photo</span>
                   </Button>
-                  <Button variant="ghost" className="flex-1 gap-2 text-yellow-500">
+                  <Button variant="ghost" className="flex-1 gap-2 text-yellow-500 hover:bg-yellow-500/10">
                     <Smile className="w-5 h-5" />
-                    Feeling
+                    <span className="hidden sm:inline">Feeling</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Sample Post with Reactions */}
+            <Card className="shadow-sm">
+              <CardContent className="p-0">
+                {/* Post Header */}
+                <div className="flex items-center gap-3 p-4">
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={profile.avatar_url || ""} />
+                    <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white">
+                      {profile.username?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-semibold">{profile.username}</p>
+                    <p className="text-xs text-muted-foreground">Just now · 🌍 Public</p>
+                  </div>
+                  <Button variant="ghost" size="icon">
+                    <MoreHorizontal className="w-5 h-5" />
+                  </Button>
+                </div>
+                
+                {/* Post Content */}
+                <p className="px-4 pb-3">
+                  🎮 Just reached Rank #{userRank} on FUN Planet! Thanks to all my {profile.total_friends} friends for the support! 
+                  <span className="text-primary"> #FUNPlanet #Gaming #CAMLY</span>
+                </p>
+                
+                {/* Post Image/Banner */}
+                <div className="bg-gradient-to-r from-primary via-secondary to-accent h-48 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <Trophy className="w-16 h-16 mx-auto mb-2" />
+                    <p className="text-2xl font-bold">Rank #{userRank}</p>
+                    <p className="text-sm opacity-80">{camlyBalance.toLocaleString()} CAMLY</p>
+                  </div>
+                </div>
+                
+                {/* Reactions Count */}
+                <div className="flex items-center justify-between px-4 py-2 text-sm text-muted-foreground border-b">
+                  <div className="flex items-center gap-1">
+                    <div className="flex -space-x-1">
+                      <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                        <ThumbsUp className="w-3 h-3 text-white fill-white" />
+                      </div>
+                      <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">
+                        <Heart className="w-3 h-3 text-white fill-white" />
+                      </div>
+                    </div>
+                    <span>You and {Math.floor(Math.random() * 50) + 10} others</span>
+                  </div>
+                  <span>{Math.floor(Math.random() * 10) + 1} comments</span>
+                </div>
+                
+                {/* Reaction Buttons */}
+                <div className="flex justify-around p-1 border-b">
+                  <ReactionButton
+                    icon={ThumbsUp}
+                    label="Like"
+                    active={true}
+                    activeColor="text-blue-500"
+                    onClick={() => toast.success("Liked!")}
+                  />
+                  <ReactionButton
+                    icon={MessageSquare}
+                    label="Comment"
+                    onClick={() => toast.info("Comment feature coming soon!")}
+                  />
+                  <ReactionButton
+                    icon={Share2}
+                    label="Share"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast.success("Link copied!");
+                    }}
+                  />
+                </div>
+                
+                {/* Quick Comment */}
+                <div className="flex items-center gap-2 p-3">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={profile.avatar_url || ""} />
+                    <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-xs">
+                      {profile.username?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Input
+                    placeholder="Write a comment..."
+                    className="flex-1 rounded-full bg-muted border-0 h-9"
+                  />
+                  <Button variant="ghost" size="icon" className="shrink-0">
+                    <Send className="w-4 h-4 text-primary" />
                   </Button>
                 </div>
               </CardContent>
@@ -801,6 +1114,44 @@ export default function Profile() {
             </Card>
           </div>
         </div>
+      </div>
+
+      {/* Floating Action Button - Messenger Style */}
+      <div className="fixed bottom-24 right-4 z-50 flex flex-col gap-3">
+        <AnimatePresence>
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/chat')}
+            className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 shadow-xl flex items-center justify-center text-white relative"
+          >
+            <MessageCircle className="w-6 h-6" />
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs font-bold flex items-center justify-center border-2 border-background">
+              5
+            </span>
+          </motion.button>
+        </AnimatePresence>
+        
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate('/games')}
+          className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg flex items-center justify-center text-white"
+        >
+          <Gamepad2 className="w-5 h-5" />
+        </motion.button>
+        
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate('/wallet')}
+          className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 shadow-lg flex items-center justify-center text-white"
+        >
+          <Wallet className="w-5 h-5" />
+        </motion.button>
       </div>
 
       {/* Modals */}
