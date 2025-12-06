@@ -108,47 +108,50 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
 
   return (
     <>
-      <div className="flex flex-col items-center gap-4">
-      <div className="relative group">
-          <Avatar className="w-32 h-32 border-[3px] border-orange-400 ring-2 ring-orange-200 shadow-lg">
-            <AvatarImage 
-              src={avatarUrl || undefined}
+      {/* Container lấp đầy parent hoàn toàn */}
+      <div className="relative group w-full h-full">
+        {/* Avatar image lấp đầy khung */}
+        <div className="w-full h-full rounded-full overflow-hidden">
+          {avatarUrl ? (
+            <img 
+              src={avatarUrl}
+              alt="Avatar"
               loading="lazy"
               decoding="async"
-              className="object-cover"
+              className="w-full h-full object-cover"
             />
-            <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-3xl font-bold">
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl font-bold">
               {user.email?.charAt(0).toUpperCase() || '?'}
-            </AvatarFallback>
-          </Avatar>
-          
-          <label
-            htmlFor="avatar-upload"
-            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-          >
-            {uploading ? (
-              <Loader2 className="w-8 h-8 text-white animate-spin" />
-            ) : (
-              <Camera className="w-8 h-8 text-white" />
-            )}
-          </label>
-          
-          <input
-            id="avatar-upload"
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            disabled={uploading}
-            className="hidden"
-          />
+            </div>
+          )}
         </div>
-
-        <div className="text-center">
-          <p className="text-sm font-comic text-muted-foreground">
+        
+        {/* Overlay khi hover */}
+        <label
+          htmlFor="avatar-upload"
+          className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+        >
+          {uploading ? (
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          ) : (
+            <Camera className="w-8 h-8 text-white" />
+          )}
+        </label>
+        
+        <input
+          id="avatar-upload"
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          disabled={uploading}
+          className="hidden"
+        />
+        
+        {/* Text hướng dẫn */}
+        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 whitespace-nowrap text-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+          <p className="text-xs text-muted-foreground">
             Click vào avatar để đổi ảnh
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            JPG, PNG hoặc GIF (tối đa 5MB)
           </p>
         </div>
       </div>
