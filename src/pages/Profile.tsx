@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarUpload } from "@/components/AvatarUpload";
-import { JoyBot } from "@/components/JoyBot";
+
 import { HonorBoard } from "@/components/profile/HonorBoard";
 import { FacebookFeatureMenu } from "@/components/profile/FacebookFeatureMenu";
 import { WalletConnectModal } from "@/components/WalletConnectModal";
@@ -1125,7 +1125,7 @@ export default function Profile() {
         onClose={clearPendingReward}
       />
 
-      <JoyBot />
+      
     </div>
   );
 }
