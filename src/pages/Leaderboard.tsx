@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Trophy, Medal, Star, Home, Send, Copy, Check, Coins, Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ const POINTS_TO_CAMLY_RATIO = 100; // 1 point = 100 Camly Coins
 interface LeaderboardEntry {
   id: string;
   username: string;
+  avatar_url: string | null;
   leaderboard_score: number;
   total_plays: number;
   total_likes: number;
@@ -43,7 +44,7 @@ export default function Leaderboard() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, username, leaderboard_score, total_plays, total_likes, total_friends, wallet_address")
+        .select("id, username, avatar_url, leaderboard_score, total_plays, total_likes, total_friends, wallet_address")
         .order("leaderboard_score", { ascending: false })
         .limit(100);
 
@@ -224,9 +225,12 @@ export default function Leaderboard() {
                   <CardContent className="p-3 sm:p-6 text-center">
                     <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-0">
                       <Trophy className="w-10 h-10 sm:w-16 sm:h-16 text-yellow-500 animate-pulse sm:mb-3" />
-                      <div className="w-14 h-14 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-xl sm:text-4xl font-bold text-white shadow-2xl sm:mb-3 shrink-0">
-                        {leaders[0].username[0].toUpperCase()}
-                      </div>
+                      <Avatar className="w-14 h-14 sm:w-24 sm:h-24 border-4 border-yellow-500 shadow-2xl sm:mb-3 shrink-0">
+                        <AvatarImage src={leaders[0].avatar_url || undefined} alt={leaders[0].username} />
+                        <AvatarFallback className="bg-gradient-to-br from-yellow-400 to-yellow-600 text-xl sm:text-4xl font-bold text-white">
+                          {leaders[0].username[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="flex-1 sm:flex-none text-left sm:text-center">
                         <p className="font-fredoka font-bold text-base sm:text-2xl text-foreground truncate">{leaders[0].username}</p>
                         <p className="text-xl sm:text-4xl font-fredoka font-bold text-yellow-600">{leaders[0].leaderboard_score} <span className="text-xs sm:text-sm font-comic text-muted-foreground font-normal">points</span></p>
@@ -250,9 +254,12 @@ export default function Leaderboard() {
                   <CardContent className="p-3 sm:p-6 text-center">
                     <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-0">
                       <Medal className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 sm:mb-3" />
-                      <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-lg sm:text-3xl font-bold text-white shadow-lg sm:mb-3 shrink-0">
-                        {leaders[1].username[0].toUpperCase()}
-                      </div>
+                      <Avatar className="w-12 h-12 sm:w-20 sm:h-20 border-4 border-gray-400 shadow-lg sm:mb-3 shrink-0">
+                        <AvatarImage src={leaders[1].avatar_url || undefined} alt={leaders[1].username} />
+                        <AvatarFallback className="bg-gradient-to-br from-gray-300 to-gray-500 text-lg sm:text-3xl font-bold text-white">
+                          {leaders[1].username[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="flex-1 sm:flex-none text-left sm:text-center">
                         <p className="font-fredoka font-bold text-sm sm:text-xl text-foreground truncate">{leaders[1].username}</p>
                         <p className="text-lg sm:text-3xl font-fredoka font-bold text-gray-500">{leaders[1].leaderboard_score} <span className="text-xs sm:text-sm font-comic text-muted-foreground font-normal">points</span></p>
@@ -273,9 +280,12 @@ export default function Leaderboard() {
                   <CardContent className="p-3 sm:p-6 text-center">
                     <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-0">
                       <Medal className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600 sm:mb-3" />
-                      <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-lg sm:text-3xl font-bold text-white shadow-lg sm:mb-3 shrink-0">
-                        {leaders[2].username[0].toUpperCase()}
-                      </div>
+                      <Avatar className="w-12 h-12 sm:w-20 sm:h-20 border-4 border-orange-600 shadow-lg sm:mb-3 shrink-0">
+                        <AvatarImage src={leaders[2].avatar_url || undefined} alt={leaders[2].username} />
+                        <AvatarFallback className="bg-gradient-to-br from-orange-400 to-orange-600 text-lg sm:text-3xl font-bold text-white">
+                          {leaders[2].username[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="flex-1 sm:flex-none text-left sm:text-center">
                         <p className="font-fredoka font-bold text-sm sm:text-xl text-foreground truncate">{leaders[2].username}</p>
                         <p className="text-lg sm:text-3xl font-fredoka font-bold text-orange-600">{leaders[2].leaderboard_score} <span className="text-xs sm:text-sm font-comic text-muted-foreground font-normal">points</span></p>
@@ -310,6 +320,7 @@ export default function Leaderboard() {
                       </div>
                       
                       <Avatar className="w-10 h-10 sm:w-14 sm:h-14 border-2 border-primary/30 shrink-0">
+                        <AvatarImage src={leader.avatar_url || undefined} alt={leader.username} />
                         <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white font-fredoka font-bold text-base sm:text-xl">
                           {leader.username[0].toUpperCase()}
                         </AvatarFallback>
