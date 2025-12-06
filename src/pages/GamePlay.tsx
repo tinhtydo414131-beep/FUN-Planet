@@ -663,7 +663,7 @@ const GamePlay = () => {
               </div>
             )}
             
-            {(!isLandscape || !gameStarted) && game?.component_name !== "Game2048Nexus" && (
+            {(!isLandscape || !gameStarted) && (
               <div className="text-center space-y-1 md:space-y-2">
                 <h1 className="text-2xl md:text-4xl lg:text-5xl font-fredoka font-bold text-primary">
                   {game?.title || (gameId === 'cooking-mama' ? 'Cooking Mama' : 'Game')} 🎮
