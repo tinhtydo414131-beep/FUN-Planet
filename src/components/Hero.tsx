@@ -57,8 +57,11 @@ export const Hero = () => {
               style={{ animationDuration: '10s' }}
             />
             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider drop-shadow-[0_0_40px_rgba(139,70,255,1)]">
-              <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent animate-gradient-shift bg-[length:200%_200%]">
-                FUN PLANET
+              <span className="relative inline-block">
+                <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400 blur-xl opacity-80 animate-pulse" />
+                <span className="relative bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent animate-gradient-shift bg-[length:200%_200%] [text-shadow:0_0_60px_rgba(255,200,50,0.8),0_0_100px_rgba(236,72,153,0.6),0_0_140px_rgba(34,211,238,0.5)]">
+                  FUN PLANET
+                </span>
               </span>
             </h1>
             <img 
