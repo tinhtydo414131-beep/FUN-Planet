@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { haptics } from "@/utils/haptics";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useFullscreen } from "@/hooks/useFullscreen";
 import { NexusParticleSystem } from "./nexus2048/NexusParticleSystem";
 import { NexusGrid } from "./nexus2048/NexusGrid";
 import { NexusHUD } from "./nexus2048/NexusHUD";
@@ -21,6 +22,7 @@ const POINTS_PER_LEVEL = 600;
 export const Game2048Nexus = ({ onBack }: Game2048NexusProps) => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
   const containerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<NexusAudioSystem | null>(null);
   
@@ -39,7 +41,6 @@ export const Game2048Nexus = ({ onBack }: Game2048NexusProps) => {
   const [gameOver, setGameOver] = useState(false);
   const [isWin, setIsWin] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMusicOn, setIsMusicOn] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(true);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
@@ -265,11 +266,6 @@ export const Game2048Nexus = ({ onBack }: Game2048NexusProps) => {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) containerRef.current?.requestFullscreen();
-    else document.exitFullscreen();
-    setIsFullscreen(!isFullscreen);
-  };
 
   const handleSelectLevel = (level: number) => {
     setCurrentLevel(level);
