@@ -331,8 +331,8 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
         </button>
       </motion.div>
 
-      {/* Top 3 Special Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      {/* Top 3 Special Cards - Always Horizontal */}
+      <div className="grid grid-cols-3 gap-2 md:gap-4 mb-8">
         {[2, 1, 3].map((pos, gridIndex) => {
           const player = top3Users.find((_, idx) => idx + 1 === pos);
           if (!player) return null;
@@ -342,24 +342,24 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
             <motion.div 
               key={pos} 
               className={`relative ${
-                pos === 1 ? 'md:-mt-8 md:order-2' : pos === 2 ? 'md:mt-4 md:order-1' : 'md:mt-8 md:order-3'
+                pos === 1 ? '-mt-2 md:-mt-4 order-2' : pos === 2 ? 'mt-2 md:mt-4 order-1' : 'mt-4 md:mt-6 order-3'
               }`}
               initial={{ opacity: 0, scale: 0.8, y: 50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 + gridIndex * 0.1 }}
-              whileHover={{ scale: 1.05, y: -10 }}
+              whileHover={{ scale: 1.03, y: -5 }}
             >
               <div className={`
-                bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden 
-                border-4 transition-all duration-300
+                bg-white dark:bg-gray-800 rounded-2xl md:rounded-3xl shadow-xl overflow-hidden 
+                border-2 md:border-4 transition-all duration-300
                 ${pos === 1 ? 'border-yellow-400 shadow-yellow-400/30' : 
                   pos === 2 ? 'border-gray-300 dark:border-gray-500 shadow-gray-400/20' : 
                   'border-orange-400 shadow-orange-400/20'}
-                ${isCurrentUser ? 'ring-4 ring-purple-500 ring-offset-2' : ''}
+                ${isCurrentUser ? 'ring-2 md:ring-4 ring-purple-500 ring-offset-1 md:ring-offset-2' : ''}
               `}>
                 {/* Top Gradient Section */}
                 <div className={`
-                  p-6 text-center relative overflow-hidden
+                  p-2 md:p-4 text-center relative overflow-hidden
                   ${pos === 1 ? 'bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400' : 
                     pos === 2 ? 'bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 dark:from-gray-600 dark:via-gray-500 dark:to-gray-400' : 
                     'bg-gradient-to-br from-orange-300 via-orange-400 to-amber-500'}
@@ -367,45 +367,45 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
                   {/* Sparkle effects */}
                   {pos === 1 && (
                     <>
-                      <div className="absolute top-2 left-4 w-2 h-2 bg-white rounded-full animate-ping" />
-                      <div className="absolute top-6 right-6 w-3 h-3 bg-white rounded-full animate-pulse" />
-                      <div className="absolute bottom-4 left-8 w-2 h-2 bg-white rounded-full animate-bounce" />
+                      <div className="absolute top-1 left-2 w-1.5 h-1.5 bg-white rounded-full animate-ping" />
+                      <div className="absolute top-3 right-3 w-2 h-2 bg-white rounded-full animate-pulse" />
                     </>
                   )}
                   
-                  <div className="relative z-10">
+                  <div className="relative z-10 scale-75 md:scale-100">
                     {getRankIcon(pos)}
                   </div>
                   
                   {/* Avatar */}
                   <Avatar className={`
-                    mx-auto mt-4 border-4 border-white shadow-xl
-                    ${pos === 1 ? 'h-20 w-20' : 'h-16 w-16'}
+                    mx-auto mt-2 border-2 md:border-4 border-white shadow-lg
+                    ${pos === 1 ? 'h-12 w-12 md:h-16 md:w-16' : 'h-10 w-10 md:h-14 md:w-14'}
                   `}>
                     <AvatarImage src={player.avatar_url || ""} />
-                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-2xl">
+                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-sm md:text-xl">
                       {player.username?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </div>
                 
                 {/* Info Section */}
-                <div className="p-6 text-center">
-                  <h3 className="text-xl md:text-2xl font-bold text-foreground truncate">
+                <div className="p-2 md:p-4 text-center">
+                  <h3 className="text-xs md:text-lg font-bold text-foreground truncate">
                     {player.username}
                   </h3>
                   {isCurrentUser && (
-                    <span className="inline-block mt-1 px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 text-xs font-bold rounded-full">
-                      Đây là bạn!
+                    <span className="inline-block mt-0.5 px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 text-[8px] md:text-xs font-bold rounded-full">
+                      Bạn
                     </span>
                   )}
-                  <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mt-3">
+                  <p className="text-sm md:text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mt-1">
                     {player.wallet_balance.toLocaleString()}
                   </p>
-                  <p className="text-sm text-muted-foreground">CAMLY</p>
-                  <p className="text-lg font-bold text-green-500 mt-2 flex items-center justify-center gap-1">
-                    <Trophy className="w-5 h-5" />
-                    {getRewardForRank(pos)}
+                  <p className="text-[8px] md:text-xs text-muted-foreground">CAMLY</p>
+                  <p className="text-[10px] md:text-sm font-bold text-green-500 mt-1 flex items-center justify-center gap-0.5">
+                    <Trophy className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="hidden md:inline">{getRewardForRank(pos)}</span>
+                    <span className="md:hidden">{pos === 1 ? '50K' : pos === 2 ? '30K' : '20K'}</span>
                   </p>
                 </div>
               </div>
