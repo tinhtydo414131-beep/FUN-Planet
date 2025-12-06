@@ -11,7 +11,7 @@ interface NexusLevelMapProps {
   onBack?: () => void;
 }
 
-const MAX_LEVEL = 100;
+const MAX_LEVEL = 10;
 const POINTS_PER_LEVEL = 600;
 
 export const NexusLevelMap: React.FC<NexusLevelMapProps> = ({
