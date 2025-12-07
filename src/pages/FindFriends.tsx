@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useDebounce } from "@/hooks/useDebounce";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ export default function FindFriends() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [searchResults, setSearchResults] = useState<UserResult[]>([]);
   const [suggestedUsers, setSuggestedUsers] = useState<UserResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,6 +50,15 @@ export default function FindFriends() {
       checkDailyRequestCount();
     }
   }, [user]);
+
+  // Auto search when typing (debounced)
+  useEffect(() => {
+    if (user && debouncedSearch.trim()) {
+      handleSearch();
+    } else if (!debouncedSearch.trim()) {
+      setSearchResults([]);
+    }
+  }, [debouncedSearch, user]);
 
   const checkDailyRequestCount = async () => {
     const today = new Date().toISOString().split("T")[0];
@@ -104,8 +115,8 @@ export default function FindFriends() {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+  const handleSearch = useCallback(async () => {
+    if (!debouncedSearch.trim()) {
       setSearchResults([]);
       return;
     }
@@ -134,7 +145,7 @@ export default function FindFriends() {
         .from("profiles")
         .select("id, username, email, avatar_url, total_plays, leaderboard_score, wallet_address")
         .neq("id", user?.id)
-        .or(`username.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,wallet_address.ilike.%${searchQuery}%`)
+        .or(`username.ilike.%${debouncedSearch}%,email.ilike.%${debouncedSearch}%,wallet_address.ilike.%${debouncedSearch}%`)
         .limit(20);
 
       if (error) throw error;
@@ -152,7 +163,7 @@ export default function FindFriends() {
     } finally {
       setSearchLoading(false);
     }
-  };
+  }, [debouncedSearch, user?.id]);
 
   const sendFriendRequest = async (targetUser: UserResult) => {
     if (dailyRequestCount >= MAX_DAILY_REQUESTS) {
@@ -309,18 +320,13 @@ export default function FindFriends() {
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    placeholder="Search users..."
+                    placeholder="Gõ tên hoặc địa chỉ ví để tìm..."
                     className="pl-10"
                   />
                 </div>
-                <Button 
-                  onClick={handleSearch} 
-                  disabled={searchLoading}
-                  className="bg-gradient-to-r from-primary to-secondary"
-                >
-                  {searchLoading ? "🔍" : "Search"}
-                </Button>
+                {searchLoading && (
+                  <div className="animate-spin text-primary">🔍</div>
+                )}
               </div>
             </CardContent>
           </Card>
