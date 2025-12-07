@@ -298,10 +298,6 @@ export default function Profile() {
 
       {/* Action Buttons */}
       <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap gap-2 justify-end border-b border-border">
-        <Button onClick={() => navigate('/settings')} variant="outline" className="gap-2">
-          <Edit2 className="w-4 h-4" />
-          Edit Profile
-        </Button>
         <Button variant="outline" onClick={() => navigate('/wallet')} className="gap-2">
           <Wallet className="w-4 h-4" />
         </Button>
