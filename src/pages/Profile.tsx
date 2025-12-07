@@ -246,6 +246,7 @@ export default function Profile() {
                 walletAddress={walletAddress}
                 isConnected={isConnected}
                 onConnectWallet={() => setShowConnectModal(true)}
+                onProfileUpdate={fetchProfile}
               />
             </div>
             <div className="lg:col-span-7 space-y-4">
