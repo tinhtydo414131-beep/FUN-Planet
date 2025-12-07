@@ -1,15 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Wallet, Trophy, Gamepad2, Users, MapPin, 
   Copy, Check, ArrowUpRight, ArrowDownLeft,
-  History
+  History, Pencil, Save, X, Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 import camlyCoinPro from '@/assets/camly-coin-pro.png';
 
 interface ProfileSidebarProps {
@@ -37,6 +39,7 @@ interface ProfileSidebarProps {
   walletAddress: string | null;
   isConnected: boolean;
   onConnectWallet: () => void;
+  onProfileUpdate?: () => void;
 }
 
 export function ProfileSidebar({
@@ -48,9 +51,13 @@ export function ProfileSidebar({
   walletAddress,
   isConnected,
   onConnectWallet,
+  onProfileUpdate,
 }: ProfileSidebarProps) {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editBio, setEditBio] = useState(profile.bio || '');
+  const [saving, setSaving] = useState(false);
 
   const handleCopyAddress = () => {
     if (walletAddress) {
@@ -66,6 +73,31 @@ export function ProfileSidebar({
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const handleSaveBio = async () => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ bio: editBio.trim() || null })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+      
+      toast.success('✅ Đã cập nhật giới thiệu!');
+      setIsEditing(false);
+      onProfileUpdate?.();
+    } catch (error: any) {
+      toast.error(error.message || 'Không thể cập nhật!');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditBio(profile.bio || '');
+    setIsEditing(false);
+  };
+
   return (
     <div className="space-y-4">
       {/* Intro Card */}
@@ -74,8 +106,52 @@ export function ProfileSidebar({
           <CardTitle className="text-lg font-bold">Intro</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {profile.bio && (
-            <p className="text-sm text-center text-muted-foreground">{profile.bio}</p>
+          {isEditing ? (
+            <div className="space-y-2">
+              <Textarea
+                value={editBio}
+                onChange={(e) => setEditBio(e.target.value)}
+                placeholder="Viết vài dòng về bản thân..."
+                className="min-h-20 resize-none"
+                maxLength={200}
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {editBio.length}/200 ký tự
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={handleSaveBio}
+                  disabled={saving}
+                  className="flex-1"
+                >
+                  {saving ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-1" />
+                      Lưu
+                    </>
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCancelEdit}
+                  disabled={saving}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {profile.bio ? (
+                <p className="text-sm text-center text-muted-foreground">{profile.bio}</p>
+              ) : (
+                <p className="text-sm text-center text-muted-foreground italic">Chưa có giới thiệu</p>
+              )}
+            </>
           )}
           
           <div className="space-y-2 text-sm">
@@ -107,9 +183,15 @@ export function ProfileSidebar({
             )}
           </div>
 
-          <Button variant="outline" className="w-full" onClick={() => navigate('/profile')}>
-            Edit Details
-          </Button>
+          {!isEditing && (
+            <Button variant="outline" className="w-full" onClick={() => {
+              setEditBio(profile.bio || '');
+              setIsEditing(true);
+            }}>
+              <Pencil className="w-4 h-4 mr-2" />
+              Edit Details
+            </Button>
+          )}
         </CardContent>
       </Card>
 
