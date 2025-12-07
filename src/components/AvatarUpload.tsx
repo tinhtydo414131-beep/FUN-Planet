@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,6 +6,7 @@ import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { ImageCropDialog } from "./ImageCropDialog";
+import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -18,6 +19,10 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
   const [avatarUrl, setAvatarUrl] = useState(currentAvatarUrl);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  // Prevent double submission on mobile
+  const isSubmittingRef = useRef(false);
+  const lastSubmitTimeRef = useRef(0);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!user) {
@@ -55,26 +60,45 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
     event.target.value = '';
   };
 
-  const handleCropComplete = async (croppedBlob: Blob) => {
+  const handleCropComplete = useCallback(async (croppedBlob: Blob) => {
+    // Prevent double submission (mobile double-tap issue)
+    const now = Date.now();
+    if (isSubmittingRef.current || now - lastSubmitTimeRef.current < 1000) {
+      console.log('Preventing double submission');
+      return;
+    }
+    
+    isSubmittingRef.current = true;
+    lastSubmitTimeRef.current = now;
+
     try {
       setUploading(true);
       setCropDialogOpen(false);
 
-      if (!user) return;
+      if (!user) {
+        toast.error("Phiên đăng nhập đã hết. Vui lòng đăng nhập lại!");
+        return;
+      }
 
       // Create unique filename
       const fileName = `${user.id}/${Date.now()}.jpg`;
 
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, croppedBlob, { 
-          upsert: true,
-          contentType: 'image/jpeg'
-        });
+      // Upload to storage with retry
+      const uploadResult = await withRetry(
+        async () => {
+          const result = await supabase.storage
+            .from('avatars')
+            .upload(fileName, croppedBlob, { 
+              upsert: true,
+              contentType: 'image/jpeg'
+            });
+          return result;
+        },
+        { operationName: "Tải ảnh lên", maxRetries: 3 }
+      );
 
-      if (uploadError) {
-        throw uploadError;
+      if (uploadResult.error) {
+        throw uploadResult.error;
       }
 
       // Get public URL
@@ -82,14 +106,19 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Update profile
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
+      // Update profile with retry
+      const updateResult = await withRetry(
+        async () => {
+          return supabase
+            .from('profiles')
+            .update({ avatar_url: publicUrl })
+            .eq('id', user.id);
+        },
+        { operationName: "Cập nhật hồ sơ", maxRetries: 3 }
+      );
 
-      if (updateError) {
-        throw updateError;
+      if (updateResult.error) {
+        throw updateResult.error;
       }
 
       setAvatarUrl(publicUrl);
@@ -97,12 +126,13 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
       toast.success("🎉 Đã cập nhật avatar!");
     } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error(error.message || "Không thể upload avatar!");
+      toast.error(formatErrorMessage(error));
     } finally {
       setUploading(false);
       setSelectedImage(null);
+      isSubmittingRef.current = false;
     }
-  };
+  }, [user, onAvatarUpdate]);
 
   if (!user) return null;
 

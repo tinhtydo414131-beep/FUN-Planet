@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,6 +19,7 @@ import { Slider } from "@/components/ui/slider";
 import { useNotificationPreferences, NOTIFICATION_THEMES, NotificationTheme } from "@/hooks/useNotificationPreferences";
 import confetti from "canvas-confetti";
 import camlyCoinIcon from "@/assets/camly-coin-notification.png";
+import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 const profileSchema = z.object({
   username: z.string().trim().min(3, "Tên người dùng phải có ít nhất 3 ký tự").max(20, "Tên người dùng không được vượt quá 20 ký tự").regex(/^[a-zA-Z0-9_]+$/, "Tên người dùng chỉ được chứa chữ, số và dấu gạch dưới"),
   bio: z.string().max(200, "Bio không được vượt quá 200 ký tự").optional()
@@ -101,8 +102,18 @@ export default function Settings() {
       setLoading(false);
     }
   };
+  // Prevent double submission on mobile
+  const isSubmittingRef = useRef(false);
+  const lastSubmitTimeRef = useRef(0);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent double submission
+    const now = Date.now();
+    if (isSubmittingRef.current || now - lastSubmitTimeRef.current < 1000) {
+      return;
+    }
 
     // Validate form
     try {
@@ -120,24 +131,34 @@ export default function Settings() {
         return;
       }
     }
+    
+    isSubmittingRef.current = true;
+    lastSubmitTimeRef.current = now;
     setSaving(true);
+    
     try {
-      const {
-        error
-      } = await supabase.from("profiles").update({
-        username: formData.username.trim(),
-        bio: formData.bio.trim() || null
-      }).eq("id", user?.id);
-      if (error) throw error;
+      // Use retry logic for mobile network issues
+      const result = await withRetry(
+        async () => {
+          return supabase.from("profiles").update({
+            username: formData.username.trim(),
+            bio: formData.bio.trim() || null
+          }).eq("id", user?.id);
+        },
+        { operationName: "Lưu thông tin", maxRetries: 3 }
+      );
+      
+      if (result.error) throw result.error;
       toast.success("✅ Đã cập nhật thông tin!");
 
       // Refresh profile
       await fetchProfile();
     } catch (error: any) {
       console.error("Error updating profile:", error);
-      toast.error(error.message || "Không thể cập nhật thông tin!");
+      toast.error(formatErrorMessage(error));
     } finally {
       setSaving(false);
+      isSubmittingRef.current = false;
     }
   };
   const handlePasswordChange = async (e: React.FormEvent) => {
