@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import Cropper, { Area, Point } from 'react-easy-crop';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { withRetry, formatErrorMessage } from '@/utils/supabaseRetry';
 
 interface CoverCropModalProps {
   isOpen: boolean;
@@ -42,6 +43,10 @@ export function CoverCropModal({
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Prevent double submission on mobile
+  const isSubmittingRef = useRef(false);
+  const lastSubmitTimeRef = useRef(0);
 
   const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -129,6 +134,16 @@ export function CoverCropModal({
       return;
     }
 
+    // Prevent double submission (mobile double-tap issue)
+    const now = Date.now();
+    if (isSubmittingRef.current || now - lastSubmitTimeRef.current < 1000) {
+      console.log('Preventing double submission');
+      return;
+    }
+    
+    isSubmittingRef.current = true;
+    lastSubmitTimeRef.current = now;
+
     setUploading(true);
     try {
       const croppedBlob = await createCroppedImage();
@@ -136,37 +151,48 @@ export function CoverCropModal({
 
       const filePath = `${userId}/cover-${Date.now()}.jpg`;
 
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, croppedBlob, { 
-          upsert: true,
-          contentType: 'image/jpeg'
-        });
+      // Upload to Supabase Storage with retry
+      const uploadResult = await withRetry(
+        async () => {
+          return supabase.storage
+            .from('avatars')
+            .upload(filePath, croppedBlob, { 
+              upsert: true,
+              contentType: 'image/jpeg'
+            });
+        },
+        { operationName: "Tải ảnh bìa lên", maxRetries: 3 }
+      );
 
-      if (uploadError) throw uploadError;
+      if (uploadResult.error) throw uploadResult.error;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Update profile
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ cover_url: publicUrl })
-        .eq('id', userId);
+      // Update profile with retry
+      const updateResult = await withRetry(
+        async () => {
+          return supabase
+            .from('profiles')
+            .update({ cover_url: publicUrl })
+            .eq('id', userId);
+        },
+        { operationName: "Cập nhật ảnh bìa", maxRetries: 3 }
+      );
 
-      if (updateError) throw updateError;
+      if (updateResult.error) throw updateResult.error;
 
       onCoverUpdate(publicUrl);
       toast.success('Đã cập nhật ảnh bìa!');
       onClose();
     } catch (error: any) {
       console.error('Error saving cover:', error);
-      toast.error('Không thể lưu ảnh bìa. Vui lòng thử lại.');
+      toast.error(formatErrorMessage(error));
     } finally {
       setUploading(false);
+      isSubmittingRef.current = false;
     }
   };
 

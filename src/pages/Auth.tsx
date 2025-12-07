@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Gamepad2, User, Wallet, Mail, Lock } from "lucide-react";
 import { web3Modal } from '@/lib/web3';
 import { useAccount, useDisconnect } from 'wagmi';
 import { z } from "zod";
+import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 
 // Email/Password validation schema
 const emailSchema = z.string().email("Email không hợp lệ").max(255, "Email quá dài");
@@ -78,8 +79,18 @@ export default function Auth() {
     toast.info("Đã ngắt kết nối ví");
   };
 
+  // Prevent double submission on mobile
+  const isSubmittingRef = useRef(false);
+  const lastSubmitTimeRef = useRef(0);
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent double submission (mobile double-tap issue)
+    const now = Date.now();
+    if (isSubmittingRef.current || now - lastSubmitTimeRef.current < 1000) {
+      return;
+    }
 
     // Validate inputs
     try {
@@ -97,11 +108,13 @@ export default function Auth() {
       return;
     }
 
+    isSubmittingRef.current = true;
+    lastSubmitTimeRef.current = now;
     setLoading(true);
 
     try {
       if (authMode === "login") {
-        // Login
+        // Login with retry
         const { data, error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
@@ -154,10 +167,11 @@ export default function Auth() {
       } else if (error.message?.includes("Invalid login credentials")) {
         toast.error("Email hoặc mật khẩu không đúng!");
       } else {
-        toast.error(error.message || "Có lỗi xảy ra. Vui lòng thử lại!");
+        toast.error(formatErrorMessage(error));
       }
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -194,6 +208,12 @@ export default function Auth() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Prevent double submission (mobile double-tap issue)
+    const now = Date.now();
+    if (isSubmittingRef.current || now - lastSubmitTimeRef.current < 1000) {
+      return;
+    }
+
     if (!address) {
       toast.error("Ví chưa kết nối!");
       return;
@@ -209,6 +229,8 @@ export default function Auth() {
       return;
     }
 
+    isSubmittingRef.current = true;
+    lastSubmitTimeRef.current = now;
     setLoading(true);
 
     try {
@@ -245,11 +267,21 @@ export default function Auth() {
 
         localStorage.setItem("funplanet_session", JSON.stringify(signUpData.session));
         
-        // Update profile
-        await supabase
-          .from("profiles")
-          .update({ wallet_address: address.toLowerCase() })
-          .eq("id", signUpData.user!.id);
+        // Update profile with retry
+        const updateResult = await withRetry(
+          async () => {
+            return supabase
+              .from("profiles")
+              .update({ wallet_address: address.toLowerCase() })
+              .eq("id", signUpData.user!.id);
+          },
+          { operationName: "Cập nhật ví", maxRetries: 3 }
+        );
+
+        if (updateResult.error) {
+          console.error("Profile update error:", updateResult.error);
+          // Don't throw - user is already logged in
+        }
 
         toast.success("🎊 Chào mừng đến với FUN Planet!");
         navigate("/");
@@ -270,9 +302,10 @@ export default function Auth() {
       }
     } catch (error: any) {
       console.error("Auth error:", error);
-      toast.error(error.message || "Có lỗi xảy ra. Vui lòng thử lại!");
+      toast.error(formatErrorMessage(error));
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
