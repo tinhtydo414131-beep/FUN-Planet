@@ -94,8 +94,6 @@ export function Web3Header() {
             <span className="text-sm text-muted-foreground">CAMLY</span>
           </div>
         </div>
-          )}
-        </div>
 
         <DropdownMenuItem onClick={handleCopyAddress} className="cursor-pointer">
           {copied ? (
