@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 import { useLegendStatus } from "@/hooks/useLegendStatus";
 import LegendParticleEffect from "@/components/LegendParticleEffect";
+import { AIGameSuggestions } from "@/components/AIGameSuggestions";
 
 interface UploadedGame {
   id: string;
@@ -220,6 +221,13 @@ const Games = () => {
               {games.length} amazing games waiting for you! 🌟
             </p>
           </div>
+
+          {/* AI Game Suggestions */}
+          {user && (
+            <div className="max-w-lg mx-auto mb-8 sm:mb-12 animate-slide-up">
+              <AIGameSuggestions />
+            </div>
+          )}
 
           {/* Search Bar - Mobile Optimized */}
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8 sm:mb-12 animate-slide-up stagger-1">
