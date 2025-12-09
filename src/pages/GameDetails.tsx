@@ -384,19 +384,17 @@ export default function GameDetails() {
     
     setLoadingGame(true);
     try {
-      // Get signed URL for the ZIP file
-      const { data: urlData } = await supabase.storage
+      // Download the ZIP file directly using Supabase storage
+      const { data: zipData, error: downloadError } = await supabase.storage
         .from('uploaded-games')
-        .createSignedUrl(game.game_file_path, 3600);
+        .download(game.game_file_path);
       
-      if (!urlData?.signedUrl) {
-        throw new Error("Could not get game file");
+      if (downloadError || !zipData) {
+        throw new Error("Could not download game file");
       }
 
-      // Fetch and extract the ZIP
-      const response = await fetch(urlData.signedUrl);
-      const zipBlob = await response.blob();
-      const zip = await JSZip.loadAsync(zipBlob);
+      // Extract the ZIP
+      const zip = await JSZip.loadAsync(zipData);
       
       // Find index.html in the ZIP
       let indexContent: string | null = null;
