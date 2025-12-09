@@ -45,6 +45,7 @@ import Profile from "./pages/Profile";
 import FindFriends from "./pages/FindFriends";
 import PrivateMessages from "./pages/PrivateMessages";
 import NFTGallery from "./pages/NFTGallery";
+import Education from "./pages/Education";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const AnimatedRoutes = () => {
         <Route path="/find-friends" element={<FindFriends />} />
         <Route path="/messages" element={<PrivateMessages />} />
         <Route path="/nft-gallery" element={<NFTGallery />} />
+        <Route path="/education" element={<Education />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
