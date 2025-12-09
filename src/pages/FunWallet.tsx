@@ -1173,9 +1173,9 @@ export default function FunWallet() {
           className="mb-6 space-y-4"
         >
 
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-center gap-3">
-            {/* Back Button */}
+          {/* Navigation Buttons - Diamond Style */}
+          <div className="flex items-center justify-center gap-6">
+            {/* Back Button - Diamond */}
             <motion.button
               onClick={() => {
                 if (window.history.length > 1) {
@@ -1184,30 +1184,29 @@ export default function FunWallet() {
                   navigate("/");
                 }
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-14 h-14 rounded-full font-bold flex items-center justify-center transition-all duration-300 shadow-2xl border-0"
+              whileHover={{ scale: 1.1, rotate: 50 }}
+              whileTap={{ scale: 0.9 }}
+              className="w-12 h-12 font-bold flex items-center justify-center transition-all duration-300 shadow-2xl border-0 rotate-45 rounded-lg"
               style={{
                 background: 'linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%)',
                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4), 0 4px 16px rgba(139, 92, 246, 0.3)',
               }}
             >
-              <ArrowLeft className="w-6 h-6 text-white" />
+              <ArrowLeft className="w-5 h-5 text-white -rotate-45" />
             </motion.button>
 
-            {/* Home Button */}
+            {/* Home Button - Diamond */}
             <motion.button
               onClick={() => navigate("/")}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex-1 max-w-md h-14 rounded-[28px] font-bold flex items-center justify-center gap-3 transition-all duration-300 shadow-2xl border-0 text-white text-lg"
+              whileHover={{ scale: 1.1, rotate: 50 }}
+              whileTap={{ scale: 0.9 }}
+              className="w-12 h-12 font-bold flex items-center justify-center transition-all duration-300 shadow-2xl border-0 rotate-45 rounded-lg"
               style={{
                 background: 'linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%)',
                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4), 0 4px 16px rgba(139, 92, 246, 0.3)',
               }}
             >
-              <Home className="w-7 h-7 text-white" />
-              <span>Về Trang Chủ</span>
+              <Home className="w-5 h-5 text-white -rotate-45" />
             </motion.button>
           </div>
 
