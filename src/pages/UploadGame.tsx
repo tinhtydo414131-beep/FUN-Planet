@@ -236,6 +236,37 @@ export default function UploadGame() {
 
         if (insertError) throw insertError;
         setUploadProgress(100);
+
+        // Award 500,000 Camly coins for approved game upload
+        if (!scanResult?.needsReview) {
+          const rewardAmount = 500000;
+          
+          // Record the transaction
+          await supabase
+            .from('camly_coin_transactions')
+            .insert({
+              user_id: user.id,
+              amount: rewardAmount,
+              transaction_type: 'reward',
+              description: `Game upload reward: ${formData.title}`,
+            });
+
+          // Update wallet balance
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('wallet_balance')
+            .eq('id', user.id)
+            .single();
+
+          await supabase
+            .from('profiles')
+            .update({ 
+              wallet_balance: (profile?.wallet_balance || 0) + rewardAmount 
+            })
+            .eq('id', user.id);
+
+          toast.success(`🎉 You earned ${rewardAmount.toLocaleString()} Camly coins for uploading!`);
+        }
       } else {
         // Insert into lovable_games table
         const { error: insertError } = await supabase
