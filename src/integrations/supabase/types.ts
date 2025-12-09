@@ -1067,6 +1067,54 @@ export type Database = {
           },
         ]
       }
+      fun_id: {
+        Row: {
+          avatar_glow_color: string | null
+          created_at: string | null
+          display_name: string | null
+          energy_level: number | null
+          id: string
+          last_activity_at: string | null
+          last_angel_message: string | null
+          light_points: number | null
+          role: string | null
+          soul_nft_id: string | null
+          soul_nft_name: string | null
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          avatar_glow_color?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          energy_level?: number | null
+          id?: string
+          last_activity_at?: string | null
+          last_angel_message?: string | null
+          light_points?: number | null
+          role?: string | null
+          soul_nft_id?: string | null
+          soul_nft_name?: string | null
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          avatar_glow_color?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          energy_level?: number | null
+          id?: string
+          last_activity_at?: string | null
+          last_angel_message?: string | null
+          light_points?: number | null
+          role?: string | null
+          soul_nft_id?: string | null
+          soul_nft_name?: string | null
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
       game_plays: {
         Row: {
           game_id: string
