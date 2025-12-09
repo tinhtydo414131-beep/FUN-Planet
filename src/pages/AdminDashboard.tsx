@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   Shield, Users, Gamepad2, Flag, CheckCircle, XCircle,
   Eye, Ban, Star, TrendingUp, AlertTriangle, Search,
-  Filter, MoreVertical, ChevronRight, Clock, Award
+  Filter, MoreVertical, ChevronRight, Clock, Award, Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -22,6 +22,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { AdminCSVExport } from "@/components/AdminCSVExport";
 
 interface UploadedGame {
   id: string;
@@ -296,7 +297,7 @@ const AdminDashboard = () => {
       <section className="py-8">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="games" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="games" className="gap-2">
                 <Gamepad2 className="w-4 h-4" />
                 {isVN ? 'Games' : 'Games'}
@@ -308,6 +309,10 @@ const AdminDashboard = () => {
               <TabsTrigger value="reports" className="gap-2">
                 <Flag className="w-4 h-4" />
                 {isVN ? 'Báo cáo' : 'Reports'}
+              </TabsTrigger>
+              <TabsTrigger value="export" className="gap-2">
+                <Download className="w-4 h-4" />
+                {isVN ? 'Xuất CSV' : 'Export'}
               </TabsTrigger>
             </TabsList>
 
@@ -562,6 +567,13 @@ const AdminDashboard = () => {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Export Tab */}
+            <TabsContent value="export">
+              <div className="max-w-md">
+                <AdminCSVExport />
+              </div>
             </TabsContent>
           </Tabs>
         </div>
