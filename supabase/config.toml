@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.validate-music-upload]
 verify_jwt = false
+
+[functions.ai-game-suggestions]
+verify_jwt = false
