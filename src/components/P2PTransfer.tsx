@@ -276,7 +276,7 @@ export function P2PTransfer({ account, userId, camlyBalance, onTransferComplete 
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              disabled={!recipientInfo || sending}
+              disabled={sending}
               step="0.001"
               min="0"
             />
@@ -287,7 +287,7 @@ export function P2PTransfer({ account, userId, camlyBalance, onTransferComplete 
                 size="sm"
                 className="h-auto p-0 text-xs"
                 onClick={() => setAmount(camlyBalance)}
-                disabled={!recipientInfo || sending}
+                disabled={sending}
               >
                 Max
               </Button>
@@ -302,7 +302,7 @@ export function P2PTransfer({ account, userId, camlyBalance, onTransferComplete 
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add a message..."
-            disabled={!recipientInfo || sending}
+            disabled={sending}
             rows={2}
             maxLength={200}
           />
