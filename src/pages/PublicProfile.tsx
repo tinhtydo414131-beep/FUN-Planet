@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Gamepad2, Users, MessageCircle, Trophy, ArrowLeft, Loader2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { FriendActionButton } from "@/components/FriendActionButton";
+import { MessageButton } from "@/components/private-chat/MessageButton";
 import { useAuth } from "@/hooks/useAuth";
 
 interface PublicProfileData {
@@ -207,12 +208,24 @@ export default function PublicProfile() {
               Quay lại
             </Button>
             <div className="flex items-center gap-2">
+              {/* Message Button */}
+              {userId && profile && user && userId !== user.id && (
+                <MessageButton 
+                  user={{
+                    id: userId,
+                    username: profile.username,
+                    avatar_url: profile.avatar_url
+                  }}
+                  size="lg"
+                  className="font-fredoka"
+                />
+              )}
               {/* Friend Action Button */}
               {userId && profile && (
                 <FriendActionButton 
                   targetUserId={userId} 
                   targetUsername={profile.username}
-                  showMessage={true}
+                  showMessage={false}
                 />
               )}
               <Button

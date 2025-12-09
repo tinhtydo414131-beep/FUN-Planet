@@ -10,6 +10,7 @@ import { CoinNotification } from "@/components/CoinNotification";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { RoleSelectionModal } from "@/components/RoleSelectionModal";
 import { CharityCounter } from "@/components/CharityCounter";
+import { FloatingChatWindows, useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -17,7 +18,6 @@ import Index from "./pages/Index";
 import Games from "./pages/Games";
 import GamePlay from "./pages/GamePlay";
 import Auth from "./pages/Auth";
-// Dashboard removed - merged into Profile
 import Settings from "./pages/Settings";
 import PublicProfile from "./pages/PublicProfile";
 import Leaderboard from "./pages/Leaderboard";
@@ -42,7 +42,7 @@ import RewardsHistory from "./pages/RewardsHistory";
 import CamlyLeaderboard from "./pages/CamlyLeaderboard";
 import Profile from "./pages/Profile";
 import FindFriends from "./pages/FindFriends";
-import Messages from "./pages/Messages";
+import PrivateMessages from "./pages/PrivateMessages";
 import NFTGallery from "./pages/NFTGallery";
 
 const queryClient = new QueryClient();
@@ -81,12 +81,29 @@ const AnimatedRoutes = () => {
         <Route path="/camly-leaderboard" element={<CamlyLeaderboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/find-friends" element={<FindFriends />} />
-        <Route path="/messages" element={<Messages />} />
+        <Route path="/messages" element={<PrivateMessages />} />
         <Route path="/nft-gallery" element={<NFTGallery />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
+  );
+};
+
+// Floating Chat Windows Component
+const FloatingChats = () => {
+  const { user } = useAuth();
+  const { windows, closeChat, toggleMinimize } = useChatWindows();
+  
+  if (!user || windows.length === 0) return null;
+  
+  return (
+    <FloatingChatWindows
+      currentUserId={user.id}
+      windows={windows}
+      onClose={closeChat}
+      onToggleMinimize={toggleMinimize}
+    />
   );
 };
 
@@ -113,6 +130,9 @@ const AppContent = () => {
       <BrowserRouter>
         <MobileBottomNavEnhanced />
         <AnimatedRoutes />
+        
+        {/* Floating Chat Windows for Desktop */}
+        <FloatingChats />
         
         {/* Charity Counter - Fixed bottom right on desktop */}
         <div className="hidden md:block fixed bottom-4 right-4 z-40">
