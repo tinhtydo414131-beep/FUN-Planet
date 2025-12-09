@@ -405,22 +405,57 @@ export default function GameDetails() {
       const allFiles = Object.keys(zip.files);
       console.log('Files in ZIP:', allFiles);
       
-      // Find index.html in the ZIP
+      // Check if this is a React/Vite project (not a built game)
+      const hasPackageJson = allFiles.some(f => f.endsWith('package.json'));
+      const hasSrcFolder = allFiles.some(f => f.includes('/src/') || f.startsWith('src/'));
+      const hasNodeModules = allFiles.some(f => f.includes('node_modules'));
+      
+      if (hasPackageJson && hasSrcFolder && !hasNodeModules) {
+        // This is an unbuild project - can't run directly
+        toast.error("This game is a source project and needs to be built first. Please upload a built HTML game instead.");
+        setLoadingGame(false);
+        return;
+      }
+      
+      // Find index.html in the ZIP - prioritize dist/build folders for built projects
       let indexContent: string | null = null;
       let basePath = '';
       
-      // Look for index.html at root or in subdirectories
-      for (const [path, file] of Object.entries(zip.files)) {
-        if (path.endsWith('index.html') && !file.dir) {
-          indexContent = await file.async('string');
-          basePath = path.replace('index.html', '');
-          console.log('Found index.html at:', path, 'basePath:', basePath);
-          break;
+      // First look for built output (dist, build folders)
+      const builtPaths = ['dist/', 'build/', 'out/', 'public/'];
+      for (const builtPath of builtPaths) {
+        for (const [path, file] of Object.entries(zip.files)) {
+          if (path.includes(builtPath) && path.endsWith('index.html') && !file.dir) {
+            indexContent = await file.async('string');
+            basePath = path.replace('index.html', '');
+            console.log('Found built index.html at:', path, 'basePath:', basePath);
+            break;
+          }
+        }
+        if (indexContent) break;
+      }
+      
+      // If no built folder, look for index.html at root or in subdirectories
+      if (!indexContent) {
+        for (const [path, file] of Object.entries(zip.files)) {
+          if (path.endsWith('index.html') && !file.dir) {
+            indexContent = await file.async('string');
+            basePath = path.replace('index.html', '');
+            console.log('Found index.html at:', path, 'basePath:', basePath);
+            break;
+          }
         }
       }
       
       if (!indexContent) {
         toast.error("Game files not found in ZIP. Make sure index.html exists.");
+        return;
+      }
+
+      // Check if this index.html references Vite/React (unbuilt project indicator)
+      if (indexContent.includes('/@vite/client') || indexContent.includes('src/main.tsx') || indexContent.includes('type="module" src="/src')) {
+        toast.error("This is a development project. Please upload a built/compiled game (run 'npm run build' first).");
+        setLoadingGame(false);
         return;
       }
 
@@ -430,7 +465,7 @@ export default function GameDetails() {
       const fileDataUrls: Record<string, string> = {};
       
       for (const [path, file] of Object.entries(zip.files)) {
-        if (!file.dir) {
+        if (!file.dir && path.startsWith(basePath)) {
           const content = await file.async('base64');
           // Determine mime type based on extension
           const ext = path.split('.').pop()?.toLowerCase() || '';
@@ -463,15 +498,11 @@ export default function GameDetails() {
           const dataUrl = `data:${mimeType};base64,${content}`;
           
           // Get relative path from basePath
-          const relativePath = path.startsWith(basePath) ? path.slice(basePath.length) : path;
+          const relativePath = path.slice(basePath.length);
           if (relativePath && relativePath !== 'index.html') {
             fileDataUrls[relativePath] = dataUrl;
-            // Also store with ./ prefix
             fileDataUrls['./' + relativePath] = dataUrl;
-            // Also store without leading slash variations
-            if (relativePath.startsWith('/')) {
-              fileDataUrls[relativePath.slice(1)] = dataUrl;
-            }
+            fileDataUrls['/' + relativePath] = dataUrl;
           }
         }
       }
@@ -488,7 +519,7 @@ export default function GameDetails() {
         // Escape special regex characters in path
         const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         
-        // Replace in src and href attributes
+        // Replace in src and href attributes (handles both single and double quotes)
         modifiedHtml = modifiedHtml.replace(
           new RegExp(`(src|href)=(["'])${escapedPath}\\2`, 'gi'),
           `$1=$2${dataUrl}$2`
