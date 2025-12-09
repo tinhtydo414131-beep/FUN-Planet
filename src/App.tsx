@@ -49,6 +49,7 @@ import NFTGallery from "./pages/NFTGallery";
 import Education from "./pages/Education";
 import ParentDashboard from "./pages/ParentDashboard";
 import PlanetExplorer from "./pages/PlanetExplorer";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,7 @@ const AnimatedRoutes = () => {
         <Route path="/parent-dashboard" element={<ParentDashboard />} />
         <Route path="/global-airdrop" element={<GlobalAirdrop />} />
         <Route path="/planet-explorer" element={<PlanetExplorer />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
