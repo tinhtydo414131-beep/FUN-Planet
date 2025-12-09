@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { Gamepad2, Trophy, Users, Sparkles, Shield, Gift } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
-import camlyCoin from "@/assets/camly-coin.png";
 import categoryAdventure from "@/assets/category-adventure.png";
 import categoryPuzzle from "@/assets/category-puzzle.png";
 import categoryCasual from "@/assets/category-casual.png";
@@ -27,6 +26,9 @@ import LegendParticleEffect from "@/components/LegendParticleEffect";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { OnboardingRoleSelector } from "@/components/OnboardingRoleSelector";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { AngelAI, AngelAIButton } from "@/components/AngelAI";
+import { FunIDOnboarding } from "@/components/FunIDOnboarding";
+import { useFunId } from "@/hooks/useFunId";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -43,14 +45,32 @@ const Index = () => {
     hasCompletedOnboarding 
   } = useOnboarding();
   
+  // FUN-ID & Angel AI
+  const { funId, isNewUser, shouldShowAngel, dismissAngel, showAngel } = useFunId();
+  const [showFunIdOnboarding, setShowFunIdOnboarding] = useState(false);
+  const [showAngelChat, setShowAngelChat] = useState(false);
+  
   const [showRoleSelector, setShowRoleSelector] = useState(false);
 
   useEffect(() => {
-    // Show onboarding for new users
+    // Show FUN-ID onboarding for new visitors (not logged in)
+    if (!loading && !user) {
+      const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
+      if (!hasSeenFunId) {
+        setShowFunIdOnboarding(true);
+      }
+    }
+    
+    // Show role selector for new logged-in users
     if (!loading && user && !hasCompletedOnboarding()) {
       setShowRoleSelector(true);
     }
-  }, [user, loading]);
+    
+    // Show Angel AI for returning users
+    if (user && funId && shouldShowAngel) {
+      setShowAngelChat(true);
+    }
+  }, [user, loading, funId, shouldShowAngel]);
 
   const handleSelectRole = (role: "kid" | "parent" | "developer") => {
     setShowRoleSelector(false);
@@ -60,6 +80,16 @@ const Index = () => {
   const handleSkipOnboarding = () => {
     setShowRoleSelector(false);
     skipOnboarding();
+  };
+
+  const handleFunIdComplete = () => {
+    setShowFunIdOnboarding(false);
+    localStorage.setItem('fun_planet_fun_id_intro', 'true');
+  };
+
+  const handleAngelClose = () => {
+    setShowAngelChat(false);
+    dismissAngel();
   };
 
   const handleConnectWalletFromBanner = async () => {
@@ -160,6 +190,31 @@ const Index = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* FUN-ID Onboarding for new visitors */}
+      <AnimatePresence>
+        {showFunIdOnboarding && !user && (
+          <FunIDOnboarding 
+            onComplete={handleFunIdComplete}
+            onSkip={handleFunIdComplete}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Angel AI Chat */}
+      <AnimatePresence>
+        {showAngelChat && user && funId && (
+          <AngelAI 
+            isNewUser={isNewUser}
+            onClose={handleAngelClose}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Angel AI Button (when chat is closed) */}
+      {user && funId && !showAngelChat && (
+        <AngelAIButton onClick={() => setShowAngelChat(true)} />
+      )}
 
       {/* Legend Particle Effect */}
       <LegendParticleEffect isLegend={isLegend} />
