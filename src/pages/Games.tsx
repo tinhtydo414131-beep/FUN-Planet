@@ -48,6 +48,7 @@ const Games = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [games, setGames] = useState<Game[]>([]);
+  const [uploadedGames, setUploadedGames] = useState<UploadedGame[]>([]);
   const [filteredGames, setFilteredGames] = useState<Game[]>([]);
   const [favoriteGameIds, setFavoriteGameIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -70,6 +71,7 @@ const Games = () => {
 
   useEffect(() => {
     fetchGames();
+    fetchUploadedGames();
   }, []);
 
   useEffect(() => {
@@ -97,6 +99,21 @@ const Games = () => {
       toast.error("Couldn't load games 😢");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUploadedGames = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("uploaded_games")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setUploadedGames(data || []);
+    } catch (error: any) {
+      console.error("Error fetching uploaded games:", error);
     }
   };
 
@@ -318,6 +335,29 @@ const Games = () => {
               <h2 className="text-2xl sm:text-3xl font-fredoka font-bold text-primary mb-2">
                 🎮 All Games 🎮
               </h2>
+            </div>
+          )}
+
+          {/* Community Uploaded Games Section */}
+          {uploadedGames.length > 0 && selectedCategory === 'all' && !searchQuery.trim() && (
+            <div className="mb-12">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl sm:text-3xl font-fredoka font-bold text-primary mb-2">
+                  🌟 Community Games 🌟
+                </h2>
+                <p className="text-muted-foreground font-comic">Games uploaded by our amazing community!</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                {uploadedGames.map((game, index) => (
+                  <div 
+                    key={game.id} 
+                    className="fade-in-on-scroll game-card"
+                    style={{ animationDelay: `${Math.min(index * 0.03, 0.3)}s` }}
+                  >
+                    <UploadedGameCard game={game} />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
