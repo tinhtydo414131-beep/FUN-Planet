@@ -311,4 +311,22 @@ export const games: Game[] = [
     image: "/images/games/happy-kitchen-joy.jpg",
     playable: true,
   },
+  {
+    id: "gratitude-journal",
+    title: "Gratitude Journal",
+    description: "Ghi lại những điều biết ơn mỗi ngày 🙏",
+    category: "casual",
+    difficulty: "easy",
+    image: happinessGardenImg,
+    playable: true,
+  },
+  {
+    id: "star-explorer-3d",
+    title: "Star Explorer 3D",
+    description: "Khám phá vũ trụ và thu thập các ngôi sao! 🚀⭐",
+    category: "adventure",
+    difficulty: "medium",
+    image: spaceExplorerImg,
+    playable: true,
+  },
 ];
