@@ -6,7 +6,8 @@ import { UploadedGameCard } from "@/components/UploadedGameCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Home, ArrowUpDown, Users } from "lucide-react";
+import { Search, Home, ArrowUpDown, Users, Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -44,6 +45,7 @@ interface Game {
 
 const Games = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [games, setGames] = useState<Game[]>([]);
   const [filteredGames, setFilteredGames] = useState<Game[]>([]);
@@ -200,16 +202,25 @@ const Games = () => {
       
       <section className="pt-20 md:pt-24 pb-20 px-4 pb-safe">
         <div className="container mx-auto">
-          {/* Back to Home Button */}
-          <div className="mb-6 sm:mb-8">
+          {/* Action Buttons */}
+          <div className="mb-6 sm:mb-8 flex flex-wrap gap-3">
             <Button
-              onClick={() => window.location.href = '/'}
+              onClick={() => navigate('/')}
               variant="outline"
               size="lg"
               className="font-bold group min-w-[48px] rounded-[20px] sm:rounded-2xl"
             >
               <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-0 sm:mr-2 text-primary group-hover:scale-110 transition-transform" />
               <span className="hidden xs:inline sm:inline">Về Trang Chính</span>
+            </Button>
+            
+            <Button
+              onClick={() => navigate('/upload-game')}
+              size="lg"
+              className="font-bold group min-w-[48px] rounded-[20px] sm:rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all"
+            >
+              <Upload className="w-4 h-4 sm:w-5 sm:h-5 mr-0 sm:mr-2 group-hover:scale-110 transition-transform" />
+              <span className="hidden xs:inline sm:inline">Tải Game Lên</span>
             </Button>
           </div>
 
