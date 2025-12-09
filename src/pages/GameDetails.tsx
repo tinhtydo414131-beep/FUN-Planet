@@ -384,17 +384,26 @@ export default function GameDetails() {
     
     setLoadingGame(true);
     try {
+      console.log('Starting game load for:', game.game_file_path);
+      
       // Download the ZIP file directly using Supabase storage
       const { data: zipData, error: downloadError } = await supabase.storage
         .from('uploaded-games')
         .download(game.game_file_path);
       
       if (downloadError || !zipData) {
+        console.error('Download error:', downloadError);
         throw new Error("Could not download game file");
       }
 
+      console.log('ZIP downloaded, size:', zipData.size);
+
       // Extract the ZIP
       const zip = await JSZip.loadAsync(zipData);
+      
+      // Log all files in ZIP
+      const allFiles = Object.keys(zip.files);
+      console.log('Files in ZIP:', allFiles);
       
       // Find index.html in the ZIP
       let indexContent: string | null = null;
@@ -405,6 +414,7 @@ export default function GameDetails() {
         if (path.endsWith('index.html') && !file.dir) {
           indexContent = await file.async('string');
           basePath = path.replace('index.html', '');
+          console.log('Found index.html at:', path, 'basePath:', basePath);
           break;
         }
       }
@@ -413,6 +423,8 @@ export default function GameDetails() {
         toast.error("Game files not found in ZIP. Make sure index.html exists.");
         return;
       }
+
+      console.log('index.html content length:', indexContent.length);
 
       // Create base64 data URLs for all files (works in srcdoc iframe)
       const fileDataUrls: Record<string, string> = {};
@@ -424,6 +436,7 @@ export default function GameDetails() {
           const ext = path.split('.').pop()?.toLowerCase() || '';
           const mimeTypes: Record<string, string> = {
             'js': 'application/javascript',
+            'mjs': 'application/javascript',
             'css': 'text/css',
             'html': 'text/html',
             'json': 'application/json',
@@ -435,11 +448,16 @@ export default function GameDetails() {
             'woff': 'font/woff',
             'woff2': 'font/woff2',
             'ttf': 'font/ttf',
+            'eot': 'application/vnd.ms-fontobject',
             'mp3': 'audio/mpeg',
             'wav': 'audio/wav',
             'ogg': 'audio/ogg',
             'webp': 'image/webp',
             'ico': 'image/x-icon',
+            'xml': 'application/xml',
+            'txt': 'text/plain',
+            'glb': 'model/gltf-binary',
+            'gltf': 'model/gltf+json',
           };
           const mimeType = mimeTypes[ext] || 'application/octet-stream';
           const dataUrl = `data:${mimeType};base64,${content}`;
@@ -448,22 +466,44 @@ export default function GameDetails() {
           const relativePath = path.startsWith(basePath) ? path.slice(basePath.length) : path;
           if (relativePath && relativePath !== 'index.html') {
             fileDataUrls[relativePath] = dataUrl;
+            // Also store with ./ prefix
+            fileDataUrls['./' + relativePath] = dataUrl;
+            // Also store without leading slash variations
+            if (relativePath.startsWith('/')) {
+              fileDataUrls[relativePath.slice(1)] = dataUrl;
+            }
           }
         }
       }
 
+      console.log('Created data URLs for files:', Object.keys(fileDataUrls).length);
+
       // Replace relative paths in HTML with data URLs
       let modifiedHtml = indexContent;
-      for (const [path, dataUrl] of Object.entries(fileDataUrls)) {
+      
+      // Sort paths by length (longest first) to avoid partial replacements
+      const sortedPaths = Object.entries(fileDataUrls).sort((a, b) => b[0].length - a[0].length);
+      
+      for (const [path, dataUrl] of sortedPaths) {
         // Escape special regex characters in path
         const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // Replace various path formats (with and without ./ prefix)
-        modifiedHtml = modifiedHtml
-          .replace(new RegExp(`(src|href)=["'](\\.?\\/?)${escapedPath}["']`, 'gi'), `$1="${dataUrl}"`)
-          .replace(new RegExp(`url\\(["']?(\\.?\\/?)${escapedPath}["']?\\)`, 'gi'), `url("${dataUrl}")`);
+        
+        // Replace in src and href attributes
+        modifiedHtml = modifiedHtml.replace(
+          new RegExp(`(src|href)=(["'])${escapedPath}\\2`, 'gi'),
+          `$1=$2${dataUrl}$2`
+        );
+        
+        // Replace url() in CSS
+        modifiedHtml = modifiedHtml.replace(
+          new RegExp(`url\\((["']?)${escapedPath}\\1\\)`, 'gi'),
+          `url($1${dataUrl}$1)`
+        );
       }
 
-      // Set game HTML (no blob URLs needed with data URLs)
+      console.log('Modified HTML ready, length:', modifiedHtml.length);
+
+      // Set game HTML
       setGameHtml(modifiedHtml);
       setIsPlaying(true);
       
