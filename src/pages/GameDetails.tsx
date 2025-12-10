@@ -659,23 +659,34 @@ export default function GameDetails() {
                   <span>⬇️ {game.download_count} downloads</span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Button
-                    onClick={handlePlayGame}
-                    disabled={loadingGame}
-                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                  >
-                    {loadingGame ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Loading Game...
-                      </>
-                    ) : (
-                      <>
-                        <Play className="h-4 w-4 mr-2" />
-                        Play Game
-                      </>
-                    )}
-                  </Button>
+                  {game.game_file_path?.toLowerCase().endsWith('.rar') ? (
+                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-sm">
+                      <p className="text-amber-600 dark:text-amber-400 font-medium">
+                        ⚠️ RAR files cannot be played in browser
+                      </p>
+                      <p className="text-muted-foreground text-xs mt-1">
+                        Please download the game or re-upload as .zip format
+                      </p>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={handlePlayGame}
+                      disabled={loadingGame}
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                    >
+                      {loadingGame ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Loading Game...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4 mr-2" />
+                          Play Game
+                        </>
+                      )}
+                    </Button>
+                  )}
                   <Button
                     onClick={getDownloadUrl}
                     variant="outline"
