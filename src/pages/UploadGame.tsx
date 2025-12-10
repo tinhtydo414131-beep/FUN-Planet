@@ -44,6 +44,7 @@ export default function UploadGame() {
     confirmed: false,
     lovableUrl: "",
     imageUrl: "",
+    externalUrl: "", // For complex games hosted externally
   });
 
   // Drag and drop handlers for game file
@@ -248,6 +249,7 @@ export default function UploadGame() {
             tags: [formData.ageAppropriate],
             status: scanResult?.needsReview ? 'pending' : 'approved',
             approved_at: scanResult?.needsReview ? null : new Date().toISOString(),
+            external_url: formData.externalUrl || null,
           });
 
         if (insertError) throw insertError;
@@ -471,6 +473,21 @@ export default function UploadGame() {
                         <SelectItem value="12+">12+ years 🧑</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* External URL for complex games */}
+                  <div className="space-y-2">
+                    <Label htmlFor="externalUrl">External Game URL (Optional)</Label>
+                    <div className="text-xs text-muted-foreground mb-2">
+                      Nếu game phức tạp (React/Vite với nhiều modules), hãy host trên Vercel/Netlify và nhập URL tại đây.
+                    </div>
+                    <Input
+                      id="externalUrl"
+                      type="url"
+                      placeholder="https://your-game.vercel.app"
+                      value={formData.externalUrl}
+                      onChange={(e) => setFormData({ ...formData, externalUrl: e.target.value })}
+                    />
                   </div>
 
                   {/* Drag & Drop Game File */}

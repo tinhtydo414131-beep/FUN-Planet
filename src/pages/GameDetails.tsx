@@ -70,6 +70,7 @@ interface GameDetails {
   download_count: number;
   created_at: string;
   user_id: string;
+  external_url?: string | null;
 }
 
 interface GameRating {
@@ -384,6 +385,23 @@ export default function GameDetails() {
     
     setLoadingGame(true);
     try {
+      // Check if game has external URL - use that directly
+      if (game.external_url) {
+        console.log('Playing game from external URL:', game.external_url);
+        setGameHtml(game.external_url);
+        setIsPlaying(true);
+        
+        // Update play count
+        await supabase
+          .from('uploaded_games')
+          .update({ play_count: (game.play_count || 0) + 1 })
+          .eq('id', game.id);
+          
+        toast.success("Game loaded! 🎮");
+        setLoadingGame(false);
+        return;
+      }
+
       console.log('Starting game load for:', game.game_file_path);
       
       // Download the ZIP file directly using Supabase storage
