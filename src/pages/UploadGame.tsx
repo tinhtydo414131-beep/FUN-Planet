@@ -61,11 +61,11 @@ export default function UploadGame() {
     e.preventDefault();
     setIsDraggingGame(false);
     const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.zip') || file.name.endsWith('.rar'))) {
+    if (file && file.name.endsWith('.zip')) {
       setGameFile(file);
       toast.success(`Game file "${file.name}" ready! 🎮`);
     } else {
-      toast.error("Please drop a .zip or .rar file");
+      toast.error("Please drop a .zip file");
     }
   }, []);
 
@@ -94,10 +94,10 @@ export default function UploadGame() {
 
   const handleGameFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && (file.name.endsWith('.zip') || file.name.endsWith('.rar'))) {
+    if (file && file.name.endsWith('.zip')) {
       setGameFile(file);
     } else {
-      toast.error("Please upload a .zip or .rar file");
+      toast.error("Please upload a .zip file");
     }
   };
 
@@ -330,7 +330,7 @@ export default function UploadGame() {
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="zip" className="gap-2">
                     <FileArchive className="h-4 w-4" />
-                    Upload ZIP/RAR
+                    Upload ZIP
                   </TabsTrigger>
                   <TabsTrigger value="lovable" className="gap-2">
                     <Link className="h-4 w-4" />
@@ -472,7 +472,7 @@ export default function UploadGame() {
 
                   {/* Drag & Drop Game File */}
                   <div className="space-y-2">
-                    <Label>Game File (.zip, .rar) *</Label>
+                    <Label>Game File (.zip) *</Label>
                     
                     {/* Important Notice */}
                     <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-sm">
@@ -502,7 +502,7 @@ export default function UploadGame() {
                     >
                       <input
                         type="file"
-                        accept=".zip,.rar"
+                        accept=".zip"
                         onChange={handleGameFileChange}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
@@ -518,7 +518,7 @@ export default function UploadGame() {
                         ) : (
                           <>
                             <Cloud className="w-12 h-12 mx-auto text-muted-foreground" />
-                            <p className="font-medium">Kéo thả file ZIP hoặc RAR vào đây</p>
+                            <p className="font-medium">Kéo thả file ZIP vào đây</p>
                             <p className="text-sm text-muted-foreground">hoặc click để chọn file</p>
                           </>
                         )}
