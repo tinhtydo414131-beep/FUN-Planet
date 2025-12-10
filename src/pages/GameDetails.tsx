@@ -503,7 +503,7 @@ export default function GameDetails() {
         }
       }
 
-      // Create blob URLs for non-JS files first
+      // Create blob URLs for ALL files first (non-JS)
       for (const [relativePath, { content, ext }] of Object.entries(fileContents)) {
         if (ext !== 'js' && ext !== 'mjs') {
           const mimeType = mimeTypes[ext] || 'application/octet-stream';
@@ -515,21 +515,21 @@ export default function GameDetails() {
         }
       }
 
-      // Process JS files and replace import paths with blob URLs
+      // Build import map for ES modules
+      const importMap: Record<string, string> = {};
+
+      // Process JS files - replace ALL path references comprehensively
       for (const [relativePath, { content, ext }] of Object.entries(fileContents)) {
         if (ext === 'js' || ext === 'mjs') {
           let jsContent = new TextDecoder().decode(content);
           
-          // Replace asset references in JS files with blob URLs
+          // Replace asset references (CSS, images, fonts, etc.)
           for (const [assetPath, blobUrl] of Object.entries(blobUrls)) {
-            // Match various import patterns
-            const patterns = [
-              new RegExp(`"${assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`, 'g'),
-              new RegExp(`'${assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`, 'g'),
-            ];
-            for (const pattern of patterns) {
-              jsContent = jsContent.replace(pattern, `"${blobUrl}"`);
-            }
+            const escapedPath = assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // Replace in strings (both single and double quotes)
+            jsContent = jsContent.replace(new RegExp(`"${escapedPath}"`, 'g'), `"${blobUrl}"`);
+            jsContent = jsContent.replace(new RegExp(`'${escapedPath}'`, 'g'), `'${blobUrl}'`);
+            jsContent = jsContent.replace(new RegExp(`\`${escapedPath}\``, 'g'), `\`${blobUrl}\``);
           }
           
           const blob = new Blob([jsContent], { type: 'application/javascript' });
@@ -537,6 +537,44 @@ export default function GameDetails() {
           blobUrls[relativePath] = blobUrl;
           blobUrls['./' + relativePath] = blobUrl;
           blobUrls['/' + relativePath] = blobUrl;
+          
+          // Add to import map for ES module resolution
+          importMap['./' + relativePath] = blobUrl;
+          importMap['/' + relativePath] = blobUrl;
+          if (relativePath.startsWith('assets/')) {
+            importMap['./' + relativePath] = blobUrl;
+          }
+        }
+      }
+
+      // Second pass: Replace JS-to-JS imports now that all JS blob URLs exist
+      const jsFiles = Object.entries(fileContents).filter(([_, f]) => f.ext === 'js' || f.ext === 'mjs');
+      for (const [relativePath] of jsFiles) {
+        const currentBlobUrl = blobUrls[relativePath];
+        if (currentBlobUrl) {
+          // Fetch the blob content, update JS imports, and create new blob
+          const response = await fetch(currentBlobUrl);
+          let jsContent = await response.text();
+          
+          // Replace JS module imports with blob URLs
+          for (const [jsPath, jsBlobUrl] of Object.entries(blobUrls)) {
+            if (jsPath.endsWith('.js') || jsPath.endsWith('.mjs')) {
+              const escapedPath = jsPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              jsContent = jsContent.replace(new RegExp(`"${escapedPath}"`, 'g'), `"${jsBlobUrl}"`);
+              jsContent = jsContent.replace(new RegExp(`'${escapedPath}'`, 'g'), `'${jsBlobUrl}'`);
+              jsContent = jsContent.replace(new RegExp(`\`${escapedPath}\``, 'g'), `\`${jsBlobUrl}\``);
+            }
+          }
+          
+          // Revoke old blob and create new one
+          URL.revokeObjectURL(currentBlobUrl);
+          const newBlob = new Blob([jsContent], { type: 'application/javascript' });
+          const newBlobUrl = URL.createObjectURL(newBlob);
+          blobUrls[relativePath] = newBlobUrl;
+          blobUrls['./' + relativePath] = newBlobUrl;
+          blobUrls['/' + relativePath] = newBlobUrl;
+          importMap['./' + relativePath] = newBlobUrl;
+          importMap['/' + relativePath] = newBlobUrl;
         }
       }
 
@@ -564,9 +602,13 @@ export default function GameDetails() {
         );
       }
 
+      // Inject import map for ES module resolution (helps with dynamic imports)
+      const importMapScript = `<script type="importmap">{"imports":${JSON.stringify(importMap)}}</script>`;
+      modifiedHtml = modifiedHtml.replace('<head>', `<head>\n${importMapScript}`);
+
       console.log('Modified HTML ready, length:', modifiedHtml.length);
 
-      // Set game HTML using iframe src instead of srcdoc (better for blob URLs)
+      // Set game HTML using iframe src
       const htmlBlob = new Blob([modifiedHtml], { type: 'text/html' });
       const htmlBlobUrl = URL.createObjectURL(htmlBlob);
       setGameHtml(htmlBlobUrl);
