@@ -382,6 +382,12 @@ export default function GameDetails() {
   const handlePlayGame = async () => {
     if (!game) return;
     
+    // Check if file is .rar - can only be downloaded, not played
+    if (game.game_file_path.toLowerCase().endsWith('.rar')) {
+      toast.error("RAR files cannot be played in browser. Please download the game instead, or upload as ZIP format.");
+      return;
+    }
+    
     setLoadingGame(true);
     try {
       console.log('Starting game load for:', game.game_file_path);
