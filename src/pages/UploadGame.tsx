@@ -974,15 +974,56 @@ export default function UploadGame() {
                     </p>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="imageUrl">Thumbnail Image URL (optional)</Label>
+                  <div className="space-y-3">
+                    <Label>Thumbnail Image URL (optional)</Label>
                     <Input
                       id="imageUrl"
                       type="url"
-                      value={formData.imageUrl}
-                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                       placeholder="https://example.com/thumbnail.png"
+                      value={formData.imageUrl}
+                      onChange={(e) => {
+                        setFormData({ ...formData, imageUrl: e.target.value });
+                        if (e.target.value) setThumbnail(null);
+                      }}
+                      className="border-primary/50 focus:border-primary"
                     />
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">OR</span>
+                      <div className="flex-1 h-px bg-border" />
+                    </div>
+
+                    <div
+                      onDragOver={handleThumbDragOver}
+                      onDragLeave={handleThumbDragLeave}
+                      onDrop={handleThumbDrop}
+                      className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-all cursor-pointer ${
+                        isDraggingThumb 
+                          ? 'border-primary bg-primary/10' 
+                          : thumbnail 
+                            ? 'border-green-500 bg-green-500/10' 
+                            : 'border-muted-foreground/30 hover:border-primary/50'
+                      }`}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          handleThumbnailChange(e);
+                          if (e.target.files?.[0]) setFormData({ ...formData, imageUrl: '' });
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      {thumbnail ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <p className="text-sm text-green-600 truncate">{thumbnail.name}</p>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Upload image file (drag & drop or click)</p>
+                      )}
+                    </div>
                   </div>
                 </>
               )}
