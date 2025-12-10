@@ -2393,6 +2393,7 @@ export type Database = {
           created_at: string
           description: string | null
           download_count: number
+          external_url: string | null
           game_file_path: string
           id: string
           play_count: number
@@ -2413,6 +2414,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           download_count?: number
+          external_url?: string | null
           game_file_path: string
           id?: string
           play_count?: number
@@ -2433,6 +2435,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           download_count?: number
+          external_url?: string | null
           game_file_path?: string
           id?: string
           play_count?: number
