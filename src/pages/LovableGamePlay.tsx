@@ -46,8 +46,8 @@ export default function LovableGamePlay() {
           .from("profiles")
           .select("username")
           .eq("id", data.user_id)
-          .single();
-        creatorName = profile?.username;
+          .maybeSingle();
+        creatorName = profile?.username || null;
       }
       
       setGame({ ...data, creator_name: creatorName });

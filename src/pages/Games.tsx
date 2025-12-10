@@ -146,11 +146,16 @@ const Games = () => {
       const gamesWithProfiles = await Promise.all(
         (data || []).map(async (game) => {
           if (game.user_id) {
-            const { data: profile } = await supabase
+            const { data: profile, error: profileError } = await supabase
               .from("profiles")
               .select("username, avatar_url")
               .eq("id", game.user_id)
-              .single();
+              .maybeSingle();
+            
+            if (profileError) {
+              console.error("Error fetching profile:", profileError);
+              return { ...game, profiles: null };
+            }
             return { ...game, profiles: profile };
           }
           return { ...game, profiles: null };
