@@ -444,8 +444,10 @@ const GamePlay = () => {
       case "SpaceExplorer2D": return <SpaceExplorer {...gameProps} />;
       case "OceanExplorer": return <OceanExplorer3D {...gameProps} />;
       case "OceanExplorer2D": return <OceanExplorer {...gameProps} />;
-      case "MazeRunner": return <MazeRunner3D {...gameProps} />;
-      case "MazeRunner2D": return <MazeRunner {...gameProps} />;
+      case "MazeRunner":
+      case "maze-runner":
+        return <MazeRunner {...gameProps} />;
+      case "MazeRunner3D": return <MazeRunner3D {...gameProps} />;
       case "TreasureHunt": return <TreasureHunt3D {...gameProps} />;
       case "TreasureHunt2D": return <TreasureHunt {...gameProps} />;
       case "Platformer": return <Platformer3D {...gameProps} />;
