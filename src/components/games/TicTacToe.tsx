@@ -1,14 +1,15 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, RotateCcw, Heart, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 
 type Player = "X" | "O" | null;
 type Difficulty = "easy" | "medium" | "hard";
 
 const BOARD_SIZE = 30;
 const WIN_LENGTH = 5;
+const CELL_SIZE = 24;
 
 export const TicTacToe = ({
   level = 1,
@@ -26,16 +27,28 @@ export const TicTacToe = ({
   const [wins, setWins] = useState(0);
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [gameStarted, setGameStarted] = useState(false);
+  const [lastMove, setLastMove] = useState<number | null>(null);
+  const [winningCells, setWinningCells] = useState<number[]>([]);
+  const gridRef = useRef<HTMLDivElement>(null);
   const targetWins = Math.min(level, 3);
 
-  const checkWinner = useCallback((squares: Player[], lastMove: number): Player => {
-    if (lastMove === -1) return null;
+  // Auto-scroll to center on mount
+  useEffect(() => {
+    if (gridRef.current && gameStarted) {
+      const centerOffset = (BOARD_SIZE * CELL_SIZE) / 2 - gridRef.current.clientWidth / 2;
+      gridRef.current.scrollLeft = centerOffset;
+      gridRef.current.scrollTop = centerOffset;
+    }
+  }, [gameStarted]);
+
+  const checkWinner = useCallback((squares: Player[], lastMoveIdx: number): { winner: Player; cells: number[] } => {
+    if (lastMoveIdx === -1) return { winner: null, cells: [] };
     
-    const row = Math.floor(lastMove / BOARD_SIZE);
-    const col = lastMove % BOARD_SIZE;
-    const player = squares[lastMove];
+    const row = Math.floor(lastMoveIdx / BOARD_SIZE);
+    const col = lastMoveIdx % BOARD_SIZE;
+    const player = squares[lastMoveIdx];
     
-    if (!player) return null;
+    if (!player) return { winner: null, cells: [] };
 
     const directions = [
       [0, 1],   // horizontal
@@ -45,15 +58,16 @@ export const TicTacToe = ({
     ];
 
     for (const [dr, dc] of directions) {
-      let count = 1;
+      const cells = [lastMoveIdx];
       
       // Check positive direction
       for (let i = 1; i < WIN_LENGTH; i++) {
         const r = row + dr * i;
         const c = col + dc * i;
         if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-          if (squares[r * BOARD_SIZE + c] === player) {
-            count++;
+          const idx = r * BOARD_SIZE + c;
+          if (squares[idx] === player) {
+            cells.push(idx);
           } else break;
         } else break;
       }
@@ -63,21 +77,21 @@ export const TicTacToe = ({
         const r = row - dr * i;
         const c = col - dc * i;
         if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-          if (squares[r * BOARD_SIZE + c] === player) {
-            count++;
+          const idx = r * BOARD_SIZE + c;
+          if (squares[idx] === player) {
+            cells.push(idx);
           } else break;
         } else break;
       }
       
-      if (count >= WIN_LENGTH) return player;
+      if (cells.length >= WIN_LENGTH) return { winner: player, cells };
     }
     
-    return null;
+    return { winner: null, cells: [] };
   }, []);
 
   const evaluateLine = (squares: Player[], start: number, dr: number, dc: number, player: Player): number => {
     let score = 0;
-    const opponent = player === "O" ? "X" : "O";
     
     for (let len = WIN_LENGTH; len >= 2; len--) {
       for (let offset = 0; offset <= WIN_LENGTH - len; offset++) {
@@ -116,14 +130,10 @@ export const TicTacToe = ({
     let score = 0;
     
     for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
-      const row = Math.floor(i / BOARD_SIZE);
-      const col = i % BOARD_SIZE;
-      
-      // Check all 4 directions from each cell
-      score += evaluateLine(squares, i, 0, 1, player);  // horizontal
-      score += evaluateLine(squares, i, 1, 0, player);  // vertical
-      score += evaluateLine(squares, i, 1, 1, player);  // diagonal
-      score += evaluateLine(squares, i, 1, -1, player); // anti-diagonal
+      score += evaluateLine(squares, i, 0, 1, player);
+      score += evaluateLine(squares, i, 1, 0, player);
+      score += evaluateLine(squares, i, 1, 1, player);
+      score += evaluateLine(squares, i, 1, -1, player);
     }
     
     return score;
@@ -137,21 +147,18 @@ export const TicTacToe = ({
     const emptyCells = getEmptyCells(squares);
     if (emptyCells.length === 0) return -1;
     
-    // Easy: mostly random moves
     if (difficulty === "easy") {
       if (Math.random() < 0.7) {
         return emptyCells[Math.floor(Math.random() * emptyCells.length)];
       }
     }
     
-    // Medium: 50% smart, 50% random
     if (difficulty === "medium") {
       if (Math.random() < 0.4) {
         return emptyCells[Math.floor(Math.random() * emptyCells.length)];
       }
     }
 
-    // For hard/smart moves: evaluate each possible move
     let bestScore = -Infinity;
     let bestMoves: number[] = [];
     
@@ -159,14 +166,12 @@ export const TicTacToe = ({
       const newSquares = [...squares];
       newSquares[move] = "O";
       
-      // Check for immediate win
-      if (checkWinner(newSquares, move) === "O") {
+      if (checkWinner(newSquares, move).winner === "O") {
         return move;
       }
       
-      // Check if this blocks opponent's win
       newSquares[move] = "X";
-      if (checkWinner(newSquares, move) === "X") {
+      if (checkWinner(newSquares, move).winner === "X") {
         return move;
       }
       
@@ -181,11 +186,10 @@ export const TicTacToe = ({
       }
     }
     
-    // Prefer center area
     const centerMoves = bestMoves.filter(move => {
       const row = Math.floor(move / BOARD_SIZE);
       const col = move % BOARD_SIZE;
-      return row >= 3 && row <= 6 && col >= 3 && col <= 6;
+      return row >= 10 && row <= 20 && col >= 10 && col <= 20;
     });
     
     if (centerMoves.length > 0) {
@@ -196,19 +200,17 @@ export const TicTacToe = ({
   }, [difficulty, checkWinner]);
 
   const handleClick = (index: number) => {
-    if (board[index] || !isXNext) return;
-    
-    // Check if there's already a winner
-    const existingWinner = board.some((_, i) => checkWinner(board, i));
-    if (existingWinner) return;
+    if (board[index] || !isXNext || winningCells.length > 0) return;
 
     const newBoard = [...board];
     newBoard[index] = "X";
     setBoard(newBoard);
+    setLastMove(index);
     setIsXNext(false);
 
-    const winner = checkWinner(newBoard, index);
+    const { winner, cells } = checkWinner(newBoard, index);
     if (winner === "X") {
+      setWinningCells(cells);
       const newWins = wins + 1;
       setWins(newWins);
       toast.success("Bạn thắng! 🎉");
@@ -223,17 +225,18 @@ export const TicTacToe = ({
       return;
     }
 
-    // AI move
     setTimeout(() => {
       const aiMove = getBestMove([...newBoard]);
       if (aiMove === -1) return;
       
       newBoard[aiMove] = "O";
       setBoard([...newBoard]);
+      setLastMove(aiMove);
       setIsXNext(true);
 
-      const aiWinner = checkWinner(newBoard, aiMove);
-      if (aiWinner === "O") {
+      const aiResult = checkWinner(newBoard, aiMove);
+      if (aiResult.winner === "O") {
+        setWinningCells(aiResult.cells);
         toast.error("Máy thắng rồi! 🤖");
       } else if (!newBoard.includes(null)) {
         toast("Hòa rồi! 🤝");
@@ -244,6 +247,8 @@ export const TicTacToe = ({
   const resetGame = () => {
     setBoard(Array(BOARD_SIZE * BOARD_SIZE).fill(null));
     setIsXNext(true);
+    setLastMove(null);
+    setWinningCells([]);
   };
 
   const resetAll = () => {
@@ -258,42 +263,70 @@ export const TicTacToe = ({
     resetGame();
   };
 
-  const hasWinner = board.some((_, i) => checkWinner(board, i));
-  const isDraw = !hasWinner && !board.includes(null);
-  const currentWinner = board.reduce<Player>((acc, _, i) => acc || checkWinner(board, i), null);
+  const isDraw = winningCells.length === 0 && !board.includes(null);
+  const hasWinner = winningCells.length > 0;
 
   if (!gameStarted) {
     return (
-      <div className="flex flex-col items-center gap-6 w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">Caro 5 Ô</h2>
-        <p className="text-muted-foreground text-center">Chọn độ khó để bắt đầu</p>
+      <div className="flex flex-col items-center gap-6 p-6 animate-fade-in">
+        {/* Difficulty Selection Screen */}
+        <div className="bg-gradient-to-br from-teal-300 via-cyan-300 to-green-300 p-6 rounded-3xl shadow-2xl">
+          <div className="grid grid-cols-3 gap-2 w-48 h-48 mb-4">
+            {[null, "X", null, "X", "O", "X", null, "O", null].map((cell, i) => (
+              <div 
+                key={i}
+                className={`rounded-lg flex items-center justify-center text-3xl font-bold ${
+                  cell === "X" ? "bg-yellow-400 text-yellow-900" :
+                  cell === "O" ? "bg-orange-400 text-orange-900" :
+                  "bg-teal-400/50"
+                }`}
+              >
+                {cell === "X" && "✕"}
+                {cell === "O" && "○"}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center gap-4">
+            <div className="flex items-center gap-1 bg-white/30 px-3 py-1 rounded-full">
+              <Heart className="w-4 h-4 text-pink-500" />
+              <span className="text-sm font-bold">0</span>
+            </div>
+            <div className="flex items-center gap-1 bg-white/30 px-3 py-1 rounded-full">
+              <TrendingUp className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-bold">0</span>
+            </div>
+          </div>
+        </div>
+
+        <h2 className="text-3xl font-bold text-foreground">Tic Tac Toe</h2>
+        <p className="text-muted-foreground text-center">Đánh cờ XO với máy tính thông minh!</p>
         
-        <div className="flex flex-col gap-4 w-full max-w-xs">
+        <div className="flex flex-col gap-3 w-full max-w-xs">
           <Button 
             onClick={() => startGame("easy")} 
             size="lg" 
-            className="w-full bg-green-500 hover:bg-green-600 text-white"
+            className="w-full bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white shadow-lg"
           >
-            🌱 Dễ
+            😊 Dễ
           </Button>
           <Button 
             onClick={() => startGame("medium")} 
             size="lg" 
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-white"
+            className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-lg"
           >
             ⚡ Trung bình
           </Button>
           <Button 
             onClick={() => startGame("hard")} 
             size="lg" 
-            className="w-full bg-red-500 hover:bg-red-600 text-white"
+            className="w-full bg-gradient-to-r from-red-400 to-rose-500 hover:from-red-500 hover:to-rose-600 text-white shadow-lg"
           >
             🔥 Khó
           </Button>
         </div>
         
         {onBack && (
-          <Button onClick={onBack} variant="outline" className="mt-4">
+          <Button onClick={onBack} variant="outline" className="mt-2">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Quay lại
           </Button>
@@ -303,66 +336,102 @@ export const TicTacToe = ({
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 md:gap-4 w-full">
-      <div className="text-center space-y-1">
-        <div className="flex items-center justify-center gap-2">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">
-            Thắng: {wins}/{targetWins}
-          </h2>
-          <span className={`px-2 py-1 rounded text-xs font-medium ${
-            difficulty === "easy" ? "bg-green-500/20 text-green-600" :
-            difficulty === "medium" ? "bg-yellow-500/20 text-yellow-600" :
-            "bg-red-500/20 text-red-600"
-          }`}>
-            {difficulty === "easy" ? "Dễ" : difficulty === "medium" ? "TB" : "Khó"}
-          </span>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {currentWinner ? `${currentWinner === "X" ? "Bạn" : "Máy"} thắng!` : isDraw ? "Hòa!" : `Lượt: ${isXNext ? "Bạn (X)" : "Máy (O)"}`}
-        </p>
-        <p className="text-xs text-muted-foreground/70">Nối 5 ô liên tiếp để thắng</p>
+    <div className="flex flex-col items-center gap-4 p-4 animate-fade-in w-full max-w-2xl mx-auto">
+      {/* Header Stats */}
+      <div className="w-full flex items-center justify-between">
+        {onBack && (
+          <Button onClick={onBack} size="sm" variant="ghost">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        )}
+        <h2 className="text-xl font-bold text-foreground">Tic Tac Toe</h2>
+        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+          difficulty === "easy" ? "bg-green-500/20 text-green-600" :
+          difficulty === "medium" ? "bg-yellow-500/20 text-yellow-600" :
+          "bg-red-500/20 text-red-600"
+        }`}>
+          {difficulty === "easy" ? "😊 easy" : difficulty === "medium" ? "⚡ medium" : "🔥 hard"}
+        </span>
       </div>
 
-      <Card className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 overflow-auto max-w-full">
+      {/* Score Bar */}
+      <div className="flex items-center gap-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl px-6 py-3">
+        <div className="flex items-center gap-2">
+          <Heart className="w-5 h-5 text-pink-500" />
+          <span className="font-bold text-foreground">{wins}</span>
+        </div>
+        <div className="h-6 w-px bg-border" />
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-blue-500" />
+          <span className="font-bold text-foreground">{targetWins - wins} left</span>
+        </div>
+      </div>
+
+      {/* Status */}
+      <p className="text-sm text-muted-foreground">
+        {hasWinner ? (
+          winningCells.length > 0 && board[winningCells[0]] === "X" 
+            ? "🎉 Bạn thắng!" 
+            : "🤖 Máy thắng!"
+        ) : isDraw ? "🤝 Hòa!" : (
+          isXNext ? "Lượt của bạn (X)" : "Máy đang suy nghĩ..."
+        )}
+      </p>
+
+      {/* Game Grid */}
+      <div 
+        ref={gridRef}
+        className="bg-gradient-to-br from-teal-300 via-cyan-300 to-green-300 p-3 rounded-3xl shadow-2xl overflow-auto max-w-full"
+        style={{ maxHeight: '60vh' }}
+      >
         <div 
           className="grid gap-0.5"
           style={{ 
-            gridTemplateColumns: `repeat(${BOARD_SIZE}, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${BOARD_SIZE}, ${CELL_SIZE}px)`,
             width: 'fit-content'
           }}
         >
-          {board.map((cell, index) => (
-            <button
-              key={index}
-              onClick={() => handleClick(index)}
-              disabled={!!cell || !!currentWinner || !isXNext}
-              className={`w-7 h-7 md:w-8 md:h-8 text-lg md:text-xl font-bold flex items-center justify-center rounded-sm transition-all touch-manipulation ${
-                cell === "X" 
-                  ? "bg-blue-500 text-white" 
-                  : cell === "O" 
-                  ? "bg-red-500 text-white" 
-                  : "bg-white/80 hover:bg-white dark:bg-gray-800 dark:hover:bg-gray-700 hover:scale-105"
-              } ${!cell && !currentWinner && isXNext ? "cursor-pointer" : "cursor-default"}`}
-            >
-              {cell === "X" && "✕"}
-              {cell === "O" && "○"}
-            </button>
-          ))}
+          {board.map((cell, index) => {
+            const isWinning = winningCells.includes(index);
+            const isLast = lastMove === index;
+            
+            return (
+              <motion.button
+                key={index}
+                initial={cell && isLast ? { scale: 0 } : false}
+                animate={{ scale: 1 }}
+                onClick={() => handleClick(index)}
+                disabled={!!cell || hasWinner || !isXNext}
+                className={`
+                  flex items-center justify-center text-sm font-bold rounded-sm transition-all
+                  ${isWinning ? 'ring-2 ring-white animate-pulse' : ''}
+                  ${cell === "X" 
+                    ? "bg-gradient-to-br from-yellow-400 to-yellow-500 text-yellow-900 shadow-md" 
+                    : cell === "O" 
+                    ? "bg-gradient-to-br from-orange-400 to-orange-500 text-orange-900 shadow-md" 
+                    : "bg-teal-400/60 hover:bg-teal-400 hover:scale-110"
+                  }
+                  ${!cell && !hasWinner && isXNext ? "cursor-pointer" : "cursor-default"}
+                `}
+                style={{ width: CELL_SIZE, height: CELL_SIZE }}
+              >
+                {cell === "X" && <span className="drop-shadow">✕</span>}
+                {cell === "O" && <span className="drop-shadow">○</span>}
+              </motion.button>
+            );
+          })}
         </div>
-      </Card>
+      </div>
 
-      <div className="flex gap-2 flex-wrap justify-center">
-        {onBack && (
-          <Button onClick={onBack} size="sm" variant="outline" className="touch-manipulation">
-            <ArrowLeft className="mr-1 h-3 w-3" />
-            Quay lại
-          </Button>
-        )}
-        <Button onClick={resetGame} size="sm" variant="outline" className="touch-manipulation">
-          <RotateCcw className="mr-1 h-3 w-3" />
+      <p className="text-xs text-muted-foreground">Bàn {BOARD_SIZE}×{BOARD_SIZE} • Nối {WIN_LENGTH} ô để thắng</p>
+
+      {/* Controls */}
+      <div className="flex gap-3">
+        <Button onClick={resetGame} variant="outline" className="gap-2">
+          <RotateCcw className="h-4 w-4" />
           Ván mới
         </Button>
-        <Button onClick={resetAll} size="sm" className="touch-manipulation">
+        <Button onClick={resetAll} className="bg-gradient-to-r from-primary to-secondary">
           Đổi độ khó
         </Button>
       </div>
