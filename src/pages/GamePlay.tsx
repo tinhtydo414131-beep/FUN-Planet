@@ -126,6 +126,7 @@ import CookingMama3D from "@/components/games/CookingMama3D";
 import Game2048Nexus3D from "@/components/games/Game2048Nexus3D";
 import HappyKitchenJoy3D from "@/components/games/HappyKitchenJoy3D";
 import GoldHookMaster3D from "@/components/games/GoldHookMaster3D";
+import { HarvestHaven } from "@/components/games/HarvestHaven";
 
 interface Game {
   id: string;
@@ -502,6 +503,11 @@ const GamePlay = () => {
         return <FlappyBird3D {...gameProps} />;
       case "FlappyBird2D": return <FlappyBird {...gameProps} />;
       
+      // Farming & City Building
+      case "HarvestHaven":
+      case "harvest-haven":
+        return <HarvestHaven onBack={handleBackToLevelSelect} />;
+      
       default:
         return (
           <div className="text-center py-20">
@@ -544,7 +550,8 @@ const GamePlay = () => {
                        gameId === 'restaurant-chef' ||
                         gameId === 'theme-park-builder' ||
                         gameId === 'gold-miner' ||
-                        gameId === 'gold-hook-master';
+                        gameId === 'gold-hook-master' ||
+                        gameId === 'harvest-haven';
   
   if (!game && !isDirectGame) {
     return (
