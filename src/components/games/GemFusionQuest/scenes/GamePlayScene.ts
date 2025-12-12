@@ -285,7 +285,8 @@ export class GamePlayScene extends Phaser.Scene {
         const gem = this.grid[row]?.[col];
         if (gem) {
           gem.blocker = blocker.type;
-          gem.blockerLayer = BLOCKER_TYPES[blocker.type.toUpperCase() as keyof typeof BLOCKER_TYPES]?.layers || 1;
+          const blockerInfo = BLOCKER_TYPES[blocker.type.toUpperCase() as keyof typeof BLOCKER_TYPES];
+          gem.blockerLayer = ('layers' in blockerInfo ? blockerInfo.layers : 1) || 1;
           this.updateGemVisual(gem);
         }
       });

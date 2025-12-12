@@ -9,14 +9,14 @@ interface LevelCompleteData {
 }
 
 export class LevelCompleteScene extends Phaser.Scene {
-  private data!: LevelCompleteData;
+  private levelData!: LevelCompleteData;
   
   constructor() {
     super({ key: 'LevelComplete' });
   }
   
   init(data: LevelCompleteData) {
-    this.data = data;
+    this.levelData = data;
   }
   
   create() {
@@ -25,22 +25,22 @@ export class LevelCompleteScene extends Phaser.Scene {
     // Background
     const bg = this.add.graphics();
     bg.fillGradientStyle(
-      this.data.isWin ? 0x2ecc71 : 0xe74c3c,
-      this.data.isWin ? 0x27ae60 : 0xc0392b,
-      this.data.isWin ? 0x1e8449 : 0x962d22,
-      this.data.isWin ? 0x1e8449 : 0x962d22,
+      this.levelData.isWin ? 0x2ecc71 : 0xe74c3c,
+      this.levelData.isWin ? 0x27ae60 : 0xc0392b,
+      this.levelData.isWin ? 0x1e8449 : 0x962d22,
+      this.levelData.isWin ? 0x1e8449 : 0x962d22,
       1
     );
     bg.fillRect(0, 0, width, height);
     
     // Particle effects for win
-    if (this.data.isWin) {
+    if (this.levelData.isWin) {
       this.createConfetti();
     }
     
     // Result text
-    const resultEmoji = this.data.isWin ? '🎉' : '😢';
-    const resultText = this.data.isWin ? 'LEVEL COMPLETE!' : 'LEVEL FAILED';
+    const resultEmoji = this.levelData.isWin ? '🎉' : '😢';
+    const resultText = this.levelData.isWin ? 'LEVEL COMPLETE!' : 'LEVEL FAILED';
     
     this.add.text(width / 2, 120, resultEmoji, {
       fontSize: '80px',
@@ -65,13 +65,13 @@ export class LevelCompleteScene extends Phaser.Scene {
     });
     
     // Level info
-    this.add.text(width / 2, 260, `Level ${this.data.levelId}`, {
+    this.add.text(width / 2, 260, `Level ${this.levelData.levelId}`, {
       fontSize: '24px',
       color: '#ffffff',
     }).setOrigin(0.5).setAlpha(0.8);
     
     // Stars (for win)
-    if (this.data.isWin) {
+    if (this.levelData.isWin) {
       this.createStarsDisplay(width / 2, 320);
     }
     
@@ -92,7 +92,7 @@ export class LevelCompleteScene extends Phaser.Scene {
     // Animate score counting
     this.tweens.addCounter({
       from: 0,
-      to: this.data.score,
+      to: this.levelData.score,
       duration: 1500,
       ease: 'Power2',
       onUpdate: (tween) => {
@@ -103,18 +103,18 @@ export class LevelCompleteScene extends Phaser.Scene {
     // Buttons
     const btnY = 550;
     
-    if (this.data.isWin) {
+    if (this.levelData.isWin) {
       // Next level button
       this.createButton(width / 2, btnY, '▶️ Next Level', 0x2ecc71, () => {
         const store = useGemFusionStore.getState();
-        const nextLevel = this.data.levelId + 1;
+        const nextLevel = this.levelData.levelId + 1;
         store.setCurrentLevel(nextLevel);
         this.scene.start('GamePlay', { levelId: nextLevel });
       });
     } else {
       // Retry button
       this.createButton(width / 2, btnY, '🔄 Try Again', 0xf1c40f, () => {
-        this.scene.start('GamePlay', { levelId: this.data.levelId });
+        this.scene.start('GamePlay', { levelId: this.levelData.levelId });
       });
     }
     
@@ -136,7 +136,7 @@ export class LevelCompleteScene extends Phaser.Scene {
     
     for (let i = 0; i < 3; i++) {
       const starX = (i - 1) * starSpacing;
-      const earned = i < this.data.stars;
+      const earned = i < this.levelData.stars;
       
       const star = this.add.text(starX, 0, '⭐', {
         fontSize: earned ? '50px' : '40px',
