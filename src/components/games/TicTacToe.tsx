@@ -7,7 +7,7 @@ import { ArrowLeft, RotateCcw } from "lucide-react";
 type Player = "X" | "O" | null;
 type Difficulty = "easy" | "medium" | "hard";
 
-const BOARD_SIZE = 10;
+const BOARD_SIZE = 30;
 const WIN_LENGTH = 5;
 
 export const TicTacToe = ({
