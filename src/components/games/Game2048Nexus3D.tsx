@@ -152,7 +152,7 @@ export const Game2048Nexus3D: React.FC<Game2048Nexus3DProps> = ({
   const [currentLevel, setCurrentLevel] = useState(level);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const [showLevelMap, setShowLevelMap] = useState(false);
+  const [showLevelMap, setShowLevelMap] = useState(true);
   const [highestUnlocked, setHighestUnlocked] = useState(1);
   
   // Calculate target score for current level (each level needs 200 more points)
