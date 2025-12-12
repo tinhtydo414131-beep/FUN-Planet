@@ -32,7 +32,7 @@ export const Hero = () => {
       >
         <source src="https://media.funplanet.life/videos/hero-background.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30" />
+      <div className="absolute inset-0 bg-white/30" />
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center space-y-6 sm:space-y-8 animate-fade-in">
           <div className="flex justify-end mb-4">
