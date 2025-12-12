@@ -687,7 +687,7 @@ const GamePlay = () => {
                 </div>
               )}
               
-              {showLevelSelector && !gameStarted && game?.component_name !== "HappyKitchenJoy" && game?.component_name !== "CookingMama" && game?.component_name !== "TicTacToe" && !isDirectGame ? (
+              {showLevelSelector && !gameStarted && game?.component_name !== "HappyKitchenJoy" && game?.component_name !== "CookingMama" && game?.component_name !== "TicTacToe" && game?.component_name !== "Game2048Nexus" && !isDirectGame ? (
                 game.component_name === "FlowerField" ? (
                   <FlowerFieldLevelSelector
                     highestLevelCompleted={highestLevelCompleted}
