@@ -37,7 +37,11 @@ export const BackgroundMusicPlayer = () => {
   });
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Load saved volume on mount
+  // Move useDraggable BEFORE any conditional returns
+  const { position, isDragging, handleMouseDown, style } = useDraggable({
+    storageKey: "music_player_position",
+    defaultPosition: { x: 0, y: 0 },
+  });
   useEffect(() => {
     const savedVolume = localStorage.getItem("funplanet_music_volume");
     
@@ -147,11 +151,6 @@ export const BackgroundMusicPlayer = () => {
   };
 
   if (!user) return null;
-
-  const { position, isDragging, handleMouseDown, style } = useDraggable({
-    storageKey: "music_player_position",
-    defaultPosition: { x: 0, y: 0 },
-  });
 
   return (
     <div 
