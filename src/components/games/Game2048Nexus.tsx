@@ -27,7 +27,7 @@ export const Game2048Nexus = ({ onBack }: Game2048NexusProps) => {
   const audioRef = useRef<NexusAudioSystem | null>(null);
   
   // Level selection state
-  const [showLevelMap, setShowLevelMap] = useState(true);
+  const [showLevelMap, setShowLevelMap] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [highestUnlocked, setHighestUnlocked] = useState(1);
   const [totalPlays, setTotalPlays] = useState(0);
