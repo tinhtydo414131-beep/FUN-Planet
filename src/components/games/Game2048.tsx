@@ -115,7 +115,7 @@ const Game2048: React.FC<Game2048Props> = ({ onBack }) => {
     (direction: "up" | "down" | "left" | "right") => {
       if (gameOver) return;
 
-      let newTiles = tiles.map((t) => ({ ...t, isNew: false, isMerged: false }));
+      let newTiles: Tile[] = tiles.map((t) => ({ ...t, isNew: false, isMerged: false }));
       let moved = false;
       let scoreGain = 0;
 
