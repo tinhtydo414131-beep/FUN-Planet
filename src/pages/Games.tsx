@@ -503,15 +503,14 @@ const Games = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedAge(filter.id)}
-                    className={`relative flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full font-bold text-sm sm:text-base transition-all overflow-hidden ${
+                    className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full font-bold text-sm sm:text-base transition-all ${
                       selectedAge === filter.id
                         ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
                         : 'bg-card border-2 border-primary/20 hover:border-primary/50 text-foreground'
                     }`}
                   >
-                    {selectedAge === filter.id && <ButtonFacets />}
-                    <span className="text-lg relative z-10">{filter.emoji}</span>
-                    <span className="hidden sm:inline relative z-10">{filter.label}</span>
+                    <span className="text-lg">{filter.emoji}</span>
+                    <span className="hidden sm:inline">{filter.label}</span>
                   </motion.button>
                 );
               })}
