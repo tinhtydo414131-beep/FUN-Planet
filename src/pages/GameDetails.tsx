@@ -465,14 +465,31 @@ export default function GameDetails() {
       // Find index.html in the ZIP - prioritize dist/build folders for built projects
       let indexContent: string | null = null;
       let basePath = '';
+      let foundHtmlPath = '';
+      
+      // Helper to check for HTML file (case-insensitive)
+      const isHtmlFile = (path: string) => path.toLowerCase().endsWith('.html');
+      const isIndexHtml = (path: string) => path.toLowerCase().endsWith('index.html');
+      
+      // Collect all HTML files for fallback
+      const allHtmlFiles: string[] = [];
+      for (const [path, file] of Object.entries(zip.files)) {
+        if (isHtmlFile(path) && !file.dir) {
+          allHtmlFiles.push(path);
+        }
+      }
+      console.log('All HTML files found:', allHtmlFiles);
       
       // First look for built output (dist, build folders)
       const builtPaths = ['dist/', 'build/', 'out/', 'public/'];
       for (const builtPath of builtPaths) {
-        for (const [path, file] of Object.entries(zip.files)) {
-          if (path.includes(builtPath) && path.endsWith('index.html') && !file.dir) {
+        for (const path of allHtmlFiles) {
+          if (path.toLowerCase().includes(builtPath) && isIndexHtml(path)) {
+            const file = zip.files[path];
             indexContent = await file.async('string');
-            basePath = path.replace('index.html', '');
+            foundHtmlPath = path;
+            const fileName = path.split('/').pop() || '';
+            basePath = path.slice(0, path.length - fileName.length);
             console.log('Found built index.html at:', path, 'basePath:', basePath);
             break;
           }
@@ -482,27 +499,30 @@ export default function GameDetails() {
       
       // If no built folder, look for index.html at root or in subdirectories
       if (!indexContent) {
-        for (const [path, file] of Object.entries(zip.files)) {
-          if (path.endsWith('index.html') && !file.dir) {
+        for (const path of allHtmlFiles) {
+          if (isIndexHtml(path)) {
+            const file = zip.files[path];
             indexContent = await file.async('string');
-            basePath = path.replace('index.html', '');
+            foundHtmlPath = path;
+            const fileName = path.split('/').pop() || '';
+            basePath = path.slice(0, path.length - fileName.length);
             console.log('Found index.html at:', path, 'basePath:', basePath);
             break;
           }
         }
       }
       
-      // If still no index.html, look for ANY .html file (handles "index copy.html" etc)
-      if (!indexContent) {
-        for (const [path, file] of Object.entries(zip.files)) {
-          if (path.endsWith('.html') && !file.dir) {
-            indexContent = await file.async('string');
-            const fileName = path.split('/').pop() || '';
-            basePath = path.replace(fileName, '');
-            console.log('Found HTML file at:', path, 'basePath:', basePath);
-            break;
-          }
-        }
+      // If still no index.html, look for ANY .html file (handles "index copy.html", "game.html", etc)
+      if (!indexContent && allHtmlFiles.length > 0) {
+        // Prefer files at root level or shortest path
+        const sortedHtmlFiles = [...allHtmlFiles].sort((a, b) => a.split('/').length - b.split('/').length);
+        const path = sortedHtmlFiles[0];
+        const file = zip.files[path];
+        indexContent = await file.async('string');
+        foundHtmlPath = path;
+        const fileName = path.split('/').pop() || '';
+        basePath = path.slice(0, path.length - fileName.length);
+        console.log('Found fallback HTML file at:', path, 'basePath:', basePath);
       }
       
       if (!indexContent) {
