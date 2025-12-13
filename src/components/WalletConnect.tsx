@@ -10,11 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CamlyCoinReward } from "./CamlyCoinReward";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
+
 
 export const WalletConnect = () => {
   const { user } = useAuth();

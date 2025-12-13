@@ -11,21 +11,12 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   build: {
-    rollupOptions: {
-      external: [
-      '@walletconnect/ethereum-provider',
-      '@walletconnect/sign-client',
-      '@walletconnect/universal-provider',
-      '@walletconnect/modal'
-    ],
-    },
     commonjsOptions: {
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
   },
   optimizeDeps: {
-    include: ['@walletconnect/ethereum-provider'],
     esbuildOptions: {
       target: 'esnext',
     },
