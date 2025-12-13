@@ -54,6 +54,7 @@ import PlanetExplorer from "./pages/PlanetExplorer";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import LovableGamePlay from "./pages/LovableGamePlay";
+import AutoClaim from "./pages/AutoClaim";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/about" element={<About />} />
         <Route path="/lovable-game/:id" element={<LovableGamePlay />} />
+        <Route path="/auto-claim" element={<AutoClaim />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
