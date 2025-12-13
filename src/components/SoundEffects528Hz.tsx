@@ -113,56 +113,18 @@ export const SoundEffects528Hz = ({ autoPlay = false }: SoundEffects528HzProps) 
   );
 };
 
-// Play bling sound effect
+// Play bling sound effect - using "Rich" reward sound
 export const playBlingSound = () => {
-  const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-  if (!AudioContext) return;
-
-  const audioContext = new AudioContext();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5
-  oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.1); // A6
-  
-  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + 0.3);
+  const audio = new Audio("/audio/rich-reward.mp3");
+  audio.volume = 0.5;
+  audio.play().catch(console.error);
 };
 
-// Play reward sound
+// Play reward sound - using "Rich" reward sound
 export const playRewardSound = () => {
-  const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-  if (!AudioContext) return;
-
-  const audioContext = new AudioContext();
-  
-  // Play a quick ascending melody
-  const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-  
-  notes.forEach((freq, i) => {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-    
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime + i * 0.1);
-    gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + i * 0.1 + 0.05);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.3);
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.start(audioContext.currentTime + i * 0.1);
-    oscillator.stop(audioContext.currentTime + i * 0.1 + 0.3);
-  });
+  const audio = new Audio("/audio/rich-reward.mp3");
+  audio.volume = 0.6;
+  audio.play().catch(console.error);
 };
 
 export default SoundEffects528Hz;

@@ -22,8 +22,8 @@ export function CoinNotification() {
   const { preferences } = useNotificationPreferences();
 
   useEffect(() => {
-    // Initialize audio
-    audioRef.current = new Audio("https://media.funplanet.life/audio/coin-reward.mp3");
+    // Initialize audio - using "Rich" reward sound from Suno
+    audioRef.current = new Audio("/audio/rich-reward.mp3");
     audioRef.current.volume = 0.5;
     
     // Test audio loading
