@@ -819,27 +819,28 @@ export default function GameDetails() {
                   <h1 className="text-4xl font-bold text-primary mb-2">{game.title}</h1>
                   
                   {/* Author Info */}
-                  {author && (
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-muted-foreground">🎨 Tác giả:</span>
-                        <span className="font-semibold text-foreground">
-                          {author.username || (author.wallet_address ? shortenAddress(author.wallet_address) : 'Anonymous')}
-                        </span>
-                      </div>
-                      {game.user_id !== user?.id && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleMessageAuthor}
-                          className="gap-2"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                          Nhắn tin
-                        </Button>
-                      )}
+                  <div className="flex items-center justify-between gap-2 mb-3 p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">🎨 Tác giả:</span>
+                      <span className="font-semibold text-foreground">
+                        {author?.username || (author?.wallet_address ? shortenAddress(author.wallet_address) : 'Đang tải...')}
+                      </span>
                     </div>
-                  )}
+                    {author && game.user_id !== user?.id && (
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={handleMessageAuthor}
+                        className="gap-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        Nhắn tin
+                      </Button>
+                    )}
+                    {game.user_id === user?.id && (
+                      <Badge variant="secondary">Game của bạn</Badge>
+                    )}
+                  </div>
                   
                   <p className="text-muted-foreground">{game.description}</p>
                 </div>
