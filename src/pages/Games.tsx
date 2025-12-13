@@ -522,9 +522,6 @@ const Games = () => {
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
               {ageFilters.map((filter) => {
                 const Icon = filter.icon;
-                const isAllFilter = filter.id === 'all';
-                const isSelected = selectedAge === filter.id;
-                
                 return (
                   <motion.button
                     key={filter.id}
@@ -532,15 +529,10 @@ const Games = () => {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedAge(filter.id)}
                     className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full font-bold text-sm sm:text-base transition-all ${
-                      isSelected
-                        ? isAllFilter 
-                          ? 'bg-gradient-to-r from-orange-500 via-pink-500 to-blue-500 text-white shadow-lg shadow-orange-500/40 animate-pulse'
-                          : 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
+                      selectedAge === filter.id
+                        ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
                         : 'bg-card border-2 border-primary/20 hover:border-primary/50 text-foreground'
                     }`}
-                    style={isSelected && isAllFilter ? {
-                      boxShadow: '0 0 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(236, 72, 153, 0.3), 0 0 60px rgba(59, 130, 246, 0.2)'
-                    } : undefined}
                   >
                     <span className="text-lg">{filter.emoji}</span>
                     <span className="hidden sm:inline">{filter.label}</span>
