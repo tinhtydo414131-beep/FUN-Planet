@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import GameDeleteModal from "@/components/GameDeleteModal";
 import { useGameTrash } from "@/hooks/useGameTrash";
+import { GamePreviewPlaceholder } from "@/components/GamePreviewPlaceholder";
 
 interface UploadedGame {
   id: string;
@@ -115,9 +116,7 @@ export const UploadedGameCard = ({ game, onDeleted }: UploadedGameCardProps) => 
               loading="lazy"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-6xl">
-              🎮
-            </div>
+            <GamePreviewPlaceholder title={game.title} category={game.category} />
           )}
           
           {/* Status Badge */}
