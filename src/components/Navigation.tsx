@@ -1,4 +1,4 @@
-import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Coins, Gift, Bell, Menu, X, Search, History, ArrowUpRight, ArrowDownLeft, Gamepad2, Calendar, ChevronDown, Loader2, BookOpen, Shield } from "lucide-react";
+import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Coins, Gift, Bell, Menu, X, Search, History, ArrowUpRight, ArrowDownLeft, Gamepad2, Calendar, ChevronDown, Loader2, BookOpen, Shield, Zap } from "lucide-react";
 
 const funPlanetLogo = "/logo-header.png";
 import { NavLink } from "./NavLink";
@@ -368,6 +368,10 @@ export const Navigation = () => {
                     <DropdownMenuItem onClick={() => navigate("/claim")} className="py-3">
                       <Gift className="mr-3 h-5 w-5" />
                       <span className="font-medium">Claim</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/auto-claim")} className="py-3">
+                      <Zap className="mr-3 h-5 w-5" />
+                      <span className="font-medium">Automatic Money Transfer Claim</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/find-friends")} className="py-3 relative">
                       <Users className="mr-3 h-5 w-5" />
