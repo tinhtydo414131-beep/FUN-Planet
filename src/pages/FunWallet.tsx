@@ -25,11 +25,7 @@ import bnbLogo from "@/assets/tokens/bnb-logo.png";
 import ethLogo from "@/assets/tokens/eth-logo.png";
 import usdtLogo from "@/assets/tokens/usdt-logo.png";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
+
 const networks = [{
   id: "1",
   name: "Ethereum",
