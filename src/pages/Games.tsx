@@ -706,7 +706,15 @@ const LightTreasureCard = ({ game, type, index, playersOnline, onPlay }: LightTr
     if ('thumbnail_url' in game && game.thumbnail_url) return game.thumbnail_url;
     if ('image_url' in game && game.image_url) return game.image_url;
     if ('thumbnail_path' in game && game.thumbnail_path) {
-      return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/game-thumbnails/${game.thumbnail_path}`;
+      return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/uploaded-games/${game.thumbnail_path}`;
+    }
+    // Fallback thumbnails for games without images
+    const title = game.title?.toLowerCase() || '';
+    if (title.includes('golden') || title.includes('hoàng kim')) {
+      return '/images/games/golden-road.jpg';
+    }
+    if (title.includes('spaceship') || title.includes('phi thuyền') || title.includes('ánh sáng')) {
+      return '/images/games/light-spaceship.jpg';
     }
     return null;
   };
