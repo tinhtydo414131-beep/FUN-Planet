@@ -1,7 +1,8 @@
-import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi';
-import { bsc } from 'wagmi/chains';
+import { createAppKit } from '@reown/appkit/react';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { defineChain } from '@reown/appkit/networks';
 
-// WalletConnect Project ID
+// Reown Cloud Project ID (from https://cloud.reown.com)
 const projectId = 'a01e309e8e50a5c1e4cc4f9f05e0d5a1';
 
 // CAMLY Token Contract on BSC Mainnet
@@ -54,7 +55,7 @@ export const CAMLY_ABI = [
   },
 ] as const;
 
-// Wagmi config for BSC only
+// App metadata
 const metadata = {
   name: 'FUN Planet',
   description: 'Build Your Planet – Play & Earn Joy! 🌍',
@@ -62,31 +63,53 @@ const metadata = {
   icons: ['https://funplanet.app/pwa-512x512.png'],
 };
 
-const chains = [bsc] as const;
-
-export const wagmiConfig = defaultWagmiConfig({
-  chains,
-  projectId,
-  metadata,
-  auth: {
-    email: false,
-    socials: [],
-    showWallets: true,
-    walletFeatures: true,
+// Define BSC network using Reown's defineChain
+const bscNetwork = defineChain({
+  id: 56,
+  caipNetworkId: 'eip155:56',
+  chainNamespace: 'eip155',
+  name: 'BNB Smart Chain',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'BNB',
+    symbol: 'BNB',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://bsc-dataseed.binance.org'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'BscScan', url: 'https://bscscan.com' },
   },
 });
 
-// Create modal for BSC
-export const web3Modal = createWeb3Modal({
-  wagmiConfig,
+// Create Wagmi Adapter
+export const wagmiAdapter = new WagmiAdapter({
+  networks: [bscNetwork],
   projectId,
-  enableAnalytics: false,
+  ssr: false,
+});
+
+// Export wagmi config for provider
+export const wagmiConfig = wagmiAdapter.wagmiConfig;
+
+// Create AppKit modal
+export const appKit = createAppKit({
+  adapters: [wagmiAdapter],
+  networks: [bscNetwork],
+  projectId,
+  metadata,
   themeMode: 'light',
   themeVariables: {
     '--w3m-accent': '#FF6B00',
     '--w3m-border-radius-master': '16px',
   },
-  defaultChain: bsc,
+  features: {
+    analytics: false,
+    email: false,
+    socials: [],
+  },
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
     '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
@@ -109,3 +132,6 @@ export const shortenAddress = (address: string): string => {
   if (!address) return '';
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
+
+// Export web3Modal for backwards compatibility
+export const web3Modal = appKit;
