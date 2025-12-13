@@ -7,9 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Star, Send, Loader2, Trash2, Edit2, Download, Reply, Flag, Play, X } from "lucide-react";
+import { ArrowLeft, Star, Send, Loader2, Trash2, Edit2, Download, Reply, Flag, Play, X, MessageCircle } from "lucide-react";
 import JSZip from "jszip";
 import { z } from "zod";
+import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -100,6 +102,8 @@ export default function GameDetails() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const { openChat } = useChatWindows();
   const [game, setGame] = useState<GameDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [ratings, setRatings] = useState<GameRating[]>([]);
@@ -118,6 +122,31 @@ export default function GameDetails() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [gameHtml, setGameHtml] = useState<string>('');
   const [loadingGame, setLoadingGame] = useState(false);
+
+  // Handle messaging the game author
+  const handleMessageAuthor = () => {
+    if (!user) {
+      toast.error("Please log in to message the author");
+      return;
+    }
+    if (!game || !author) return;
+    
+    // Don't allow messaging yourself
+    if (game.user_id === user.id) {
+      toast.info("This is your own game!");
+      return;
+    }
+
+    if (isMobile) {
+      navigate(`/messages?with=${game.user_id}`);
+    } else {
+      openChat({
+        id: game.user_id,
+        username: author.username || shortenAddress(author.wallet_address || ''),
+        avatar_url: author.avatar_url
+      });
+    }
+  };
 
   // Helper to shorten wallet address
   const shortenAddress = (address: string) => {
@@ -791,11 +820,24 @@ export default function GameDetails() {
                   
                   {/* Author Info */}
                   {author && (
-                    <div className="flex items-center gap-2 mb-3 text-sm">
-                      <span className="text-muted-foreground">🎨 Tác giả:</span>
-                      <span className="font-semibold text-foreground">
-                        {author.username || (author.wallet_address ? shortenAddress(author.wallet_address) : 'Anonymous')}
-                      </span>
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">🎨 Tác giả:</span>
+                        <span className="font-semibold text-foreground">
+                          {author.username || (author.wallet_address ? shortenAddress(author.wallet_address) : 'Anonymous')}
+                        </span>
+                      </div>
+                      {game.user_id !== user?.id && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleMessageAuthor}
+                          className="gap-2"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          Nhắn tin
+                        </Button>
+                      )}
                     </div>
                   )}
                   
