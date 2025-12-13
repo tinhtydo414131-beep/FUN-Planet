@@ -88,15 +88,7 @@ export const Hero = () => {
               </span>
             </h1>
             
-            <motion.div animate={{
-            rotate: -360
-          }} transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "linear"
-          }}>
-              <Diamond className="w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 text-pink-400 drop-shadow-[0_0_30px_rgba(244,114,182,0.8)]" />
-            </motion.div>
+            
           </motion.div>
 
           {/* Slogan */}
