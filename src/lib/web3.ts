@@ -6,6 +6,7 @@ import { defineChain } from '@reown/appkit/networks';
 const projectId = 'a01e309e8e50a5c1e4cc4f9f05e0d5a1';
 
 // CAMLY Token Contract on BSC Mainnet
+// ⚠️ THAY ĐỔI ĐỊA CHỈ NÀY SAU KHI DEPLOY CONTRACT MỚI
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889fefde0bb1ca63962b0a8882e413';
 
 // Charity wallet receives 11% of all rewards
@@ -20,8 +21,9 @@ export const REWARDS = {
   NFT_MINT_COST: 1000,
 };
 
-// CAMLY Token ABI (ERC20)
+// CAMLY Token ABI (ERC20 + Airdrop functions)
 export const CAMLY_ABI = [
+  // ERC20 Standard
   {
     constant: true,
     inputs: [{ name: '_owner', type: 'address' }],
@@ -52,6 +54,66 @@ export const CAMLY_ABI = [
     name: 'symbol',
     outputs: [{ name: '', type: 'string' }],
     type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', type: 'string' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ name: '', type: 'uint256' }],
+    type: 'function',
+  },
+  // Airdrop Functions
+  {
+    constant: false,
+    inputs: [],
+    name: 'claimAirdrop',
+    outputs: [],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [{ name: 'account', type: 'address' }],
+    name: 'hasClaimedAirdrop',
+    outputs: [{ name: '', type: 'bool' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [{ name: '', type: 'address' }],
+    name: 'hasClaimed',
+    outputs: [{ name: '', type: 'bool' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'remainingAirdropPool',
+    outputs: [{ name: '', type: 'uint256' }],
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'AIRDROP_AMOUNT',
+    outputs: [{ name: '', type: 'uint256' }],
+    type: 'function',
+  },
+  // Events
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: 'recipient', type: 'address' },
+      { indexed: false, name: 'amount', type: 'uint256' },
+    ],
+    name: 'AirdropClaimed',
+    type: 'event',
   },
 ] as const;
 
