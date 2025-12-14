@@ -81,7 +81,7 @@ export const ButtonFacets = () => {
       </div>
       
       {/* Multiple crystalline facet layers with prismatic colors and luminous cuts */}
-      <div className="absolute inset-0 opacity-80 pointer-events-none" style={{ filter: "blur(0.5px)" }}>
+      <div className="absolute inset-0 opacity-80 pointer-events-none">
         {/* Top-left facet - Cyan to Magenta with glowing edge */}
         <div 
           className="absolute top-0 left-0 w-1/2 h-1/2"
