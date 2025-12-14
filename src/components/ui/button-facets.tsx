@@ -207,7 +207,7 @@ export const ButtonFacets = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-cyan-100/40 to-purple-100/30" />
           <div 
-            className="absolute inset-0 animate-[pulse_2.5s_ease-in-out_infinite]"
+            className="absolute inset-0"
             style={{ 
               background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(207,250,254,0.5) 50%, transparent 80%)",
               boxShadow: "inset 0 0 20px rgba(255,255,255,0.8)"
