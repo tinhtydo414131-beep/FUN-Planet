@@ -81,22 +81,22 @@ export const ButtonFacets = () => {
       </div>
       
       {/* Diamond-cut facet layers matching natural light refraction pattern */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 opacity-85 pointer-events-none">
         {/* Crown facets - upper triangular sections radiating from center */}
         {/* Star facet - top */}
         <div 
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[35%]"
           style={{ 
             clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)",
-            filter: "blur(0.5px)",
+            filter: "blur(5px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-white via-cyan-200 to-cyan-300/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-cyan-200/70 to-transparent" />
           <div 
             className="absolute inset-0 animate-[shimmer_2.5s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(207,250,254,0.9) 50%, rgba(103,232,249,0.7) 100%)",
-              boxShadow: "inset 0 0 10px rgba(255,255,255,0.9)"
+              background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(207,250,254,0.7) 50%, transparent 100%)",
+              boxShadow: "inset 0 0 15px rgba(255,255,255,0.9)"
             }}
           />
         </div>
@@ -106,15 +106,15 @@ export const ButtonFacets = () => {
           className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[35%]"
           style={{ 
             clipPath: "polygon(50% 100%, 100% 0%, 0% 0%)",
-            filter: "blur(0.5px)",
+            filter: "blur(5px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-violet-300 via-purple-200 to-purple-300/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-violet-300/80 via-purple-200/60 to-transparent" />
           <div 
             className="absolute inset-0 animate-[shimmer_2.5s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(0deg, rgba(196,181,253,1) 0%, rgba(255,255,255,0.9) 50%, rgba(167,139,250,0.7) 100%)",
-              boxShadow: "inset 0 0 10px rgba(196,181,253,0.9)",
+              background: "linear-gradient(0deg, rgba(196,181,253,0.9) 0%, rgba(255,255,255,0.7) 50%, transparent 100%)",
+              boxShadow: "inset 0 0 15px rgba(196,181,253,0.8)",
               animationDelay: "0.6s"
             }}
           />
@@ -125,15 +125,15 @@ export const ButtonFacets = () => {
           className="absolute left-0 top-1/2 -translate-y-1/2 w-[35%] h-[40%]"
           style={{ 
             clipPath: "polygon(0% 50%, 100% 0%, 100% 100%)",
-            filter: "blur(0.5px)",
+            filter: "blur(5px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 via-blue-200 to-blue-300/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-300/80 via-blue-200/60 to-transparent" />
           <div 
             className="absolute inset-0 animate-[shimmer_2.8s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(90deg, rgba(103,232,249,1) 0%, rgba(255,255,255,0.9) 50%, rgba(59,130,246,0.7) 100%)",
-              boxShadow: "inset 0 0 10px rgba(103,232,249,0.9)",
+              background: "linear-gradient(90deg, rgba(103,232,249,0.85) 0%, rgba(255,255,255,0.7) 50%, transparent 100%)",
+              boxShadow: "inset 0 0 15px rgba(103,232,249,0.7)",
               animationDelay: "0.3s"
             }}
           />
@@ -144,15 +144,15 @@ export const ButtonFacets = () => {
           className="absolute right-0 top-1/2 -translate-y-1/2 w-[35%] h-[40%]"
           style={{ 
             clipPath: "polygon(100% 50%, 0% 0%, 0% 100%)",
-            filter: "blur(0.5px)",
+            filter: "blur(5px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-l from-purple-300 via-violet-200 to-violet-300/80" />
+          <div className="absolute inset-0 bg-gradient-to-l from-purple-300/80 via-violet-200/60 to-transparent" />
           <div 
             className="absolute inset-0 animate-[shimmer_2.8s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(-90deg, rgba(167,139,250,1) 0%, rgba(255,255,255,0.9) 50%, rgba(139,92,246,0.7) 100%)",
-              boxShadow: "inset 0 0 10px rgba(167,139,250,0.9)",
+              background: "linear-gradient(-90deg, rgba(167,139,250,0.85) 0%, rgba(255,255,255,0.7) 50%, transparent 100%)",
+              boxShadow: "inset 0 0 15px rgba(167,139,250,0.7)",
               animationDelay: "0.9s"
             }}
           />
@@ -163,40 +163,40 @@ export const ButtonFacets = () => {
           className="absolute top-[5%] left-[5%] w-[35%] h-[35%]"
           style={{ 
             clipPath: "polygon(0% 0%, 100% 0%, 100% 100%)",
-            filter: "blur(0.3px)",
+            filter: "blur(6px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-cyan-100 to-cyan-200/90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-cyan-100/50 to-transparent" />
         </div>
         
         <div 
           className="absolute top-[5%] right-[5%] w-[35%] h-[35%]"
           style={{ 
             clipPath: "polygon(0% 0%, 100% 0%, 0% 100%)",
-            filter: "blur(0.3px)",
+            filter: "blur(6px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-bl from-white via-purple-100 to-purple-200/90" />
+          <div className="absolute inset-0 bg-gradient-to-bl from-white/70 via-purple-100/50 to-transparent" />
         </div>
         
         <div 
           className="absolute bottom-[5%] left-[5%] w-[35%] h-[35%]"
           style={{ 
             clipPath: "polygon(0% 100%, 100% 0%, 100% 100%)",
-            filter: "blur(0.3px)",
+            filter: "blur(6px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-200 via-indigo-100 to-indigo-200/90" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-blue-200/60 via-indigo-100/40 to-transparent" />
         </div>
         
         <div 
           className="absolute bottom-[5%] right-[5%] w-[35%] h-[35%]"
           style={{ 
             clipPath: "polygon(0% 0%, 0% 100%, 100% 100%)",
-            filter: "blur(0.3px)",
+            filter: "blur(6px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-tl from-violet-200 via-purple-100 to-pink-200/90" />
+          <div className="absolute inset-0 bg-gradient-to-tl from-violet-200/60 via-purple-100/40 to-transparent" />
         </div>
         
         {/* Table facet - central octagon */}
@@ -204,15 +204,15 @@ export const ButtonFacets = () => {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[45%] h-[45%]"
           style={{ 
             clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            filter: "blur(0.3px)",
+            filter: "blur(4px)",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-cyan-100 to-purple-100" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/85 via-cyan-100/60 to-purple-100/50" />
           <div 
             className="absolute inset-0 animate-[pulse_2.5s_ease-in-out_infinite]"
             style={{ 
-              background: "radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(207,250,254,0.85) 50%, rgba(196,181,253,0.7) 100%)",
-              boxShadow: "inset 0 0 15px rgba(255,255,255,0.95)"
+              background: "radial-gradient(ellipse at center, rgba(255,255,255,0.95) 0%, rgba(207,250,254,0.6) 50%, transparent 100%)",
+              boxShadow: "inset 0 0 20px rgba(255,255,255,0.9)"
             }}
           />
         </div>
@@ -222,14 +222,14 @@ export const ButtonFacets = () => {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%]"
           style={{ 
             clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-            filter: "blur(0.2px)",
+            filter: "blur(3px)",
           }}
         >
           <div 
             className="absolute inset-0 animate-[shimmer_2s_ease-in-out_infinite]"
             style={{ 
-              background: "radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 50%, rgba(207,250,254,0.9) 100%)",
-              boxShadow: "0 0 10px rgba(255,255,255,1), 0 0 20px rgba(103,232,249,0.7)"
+              background: "radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 40%, rgba(207,250,254,0.7) 70%, transparent 100%)",
+              boxShadow: "0 0 15px rgba(255,255,255,0.95), 0 0 25px rgba(103,232,249,0.6)"
             }}
           />
         </div>
