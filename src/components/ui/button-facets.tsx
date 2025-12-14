@@ -46,35 +46,35 @@ export const ButtonFacets = () => {
           }}
         />
         
-        {/* Corner cut facets - luminous diamonds */}
+        {/* Corner cut facets - luminous diamonds (dimmed) */}
         <div 
           className="absolute top-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 100% 100%, rgba(255,255,255,1) 0%, rgba(103,232,249,0.72) 30%, transparent 70%)",
-            boxShadow: "2px 2px 12px rgba(255,255,255,0.6)"
+            background: "radial-gradient(circle at 100% 100%, rgba(255,255,255,0.5) 0%, rgba(103,232,249,0.35) 30%, transparent 70%)",
+            boxShadow: "2px 2px 8px rgba(255,255,255,0.3)"
           }}
         />
         <div 
           className="absolute top-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 0% 100%, rgba(255,255,255,1) 0%, rgba(196,181,253,0.72) 30%, transparent 70%)",
-            boxShadow: "-2px 2px 12px rgba(255,255,255,0.6)",
+            background: "radial-gradient(circle at 0% 100%, rgba(255,255,255,0.5) 0%, rgba(196,181,253,0.35) 30%, transparent 70%)",
+            boxShadow: "-2px 2px 8px rgba(255,255,255,0.3)",
             animationDelay: "0.4s"
           }}
         />
         <div 
           className="absolute bottom-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,1) 0%, rgba(251,207,232,0.72) 30%, transparent 70%)",
-            boxShadow: "2px -2px 12px rgba(255,255,255,0.6)",
+            background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.5) 0%, rgba(251,207,232,0.35) 30%, transparent 70%)",
+            boxShadow: "2px -2px 8px rgba(255,255,255,0.3)",
             animationDelay: "0.7s"
           }}
         />
         <div 
           className="absolute bottom-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,1) 0%, rgba(254,240,138,0.72) 30%, transparent 70%)",
-            boxShadow: "-2px -2px 12px rgba(255,255,255,0.6)",
+            background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.5) 0%, rgba(254,240,138,0.35) 30%, transparent 70%)",
+            boxShadow: "-2px -2px 8px rgba(255,255,255,0.3)",
             animationDelay: "1s"
           }}
         />
