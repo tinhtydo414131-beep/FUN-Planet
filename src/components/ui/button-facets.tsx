@@ -47,8 +47,7 @@ export const ButtonFacets = () => {
           className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-white/40 via-cyan-200/30 to-purple-200/20"
           style={{ 
             clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
-            filter: "blur(0.8px)",
-            animation: "spin 20s linear infinite"
+            filter: "blur(0.8px)"
           }}
         />
         
