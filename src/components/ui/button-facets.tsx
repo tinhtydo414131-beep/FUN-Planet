@@ -233,81 +233,154 @@ export const ButtonFacets = () => {
         </div>
       </div>
       
-      {/* Enhanced prismatic light refraction lines with luminous cut effect */}
-      <div className="absolute inset-0 opacity-70 pointer-events-none overflow-hidden">
+      {/* Diamond facet grooves - brilliant cut pattern */}
+      <div className="absolute inset-0 opacity-50 pointer-events-none overflow-hidden">
+        {/* Crown star facet grooves - 8 lines radiating from center table */}
         <div 
-          className="absolute top-0 left-1/4 w-[3px] h-full animate-[shimmer_2.5s_ease-in-out_infinite]"
+          className="absolute top-[25%] left-1/2 w-[1px] h-[25%] -translate-x-1/2"
           style={{ 
-            transform: "rotate(15deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(103,232,249,0.9) 30%, rgba(255,255,255,1) 50%, rgba(103,232,249,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 6px 2px rgba(103,232,249,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
-            filter: "blur(0.3px)"
+            background: "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%)",
+            boxShadow: "0 0 2px rgba(255,255,255,0.5)"
           }}
         />
         <div 
-          className="absolute top-0 right-1/4 w-[3px] h-full animate-[shimmer_2.5s_ease-in-out_infinite]"
+          className="absolute top-[25%] left-1/2 w-[1px] h-[22%] origin-top"
           style={{ 
-            transform: "rotate(-15deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(196,181,253,0.9) 30%, rgba(255,255,255,1) 50%, rgba(196,181,253,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 6px 2px rgba(196,181,253,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
-            filter: "blur(0.3px)",
-            animationDelay: "0.4s"
+            transform: "translateX(-50%) rotate(45deg)",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(103,232,249,0.3) 100%)",
+            boxShadow: "0 0 2px rgba(103,232,249,0.4)"
           }}
         />
         <div 
-          className="absolute top-1/2 left-0 w-full h-[3px] animate-[shimmer_2s_ease-in-out_infinite]"
+          className="absolute top-[25%] left-1/2 w-[1px] h-[22%] origin-top"
           style={{ 
-            background: "linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.9) 30%, rgba(255,255,255,1) 50%, rgba(59,130,246,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 6px 2px rgba(59,130,246,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
-            filter: "blur(0.3px)",
-            animationDelay: "0.2s"
+            transform: "translateX(-50%) rotate(-45deg)",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(196,181,253,0.3) 100%)",
+            boxShadow: "0 0 2px rgba(196,181,253,0.4)"
           }}
         />
         <div 
-          className="absolute top-0 left-1/3 w-[2px] h-full animate-[shimmer_2.8s_ease-in-out_infinite]"
+          className="absolute top-[25%] left-1/2 w-[1px] h-[20%] origin-top"
           style={{ 
-            transform: "rotate(25deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(251,207,232,0.9) 30%, rgba(255,255,255,1) 50%, rgba(251,207,232,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 5px 1px rgba(251,207,232,0.6), 0 0 10px 3px rgba(255,255,255,0.3)",
-            filter: "blur(0.2px)",
-            animationDelay: "0.6s"
+            transform: "translateX(-50%) rotate(22.5deg)",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 100%)",
           }}
         />
         <div 
-          className="absolute top-0 right-1/3 w-[2px] h-full animate-[shimmer_2.8s_ease-in-out_infinite]"
+          className="absolute top-[25%] left-1/2 w-[1px] h-[20%] origin-top"
           style={{ 
-            transform: "rotate(-25deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(167,139,250,0.9) 30%, rgba(255,255,255,1) 50%, rgba(167,139,250,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 5px 1px rgba(167,139,250,0.6), 0 0 10px 3px rgba(255,255,255,0.3)",
-            filter: "blur(0.2px)",
-            animationDelay: "0.8s"
+            transform: "translateX(-50%) rotate(-22.5deg)",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 100%)",
           }}
         />
-        {/* Diagonal cross veins */}
+        
+        {/* Bezel facet grooves - crown edges */}
         <div 
-          className="absolute top-0 left-[45%] w-[2px] h-full animate-[shimmer_3s_ease-in-out_infinite]"
+          className="absolute top-[8%] left-[15%] w-[35%] h-[1px]"
           style={{ 
-            transform: "rotate(40deg)", 
-            transformOrigin: "center", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(254,240,138,0.8) 40%, rgba(255,255,255,0.9) 50%, rgba(254,240,138,0.8) 60%, transparent 100%)",
-            boxShadow: "0 0 4px 1px rgba(254,240,138,0.5), 0 0 8px 2px rgba(255,255,255,0.2)",
-            filter: "blur(0.2px)",
-            animationDelay: "1s"
+            transform: "rotate(25deg)",
+            background: "linear-gradient(90deg, rgba(255,255,255,0.6) 0%, rgba(103,232,249,0.4) 50%, transparent 100%)",
+            boxShadow: "0 0 2px rgba(255,255,255,0.3)"
           }}
         />
         <div 
-          className="absolute top-0 right-[45%] w-[2px] h-full animate-[shimmer_3s_ease-in-out_infinite]"
+          className="absolute top-[8%] right-[15%] w-[35%] h-[1px]"
           style={{ 
-            transform: "rotate(-40deg)", 
-            transformOrigin: "center", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(134,239,172,0.8) 40%, rgba(255,255,255,0.9) 50%, rgba(134,239,172,0.8) 60%, transparent 100%)",
-            boxShadow: "0 0 4px 1px rgba(134,239,172,0.5), 0 0 8px 2px rgba(255,255,255,0.2)",
-            filter: "blur(0.2px)",
-            animationDelay: "1.2s"
+            transform: "rotate(-25deg)",
+            background: "linear-gradient(90deg, transparent 0%, rgba(196,181,253,0.4) 50%, rgba(255,255,255,0.6) 100%)",
+            boxShadow: "0 0 2px rgba(255,255,255,0.3)"
+          }}
+        />
+        <div 
+          className="absolute top-[18%] left-[8%] w-[25%] h-[1px]"
+          style={{ 
+            transform: "rotate(40deg)",
+            background: "linear-gradient(90deg, rgba(255,255,255,0.5) 0%, transparent 100%)",
+          }}
+        />
+        <div 
+          className="absolute top-[18%] right-[8%] w-[25%] h-[1px]"
+          style={{ 
+            transform: "rotate(-40deg)",
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 100%)",
+          }}
+        />
+        
+        {/* Girdle groove - horizontal belt */}
+        <div 
+          className="absolute top-[48%] left-[5%] right-[5%] h-[1px]"
+          style={{ 
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 20%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.5) 80%, transparent 100%)",
+            boxShadow: "0 0 3px rgba(255,255,255,0.4)"
+          }}
+        />
+        
+        {/* Pavilion main facet grooves - 8 lines converging to culet */}
+        <div 
+          className="absolute bottom-[12%] left-1/2 w-[1px] h-[38%] -translate-x-1/2"
+          style={{ 
+            background: "linear-gradient(0deg, rgba(255,255,255,0.8) 0%, rgba(167,139,250,0.3) 100%)",
+            boxShadow: "0 0 2px rgba(255,255,255,0.5)"
+          }}
+        />
+        <div 
+          className="absolute bottom-[12%] left-1/2 w-[1px] h-[35%] origin-bottom"
+          style={{ 
+            transform: "translateX(-50%) rotate(30deg)",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.7) 0%, rgba(99,102,241,0.3) 100%)",
+            boxShadow: "0 0 2px rgba(99,102,241,0.4)"
+          }}
+        />
+        <div 
+          className="absolute bottom-[12%] left-1/2 w-[1px] h-[35%] origin-bottom"
+          style={{ 
+            transform: "translateX(-50%) rotate(-30deg)",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.7) 0%, rgba(244,114,182,0.3) 100%)",
+            boxShadow: "0 0 2px rgba(244,114,182,0.4)"
+          }}
+        />
+        <div 
+          className="absolute bottom-[12%] left-1/2 w-[1px] h-[32%] origin-bottom"
+          style={{ 
+            transform: "translateX(-50%) rotate(55deg)",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.6) 0%, transparent 100%)",
+          }}
+        />
+        <div 
+          className="absolute bottom-[12%] left-1/2 w-[1px] h-[32%] origin-bottom"
+          style={{ 
+            transform: "translateX(-50%) rotate(-55deg)",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.6) 0%, transparent 100%)",
+          }}
+        />
+        <div 
+          className="absolute bottom-[12%] left-1/2 w-[1px] h-[28%] origin-bottom"
+          style={{ 
+            transform: "translateX(-50%) rotate(15deg)",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.5) 0%, transparent 100%)",
+          }}
+        />
+        <div 
+          className="absolute bottom-[12%] left-1/2 w-[1px] h-[28%] origin-bottom"
+          style={{ 
+            transform: "translateX(-50%) rotate(-15deg)",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.5) 0%, transparent 100%)",
+          }}
+        />
+        
+        {/* Lower girdle facet grooves */}
+        <div 
+          className="absolute bottom-[35%] left-[10%] w-[20%] h-[1px]"
+          style={{ 
+            transform: "rotate(-35deg)",
+            background: "linear-gradient(90deg, rgba(255,255,255,0.5) 0%, transparent 100%)",
+          }}
+        />
+        <div 
+          className="absolute bottom-[35%] right-[10%] w-[20%] h-[1px]"
+          style={{ 
+            transform: "rotate(35deg)",
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 100%)",
           }}
         />
       </div>
