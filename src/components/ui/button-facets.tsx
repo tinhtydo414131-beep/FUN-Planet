@@ -85,25 +85,53 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Sparkling highlights */}
+      {/* Enhanced sparkling highlights with luminous glow */}
       <div className="absolute inset-0 pointer-events-none">
+        {/* Primary sparkles */}
         <div 
-          className="absolute top-[15%] left-[20%] w-2 h-2 bg-white rounded-full blur-sm opacity-80 animate-[sparkle_2s_ease-in-out_infinite]"
-          style={{ animationDelay: "0s" }}
+          className="absolute top-[15%] left-[20%] w-3 h-3 bg-white rounded-full blur-[2px] opacity-90 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          style={{ animationDelay: "0s", boxShadow: "0 0 8px 2px rgba(255,255,255,0.8)" }}
         />
         <div 
-          className="absolute top-[25%] right-[25%] w-1.5 h-1.5 bg-cyan-200 rounded-full blur-sm opacity-70 animate-[sparkle_2s_ease-in-out_infinite]"
-          style={{ animationDelay: "0.5s" }}
+          className="absolute top-[25%] right-[25%] w-2.5 h-2.5 bg-cyan-200 rounded-full blur-[2px] opacity-85 animate-[sparkle_1.8s_ease-in-out_infinite]"
+          style={{ animationDelay: "0.3s", boxShadow: "0 0 10px 3px rgba(103,232,249,0.7)" }}
         />
         <div 
-          className="absolute bottom-[30%] left-[30%] w-1 h-1 bg-purple-200 rounded-full blur-sm opacity-60 animate-[sparkle_2s_ease-in-out_infinite]"
-          style={{ animationDelay: "1s" }}
+          className="absolute bottom-[30%] left-[30%] w-2 h-2 bg-purple-300 rounded-full blur-[2px] opacity-80 animate-[sparkle_1.6s_ease-in-out_infinite]"
+          style={{ animationDelay: "0.6s", boxShadow: "0 0 8px 2px rgba(196,181,253,0.7)" }}
         />
         <div 
-          className="absolute bottom-[20%] right-[20%] w-1.5 h-1.5 bg-white rounded-full blur-sm opacity-75 animate-[sparkle_2s_ease-in-out_infinite]"
-          style={{ animationDelay: "1.5s" }}
+          className="absolute bottom-[20%] right-[20%] w-2.5 h-2.5 bg-white rounded-full blur-[2px] opacity-90 animate-[sparkle_1.4s_ease-in-out_infinite]"
+          style={{ animationDelay: "0.9s", boxShadow: "0 0 10px 3px rgba(255,255,255,0.8)" }}
+        />
+        
+        {/* Secondary smaller sparkles */}
+        <div 
+          className="absolute top-[40%] left-[15%] w-1.5 h-1.5 bg-yellow-200 rounded-full blur-[1px] opacity-75 animate-[sparkle_2s_ease-in-out_infinite]"
+          style={{ animationDelay: "0.2s", boxShadow: "0 0 6px 2px rgba(254,240,138,0.6)" }}
+        />
+        <div 
+          className="absolute top-[10%] right-[40%] w-1.5 h-1.5 bg-pink-200 rounded-full blur-[1px] opacity-70 animate-[sparkle_2.2s_ease-in-out_infinite]"
+          style={{ animationDelay: "0.8s", boxShadow: "0 0 6px 2px rgba(251,207,232,0.6)" }}
+        />
+        <div 
+          className="absolute bottom-[15%] left-[45%] w-2 h-2 bg-cyan-100 rounded-full blur-[1px] opacity-75 animate-[sparkle_1.7s_ease-in-out_infinite]"
+          style={{ animationDelay: "1.1s", boxShadow: "0 0 8px 2px rgba(207,250,254,0.7)" }}
+        />
+        <div 
+          className="absolute top-[50%] right-[15%] w-1.5 h-1.5 bg-white rounded-full blur-[1px] opacity-80 animate-[sparkle_1.9s_ease-in-out_infinite]"
+          style={{ animationDelay: "1.4s", boxShadow: "0 0 6px 2px rgba(255,255,255,0.7)" }}
         />
       </div>
+      
+      {/* Luminous glow overlay */}
+      <div 
+        className="absolute inset-0 rounded-xl opacity-30 pointer-events-none animate-[pulse_3s_ease-in-out_infinite]"
+        style={{ 
+          background: "radial-gradient(ellipse at center, rgba(255,255,255,0.4) 0%, rgba(103,232,249,0.2) 40%, transparent 70%)",
+          filter: "blur(4px)"
+        }}
+      />
     </>
   );
 };
