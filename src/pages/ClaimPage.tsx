@@ -8,6 +8,7 @@ import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
+import { ClaimRewardsModal } from "@/components/ClaimRewardsModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DiamondConfetti, fireDiamondConfetti } from "@/components/DiamondConfetti";
@@ -45,10 +46,11 @@ export default function ClaimPage() {
   const isVN = i18n.language === 'vi';
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { camlyBalance, connectWallet, claimDailyCheckin, canClaimDailyCheckin, isLoading } = useWeb3Rewards();
+  const { camlyBalance, walletAddress, isConnected, claimDailyCheckin, claimToWallet, canClaimDailyCheckin, isLoading, CAMLY_CONTRACT_ADDRESS } = useWeb3Rewards();
   
   const [showConfetti, setShowConfetti] = useState(false);
   const [claiming, setClaiming] = useState(false);
+  const [showClaimModal, setShowClaimModal] = useState(false);
   const [rewardHistory, setRewardHistory] = useState<RewardTransaction[]>([]);
   const [weeklyLimits, setWeeklyLimits] = useState<WeeklyLimits>({
     uploadRewards: 0,
@@ -59,7 +61,6 @@ export default function ClaimPage() {
   });
   const [parentLimit, setParentLimit] = useState<number | null>(null);
   const [dailyStreak, setDailyStreak] = useState(0);
-
   useEffect(() => {
     if (user) {
       fetchRewardHistory();
@@ -354,6 +355,24 @@ export default function ClaimPage() {
                   </span>
                 </motion.div>
               )}
+
+              {/* Withdraw to Wallet Button */}
+              {camlyBalance > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-6"
+                >
+                  <Button
+                    onClick={() => setShowClaimModal(true)}
+                    size="lg"
+                    className="w-full max-w-xs bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg"
+                  >
+                    <ExternalLink className="w-5 h-5 mr-2" />
+                    {isVN ? 'Rút về ví' : 'Withdraw to Wallet'}
+                  </Button>
+                </motion.div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -574,6 +593,16 @@ export default function ClaimPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Claim to Wallet Modal */}
+      <ClaimRewardsModal
+        isOpen={showClaimModal}
+        onClose={() => setShowClaimModal(false)}
+        camlyBalance={camlyBalance}
+        walletAddress={walletAddress}
+        onClaim={claimToWallet}
+        contractAddress={CAMLY_CONTRACT_ADDRESS}
+      />
     </div>
   );
 }
