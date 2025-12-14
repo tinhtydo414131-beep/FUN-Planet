@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import confetti from "canvas-confetti";
 import { useAccount } from "wagmi";
-import { CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, formatCamly, shortenAddress, appKit } from "@/lib/web3";
+import { CAMLY_CONTRACT_ADDRESS, CAMLY_AIRDROP_CONTRACT_ADDRESS, CAMLY_ABI, formatCamly, shortenAddress, appKit } from "@/lib/web3";
 import { ethers } from "ethers";
 
 const CLAIM_AMOUNT = 50000; // 50,000 CAMLY
@@ -31,19 +31,20 @@ export const ClaimCamlyOnChain = () => {
       
       try {
         const provider = new ethers.JsonRpcProvider('https://bsc-dataseed.binance.org');
-        const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, provider);
+        const tokenContract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, provider);
+        const airdropContract = new ethers.Contract(CAMLY_AIRDROP_CONTRACT_ADDRESS, CAMLY_ABI, provider);
         
-        // Check if claimed
-        const claimed = await contract.hasClaimed(address);
+        // Check if claimed (from airdrop contract)
+        const claimed = await airdropContract.hasClaimed(address);
         setHasClaimed(claimed);
         
-        // Get balance
-        const bal = await contract.balanceOf(address);
+        // Get user's CAMLY balance (from token contract)
+        const bal = await tokenContract.balanceOf(address);
         setBalance(ethers.formatUnits(bal, 18));
         
-        // Get remaining pool
+        // Get remaining pool (from airdrop contract)
         try {
-          const pool = await contract.remainingAirdropPool();
+          const pool = await airdropContract.remainingAirdropPool();
           setRemainingPool(ethers.formatUnits(pool, 18));
         } catch {
           setRemainingPool('N/A');
@@ -75,10 +76,11 @@ export const ClaimCamlyOnChain = () => {
       if (typeof window.ethereum !== 'undefined') {
         const provider = new ethers.BrowserProvider(window.ethereum as any);
         const signer = await provider.getSigner();
-        const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, signer);
+        // Use AIRDROP contract for claiming
+        const airdropContract = new ethers.Contract(CAMLY_AIRDROP_CONTRACT_ADDRESS, CAMLY_ABI, signer);
         
         toast.info(isVN ? 'Đang gửi giao dịch...' : 'Sending transaction...');
-        const tx = await contract.claimAirdrop();
+        const tx = await airdropContract.claimAirdrop();
         setTxHash(tx.hash);
         
         toast.info(isVN ? 'Đang xác nhận...' : 'Confirming...');
