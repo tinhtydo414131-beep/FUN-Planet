@@ -10,8 +10,8 @@ export const ButtonFacets = () => {
         <div 
           className="absolute top-0 left-[10%] right-[10%] h-[2px] animate-[shimmer_2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), rgba(103,232,249,0.8), rgba(255,255,255,0.9), transparent)",
-            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(103,232,249,0.4)",
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,1), rgba(103,232,249,0.96), rgba(255,255,255,1), transparent)",
+            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(103,232,249,0.48)",
             filter: "blur(0.5px)"
           }}
         />
@@ -19,8 +19,8 @@ export const ButtonFacets = () => {
         <div 
           className="absolute bottom-0 left-[10%] right-[10%] h-[2px] animate-[shimmer_2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(90deg, transparent, rgba(196,181,253,0.8), rgba(255,255,255,0.9), rgba(196,181,253,0.8), transparent)",
-            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(196,181,253,0.4)",
+            background: "linear-gradient(90deg, transparent, rgba(196,181,253,0.96), rgba(255,255,255,1), rgba(196,181,253,0.96), transparent)",
+            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(196,181,253,0.48)",
             filter: "blur(0.5px)",
             animationDelay: "0.5s"
           }}
@@ -29,8 +29,8 @@ export const ButtonFacets = () => {
         <div 
           className="absolute left-0 top-[10%] bottom-[10%] w-[2px] animate-[shimmer_2.2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.9), rgba(103,232,249,0.8), rgba(255,255,255,0.9), transparent)",
-            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(103,232,249,0.4)",
+            background: "linear-gradient(180deg, transparent, rgba(255,255,255,1), rgba(103,232,249,0.96), rgba(255,255,255,1), transparent)",
+            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(103,232,249,0.48)",
             filter: "blur(0.5px)",
             animationDelay: "0.3s"
           }}
@@ -39,8 +39,8 @@ export const ButtonFacets = () => {
         <div 
           className="absolute right-0 top-[10%] bottom-[10%] w-[2px] animate-[shimmer_2.2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(180deg, transparent, rgba(196,181,253,0.8), rgba(255,255,255,0.9), rgba(196,181,253,0.8), transparent)",
-            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(196,181,253,0.4)",
+            background: "linear-gradient(180deg, transparent, rgba(196,181,253,0.96), rgba(255,255,255,1), rgba(196,181,253,0.96), transparent)",
+            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(196,181,253,0.48)",
             filter: "blur(0.5px)",
             animationDelay: "0.8s"
           }}
@@ -50,31 +50,31 @@ export const ButtonFacets = () => {
         <div 
           className="absolute top-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 100% 100%, rgba(255,255,255,0.9) 0%, rgba(103,232,249,0.6) 30%, transparent 70%)",
-            boxShadow: "2px 2px 10px rgba(255,255,255,0.5)"
+            background: "radial-gradient(circle at 100% 100%, rgba(255,255,255,1) 0%, rgba(103,232,249,0.72) 30%, transparent 70%)",
+            boxShadow: "2px 2px 12px rgba(255,255,255,0.6)"
           }}
         />
         <div 
           className="absolute top-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 0% 100%, rgba(255,255,255,0.9) 0%, rgba(196,181,253,0.6) 30%, transparent 70%)",
-            boxShadow: "-2px 2px 10px rgba(255,255,255,0.5)",
+            background: "radial-gradient(circle at 0% 100%, rgba(255,255,255,1) 0%, rgba(196,181,253,0.72) 30%, transparent 70%)",
+            boxShadow: "-2px 2px 12px rgba(255,255,255,0.6)",
             animationDelay: "0.4s"
           }}
         />
         <div 
           className="absolute bottom-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.9) 0%, rgba(251,207,232,0.6) 30%, transparent 70%)",
-            boxShadow: "2px -2px 10px rgba(255,255,255,0.5)",
+            background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,1) 0%, rgba(251,207,232,0.72) 30%, transparent 70%)",
+            boxShadow: "2px -2px 12px rgba(255,255,255,0.6)",
             animationDelay: "0.7s"
           }}
         />
         <div 
           className="absolute bottom-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.9) 0%, rgba(254,240,138,0.6) 30%, transparent 70%)",
-            boxShadow: "-2px -2px 10px rgba(255,255,255,0.5)",
+            background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,1) 0%, rgba(254,240,138,0.72) 30%, transparent 70%)",
+            boxShadow: "-2px -2px 12px rgba(255,255,255,0.6)",
             animationDelay: "1s"
           }}
         />
