@@ -10,15 +10,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDraggable } from "@/hooks/useDraggable";
-import { useAuth } from "@/hooks/useAuth";
-
 const PLAYLIST = [
   { title: "Radiant Dreamland", src: "https://media.funplanet.life/audio/radiant-dreamland.mp3" },
   { title: "Angel of the Stars", src: "https://media.funplanet.life/audio/angel-of-the-stars.mp3" }
 ];
 
 export const BackgroundMusicPlayer = () => {
-  const { user } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
   const [isMuted, setIsMuted] = useState(false);
@@ -154,9 +151,7 @@ export const BackgroundMusicPlayer = () => {
     setRepeatMode(nextMode);
     localStorage.setItem("music_repeat_mode", nextMode);
   };
-
-  if (!user) return null;
-
+  
   return (
     <div 
       className="fixed top-4 right-4 z-50 select-none md:bottom-6 md:right-6 md:top-auto"
