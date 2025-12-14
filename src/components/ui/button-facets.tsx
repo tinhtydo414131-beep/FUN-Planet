@@ -80,61 +80,139 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Multiple crystalline facet layers with prismatic colors */}
-      <div className="absolute inset-0 opacity-70 pointer-events-none">
-        {/* Top-left facet - Cyan to Magenta */}
+      {/* Multiple crystalline facet layers with prismatic colors and luminous cuts */}
+      <div className="absolute inset-0 opacity-80 pointer-events-none">
+        {/* Top-left facet - Cyan to Magenta with glowing edge */}
         <div 
-          className="absolute top-0 left-0 w-1/2 h-1/2 bg-gradient-to-br from-cyan-300/50 via-blue-300/30 to-transparent"
+          className="absolute top-0 left-0 w-1/2 h-1/2"
           style={{ 
             clipPath: "polygon(0 0, 100% 0, 50% 100%, 0 50%)",
-            filter: "blur(0.3px)"
           }}
-        />
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-br from-cyan-300/60 via-blue-300/40 to-transparent"
+            style={{ filter: "blur(0.3px)" }}
+          />
+          <div 
+            className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
+            style={{ 
+              background: "linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 30%, transparent 70%, rgba(103,232,249,0.6) 100%)",
+              boxShadow: "inset 0 0 10px rgba(255,255,255,0.5), inset 0 0 20px rgba(103,232,249,0.3)"
+            }}
+          />
+        </div>
         
-        {/* Top-right facet - Purple to Cyan */}
+        {/* Top-right facet - Purple to Cyan with glowing edge */}
         <div 
-          className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-purple-300/50 via-violet-300/30 to-transparent"
+          className="absolute top-0 right-0 w-1/2 h-1/2"
           style={{ 
             clipPath: "polygon(0 0, 100% 0, 100% 50%, 50% 100%)",
-            filter: "blur(0.3px)"
           }}
-        />
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-bl from-purple-300/60 via-violet-300/40 to-transparent"
+            style={{ filter: "blur(0.3px)" }}
+          />
+          <div 
+            className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
+            style={{ 
+              background: "linear-gradient(-135deg, rgba(255,255,255,0.8) 0%, transparent 30%, transparent 70%, rgba(196,181,253,0.6) 100%)",
+              boxShadow: "inset 0 0 10px rgba(255,255,255,0.5), inset 0 0 20px rgba(196,181,253,0.3)",
+              animationDelay: "0.5s"
+            }}
+          />
+        </div>
         
-        {/* Bottom-left facet - Blue to Violet */}
+        {/* Bottom-left facet - Blue to Violet with glowing edge */}
         <div 
-          className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-blue-400/50 via-indigo-300/30 to-transparent"
+          className="absolute bottom-0 left-0 w-1/2 h-1/2"
           style={{ 
-            clipPath: "polygon(0 100%, 50% 0, 0 50%)",
-            filter: "blur(0.3px)"
+            clipPath: "polygon(0 100%, 50% 0, 100% 100%, 0 50%)",
           }}
-        />
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-tr from-blue-400/60 via-indigo-300/40 to-transparent"
+            style={{ filter: "blur(0.3px)" }}
+          />
+          <div 
+            className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
+            style={{ 
+              background: "linear-gradient(45deg, rgba(255,255,255,0.8) 0%, transparent 30%, transparent 70%, rgba(99,102,241,0.6) 100%)",
+              boxShadow: "inset 0 0 10px rgba(255,255,255,0.5), inset 0 0 20px rgba(99,102,241,0.3)",
+              animationDelay: "1s"
+            }}
+          />
+        </div>
         
-        {/* Bottom-right facet - Violet to Cyan */}
+        {/* Bottom-right facet - Violet to Cyan with glowing edge */}
         <div 
-          className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-violet-400/50 via-purple-300/30 to-transparent"
+          className="absolute bottom-0 right-0 w-1/2 h-1/2"
           style={{ 
-            clipPath: "polygon(100% 100%, 50% 0, 100% 50%)",
-            filter: "blur(0.3px)"
+            clipPath: "polygon(100% 100%, 50% 0, 0 100%, 100% 50%)",
           }}
-        />
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-tl from-violet-400/60 via-purple-300/40 to-transparent"
+            style={{ filter: "blur(0.3px)" }}
+          />
+          <div 
+            className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
+            style={{ 
+              background: "linear-gradient(-45deg, rgba(255,255,255,0.8) 0%, transparent 30%, transparent 70%, rgba(167,139,250,0.6) 100%)",
+              boxShadow: "inset 0 0 10px rgba(255,255,255,0.5), inset 0 0 20px rgba(167,139,250,0.3)",
+              animationDelay: "1.5s"
+            }}
+          />
+        </div>
         
-        {/* Center diamond facets with prismatic effect */}
+        {/* Center diamond facets with prismatic effect and luminous border */}
         <div 
-          className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-white/40 via-cyan-200/30 to-purple-200/20"
+          className="absolute top-1/4 left-1/4 w-1/2 h-1/2"
           style={{ 
             clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
-            filter: "blur(0.8px)"
           }}
-        />
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-br from-white/50 via-cyan-200/40 to-purple-200/30"
+            style={{ filter: "blur(0.5px)" }}
+          />
+          <div 
+            className="absolute inset-0 animate-[pulse_2s_ease-in-out_infinite]"
+            style={{ 
+              background: "radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, transparent 60%)",
+              boxShadow: "inset 0 0 15px rgba(255,255,255,0.6), inset 0 0 30px rgba(103,232,249,0.3)"
+            }}
+          />
+          {/* Inner diamond edge glow */}
+          <div 
+            className="absolute inset-[2px] animate-[shimmer_2s_ease-in-out_infinite]"
+            style={{ 
+              clipPath: "polygon(50% 5%, 95% 50%, 50% 95%, 5% 50%)",
+              border: "1px solid rgba(255,255,255,0.8)",
+              boxShadow: "0 0 8px rgba(255,255,255,0.6), 0 0 16px rgba(103,232,249,0.4)"
+            }}
+          />
+        </div>
         
-        {/* Additional prismatic layers */}
+        {/* Additional prismatic octagon layer with glowing cuts */}
         <div 
-          className="absolute top-[15%] left-[15%] w-[70%] h-[70%] bg-gradient-to-br from-pink-300/20 via-transparent to-cyan-300/20"
+          className="absolute top-[15%] left-[15%] w-[70%] h-[70%]"
           style={{ 
             clipPath: "polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%)",
-            filter: "blur(1px)"
           }}
-        />
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-br from-pink-300/25 via-transparent to-cyan-300/25"
+            style={{ filter: "blur(0.8px)" }}
+          />
+          <div 
+            className="absolute inset-0 animate-[shimmer_4s_ease-in-out_infinite]"
+            style={{ 
+              background: "conic-gradient(from 0deg, rgba(255,255,255,0.4), rgba(103,232,249,0.2), rgba(196,181,253,0.2), rgba(251,207,232,0.2), rgba(255,255,255,0.4))",
+              boxShadow: "inset 0 0 12px rgba(255,255,255,0.4)"
+            }}
+          />
+        </div>
       </div>
       
       {/* Enhanced prismatic light refraction lines with luminous cut effect */}
