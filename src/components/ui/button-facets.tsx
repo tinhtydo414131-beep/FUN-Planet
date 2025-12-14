@@ -80,8 +80,8 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Multiple crystalline facet layers with heavily blurred edges and enhanced light refraction */}
-      <div className="absolute inset-0 opacity-80 pointer-events-none">
+      {/* Multiple crystalline facet layers at 30% visibility with brilliant sparkling edges */}
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
         {/* Top-left facet - Cyan to Magenta with ultra-blurred edges */}
         <div 
           className="absolute top-0 left-0 w-1/2 h-1/2"
