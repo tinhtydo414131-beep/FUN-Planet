@@ -389,7 +389,7 @@ export const ButtonFacets = () => {
       <div className="absolute inset-0 pointer-events-none opacity-60">
         {/* Central brilliance cluster */}
         <div 
-          className="absolute top-[30%] left-1/2 -translate-x-1/2 w-3 h-3 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          className="absolute top-[30%] left-1/2 -translate-x-1/2 w-3 h-3"
           style={{ 
             background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, transparent 70%)",
             boxShadow: "0 0 8px 3px rgba(255,255,255,0.8)"
