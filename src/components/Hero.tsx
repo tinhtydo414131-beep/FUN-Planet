@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Search, Sparkles, Diamond } from "lucide-react";
+import { Search, Sparkles, Diamond, Rocket } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import camlyCoin from "@/assets/camly-coin.png";
@@ -10,8 +10,10 @@ import { HeroStats } from "./HeroStats";
 import { HeroActionButtons } from "./HeroActionButtons";
 import { motion } from "framer-motion";
 import { MEDIA_URLS } from "@/config/media";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Hero = () => {
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [backgroundVideo, setBackgroundVideo] = useState<string>(MEDIA_URLS.videos.heroBackgroundLatest);
   const navigate = useNavigate();
@@ -120,6 +122,23 @@ export const Hero = () => {
         }} className="text-base sm:text-xl md:text-2xl text-white font-rajdhani font-black max-w-3xl mx-auto leading-relaxed px-6 drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] bg-gradient-to-r from-purple-600/80 via-pink-600/80 to-cyan-600/80 backdrop-blur-lg rounded-3xl py-4 sm:py-6 border-2 border-white/30 shadow-2xl">
             🚀 Build Your Planet – Play & Earn Joy! 💎✨
           </motion.p>
+
+          {/* Hero Claim Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <Button
+              onClick={() => navigate(user ? '/claim' : '/auth')}
+              size="lg"
+              className="h-16 px-8 text-xl font-black rounded-2xl bg-gradient-to-r from-yellow-500 via-pink-500 to-cyan-500 hover:from-yellow-400 hover:via-pink-400 hover:to-cyan-400 shadow-[0_0_40px_rgba(236,72,153,0.5)] hover:shadow-[0_0_60px_rgba(236,72,153,0.7)] hover:scale-105 transition-all duration-300 border-2 border-white/30"
+            >
+              <Diamond className="w-6 h-6 mr-2 animate-bounce" />
+              Connect & Claim 50K CAMLY Free!
+              <Rocket className="w-6 h-6 ml-2" />
+            </Button>
+          </motion.div>
 
           {/* Search bar */}
           <motion.form initial={{
