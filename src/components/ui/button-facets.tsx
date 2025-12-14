@@ -80,8 +80,8 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Diamond-cut facet layers with 5% brilliance */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
+      {/* Diamond-cut facet layers with 10% brilliance */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
         {/* Star facet - top */}
         <div 
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[35%]"
