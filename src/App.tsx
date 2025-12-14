@@ -16,6 +16,8 @@ import { CallProvider } from "@/components/private-chat/CallProvider";
 import { UploadGameFAB } from "@/components/UploadGameFAB";
 import { ClaimFAB } from "@/components/ClaimFAB";
 import { WelcomeCreatorPopup } from "@/components/WelcomeCreatorPopup";
+import { GameCompleteClaimPopup } from "@/components/GameCompleteClaimPopup";
+import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -160,6 +162,7 @@ const FloatingChats = () => {
 const AppContent = () => {
   const { user } = useAuth();
   const { needsRoleSelection, loading: roleLoading } = useUserRole();
+  const { isOpen: gameCompleteOpen, score, gameName, bonusAmount, hidePopup } = useGameCompletePopup();
 
   return (
     <>
@@ -192,6 +195,15 @@ const AppContent = () => {
         
         {/* Welcome Creator Popup - Shows for new users */}
         <WelcomeCreatorPopup />
+        
+        {/* Game Complete Claim Popup - Shows after games */}
+        <GameCompleteClaimPopup
+          isOpen={gameCompleteOpen}
+          onClose={hidePopup}
+          score={score}
+          gameName={gameName}
+          bonusAmount={bonusAmount}
+        />
         
       </BrowserRouter>
     </>
