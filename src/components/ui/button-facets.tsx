@@ -385,6 +385,163 @@ export const ButtonFacets = () => {
         />
       </div>
       
+      {/* Diamond fire glitter - scattered prismatic sparkles */}
+      <div className="absolute inset-0 pointer-events-none opacity-60">
+        {/* Central brilliance cluster */}
+        <div 
+          className="absolute top-[30%] left-1/2 -translate-x-1/2 w-3 h-3"
+          style={{ 
+            background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, transparent 70%)",
+            boxShadow: "0 0 8px 3px rgba(255,255,255,0.8)"
+          }}
+        />
+        
+        {/* Scattered glitter particles - mimicking diamond's internal reflections */}
+        {/* Upper crown area */}
+        <div 
+          className="absolute top-[15%] left-[25%] w-1 h-1 rounded-full animate-[sparkle_2.2s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.9)",
+            boxShadow: "0 0 4px 1px rgba(103,232,249,0.8)",
+            animationDelay: "0.1s"
+          }}
+        />
+        <div 
+          className="absolute top-[12%] left-[45%] w-0.5 h-0.5 rounded-full animate-[sparkle_1.8s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.95)",
+            boxShadow: "0 0 3px 1px rgba(196,181,253,0.7)",
+            animationDelay: "0.3s"
+          }}
+        />
+        <div 
+          className="absolute top-[18%] right-[28%] w-1 h-1 rounded-full animate-[sparkle_2s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 0 4px 1px rgba(167,139,250,0.8)",
+            animationDelay: "0.5s"
+          }}
+        />
+        <div 
+          className="absolute top-[22%] left-[18%] w-0.5 h-0.5 rounded-full animate-[sparkle_2.5s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.9)",
+            boxShadow: "0 0 3px 1px rgba(59,130,246,0.7)",
+            animationDelay: "0.7s"
+          }}
+        />
+        
+        {/* Mid-section glitter */}
+        <div 
+          className="absolute top-[35%] left-[15%] w-1 h-1 rounded-full animate-[sparkle_1.9s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.9)",
+            boxShadow: "0 0 4px 1px rgba(254,240,138,0.8)",
+            animationDelay: "0.2s"
+          }}
+        />
+        <div 
+          className="absolute top-[38%] right-[20%] w-0.5 h-0.5 rounded-full animate-[sparkle_2.3s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 0 3px 1px rgba(251,207,232,0.7)",
+            animationDelay: "0.4s"
+          }}
+        />
+        <div 
+          className="absolute top-[42%] left-[35%] w-1 h-1 rounded-full animate-[sparkle_2.1s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.9)",
+            boxShadow: "0 0 4px 1px rgba(134,239,172,0.8)",
+            animationDelay: "0.6s"
+          }}
+        />
+        <div 
+          className="absolute top-[40%] right-[38%] w-0.5 h-0.5 rounded-full animate-[sparkle_1.7s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.95)",
+            boxShadow: "0 0 3px 1px rgba(103,232,249,0.7)",
+            animationDelay: "0.8s"
+          }}
+        />
+        
+        {/* Lower pavilion glitter */}
+        <div 
+          className="absolute bottom-[35%] left-[22%] w-1 h-1 rounded-full animate-[sparkle_2.4s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 0 4px 1px rgba(99,102,241,0.8)",
+            animationDelay: "0.15s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[38%] right-[25%] w-0.5 h-0.5 rounded-full animate-[sparkle_1.6s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.9)",
+            boxShadow: "0 0 3px 1px rgba(244,114,182,0.7)",
+            animationDelay: "0.35s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[28%] left-[40%] w-1 h-1 rounded-full animate-[sparkle_2s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.9)",
+            boxShadow: "0 0 4px 1px rgba(196,181,253,0.8)",
+            animationDelay: "0.55s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[32%] right-[42%] w-0.5 h-0.5 rounded-full animate-[sparkle_2.2s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 0 3px 1px rgba(254,240,138,0.7)",
+            animationDelay: "0.75s"
+          }}
+        />
+        
+        {/* Edge sparkles */}
+        <div 
+          className="absolute top-[50%] left-[10%] w-0.5 h-0.5 rounded-full animate-[sparkle_2.6s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.8)",
+            boxShadow: "0 0 3px 1px rgba(167,139,250,0.6)",
+            animationDelay: "0.25s"
+          }}
+        />
+        <div 
+          className="absolute top-[55%] right-[12%] w-0.5 h-0.5 rounded-full animate-[sparkle_2.1s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.8)",
+            boxShadow: "0 0 3px 1px rgba(103,232,249,0.6)",
+            animationDelay: "0.45s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[22%] left-[30%] w-0.5 h-0.5 rounded-full animate-[sparkle_1.9s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 0 3px 1px rgba(59,130,246,0.6)",
+            animationDelay: "0.65s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[25%] right-[32%] w-0.5 h-0.5 rounded-full animate-[sparkle_2.3s_ease-in-out_infinite]"
+          style={{ 
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 0 3px 1px rgba(251,207,232,0.6)",
+            animationDelay: "0.85s"
+          }}
+        />
+        
+        {/* Culet point sparkle */}
+        <div 
+          className="absolute bottom-[15%] left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full animate-[sparkle_1.4s_ease-in-out_infinite]"
+          style={{ 
+            background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(167,139,250,0.5) 60%, transparent 90%)",
+            boxShadow: "0 0 6px 2px rgba(255,255,255,0.7)"
+          }}
+        />
+      </div>
     </>
   );
 };
