@@ -137,27 +137,82 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Enhanced prismatic light refraction lines */}
-      <div className="absolute inset-0 opacity-50 pointer-events-none overflow-hidden">
+      {/* Enhanced prismatic light refraction lines with luminous cut effect */}
+      <div className="absolute inset-0 opacity-70 pointer-events-none overflow-hidden">
         <div 
-          className="absolute top-0 left-1/4 w-1 h-full bg-gradient-to-b from-transparent via-cyan-300 to-transparent"
-          style={{ transform: "rotate(15deg)", transformOrigin: "top", filter: "blur(1px)" }}
+          className="absolute top-0 left-1/4 w-[3px] h-full animate-[shimmer_2.5s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(15deg)", 
+            transformOrigin: "top", 
+            background: "linear-gradient(180deg, transparent 0%, rgba(103,232,249,0.9) 30%, rgba(255,255,255,1) 50%, rgba(103,232,249,0.9) 70%, transparent 100%)",
+            boxShadow: "0 0 6px 2px rgba(103,232,249,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
+            filter: "blur(0.3px)"
+          }}
         />
         <div 
-          className="absolute top-0 right-1/4 w-1 h-full bg-gradient-to-b from-transparent via-purple-300 to-transparent"
-          style={{ transform: "rotate(-15deg)", transformOrigin: "top", filter: "blur(1px)" }}
+          className="absolute top-0 right-1/4 w-[3px] h-full animate-[shimmer_2.5s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(-15deg)", 
+            transformOrigin: "top", 
+            background: "linear-gradient(180deg, transparent 0%, rgba(196,181,253,0.9) 30%, rgba(255,255,255,1) 50%, rgba(196,181,253,0.9) 70%, transparent 100%)",
+            boxShadow: "0 0 6px 2px rgba(196,181,253,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
+            filter: "blur(0.3px)",
+            animationDelay: "0.4s"
+          }}
         />
         <div 
-          className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent"
-          style={{ filter: "blur(1px)" }}
+          className="absolute top-1/2 left-0 w-full h-[3px] animate-[shimmer_2s_ease-in-out_infinite]"
+          style={{ 
+            background: "linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.9) 30%, rgba(255,255,255,1) 50%, rgba(59,130,246,0.9) 70%, transparent 100%)",
+            boxShadow: "0 0 6px 2px rgba(59,130,246,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
+            filter: "blur(0.3px)",
+            animationDelay: "0.2s"
+          }}
         />
         <div 
-          className="absolute top-0 left-1/3 w-0.5 h-full bg-gradient-to-b from-transparent via-pink-300 to-transparent"
-          style={{ transform: "rotate(25deg)", transformOrigin: "top", filter: "blur(0.5px)" }}
+          className="absolute top-0 left-1/3 w-[2px] h-full animate-[shimmer_2.8s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(25deg)", 
+            transformOrigin: "top", 
+            background: "linear-gradient(180deg, transparent 0%, rgba(251,207,232,0.9) 30%, rgba(255,255,255,1) 50%, rgba(251,207,232,0.9) 70%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(251,207,232,0.6), 0 0 10px 3px rgba(255,255,255,0.3)",
+            filter: "blur(0.2px)",
+            animationDelay: "0.6s"
+          }}
         />
         <div 
-          className="absolute top-0 right-1/3 w-0.5 h-full bg-gradient-to-b from-transparent via-violet-300 to-transparent"
-          style={{ transform: "rotate(-25deg)", transformOrigin: "top", filter: "blur(0.5px)" }}
+          className="absolute top-0 right-1/3 w-[2px] h-full animate-[shimmer_2.8s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(-25deg)", 
+            transformOrigin: "top", 
+            background: "linear-gradient(180deg, transparent 0%, rgba(167,139,250,0.9) 30%, rgba(255,255,255,1) 50%, rgba(167,139,250,0.9) 70%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(167,139,250,0.6), 0 0 10px 3px rgba(255,255,255,0.3)",
+            filter: "blur(0.2px)",
+            animationDelay: "0.8s"
+          }}
+        />
+        {/* Diagonal cross veins */}
+        <div 
+          className="absolute top-0 left-[45%] w-[2px] h-full animate-[shimmer_3s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(40deg)", 
+            transformOrigin: "center", 
+            background: "linear-gradient(180deg, transparent 0%, rgba(254,240,138,0.8) 40%, rgba(255,255,255,0.9) 50%, rgba(254,240,138,0.8) 60%, transparent 100%)",
+            boxShadow: "0 0 4px 1px rgba(254,240,138,0.5), 0 0 8px 2px rgba(255,255,255,0.2)",
+            filter: "blur(0.2px)",
+            animationDelay: "1s"
+          }}
+        />
+        <div 
+          className="absolute top-0 right-[45%] w-[2px] h-full animate-[shimmer_3s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(-40deg)", 
+            transformOrigin: "center", 
+            background: "linear-gradient(180deg, transparent 0%, rgba(134,239,172,0.8) 40%, rgba(255,255,255,0.9) 50%, rgba(134,239,172,0.8) 60%, transparent 100%)",
+            boxShadow: "0 0 4px 1px rgba(134,239,172,0.5), 0 0 8px 2px rgba(255,255,255,0.2)",
+            filter: "blur(0.2px)",
+            animationDelay: "1.2s"
+          }}
         />
       </div>
       
