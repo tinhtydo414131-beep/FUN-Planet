@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Diamond, Rocket, Sparkles } from "lucide-react";
+import { Gem, Rocket, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,7 +49,7 @@ export const HeroClaimButton = () => {
             delay: i * 0.2,
           }}
         >
-          <Diamond className="w-4 h-4 text-yellow-400 opacity-60" />
+          <Gem className="w-4 h-4 text-yellow-400 opacity-60" />
         </motion.div>
       ))}
 
@@ -83,7 +83,7 @@ export const HeroClaimButton = () => {
               animate={{ rotate: isHovered ? 360 : 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Diamond className="w-6 h-6" />
+              <Gem className="w-6 h-6" />
             </motion.div>
             
             <span>
