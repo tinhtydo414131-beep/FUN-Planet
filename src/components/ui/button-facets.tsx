@@ -4,6 +4,82 @@ export const ButtonFacets = () => {
       {/* Ambient diamond glow halo - Reduced intensity */}
       <div className="absolute inset-[-6px] rounded-2xl bg-gradient-radial from-cyan-400/15 via-purple-400/10 to-transparent blur-xl opacity-50 pointer-events-none" />
       
+      {/* Luminous cut edges - outer ring */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Top edge facet */}
+        <div 
+          className="absolute top-0 left-[10%] right-[10%] h-[2px] animate-[shimmer_2s_ease-in-out_infinite]"
+          style={{ 
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), rgba(103,232,249,0.8), rgba(255,255,255,0.9), transparent)",
+            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(103,232,249,0.4)",
+            filter: "blur(0.5px)"
+          }}
+        />
+        {/* Bottom edge facet */}
+        <div 
+          className="absolute bottom-0 left-[10%] right-[10%] h-[2px] animate-[shimmer_2s_ease-in-out_infinite]"
+          style={{ 
+            background: "linear-gradient(90deg, transparent, rgba(196,181,253,0.8), rgba(255,255,255,0.9), rgba(196,181,253,0.8), transparent)",
+            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(196,181,253,0.4)",
+            filter: "blur(0.5px)",
+            animationDelay: "0.5s"
+          }}
+        />
+        {/* Left edge facet */}
+        <div 
+          className="absolute left-0 top-[10%] bottom-[10%] w-[2px] animate-[shimmer_2.2s_ease-in-out_infinite]"
+          style={{ 
+            background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.9), rgba(103,232,249,0.8), rgba(255,255,255,0.9), transparent)",
+            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(103,232,249,0.4)",
+            filter: "blur(0.5px)",
+            animationDelay: "0.3s"
+          }}
+        />
+        {/* Right edge facet */}
+        <div 
+          className="absolute right-0 top-[10%] bottom-[10%] w-[2px] animate-[shimmer_2.2s_ease-in-out_infinite]"
+          style={{ 
+            background: "linear-gradient(180deg, transparent, rgba(196,181,253,0.8), rgba(255,255,255,0.9), rgba(196,181,253,0.8), transparent)",
+            boxShadow: "0 0 8px 2px rgba(255,255,255,0.6), 0 0 15px 4px rgba(196,181,253,0.4)",
+            filter: "blur(0.5px)",
+            animationDelay: "0.8s"
+          }}
+        />
+        
+        {/* Corner cut facets - luminous diamonds */}
+        <div 
+          className="absolute top-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          style={{ 
+            background: "radial-gradient(circle at 100% 100%, rgba(255,255,255,0.9) 0%, rgba(103,232,249,0.6) 30%, transparent 70%)",
+            boxShadow: "2px 2px 10px rgba(255,255,255,0.5)"
+          }}
+        />
+        <div 
+          className="absolute top-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          style={{ 
+            background: "radial-gradient(circle at 0% 100%, rgba(255,255,255,0.9) 0%, rgba(196,181,253,0.6) 30%, transparent 70%)",
+            boxShadow: "-2px 2px 10px rgba(255,255,255,0.5)",
+            animationDelay: "0.4s"
+          }}
+        />
+        <div 
+          className="absolute bottom-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          style={{ 
+            background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.9) 0%, rgba(251,207,232,0.6) 30%, transparent 70%)",
+            boxShadow: "2px -2px 10px rgba(255,255,255,0.5)",
+            animationDelay: "0.7s"
+          }}
+        />
+        <div 
+          className="absolute bottom-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          style={{ 
+            background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.9) 0%, rgba(254,240,138,0.6) 30%, transparent 70%)",
+            boxShadow: "-2px -2px 10px rgba(255,255,255,0.5)",
+            animationDelay: "1s"
+          }}
+        />
+      </div>
+      
       {/* Multiple crystalline facet layers with prismatic colors */}
       <div className="absolute inset-0 opacity-70 pointer-events-none">
         {/* Top-left facet - Cyan to Magenta */}
