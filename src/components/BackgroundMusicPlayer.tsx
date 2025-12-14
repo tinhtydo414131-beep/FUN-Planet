@@ -72,16 +72,28 @@ export const BackgroundMusicPlayer = () => {
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
-    } else {
-      try {
-        await audioRef.current.play();
-        setIsPlaying(true);
-      } catch (error) {
-        console.log("Audio play failed on user gesture:", error);
-      }
+      return;
+    }
+
+    // Đảm bảo khi bấm Play thì nhạc luôn nghe được
+    let effectiveVolume = volume;
+    if (effectiveVolume <= 0) {
+      effectiveVolume = 50;
+      setVolume(50);
+      localStorage.setItem("funplanet_music_volume", "50");
+    }
+
+    setIsMuted(false);
+    audioRef.current.muted = false;
+    audioRef.current.volume = effectiveVolume / 100;
+
+    try {
+      await audioRef.current.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.log("Audio play failed on user gesture:", error);
     }
   };
-
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
