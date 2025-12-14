@@ -80,136 +80,154 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Multiple crystalline facet layers at 30% visibility with brilliant sparkling edges */}
+      {/* Diamond brilliant cut facets at 30% visibility */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
-        {/* Top-left facet - Cyan to Magenta with ultra-blurred edges */}
+        {/* Crown facets - Upper triangular cuts radiating from center */}
+        {/* Star facet - Top */}
         <div 
-          className="absolute top-0 left-0 w-1/2 h-1/2"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[35%]"
           style={{ 
-            clipPath: "polygon(0 0, 100% 0, 50% 100%, 0 50%)",
-            filter: "blur(8px)",
+            clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)",
+            filter: "blur(6px)",
           }}
         >
-          <div 
-            className="absolute inset-0 bg-gradient-to-br from-cyan-300/80 via-blue-300/60 to-transparent"
-          />
+          <div className="absolute inset-0 bg-gradient-to-b from-cyan-300/70 via-white/50 to-transparent" />
           <div 
             className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, transparent 25%, transparent 75%, rgba(103,232,249,0.8) 100%)",
-              boxShadow: "inset 0 0 20px rgba(255,255,255,0.8), inset 0 0 40px rgba(103,232,249,0.5)"
+              background: "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(103,232,249,0.6) 50%, transparent 100%)",
+              boxShadow: "inset 0 0 15px rgba(255,255,255,0.7)"
             }}
           />
         </div>
         
-        {/* Top-right facet - Purple to Cyan with ultra-blurred edges */}
+        {/* Bezel facets - Upper left */}
         <div 
-          className="absolute top-0 right-0 w-1/2 h-1/2"
+          className="absolute top-[5%] left-0 w-[35%] h-[40%]"
           style={{ 
-            clipPath: "polygon(0 0, 100% 0, 100% 50%, 50% 100%)",
-            filter: "blur(8px)",
+            clipPath: "polygon(0% 0%, 100% 30%, 70% 100%, 0% 60%)",
+            filter: "blur(7px)",
           }}
         >
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-300/60 via-cyan-200/40 to-transparent" />
           <div 
-            className="absolute inset-0 bg-gradient-to-bl from-purple-300/80 via-violet-300/60 to-transparent"
-          />
-          <div 
-            className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
+            className="absolute inset-0 animate-[shimmer_3.5s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(-135deg, rgba(255,255,255,0.95) 0%, transparent 25%, transparent 75%, rgba(196,181,253,0.8) 100%)",
-              boxShadow: "inset 0 0 20px rgba(255,255,255,0.8), inset 0 0 40px rgba(196,181,253,0.5)",
-              animationDelay: "0.5s"
+              background: "linear-gradient(135deg, rgba(255,255,255,0.85) 0%, transparent 60%)",
+              boxShadow: "inset 0 0 12px rgba(103,232,249,0.5)",
+              animationDelay: "0.3s"
             }}
           />
         </div>
         
-        {/* Bottom-left facet - Blue to Violet with ultra-blurred edges */}
+        {/* Bezel facets - Upper right */}
         <div 
-          className="absolute bottom-0 left-0 w-1/2 h-1/2"
+          className="absolute top-[5%] right-0 w-[35%] h-[40%]"
           style={{ 
-            clipPath: "polygon(0 100%, 50% 0, 100% 100%, 0 50%)",
-            filter: "blur(8px)",
+            clipPath: "polygon(100% 0%, 100% 60%, 30% 100%, 0% 30%)",
+            filter: "blur(7px)",
           }}
         >
+          <div className="absolute inset-0 bg-gradient-to-bl from-purple-300/60 via-violet-200/40 to-transparent" />
           <div 
-            className="absolute inset-0 bg-gradient-to-tr from-blue-400/80 via-indigo-300/60 to-transparent"
-          />
-          <div 
-            className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
+            className="absolute inset-0 animate-[shimmer_3.5s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(45deg, rgba(255,255,255,0.95) 0%, transparent 25%, transparent 75%, rgba(99,102,241,0.8) 100%)",
-              boxShadow: "inset 0 0 20px rgba(255,255,255,0.8), inset 0 0 40px rgba(99,102,241,0.5)",
-              animationDelay: "1s"
+              background: "linear-gradient(-135deg, rgba(255,255,255,0.85) 0%, transparent 60%)",
+              boxShadow: "inset 0 0 12px rgba(196,181,253,0.5)",
+              animationDelay: "0.6s"
             }}
           />
         </div>
         
-        {/* Bottom-right facet - Violet to Cyan with ultra-blurred edges */}
+        {/* Pavilion facets - Lower triangular cuts */}
+        {/* Main pavilion - Bottom */}
         <div 
-          className="absolute bottom-0 right-0 w-1/2 h-1/2"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[50%] h-[40%]"
           style={{ 
-            clipPath: "polygon(100% 100%, 50% 0, 0 100%, 100% 50%)",
-            filter: "blur(8px)",
+            clipPath: "polygon(0% 0%, 100% 0%, 50% 100%)",
+            filter: "blur(6px)",
           }}
         >
-          <div 
-            className="absolute inset-0 bg-gradient-to-tl from-violet-400/80 via-purple-300/60 to-transparent"
-          />
+          <div className="absolute inset-0 bg-gradient-to-t from-violet-400/60 via-purple-200/40 to-transparent" />
           <div 
             className="absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite]"
             style={{ 
-              background: "linear-gradient(-45deg, rgba(255,255,255,0.95) 0%, transparent 25%, transparent 75%, rgba(167,139,250,0.8) 100%)",
-              boxShadow: "inset 0 0 20px rgba(255,255,255,0.8), inset 0 0 40px rgba(167,139,250,0.5)",
+              background: "linear-gradient(0deg, rgba(255,255,255,0.9) 0%, rgba(167,139,250,0.5) 50%, transparent 100%)",
+              boxShadow: "inset 0 0 15px rgba(255,255,255,0.6)",
+              animationDelay: "0.9s"
+            }}
+          />
+        </div>
+        
+        {/* Lower pavilion - Left */}
+        <div 
+          className="absolute bottom-[5%] left-0 w-[35%] h-[40%]"
+          style={{ 
+            clipPath: "polygon(0% 40%, 70% 0%, 100% 70%, 0% 100%)",
+            filter: "blur(7px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-indigo-400/50 via-blue-200/30 to-transparent" />
+          <div 
+            className="absolute inset-0 animate-[shimmer_3.2s_ease-in-out_infinite]"
+            style={{ 
+              background: "linear-gradient(45deg, rgba(255,255,255,0.8) 0%, transparent 60%)",
+              boxShadow: "inset 0 0 10px rgba(99,102,241,0.4)",
+              animationDelay: "1.2s"
+            }}
+          />
+        </div>
+        
+        {/* Lower pavilion - Right */}
+        <div 
+          className="absolute bottom-[5%] right-0 w-[35%] h-[40%]"
+          style={{ 
+            clipPath: "polygon(100% 40%, 30% 0%, 0% 70%, 100% 100%)",
+            filter: "blur(7px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-tl from-pink-400/50 via-rose-200/30 to-transparent" />
+          <div 
+            className="absolute inset-0 animate-[shimmer_3.2s_ease-in-out_infinite]"
+            style={{ 
+              background: "linear-gradient(-45deg, rgba(255,255,255,0.8) 0%, transparent 60%)",
+              boxShadow: "inset 0 0 10px rgba(251,207,232,0.4)",
               animationDelay: "1.5s"
             }}
           />
         </div>
         
-        {/* Center diamond facets with maximum light refraction */}
+        {/* Table facet - Center octagonal */}
         <div 
-          className="absolute top-1/4 left-1/4 w-1/2 h-1/2"
+          className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[45%] h-[35%]"
           style={{ 
-            clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
-            filter: "blur(6px)",
+            clipPath: "polygon(25% 0%, 75% 0%, 100% 35%, 100% 65%, 75% 100%, 25% 100%, 0% 65%, 0% 35%)",
+            filter: "blur(5px)",
           }}
         >
+          <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-cyan-100/40 to-purple-100/30" />
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-white/70 via-cyan-200/60 to-purple-200/50"
-          />
-          <div 
-            className="absolute inset-0 animate-[pulse_2s_ease-in-out_infinite]"
+            className="absolute inset-0 animate-[pulse_2.5s_ease-in-out_infinite]"
             style={{ 
-              background: "radial-gradient(ellipse at center, rgba(255,255,255,0.95) 0%, rgba(103,232,249,0.6) 40%, transparent 70%)",
-              boxShadow: "inset 0 0 25px rgba(255,255,255,0.9), inset 0 0 50px rgba(103,232,249,0.5)"
-            }}
-          />
-          {/* Inner diamond intense refraction core */}
-          <div 
-            className="absolute inset-[5px] animate-[shimmer_2s_ease-in-out_infinite]"
-            style={{ 
-              clipPath: "polygon(50% 5%, 95% 50%, 50% 95%, 5% 50%)",
-              background: "radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(207,250,254,0.8) 50%, transparent 100%)",
-              boxShadow: "0 0 15px rgba(255,255,255,0.9), 0 0 30px rgba(103,232,249,0.6)"
+              background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(207,250,254,0.5) 50%, transparent 80%)",
+              boxShadow: "inset 0 0 20px rgba(255,255,255,0.8)"
             }}
           />
         </div>
         
-        {/* Additional prismatic octagon layer with intense refraction */}
+        {/* Culet - Bottom point radiance */}
         <div 
-          className="absolute top-[15%] left-[15%] w-[70%] h-[70%]"
+          className="absolute bottom-[8%] left-1/2 -translate-x-1/2 w-[20%] h-[15%]"
           style={{ 
-            clipPath: "polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%)",
-            filter: "blur(7px)",
+            clipPath: "polygon(50% 100%, 0% 0%, 100% 0%)",
+            filter: "blur(4px)",
           }}
         >
           <div 
-            className="absolute inset-0 bg-gradient-to-br from-pink-300/40 via-transparent to-cyan-300/40"
-          />
-          <div 
-            className="absolute inset-0 animate-[shimmer_4s_ease-in-out_infinite]"
+            className="absolute inset-0 animate-[shimmer_2s_ease-in-out_infinite]"
             style={{ 
-              background: "conic-gradient(from 0deg, rgba(255,255,255,0.7), rgba(103,232,249,0.5), rgba(196,181,253,0.5), rgba(251,207,232,0.5), rgba(255,255,255,0.7))",
-              boxShadow: "inset 0 0 25px rgba(255,255,255,0.6), 0 0 30px rgba(255,255,255,0.3)"
+              background: "radial-gradient(circle at 50% 0%, rgba(255,255,255,1) 0%, rgba(167,139,250,0.6) 60%, transparent 100%)",
+              boxShadow: "0 0 12px rgba(255,255,255,0.7)"
             }}
           />
         </div>
