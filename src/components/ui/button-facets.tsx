@@ -80,7 +80,115 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Internal facet layers hidden */}
+      {/* Diamond-cut facet layers with 5% brilliance */}
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
+        {/* Star facet - top */}
+        <div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[35%]"
+          style={{ 
+            clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)",
+            filter: "blur(5px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-cyan-200 to-transparent" />
+        </div>
+        
+        {/* Star facet - bottom */}
+        <div 
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[35%]"
+          style={{ 
+            clipPath: "polygon(50% 100%, 100% 0%, 0% 0%)",
+            filter: "blur(5px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-violet-300 via-purple-200 to-transparent" />
+        </div>
+        
+        {/* Star facet - left */}
+        <div 
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-[35%] h-[40%]"
+          style={{ 
+            clipPath: "polygon(0% 50%, 100% 0%, 100% 100%)",
+            filter: "blur(5px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 via-blue-200 to-transparent" />
+        </div>
+        
+        {/* Star facet - right */}
+        <div 
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-[35%] h-[40%]"
+          style={{ 
+            clipPath: "polygon(100% 50%, 0% 0%, 0% 100%)",
+            filter: "blur(5px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-l from-purple-300 via-violet-200 to-transparent" />
+        </div>
+        
+        {/* Kite facets - diagonal corners */}
+        <div 
+          className="absolute top-[5%] left-[5%] w-[35%] h-[35%]"
+          style={{ 
+            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%)",
+            filter: "blur(6px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-cyan-100 to-transparent" />
+        </div>
+        
+        <div 
+          className="absolute top-[5%] right-[5%] w-[35%] h-[35%]"
+          style={{ 
+            clipPath: "polygon(0% 0%, 100% 0%, 0% 100%)",
+            filter: "blur(6px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-bl from-white via-purple-100 to-transparent" />
+        </div>
+        
+        <div 
+          className="absolute bottom-[5%] left-[5%] w-[35%] h-[35%]"
+          style={{ 
+            clipPath: "polygon(0% 100%, 100% 0%, 100% 100%)",
+            filter: "blur(6px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-blue-200 via-indigo-100 to-transparent" />
+        </div>
+        
+        <div 
+          className="absolute bottom-[5%] right-[5%] w-[35%] h-[35%]"
+          style={{ 
+            clipPath: "polygon(0% 0%, 0% 100%, 100% 100%)",
+            filter: "blur(6px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-tl from-violet-200 via-purple-100 to-transparent" />
+        </div>
+        
+        {/* Table facet - central octagon */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[45%] h-[45%]"
+          style={{ 
+            clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+            filter: "blur(4px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-cyan-100 to-purple-100" />
+        </div>
+        
+        {/* Culet - center point */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%]"
+          style={{ 
+            clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+            filter: "blur(3px)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-radial from-white via-cyan-50 to-transparent" />
+        </div>
+      </div>
       
       {/* Enhanced prismatic light refraction lines with luminous cut effect */}
       <div className="absolute inset-0 opacity-70 pointer-events-none overflow-hidden">
