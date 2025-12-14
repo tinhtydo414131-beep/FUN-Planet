@@ -28,7 +28,7 @@ import {
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { MessengerButton } from "./MessengerButton";
 import { LightWalletButton } from "./LightWallet";
-import { CharityCounter } from "./CharityCounter";
+
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { ScrollArea } from "@/components/ui/scroll-area";

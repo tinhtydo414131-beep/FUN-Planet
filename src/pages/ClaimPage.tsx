@@ -402,13 +402,6 @@ export default function ClaimPage() {
                   </div>
                 )}
                 
-                {/* 11% Charity */}
-                <div className="mt-4 p-3 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30">
-                  <div className="flex items-center gap-2 text-green-600 font-medium">
-                    <Gift className="w-4 h-4" />
-                    <span>{isVN ? '11% đóng góp từ thiện' : '11% Charity Contribution'}</span>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </motion.div>
