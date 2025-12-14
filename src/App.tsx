@@ -10,7 +10,7 @@ import { Web3Provider } from "@/providers/Web3Provider";
 import { CoinNotification } from "@/components/CoinNotification";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { RoleSelectionModal } from "@/components/RoleSelectionModal";
-import { CharityCounter } from "@/components/CharityCounter";
+
 import { FloatingChatWindows, useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { CallProvider } from "@/components/private-chat/CallProvider";
 import { UploadGameFAB } from "@/components/UploadGameFAB";
@@ -193,10 +193,6 @@ const AppContent = () => {
         {/* Welcome Creator Popup - Shows for new users */}
         <WelcomeCreatorPopup />
         
-        {/* Charity Counter - Fixed bottom right on desktop */}
-        <div className="hidden md:block fixed bottom-4 right-24 z-40">
-          <CharityCounter />
-        </div>
       </BrowserRouter>
     </>
   );

@@ -12,7 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCamly } from '@/lib/web3';
 import { toast } from 'sonner';
-import { CharityCounter } from '@/components/CharityCounter';
+
 
 interface LightWalletModalProps {
   isOpen: boolean;
@@ -241,14 +241,6 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
                 </div>
               </div>
 
-              {/* Charity Counter */}
-              <div className="p-4 rounded-xl bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-500/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <Heart className="w-5 h-5 text-pink-500" />
-                  <span className="font-semibold text-pink-500">Light Fund (11% Revenue)</span>
-                </div>
-                <CharityCounter />
-              </div>
 
               {/* Disconnect */}
               <Button
