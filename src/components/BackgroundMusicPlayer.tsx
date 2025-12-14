@@ -57,20 +57,25 @@ export const BackgroundMusicPlayer = () => {
     }
   }, [volume, isMuted]);
 
-  // Handle play/pause
+  // Handle play/pause with better mobile support
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play().catch(() => {
-          // Auto-play might be blocked by browser
-          setIsPlaying(false);
-        });
+        // Resume audio context if suspended (mobile browsers)
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.log("Audio play failed:", error);
+            // Auto-play blocked by browser, show user they need to tap
+            setIsPlaying(false);
+          });
+        }
       } else {
         audioRef.current.pause();
       }
       localStorage.setItem("funplanet_music_playing", String(isPlaying));
     }
-  }, [isPlaying]);
+  }, [isPlaying, currentTrack]);
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);

@@ -141,12 +141,17 @@ export default function SampleGames() {
               </div>
             </div>
             
-            {/* Game iframe */}
+            {/* Game iframe - optimized for mobile touch */}
             <iframe
               src={activeGame.path}
               className={`w-full border-0 ${isFullscreen ? 'h-full' : 'h-[calc(100%-80px)] mt-[80px]'}`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               title={activeGame.title}
+              style={{ 
+                touchAction: 'manipulation',
+                WebkitOverflowScrolling: 'touch',
+              }}
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
             />
           </motion.div>
         )}
