@@ -103,21 +103,30 @@
       ground.receiveShadow = true;
       scene.add(ground);
 
-      // Events
+      // Events - support both mouse and touch
       renderer.domElement.addEventListener('click', onCanvasClick);
+      renderer.domElement.addEventListener('touchend', onCanvasTouch, { passive: false });
       window.addEventListener('resize', onResize);
 
       animate();
     }
 
-    function setTool(tool) {
-      currentTool = tool;
+    function onCanvasTouch(event) {
+      event.preventDefault();
+      if (event.changedTouches.length > 0) {
+        const touch = event.changedTouches[0];
+        handleInteraction(touch.clientX, touch.clientY);
+      }
     }
 
     function onCanvasClick(event) {
+      handleInteraction(event.clientX, event.clientY);
+    }
+
+    function handleInteraction(clientX, clientY) {
       const mouse = new THREE.Vector2(
-        (event.clientX / window.innerWidth) * 2 - 1,
-        -(event.clientY / window.innerHeight) * 2 + 1
+        (clientX / window.innerWidth) * 2 - 1,
+        -(clientY / window.innerHeight) * 2 + 1
       );
 
       const raycaster = new THREE.Raycaster();
@@ -128,6 +137,10 @@
         const point = intersects[0].point;
         placeObject(point.x, point.z);
       }
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
     }
 
     function placeObject(x, z) {
