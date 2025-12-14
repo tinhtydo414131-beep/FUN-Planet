@@ -54,28 +54,32 @@ export const BackgroundMusicPlayer = () => {
     }
   }, [volume, isMuted]);
 
-  // Handle play/pause with better mobile support
+  // Khi đổi bài trong lúc đang phát, tự phát lại bài mới
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        // Resume audio context if suspended (mobile browsers)
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch((error) => {
-            console.log("Audio play failed:", error);
-            // Auto-play blocked by browser, show user they need to tap
-            setIsPlaying(false);
-          });
-        }
-      } else {
-        audioRef.current.pause();
+    if (audioRef.current && isPlaying) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log("Audio play failed on track change:", error);
+        });
       }
-      localStorage.setItem("funplanet_music_playing", String(isPlaying));
     }
-  }, [isPlaying, currentTrack]);
+  }, [currentTrack, isPlaying]);
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  const togglePlay = async () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (error) {
+        console.log("Audio play failed on user gesture:", error);
+      }
+    }
   };
 
   const toggleMute = () => {
