@@ -321,13 +321,13 @@ export default function ClaimPage() {
                   ]
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="inline-block rounded-2xl p-1 mb-6"
+                className="inline-block rounded-full p-1 mb-6"
               >
                 <Button
                   onClick={handleClaim}
                   disabled={claiming || isLoading}
                   size="lg"
-                  className="h-32 w-64 md:h-40 md:w-80 text-xl md:text-2xl font-black rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500 shadow-2xl hover:scale-105 transition-all duration-300"
+                  className="h-32 w-64 md:h-40 md:w-80 text-xl md:text-2xl font-black rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500 shadow-2xl hover:scale-105 transition-all duration-300"
                 >
                   <div className="flex flex-col items-center gap-2">
                     <Diamond className="w-10 h-10 md:w-12 md:h-12 animate-bounce" />
