@@ -357,22 +357,20 @@ export default function ClaimPage() {
               )}
 
               {/* Withdraw to Wallet Button */}
-              {camlyBalance > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-6"
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6"
+              >
+                <Button
+                  onClick={() => setShowClaimModal(true)}
+                  size="lg"
+                  className="w-full max-w-xs bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg"
                 >
-                  <Button
-                    onClick={() => setShowClaimModal(true)}
-                    size="lg"
-                    className="w-full max-w-xs bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg"
-                  >
-                    <ExternalLink className="w-5 h-5 mr-2" />
-                    {isVN ? 'Rút về ví' : 'Withdraw to Wallet'}
-                  </Button>
-                </motion.div>
-              )}
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  {isVN ? 'Rút về ví' : 'Withdraw to Wallet'}
+                </Button>
+              </motion.div>
             </CardContent>
           </Card>
         </motion.div>
