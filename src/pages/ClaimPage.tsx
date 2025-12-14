@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star } from "lucide-react";
+import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
-import { ClaimRewardsModal } from "@/components/ClaimRewardsModal";
+import { SmoothClaimModal } from "@/components/SmoothClaimModal";
+import { RewardsDashboard } from "@/components/RewardsDashboard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DiamondConfetti, fireDiamondConfetti } from "@/components/DiamondConfetti";
@@ -17,6 +18,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import { useClaimToWallet } from "@/hooks/useClaimToWallet";
+import { playBlingSound } from "@/components/SoundEffects528Hz";
 
 interface RewardTransaction {
   id: string;
@@ -47,6 +50,8 @@ export default function ClaimPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { camlyBalance, walletAddress, isConnected, claimDailyCheckin, claimToWallet, canClaimDailyCheckin, isLoading, CAMLY_CONTRACT_ADDRESS } = useWeb3Rewards();
+  const { celebrateClaim, triggerHaptic } = useClaimToWallet();
+  const [showDashboard, setShowDashboard] = useState(false);
   
   const [showConfetti, setShowConfetti] = useState(false);
   const [claiming, setClaiming] = useState(false);
@@ -206,16 +211,19 @@ export default function ClaimPage() {
     }
 
     setClaiming(true);
+    triggerHaptic();
     
     try {
       if (canClaimDailyCheckin) {
         await claimDailyCheckin();
         setShowConfetti(true);
-        fireDiamondConfetti('rainbow');
-        setTimeout(() => setShowConfetti(false), 3000);
+        celebrateClaim();
+        playBlingSound();
         
         await fetchRewardHistory();
         await fetchWeeklyLimits();
+        
+        setTimeout(() => setShowConfetti(false), 3000);
       } else {
         toast.info(isVN 
           ? "Bạn đã nhận thưởng hôm nay! Quay lại ngày mai 🌈" 
@@ -590,16 +598,69 @@ export default function ClaimPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Dashboard Toggle */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="mt-6"
+        >
+          <Button
+            variant="outline"
+            onClick={() => setShowDashboard(!showDashboard)}
+            className="w-full"
+          >
+            <TrendingUp className="w-4 h-4 mr-2" />
+            {showDashboard 
+              ? (isVN ? 'Ẩn thống kê' : 'Hide Stats')
+              : (isVN ? 'Xem thống kê chi tiết' : 'View Detailed Stats')
+            }
+          </Button>
+          
+          <AnimatePresence>
+            {showDashboard && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4"
+              >
+                <RewardsDashboard />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Charity Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-pink-500/10 to-red-500/10 border border-pink-500/30"
+        >
+          <div className="flex items-center gap-3">
+            <Heart className="w-8 h-8 text-pink-500" />
+            <div>
+              <h3 className="font-bold text-pink-500">
+                {isVN ? '11% Từ Thiện' : '11% Charity'}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {isVN 
+                  ? 'Mỗi giao dịch rút tiền, 11% được quyên góp cho trẻ em nghèo 💝'
+                  : 'Each withdrawal, 11% is donated to children in need 💝'
+                }
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Claim to Wallet Modal */}
-      <ClaimRewardsModal
+      {/* Smooth Claim Modal */}
+      <SmoothClaimModal
         isOpen={showClaimModal}
         onClose={() => setShowClaimModal(false)}
         camlyBalance={camlyBalance}
-        walletAddress={walletAddress}
-        onClaim={claimToWallet}
-        contractAddress={CAMLY_CONTRACT_ADDRESS}
       />
     </div>
   );
