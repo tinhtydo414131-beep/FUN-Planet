@@ -251,6 +251,18 @@ export const Navigation = () => {
               {/* Light Wallet Button */}
               <LightWalletButton variant="header" />
 
+              {/* Claim Airdrop Button */}
+              <Button
+                onClick={() => navigate('/claim')}
+                variant="outline"
+                className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-cyan-500/50 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-cyan-500/10 hover:border-cyan-500 hover:bg-cyan-500/20 transition-all"
+              >
+                <Gem className="w-4 h-4 text-cyan-400" />
+                <span className="font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+                  Claim Airdrop 💎
+                </span>
+              </Button>
+
               {user && (
                 <>
                   {/* Search Button */}
