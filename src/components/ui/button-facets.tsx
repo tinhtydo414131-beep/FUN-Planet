@@ -233,81 +233,146 @@ export const ButtonFacets = () => {
         </div>
       </div>
       
-      {/* Enhanced prismatic light refraction lines with luminous cut effect */}
-      <div className="absolute inset-0 opacity-70 pointer-events-none overflow-hidden">
+      {/* Diamond brilliance - internal light reflections following facet geometry */}
+      <div className="absolute inset-0 opacity-60 pointer-events-none overflow-hidden">
+        {/* Crown main facet reflections - radiating from table */}
         <div 
-          className="absolute top-0 left-1/4 w-[3px] h-full animate-[shimmer_2.5s_ease-in-out_infinite]"
+          className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[1px] h-[40%] animate-[shimmer_2s_ease-in-out_infinite]"
           style={{ 
-            transform: "rotate(15deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(103,232,249,0.9) 30%, rgba(255,255,255,1) 50%, rgba(103,232,249,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 6px 2px rgba(103,232,249,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
-            filter: "blur(0.3px)"
+            background: "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 30%, transparent 100%)",
+            boxShadow: "0 0 8px 2px rgba(255,255,255,0.9)",
+          }}
+        />
+        
+        {/* Star facet rays - 8 directions from center */}
+        <div 
+          className="absolute top-[20%] left-1/2 w-[1px] h-[25%] animate-[shimmer_2.2s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(45deg)", 
+            transformOrigin: "top center",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(103,232,249,0.6) 50%, transparent 100%)",
+            boxShadow: "0 0 6px 1px rgba(103,232,249,0.7)",
+            animationDelay: "0.1s"
           }}
         />
         <div 
-          className="absolute top-0 right-1/4 w-[3px] h-full animate-[shimmer_2.5s_ease-in-out_infinite]"
+          className="absolute top-[20%] left-1/2 w-[1px] h-[25%] animate-[shimmer_2.2s_ease-in-out_infinite]"
           style={{ 
-            transform: "rotate(-15deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(196,181,253,0.9) 30%, rgba(255,255,255,1) 50%, rgba(196,181,253,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 6px 2px rgba(196,181,253,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
-            filter: "blur(0.3px)",
-            animationDelay: "0.4s"
+            transform: "rotate(-45deg)", 
+            transformOrigin: "top center",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(196,181,253,0.6) 50%, transparent 100%)",
+            boxShadow: "0 0 6px 1px rgba(196,181,253,0.7)",
+            animationDelay: "0.3s"
           }}
         />
         <div 
-          className="absolute top-1/2 left-0 w-full h-[3px] animate-[shimmer_2s_ease-in-out_infinite]"
+          className="absolute top-[20%] left-1/2 w-[1px] h-[25%] animate-[shimmer_2.4s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.9) 30%, rgba(255,255,255,1) 50%, rgba(59,130,246,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 6px 2px rgba(59,130,246,0.6), 0 0 12px 4px rgba(255,255,255,0.3)",
-            filter: "blur(0.3px)",
+            transform: "rotate(22.5deg)", 
+            transformOrigin: "top center",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(254,240,138,0.5) 50%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(254,240,138,0.6)",
+            animationDelay: "0.5s"
+          }}
+        />
+        <div 
+          className="absolute top-[20%] left-1/2 w-[1px] h-[25%] animate-[shimmer_2.4s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(-22.5deg)", 
+            transformOrigin: "top center",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(251,207,232,0.5) 50%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(251,207,232,0.6)",
+            animationDelay: "0.7s"
+          }}
+        />
+        
+        {/* Pavilion main rays - converging to culet */}
+        <div 
+          className="absolute bottom-[10%] left-1/2 w-[1px] h-[35%] animate-[shimmer_2.3s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(30deg)", 
+            transformOrigin: "bottom center",
+            background: "linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(167,139,250,0.6) 50%, transparent 100%)",
+            boxShadow: "0 0 6px 1px rgba(167,139,250,0.7)",
             animationDelay: "0.2s"
           }}
         />
         <div 
-          className="absolute top-0 left-1/3 w-[2px] h-full animate-[shimmer_2.8s_ease-in-out_infinite]"
+          className="absolute bottom-[10%] left-1/2 w-[1px] h-[35%] animate-[shimmer_2.3s_ease-in-out_infinite]"
           style={{ 
-            transform: "rotate(25deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(251,207,232,0.9) 30%, rgba(255,255,255,1) 50%, rgba(251,207,232,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 5px 1px rgba(251,207,232,0.6), 0 0 10px 3px rgba(255,255,255,0.3)",
-            filter: "blur(0.2px)",
+            transform: "rotate(-30deg)", 
+            transformOrigin: "bottom center",
+            background: "linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(99,102,241,0.6) 50%, transparent 100%)",
+            boxShadow: "0 0 6px 1px rgba(99,102,241,0.7)",
+            animationDelay: "0.4s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[10%] left-1/2 w-[1px] h-[30%] animate-[shimmer_2.5s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(55deg)", 
+            transformOrigin: "bottom center",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.9) 0%, rgba(244,114,182,0.5) 50%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(244,114,182,0.6)",
             animationDelay: "0.6s"
           }}
         />
         <div 
-          className="absolute top-0 right-1/3 w-[2px] h-full animate-[shimmer_2.8s_ease-in-out_infinite]"
+          className="absolute bottom-[10%] left-1/2 w-[1px] h-[30%] animate-[shimmer_2.5s_ease-in-out_infinite]"
           style={{ 
-            transform: "rotate(-25deg)", 
-            transformOrigin: "top", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(167,139,250,0.9) 30%, rgba(255,255,255,1) 50%, rgba(167,139,250,0.9) 70%, transparent 100%)",
-            boxShadow: "0 0 5px 1px rgba(167,139,250,0.6), 0 0 10px 3px rgba(255,255,255,0.3)",
-            filter: "blur(0.2px)",
+            transform: "rotate(-55deg)", 
+            transformOrigin: "bottom center",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.9) 0%, rgba(134,239,172,0.5) 50%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(134,239,172,0.6)",
             animationDelay: "0.8s"
           }}
         />
-        {/* Diagonal cross veins */}
+        
+        {/* Girdle flash - horizontal belt */}
         <div 
-          className="absolute top-0 left-[45%] w-[2px] h-full animate-[shimmer_3s_ease-in-out_infinite]"
+          className="absolute top-[48%] left-[5%] right-[5%] h-[1px] animate-[shimmer_1.8s_ease-in-out_infinite]"
           style={{ 
-            transform: "rotate(40deg)", 
-            transformOrigin: "center", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(254,240,138,0.8) 40%, rgba(255,255,255,0.9) 50%, rgba(254,240,138,0.8) 60%, transparent 100%)",
-            boxShadow: "0 0 4px 1px rgba(254,240,138,0.5), 0 0 8px 2px rgba(255,255,255,0.2)",
-            filter: "blur(0.2px)",
-            animationDelay: "1s"
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 20%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.7) 80%, transparent 100%)",
+            boxShadow: "0 0 4px 1px rgba(255,255,255,0.6)",
+            animationDelay: "0.15s"
+          }}
+        />
+        
+        {/* Scintillation flashes - quick moving light */}
+        <div 
+          className="absolute top-[30%] left-[20%] w-[2px] h-[15%] animate-[shimmer_1.5s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(60deg)",
+            background: "linear-gradient(180deg, transparent 0%, rgba(255,255,255,1) 50%, transparent 100%)",
+            boxShadow: "0 0 6px 2px rgba(255,255,255,0.8)",
+            animationDelay: "0s"
           }}
         />
         <div 
-          className="absolute top-0 right-[45%] w-[2px] h-full animate-[shimmer_3s_ease-in-out_infinite]"
+          className="absolute top-[30%] right-[20%] w-[2px] h-[15%] animate-[shimmer_1.5s_ease-in-out_infinite]"
           style={{ 
-            transform: "rotate(-40deg)", 
-            transformOrigin: "center", 
-            background: "linear-gradient(180deg, transparent 0%, rgba(134,239,172,0.8) 40%, rgba(255,255,255,0.9) 50%, rgba(134,239,172,0.8) 60%, transparent 100%)",
-            boxShadow: "0 0 4px 1px rgba(134,239,172,0.5), 0 0 8px 2px rgba(255,255,255,0.2)",
-            filter: "blur(0.2px)",
-            animationDelay: "1.2s"
+            transform: "rotate(-60deg)",
+            background: "linear-gradient(180deg, transparent 0%, rgba(255,255,255,1) 50%, transparent 100%)",
+            boxShadow: "0 0 6px 2px rgba(255,255,255,0.8)",
+            animationDelay: "0.25s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[25%] left-[30%] w-[2px] h-[12%] animate-[shimmer_1.6s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(75deg)",
+            background: "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.9) 50%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(255,255,255,0.7)",
+            animationDelay: "0.5s"
+          }}
+        />
+        <div 
+          className="absolute bottom-[25%] right-[30%] w-[2px] h-[12%] animate-[shimmer_1.6s_ease-in-out_infinite]"
+          style={{ 
+            transform: "rotate(-75deg)",
+            background: "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.9) 50%, transparent 100%)",
+            boxShadow: "0 0 5px 1px rgba(255,255,255,0.7)",
+            animationDelay: "0.75s"
           }}
         />
       </div>
