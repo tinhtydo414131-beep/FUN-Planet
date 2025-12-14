@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Gem, Sparkles } from "lucide-react";
+import { Diamond, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -62,7 +62,7 @@ export const HeaderClaimButton = () => {
           animate={{ rotate: isHovered ? 360 : 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Gem className="w-4 h-4 text-purple-400" />
+          <Diamond className="w-4 h-4 text-purple-400" />
         </motion.div>
         
         <span className="font-bold text-sm text-foreground">

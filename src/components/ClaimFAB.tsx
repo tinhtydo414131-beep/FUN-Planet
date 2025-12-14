@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Gem, Sparkles, Gift } from "lucide-react";
+import { Diamond, Sparkles, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -47,7 +47,7 @@ export const ClaimFAB = () => {
             delay: i * 0.2,
           }}
         >
-          <Gem className="w-3 h-3 text-yellow-400" />
+          <Diamond className="w-3 h-3 text-yellow-400" />
         </motion.div>
       ))}
 
@@ -133,7 +133,7 @@ export const ClaimFAB = () => {
               ease: "easeInOut"
             }}
           >
-            <Gem className="w-7 h-7 md:w-8 md:h-8 text-white drop-shadow-lg" />
+            <Diamond className="w-7 h-7 md:w-8 md:h-8 text-white drop-shadow-lg" />
           </motion.div>
 
           {/* Badge - Claim indicator */}
@@ -165,7 +165,7 @@ export const ClaimFAB = () => {
             >
               <div className="px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 text-white font-bold shadow-2xl border border-white/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <Gem className="w-5 h-5 text-yellow-300" />
+                  <Diamond className="w-5 h-5 text-yellow-300" />
                   <span className="text-lg">Claim 50K CAMLY!</span>
                 </div>
                 {user && (

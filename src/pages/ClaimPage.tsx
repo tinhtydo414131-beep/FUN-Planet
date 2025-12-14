@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Gem, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star, Heart } from "lucide-react";
+import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
@@ -306,7 +306,7 @@ export default function ClaimPage() {
             >
               {camlyBalance.toLocaleString()}
             </motion.span>
-            <Gem className="w-12 h-12 text-cyan-400 animate-pulse" />
+            <Diamond className="w-12 h-12 text-cyan-400 animate-pulse" />
             <span className="text-2xl text-muted-foreground">CAMLY</span>
           </div>
         </motion.div>
@@ -338,7 +338,7 @@ export default function ClaimPage() {
                   className="h-32 w-64 md:h-40 md:w-80 text-xl md:text-2xl font-black rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500 shadow-2xl hover:scale-105 transition-all duration-300"
                 >
                   <div className="flex flex-col items-center gap-2">
-                    <Gem className="w-10 h-10 md:w-12 md:h-12 animate-bounce" />
+                    <Diamond className="w-10 h-10 md:w-12 md:h-12 animate-bounce" />
                     <span>
                       {claiming ? (isVN ? 'Đang xử lý...' : 'Claiming...') : 
                        canClaimDailyCheckin ? (isVN ? 'Nhận 50K CAMLY!' : 'Claim 50K CAMLY!') :
