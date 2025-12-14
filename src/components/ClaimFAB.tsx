@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Diamond, Sparkles } from "lucide-react";
+import { Diamond, Sparkles, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,7 +9,7 @@ import { useState } from "react";
 export const ClaimFAB = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { canClaimDailyCheckin } = useWeb3Rewards();
+  const { canClaimDailyCheckin, camlyBalance } = useWeb3Rewards();
   const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
@@ -27,11 +27,35 @@ export const ClaimFAB = () => {
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 1, type: "spring", stiffness: 200 }}
     >
-      {/* Sparkle particles */}
+      {/* Floating diamonds around FAB */}
+      {[...Array(4)].map((_, i) => (
+        <motion.div
+          key={`float-${i}`}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${-10 + i * 25}px`,
+            top: `${-15 + (i % 2) * 80}px`,
+          }}
+          animate={{
+            y: [0, -8, 0],
+            rotate: [0, 10, -10, 0],
+            opacity: [0.4, 0.8, 0.4],
+          }}
+          transition={{
+            duration: 2 + i * 0.3,
+            repeat: Infinity,
+            delay: i * 0.2,
+          }}
+        >
+          <Diamond className="w-3 h-3 text-yellow-400" />
+        </motion.div>
+      ))}
+
+      {/* Sparkle particles on hover */}
       <AnimatePresence>
         {isHovered && (
           <>
-            {[...Array(6)].map((_, i) => (
+            {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute w-2 h-2 bg-yellow-400 rounded-full"
@@ -42,14 +66,14 @@ export const ClaimFAB = () => {
                   opacity: 1 
                 }}
                 animate={{ 
-                  x: 28 + Math.cos(i * 60 * Math.PI / 180) * 50,
-                  y: 28 + Math.sin(i * 60 * Math.PI / 180) * 50,
-                  scale: [0, 1, 0],
+                  x: 28 + Math.cos(i * 45 * Math.PI / 180) * 60,
+                  y: 28 + Math.sin(i * 45 * Math.PI / 180) * 60,
+                  scale: [0, 1.2, 0],
                   opacity: [1, 1, 0]
                 }}
                 transition={{ 
                   duration: 0.8,
-                  delay: i * 0.05
+                  delay: i * 0.04
                 }}
               />
             ))}
@@ -65,14 +89,14 @@ export const ClaimFAB = () => {
       >
         <Button
           onClick={handleClick}
-          className="relative h-14 w-14 md:h-16 md:w-16 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 shadow-2xl hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] transition-all duration-300"
+          className="relative h-16 w-16 md:h-18 md:w-18 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 shadow-2xl hover:shadow-[0_0_50px_rgba(168,85,247,0.7)] transition-all duration-300 border-2 border-white/30"
         >
           {/* Pulsing ring */}
           <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/50 via-pink-500/50 to-cyan-500/50"
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/60 via-pink-500/60 to-cyan-500/60"
             animate={{
-              scale: [1, 1.4, 1],
-              opacity: [0.5, 0, 0.5]
+              scale: [1, 1.5, 1],
+              opacity: [0.6, 0, 0.6]
             }}
             transition={{
               duration: 2,
@@ -81,11 +105,27 @@ export const ClaimFAB = () => {
             }}
           />
           
+          {/* Second ring */}
+          <motion.div
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-500/40 via-orange-500/40 to-pink-500/40"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.4, 0, 0.4]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.3
+            }}
+          />
+          
           {/* Diamond icon */}
           <motion.div
             animate={{
-              rotate: [0, 10, -10, 0],
-              y: [0, -2, 0]
+              rotate: [0, 15, -15, 0],
+              y: [0, -3, 0],
+              scale: [1, 1.1, 1]
             }}
             transition={{
               duration: 2,
@@ -93,27 +133,28 @@ export const ClaimFAB = () => {
               ease: "easeInOut"
             }}
           >
-            <Diamond className="w-6 h-6 md:w-7 md:h-7 text-white" />
+            <Diamond className="w-7 h-7 md:w-8 md:h-8 text-white drop-shadow-lg" />
           </motion.div>
 
           {/* Badge - Claim indicator */}
           {canClaimDailyCheckin && (
             <motion.div
-              className="absolute -top-1 -right-1 w-6 h-6 md:w-7 md:h-7 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg"
+              className="absolute -top-2 -right-2 w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg border-2 border-white"
               animate={{
-                scale: [1, 1.2, 1]
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, -10, 0]
               }}
               transition={{
                 duration: 1,
                 repeat: Infinity
               }}
             >
-              <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-yellow-900" />
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </motion.div>
           )}
         </Button>
 
-        {/* Tooltip */}
+        {/* Tooltip with balance */}
         <AnimatePresence>
           {isHovered && (
             <motion.div
@@ -122,11 +163,17 @@ export const ClaimFAB = () => {
               exit={{ opacity: 0, x: 10, scale: 0.9 }}
               className="absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap"
             >
-              <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 text-white font-bold shadow-xl">
-                <div className="flex items-center gap-2">
-                  <Diamond className="w-4 h-4" />
-                  <span>Claim 50K CAMLY!</span>
+              <div className="px-4 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 text-white font-bold shadow-2xl border border-white/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <Diamond className="w-5 h-5 text-yellow-300" />
+                  <span className="text-lg">Claim 50K CAMLY!</span>
                 </div>
+                {user && (
+                  <div className="flex items-center gap-1 text-xs text-white/80">
+                    <Gift className="w-3 h-3" />
+                    <span>Balance: {camlyBalance.toLocaleString()}</span>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}

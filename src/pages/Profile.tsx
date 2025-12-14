@@ -24,6 +24,7 @@ import { ClaimRewardsModal } from "@/components/ClaimRewardsModal";
 import { Web3RewardNotification } from "@/components/Web3RewardNotification";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardClaimBanner } from "@/components/DashboardClaimBanner";
 
 interface Profile {
   id: string;
@@ -292,6 +293,11 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-muted/30 pb-24">
       <Navigation />
+      
+      {/* Claim Bonus Banner at top */}
+      <div className="max-w-6xl mx-auto px-4 pt-24 pb-4">
+        <DashboardClaimBanner />
+      </div>
       
       {/* Cover Photo & Avatar */}
       <ProfileCover 
