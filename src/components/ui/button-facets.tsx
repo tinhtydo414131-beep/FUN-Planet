@@ -1,6 +1,39 @@
 export const ButtonFacets = () => {
   return (
     <>
+      {/* Enhanced glossy finish - main highlight layer */}
+      <div 
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.15) 25%, transparent 50%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.2) 100%)",
+        }}
+      />
+      
+      {/* Top glossy reflection band */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-[40%] rounded-t-2xl pointer-events-none"
+        style={{
+          background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 40%, transparent 100%)",
+        }}
+      />
+      
+      {/* Curved specular highlight */}
+      <div 
+        className="absolute top-[8%] left-[15%] right-[15%] h-[20%] rounded-full pointer-events-none"
+        style={{
+          background: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 50%, transparent 100%)",
+          filter: "blur(2px)",
+        }}
+      />
+      
+      {/* Bottom glossy rim light */}
+      <div 
+        className="absolute bottom-0 left-[10%] right-[10%] h-[15%] rounded-b-xl pointer-events-none"
+        style={{
+          background: "linear-gradient(0deg, rgba(255,255,255,0.25) 0%, transparent 100%)",
+        }}
+      />
+      
       {/* Ambient diamond glow halo - Reduced intensity */}
       <div className="absolute inset-[-6px] rounded-2xl bg-gradient-radial from-cyan-400/15 via-purple-400/10 to-transparent blur-xl opacity-50 pointer-events-none" />
       
