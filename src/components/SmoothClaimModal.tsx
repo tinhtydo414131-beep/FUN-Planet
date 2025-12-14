@@ -4,16 +4,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { 
-  Diamond, Wallet, ArrowRight, CheckCircle2, ExternalLink, 
-  Shield, AlertCircle, Heart, Sparkles, Copy, Gift, Volume2
+  Diamond, Wallet, ArrowRight, Loader2, CheckCircle2, ExternalLink, 
+  Shield, AlertCircle, Heart, Sparkles, Zap, Copy, Gift
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useClaimToWallet } from '@/hooks/useClaimToWallet';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { CAMLY_CONTRACT_ADDRESS } from '@/lib/web3';
-import { ClaimSuccessAnnouncement } from './ClaimSuccessAnnouncement';
 
 interface SmoothClaimModalProps {
   isOpen: boolean;
@@ -367,21 +367,13 @@ export const SmoothClaimModal = ({
               animate={{ opacity: 1, scale: 1 }}
               className="py-6 text-center space-y-6"
             >
-              {/* Announcement + Sound + Confetti */}
-              <ClaimSuccessAnnouncement amount={userAmount} />
-              
               <motion.div 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', damping: 10 }}
-                className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center relative"
+                className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center"
               >
                 <CheckCircle2 className="w-14 h-14 text-green-500" />
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="absolute inset-0 rounded-full bg-green-500/20"
-                />
               </motion.div>
 
               <div>
@@ -390,20 +382,11 @@ export const SmoothClaimModal = ({
                   animate={{ y: 0 }}
                   className="text-2xl font-bold text-green-500 mb-2"
                 >
-                  🎉 Thành công! 🎉
+                  Thành công! 🎉
                 </motion.h3>
                 <p className="text-muted-foreground">
                   Đã nhận <strong className="text-green-500">{userAmount.toLocaleString()} CAMLY</strong> vào ví!
                 </p>
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="flex items-center justify-center gap-2 mt-2 text-xs text-muted-foreground"
-                >
-                  <Volume2 className="w-3 h-3" />
-                  <span>Đang phát thông báo phần thưởng...</span>
-                </motion.div>
               </div>
 
               {/* Charity highlight */}
