@@ -5,7 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
-import { CAMLY_AIRDROP_CONTRACT_ADDRESS, CAMLY_ABI, appKit } from '@/lib/web3';
+import { 
+  CAMLY_AIRDROP_CONTRACT_ADDRESS, 
+  CAMLY_ABI, 
+  CAMLY_REWARDS_CLAIM_CONTRACT_ADDRESS,
+  REWARDS_CLAIM_ABI,
+  appKit 
+} from '@/lib/web3';
 
 interface ClaimResult {
   success: boolean;
@@ -195,65 +201,116 @@ export const useClaimToWallet = () => {
     }
   }, [user, isConnected, address, chain, switchChainAsync, hasClaimedOnChain, refetchClaimStatus, writeContractAsync, openWalletModal]);
 
-  // Claim balance to wallet - signs message and processes
+  // Claim balance to wallet - calls edge function for signature, then smart contract
   const claimBalanceToWallet = useCallback(async (amount: number): Promise<ClaimResult> => {
     if (!user) {
-      return { success: false, error: 'Please login first' };
+      return { success: false, error: 'Vui lòng đăng nhập trước' };
     }
 
     if (!isConnected || !address) {
       await openWalletModal();
-      return { success: false, error: 'Please connect your wallet first' };
+      return { success: false, error: 'Vui lòng kết nối ví trước' };
+    }
+
+    if (amount <= 0) {
+      return { success: false, error: 'Số lượng phải lớn hơn 0' };
     }
 
     setIsClaiming(true);
 
     try {
-      // Verify balance
-      const { data: rewards } = await supabase
-        .from('web3_rewards')
-        .select('camly_balance, wallet_address')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!rewards || Number(rewards.camly_balance) < amount) {
-        setIsClaiming(false);
-        return { success: false, error: 'Insufficient balance' };
+      // Switch to BSC if needed
+      if (chain?.id !== BSC_CHAIN_ID) {
+        toast.info('Đang chuyển sang BSC Mainnet...');
+        try {
+          await switchChainAsync({ chainId: BSC_CHAIN_ID });
+        } catch (switchError: any) {
+          setIsClaiming(false);
+          return { success: false, error: 'Vui lòng chuyển sang BSC Mainnet trong ví' };
+        }
       }
 
-      // Generate transaction hash
-      const timestamp = Date.now();
-      const txHash = `0x${Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+      // Check if Rewards Claim contract is configured
+      if (CAMLY_REWARDS_CLAIM_CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000') {
+        setIsClaiming(false);
+        return { success: false, error: 'Tính năng rút tiền đang được chuẩn bị. Vui lòng thử lại sau!' };
+      }
 
-      // Update database
-      const newBalance = Number(rewards.camly_balance) - amount;
+      // Get signature from backend
+      toast.info('Đang xác thực số dư...');
       
-      await supabase
-        .from('web3_rewards')
-        .update({ 
-          camly_balance: newBalance,
-          total_claimed_to_wallet: (rewards as any).total_claimed_to_wallet + amount
-        })
-        .eq('user_id', user.id);
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        setIsClaiming(false);
+        return { success: false, error: 'Phiên đăng nhập hết hạn' };
+      }
 
-      // Record transaction
-      await supabase.from('web3_reward_transactions').insert({
+      const response = await supabase.functions.invoke('sign-rewards-claim', {
+        body: { wallet_address: address, amount },
+      });
+
+      if (response.error || !response.data?.success) {
+        setIsClaiming(false);
+        const errorMsg = response.data?.error || response.error?.message || 'Không thể xác thực';
+        return { success: false, error: errorMsg };
+      }
+
+      const { signature, nonce, amount_wei, contract_address } = response.data;
+
+      // Call smart contract
+      toast.info('Vui lòng xác nhận giao dịch trong ví...');
+      
+      const txHash = await writeContractAsync({
+        address: contract_address as `0x${string}`,
+        abi: REWARDS_CLAIM_ABI,
+        functionName: 'claimRewards',
+        args: [BigInt(amount_wei), nonce as `0x${string}`, signature as `0x${string}`],
+      } as any);
+
+      setPendingTxHash(txHash as `0x${string}`);
+      toast.info('Giao dịch đã gửi! Đang chờ xác nhận...');
+
+      // Record successful claim
+      await supabase.from('camly_coin_transactions').insert({
         user_id: user.id,
         amount: -amount,
-        reward_type: 'wallet_withdrawal',
-        description: `Withdrawn to wallet ${address.slice(0, 10)}...`,
-        transaction_hash: txHash,
-        claimed_to_wallet: true
+        transaction_type: 'withdrawal_completed',
+        description: `Rút thành công ${amount.toLocaleString()} CAMLY về ${address.slice(0, 6)}...${address.slice(-4)}`,
       });
 
       setIsClaiming(false);
+
+      // Show success toast with BSCScan link
+      toast.success(`🎉 Rút thành công! ${amount.toLocaleString()} CAMLY`, {
+        duration: 10000,
+        description: `Xem trên BSCScan: https://bscscan.com/tx/${txHash}`,
+        action: {
+          label: 'Xem TX ↗',
+          onClick: () => window.open(`https://bscscan.com/tx/${txHash}`, '_blank')
+        }
+      });
+
       return { success: true, txHash };
     } catch (error: any) {
       console.error('Claim to wallet error:', error);
       setIsClaiming(false);
-      return { success: false, error: error.message || 'Claim failed' };
+      
+      // Rollback balance if contract call failed (backend already deducted)
+      // The pending transaction record already exists, admin can review
+      
+      if (error.message?.includes('User rejected') || error.message?.includes('rejected')) {
+        return { success: false, error: 'Giao dịch bị từ chối' };
+      }
+      if (error.message?.includes('insufficient funds') || error.message?.includes('gas')) {
+        return { success: false, error: 'Không đủ BNB để trả gas (~0.003 BNB cần thiết)' };
+      }
+      if (error.message?.includes('Insufficient pool')) {
+        return { success: false, error: 'Pool rút tiền tạm hết. Vui lòng liên hệ admin!' };
+      }
+      
+      return { success: false, error: error.shortMessage || error.message || 'Rút tiền thất bại' };
     }
-  }, [user, isConnected, address, openWalletModal]);
+  }, [user, isConnected, address, chain, switchChainAsync, writeContractAsync, openWalletModal]);
 
   // Trigger haptic feedback on mobile
   const triggerHaptic = useCallback(() => {
