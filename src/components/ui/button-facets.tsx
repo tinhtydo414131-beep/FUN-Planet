@@ -80,8 +80,8 @@ export const ButtonFacets = () => {
         />
       </div>
       
-      {/* Diamond brilliant cut facets at 30% visibility */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
+      {/* Diamond brilliant cut facets at 20% visibility */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
         {/* Crown facets - Upper triangular cuts radiating from center */}
         {/* Star facet - Top */}
         <div 
@@ -234,7 +234,7 @@ export const ButtonFacets = () => {
       </div>
       
       {/* Diamond facet grooves - brilliant cut pattern */}
-      <div className="absolute inset-0 opacity-50 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 opacity-20 pointer-events-none overflow-hidden">
         {/* Crown star facet grooves - 8 lines radiating from center table */}
         <div 
           className="absolute top-[25%] left-1/2 w-[1px] h-[25%] -translate-x-1/2"
@@ -386,7 +386,7 @@ export const ButtonFacets = () => {
       </div>
       
       {/* Diamond fire glitter - scattered prismatic sparkles */}
-      <div className="absolute inset-0 pointer-events-none opacity-60">
+      <div className="absolute inset-0 pointer-events-none opacity-20">
         {/* Central brilliance cluster */}
         <div 
           className="absolute top-[30%] left-1/2 -translate-x-1/2 w-3 h-3"
