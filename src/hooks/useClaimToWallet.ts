@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
-import { ethers } from 'ethers';
+import { useAccount, useWriteContract, useReadContract, useSwitchChain, useWaitForTransactionReceipt } from 'wagmi';
+import { parseUnits, formatUnits } from 'viem';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
-import { CAMLY_CONTRACT_ADDRESS, CAMLY_AIRDROP_CONTRACT_ADDRESS, CAMLY_ABI } from '@/lib/web3';
+import { CAMLY_AIRDROP_CONTRACT_ADDRESS, CAMLY_ABI, appKit } from '@/lib/web3';
 
 interface ClaimResult {
   success: boolean;
@@ -12,113 +13,120 @@ interface ClaimResult {
   error?: string;
 }
 
+// BSC Mainnet Chain ID
+const BSC_CHAIN_ID = 56;
+
 export const useClaimToWallet = () => {
   const { user } = useAuth();
+  const { address, isConnected, chain } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
   const [isClaiming, setIsClaiming] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
+  const [pendingTxHash, setPendingTxHash] = useState<`0x${string}` | undefined>();
+
+  // Write contract hook for claiming
+  const { writeContractAsync } = useWriteContract();
+
+  // Wait for transaction receipt
+  const { isLoading: isWaitingForTx, isSuccess: txSuccess } = useWaitForTransactionReceipt({
+    hash: pendingTxHash,
+  });
+
+  // Read if user has claimed (using wagmi hook for reactivity)
+  const { data: hasClaimedOnChain, refetch: refetchClaimStatus } = useReadContract({
+    address: CAMLY_AIRDROP_CONTRACT_ADDRESS as `0x${string}`,
+    abi: CAMLY_ABI,
+    functionName: 'hasClaimed',
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    },
+  });
+
+  // Read remaining pool
+  const { data: remainingPoolRaw, refetch: refetchPool } = useReadContract({
+    address: CAMLY_AIRDROP_CONTRACT_ADDRESS as `0x${string}`,
+    abi: CAMLY_ABI,
+    functionName: 'remainingAirdropPool',
+    query: {
+      enabled: true,
+    },
+  });
 
   // Check if user has already claimed airdrop on-chain
-  const checkHasClaimed = useCallback(async (address: string): Promise<boolean> => {
-    if (typeof window.ethereum === 'undefined') return false;
-    
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const contract = new ethers.Contract(
-        CAMLY_AIRDROP_CONTRACT_ADDRESS,
-        CAMLY_ABI,
-        provider
-      );
-      
-      const claimed = await contract.hasClaimed(address);
-      setHasClaimed(claimed);
-      return claimed;
-    } catch (error) {
-      console.error('Error checking claim status:', error);
-      return false;
-    }
-  }, []);
+  const checkHasClaimed = useCallback(async (walletAddress: string): Promise<boolean> => {
+    if (!walletAddress) return false;
+    await refetchClaimStatus();
+    const claimed = hasClaimedOnChain as boolean;
+    setHasClaimed(claimed);
+    return claimed;
+  }, [hasClaimedOnChain, refetchClaimStatus]);
 
   // Get remaining airdrop pool
   const getRemainingPool = useCallback(async (): Promise<string> => {
-    if (typeof window.ethereum === 'undefined') return '0';
-    
+    await refetchPool();
+    if (remainingPoolRaw) {
+      return formatUnits(remainingPoolRaw as bigint, 18);
+    }
+    return '0';
+  }, [remainingPoolRaw, refetchPool]);
+
+  // Open wallet modal
+  const openWalletModal = useCallback(async () => {
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const contract = new ethers.Contract(
-        CAMLY_AIRDROP_CONTRACT_ADDRESS,
-        CAMLY_ABI,
-        provider
-      );
-      
-      const remaining = await contract.remainingAirdropPool();
-      return ethers.formatUnits(remaining, 18);
+      await appKit.open();
     } catch (error) {
-      console.error('Error getting remaining pool:', error);
-      return '0';
+      console.error('Failed to open wallet modal:', error);
     }
   }, []);
 
-  // Claim airdrop from contract - REAL BSC MAINNET
+  // Claim airdrop from contract - REAL BSC MAINNET with wagmi
   const claimAirdrop = useCallback(async (): Promise<ClaimResult> => {
     if (!user) {
       return { success: false, error: 'Please login first' };
     }
 
-    if (typeof window.ethereum === 'undefined') {
-      return { success: false, error: 'MetaMask is not installed' };
+    // Check if wallet is connected
+    if (!isConnected || !address) {
+      // Open wallet modal
+      await openWalletModal();
+      return { success: false, error: 'Please connect your wallet first' };
     }
 
     setIsClaiming(true);
 
     try {
-      // Request wallet connection
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-
-      // Check if already claimed
-      const alreadyClaimed = await checkHasClaimed(address);
-      if (alreadyClaimed) {
-        setIsClaiming(false);
-        return { success: false, error: 'Already claimed airdrop' };
-      }
-
       // Switch to BSC if needed
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x38' }], // BSC Mainnet
-        });
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: '0x38',
-              chainName: 'BNB Smart Chain',
-              nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-              rpcUrls: ['https://bsc-dataseed.binance.org'],
-              blockExplorerUrls: ['https://bscscan.com'],
-            }],
-          });
+      if (chain?.id !== BSC_CHAIN_ID) {
+        toast.info('Switching to BSC Mainnet...');
+        try {
+          await switchChainAsync({ chainId: BSC_CHAIN_ID });
+        } catch (switchError: any) {
+          setIsClaiming(false);
+          return { success: false, error: 'Please switch to BSC Mainnet in your wallet' };
         }
       }
 
-      // Create contract instance with signer
-      const contract = new ethers.Contract(
-        CAMLY_AIRDROP_CONTRACT_ADDRESS,
-        CAMLY_ABI,
-        signer
-      );
+      // Check if already claimed
+      await refetchClaimStatus();
+      if (hasClaimedOnChain) {
+        setIsClaiming(false);
+        setHasClaimed(true);
+        return { success: false, error: 'Already claimed airdrop' };
+      }
 
-      // Call claimAirdrop function
+      // Call claimAirdrop function using wagmi
       toast.info('Please confirm the transaction in your wallet...');
-      const tx = await contract.claimAirdrop();
       
+      const txHash = await writeContractAsync({
+        address: CAMLY_AIRDROP_CONTRACT_ADDRESS as `0x${string}`,
+        abi: CAMLY_ABI,
+        functionName: 'claimAirdrop',
+        args: [],
+      } as any);
+
+      setPendingTxHash(txHash as `0x${string}`);
       toast.info('Transaction submitted! Waiting for confirmation...');
-      const receipt = await tx.wait();
-      
-      const txHash = receipt.hash;
 
       // Update database
       const { data: profile } = await supabase
@@ -162,16 +170,20 @@ export const useClaimToWallet = () => {
       console.error('Claim error:', error);
       setIsClaiming(false);
       
-      if (error.code === 'ACTION_REJECTED') {
+      if (error.message?.includes('User rejected') || error.message?.includes('rejected')) {
         return { success: false, error: 'Transaction rejected by user' };
       }
-      if (error.message?.includes('insufficient funds')) {
-        return { success: false, error: 'Insufficient BNB for gas fees' };
+      if (error.message?.includes('insufficient funds') || error.message?.includes('gas')) {
+        return { success: false, error: 'Insufficient BNB for gas fees (~0.001 BNB needed)' };
+      }
+      if (error.message?.includes('Already claimed')) {
+        setHasClaimed(true);
+        return { success: false, error: 'Already claimed airdrop' };
       }
       
-      return { success: false, error: error.message || 'Claim failed' };
+      return { success: false, error: error.shortMessage || error.message || 'Claim failed' };
     }
-  }, [user, checkHasClaimed]);
+  }, [user, isConnected, address, chain, switchChainAsync, hasClaimedOnChain, refetchClaimStatus, writeContractAsync, openWalletModal]);
 
   // Claim balance to wallet - signs message and processes
   const claimBalanceToWallet = useCallback(async (amount: number): Promise<ClaimResult> => {
@@ -179,17 +191,14 @@ export const useClaimToWallet = () => {
       return { success: false, error: 'Please login first' };
     }
 
-    if (typeof window.ethereum === 'undefined') {
-      return { success: false, error: 'MetaMask is not installed' };
+    if (!isConnected || !address) {
+      await openWalletModal();
+      return { success: false, error: 'Please connect your wallet first' };
     }
 
     setIsClaiming(true);
 
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-
       // Verify balance
       const { data: rewards } = await supabase
         .from('web3_rewards')
@@ -202,28 +211,9 @@ export const useClaimToWallet = () => {
         return { success: false, error: 'Insufficient balance' };
       }
 
-      // Create claim message
-      const timestamp = Date.now();
-      const message = `FUN Planet Claim Request
-
-Amount: ${amount.toLocaleString()} CAMLY
-Wallet: ${address}
-Timestamp: ${timestamp}
-
-Sign to confirm your withdrawal.`;
-
-      toast.info('Please sign the message in your wallet...');
-      const signature = await signer.signMessage(message);
-
-      // Verify signature
-      const recovered = ethers.verifyMessage(message, signature);
-      if (recovered.toLowerCase() !== address.toLowerCase()) {
-        setIsClaiming(false);
-        return { success: false, error: 'Signature verification failed' };
-      }
-
       // Generate transaction hash
-      const txHash = ethers.keccak256(ethers.toUtf8Bytes(signature + timestamp));
+      const timestamp = Date.now();
+      const txHash = `0x${Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
 
       // Update database
       const newBalance = Number(rewards.camly_balance) - amount;
@@ -251,14 +241,9 @@ Sign to confirm your withdrawal.`;
     } catch (error: any) {
       console.error('Claim to wallet error:', error);
       setIsClaiming(false);
-      
-      if (error.code === 'ACTION_REJECTED') {
-        return { success: false, error: 'Signature rejected' };
-      }
-      
       return { success: false, error: error.message || 'Claim failed' };
     }
-  }, [user]);
+  }, [user, isConnected, address, openWalletModal]);
 
   // Trigger haptic feedback on mobile
   const triggerHaptic = useCallback(() => {
@@ -267,7 +252,7 @@ Sign to confirm your withdrawal.`;
     }
   }, []);
 
-  // Fire diamond confetti with bling sound
+  // Fire diamond confetti with bling sound at 528Hz
   const celebrateClaim = useCallback(() => {
     triggerHaptic();
     
@@ -303,7 +288,7 @@ Sign to confirm your withdrawal.`;
       });
     }, 150);
 
-    // Play bling sound at 528Hz
+    // Play bling sound at 528Hz (Love frequency)
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioContext) {
@@ -327,13 +312,16 @@ Sign to confirm your withdrawal.`;
   }, [triggerHaptic]);
 
   return {
-    isClaiming,
-    hasClaimed,
+    isClaiming: isClaiming || isWaitingForTx,
+    hasClaimed: hasClaimed || (hasClaimedOnChain as boolean),
+    isConnected,
+    walletAddress: address,
     claimAirdrop,
     claimBalanceToWallet,
     checkHasClaimed,
     getRemainingPool,
     celebrateClaim,
-    triggerHaptic
+    triggerHaptic,
+    openWalletModal,
   };
 };

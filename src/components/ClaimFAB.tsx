@@ -1,23 +1,32 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Diamond, Sparkles, Gift } from "lucide-react";
+import { Diamond, Sparkles, Gift, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
+import { useClaimToWallet } from "@/hooks/useClaimToWallet";
 import { useState } from "react";
 
 export const ClaimFAB = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { canClaimDailyCheckin, camlyBalance } = useWeb3Rewards();
+  const { isConnected, openWalletModal, hasClaimed } = useClaimToWallet();
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!user) {
       navigate('/auth');
-    } else {
-      navigate('/claim');
+      return;
     }
+    
+    // If wallet not connected, open modal first
+    if (!isConnected) {
+      await openWalletModal();
+      return;
+    }
+    
+    navigate('/claim');
   };
 
   return (
