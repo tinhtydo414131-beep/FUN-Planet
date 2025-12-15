@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star, Heart } from "lucide-react";
+import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star, Heart, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
@@ -20,6 +20,7 @@ import { vi } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { useClaimToWallet } from "@/hooks/useClaimToWallet";
 import { playBlingSound } from "@/components/SoundEffects528Hz";
+import { CAMLY_AIRDROP_CONTRACT_ADDRESS } from "@/lib/web3";
 
 interface RewardTransaction {
   id: string;
@@ -50,8 +51,10 @@ export default function ClaimPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { camlyBalance, walletAddress, isConnected, claimDailyCheckin, claimToWallet, canClaimDailyCheckin, isLoading, CAMLY_CONTRACT_ADDRESS } = useWeb3Rewards();
-  const { celebrateClaim, triggerHaptic } = useClaimToWallet();
+  const { isClaiming, hasClaimed, claimAirdrop, celebrateClaim, triggerHaptic, checkHasClaimed, getRemainingPool } = useClaimToWallet();
   const [showDashboard, setShowDashboard] = useState(false);
+  const [airdropClaimed, setAirdropClaimed] = useState(false);
+  const [remainingPool, setRemainingPool] = useState("0");
   
   const [showConfetti, setShowConfetti] = useState(false);
   const [claiming, setClaiming] = useState(false);
@@ -74,6 +77,43 @@ export default function ClaimPage() {
       fetchDailyStreak();
     }
   }, [user]);
+
+  // Check airdrop claim status on mount
+  useEffect(() => {
+    const checkAirdropStatus = async () => {
+      if (walletAddress) {
+        const claimed = await checkHasClaimed(walletAddress);
+        setAirdropClaimed(claimed);
+        const pool = await getRemainingPool();
+        setRemainingPool(pool);
+      }
+    };
+    checkAirdropStatus();
+  }, [walletAddress, checkHasClaimed, getRemainingPool]);
+
+  // Handle REAL airdrop claim from smart contract
+  const handleRealAirdropClaim = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    const result = await claimAirdrop();
+    
+    if (result.success) {
+      setAirdropClaimed(true);
+      celebrateClaim();
+      playBlingSound();
+      toast.success(
+        isVN 
+          ? `✨ Claim thành công! TX: ${result.txHash?.slice(0, 10)}...` 
+          : `✨ Claimed successfully! TX: ${result.txHash?.slice(0, 10)}...`
+      );
+      await fetchRewardHistory();
+    } else {
+      toast.error(result.error || (isVN ? 'Claim thất bại' : 'Claim failed'));
+    }
+  };
 
   const fetchRewardHistory = async () => {
     if (!user) return;
@@ -320,6 +360,59 @@ export default function ClaimPage() {
         >
           <Card className="overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-pink-500/10 to-cyan-500/10">
             <CardContent className="p-8 text-center">
+              {/* REAL BSC AIRDROP CLAIM BUTTON */}
+              <motion.div
+                animate={{ 
+                  boxShadow: [
+                    '0 0 20px rgba(255, 215, 0, 0.3)',
+                    '0 0 60px rgba(255, 215, 0, 0.6)',
+                    '0 0 20px rgba(255, 215, 0, 0.3)'
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="inline-block rounded-full p-1 mb-6"
+              >
+                <Button
+                  onClick={handleRealAirdropClaim}
+                  disabled={isClaiming || airdropClaimed}
+                  size="lg"
+                  className="h-32 w-64 md:h-40 md:w-80 text-xl md:text-2xl font-black rounded-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-400 hover:via-orange-400 hover:to-red-400 shadow-2xl hover:scale-105 transition-all duration-300"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Wallet className="w-10 h-10 md:w-12 md:h-12 animate-bounce" />
+                    <span>
+                      {isClaiming ? (isVN ? 'Đang claim...' : 'Claiming...') : 
+                       airdropClaimed ? (isVN ? 'Đã nhận Airdrop ✓' : 'Airdrop Claimed ✓') :
+                       (isVN ? 'Claim 50K CAMLY về Ví!' : 'Claim 50K CAMLY to Wallet!')}
+                    </span>
+                  </div>
+                </Button>
+              </motion.div>
+
+              {/* Pool Info */}
+              <div className="text-sm text-muted-foreground mb-4">
+                {isVN ? 'Pool còn lại: ' : 'Remaining Pool: '}
+                <span className="font-bold text-yellow-500">
+                  {Number(remainingPool).toLocaleString()} CAMLY
+                </span>
+              </div>
+
+              {/* Contract Address */}
+              <div className="text-xs text-muted-foreground mb-6">
+                <a 
+                  href={`https://bscscan.com/address/${CAMLY_AIRDROP_CONTRACT_ADDRESS}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary underline"
+                >
+                  {isVN ? 'Xem Contract trên BSCScan' : 'View Contract on BSCScan'} ↗
+                </a>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-primary/20 my-6" />
+
+              {/* Daily Check-in Button (Database rewards) */}
               <motion.div
                 animate={{ 
                   boxShadow: [
@@ -333,16 +426,16 @@ export default function ClaimPage() {
               >
                 <Button
                   onClick={handleClaim}
-                  disabled={claiming || isLoading}
+                  disabled={claiming || isLoading || !canClaimDailyCheckin}
                   size="lg"
-                  className="h-32 w-64 md:h-40 md:w-80 text-xl md:text-2xl font-black rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500 shadow-2xl hover:scale-105 transition-all duration-300"
+                  className="h-24 w-56 md:h-28 md:w-64 text-lg md:text-xl font-black rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500 shadow-xl hover:scale-105 transition-all duration-300"
                 >
                   <div className="flex flex-col items-center gap-2">
-                    <Diamond className="w-10 h-10 md:w-12 md:h-12 animate-bounce" />
+                    <Calendar className="w-8 h-8 md:w-10 md:h-10" />
                     <span>
-                      {claiming ? (isVN ? 'Đang xử lý...' : 'Claiming...') : 
-                       canClaimDailyCheckin ? (isVN ? 'Nhận 50K CAMLY!' : 'Claim 50K CAMLY!') :
-                       (isVN ? 'Đã nhận hôm nay ✓' : 'Claimed Today ✓')}
+                      {claiming ? (isVN ? 'Đang xử lý...' : 'Processing...') : 
+                       canClaimDailyCheckin ? (isVN ? 'Điểm danh hàng ngày' : 'Daily Check-in') :
+                       (isVN ? 'Đã điểm danh ✓' : 'Checked in ✓')}
                     </span>
                   </div>
                 </Button>
