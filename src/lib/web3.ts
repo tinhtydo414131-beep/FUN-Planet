@@ -11,6 +11,10 @@ export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e41
 // CAMLY Airdrop Contract on BSC Mainnet (for claiming airdrop)
 export const CAMLY_AIRDROP_CONTRACT_ADDRESS = '0xf9FfF1976FADEf8712319fa46881DB0E0FB2f828';
 
+// CAMLY Rewards Claim Contract on BSC Mainnet (for withdrawing in-app balance)
+// TODO: Update after deploying CamlyRewardsClaim.sol
+export const CAMLY_REWARDS_CLAIM_CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 // Reward amounts
 export const REWARDS = {
   FIRST_WALLET_CONNECT: 50000,
@@ -112,6 +116,52 @@ export const CAMLY_ABI = [
       { indexed: false, name: 'amount', type: 'uint256' },
     ],
     name: 'AirdropClaimed',
+    type: 'event',
+  },
+] as const;
+
+// Rewards Claim Contract ABI
+export const REWARDS_CLAIM_ABI = [
+  {
+    inputs: [
+      { name: 'amount', type: 'uint256' },
+      { name: 'nonce', type: 'bytes32' },
+      { name: 'signature', type: 'bytes' },
+    ],
+    name: 'claimRewards',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'remainingPool',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ name: '', type: 'address' }],
+    name: 'claimedAmount',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ name: 'nonce', type: 'bytes32' }],
+    name: 'isNonceUsed',
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: 'user', type: 'address' },
+      { indexed: false, name: 'amount', type: 'uint256' },
+      { indexed: false, name: 'totalClaimed', type: 'uint256' },
+    ],
+    name: 'RewardsClaimed',
     type: 'event',
   },
 ] as const;
