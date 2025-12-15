@@ -83,7 +83,7 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, enableEffects = true, onClick, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, enableEffects = false, onClick, ...props }, ref) => {
     const [isHovered, setIsHovered] = React.useState(false);
     const Comp = asChild ? Slot : "button";
     
