@@ -56,6 +56,15 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         success: "hsl(var(--success))",
+        // 🎀 Fun Planet Pastel Colors
+        pastel: {
+          pink: "hsl(var(--fun-pink))",
+          lavender: "hsl(var(--fun-lavender))",
+          mint: "hsl(var(--fun-mint))",
+          blue: "hsl(var(--fun-blue))",
+          yellow: "hsl(var(--fun-yellow))",
+          orange: "hsl(var(--fun-orange))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

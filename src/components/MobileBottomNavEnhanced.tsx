@@ -1,10 +1,11 @@
-import { Home, Gamepad2, Upload, User, Trophy, MessageCircle, Wallet } from "lucide-react";
+import { Home, Gamepad2, Upload, User, Trophy, Wallet, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { motion } from "framer-motion";
 
+// 🎀 FUN PLANET PASTEL CUTE BOTTOM NAV - Kids Gaming 2025
 export const MobileBottomNavEnhanced = () => {
   const location = useLocation();
   const { user } = useAuth();
@@ -17,23 +18,23 @@ export const MobileBottomNavEnhanced = () => {
   if (shouldHide) return null;
 
   const baseNavItems = [
-    { icon: Home, label: "Home", labelVi: "Trang chủ", path: "/", emoji: "🏠" },
-    { icon: Gamepad2, label: "Games", labelVi: "Game", path: "/games", emoji: "🎮" },
-    { icon: Trophy, label: "Rank", labelVi: "BXH", path: "/leaderboard", emoji: "🏆" },
+    { icon: Home, label: "Home", labelVi: "Trang chủ", path: "/", emoji: "🏠", color: "from-[hsl(340,70%,75%)] to-[hsl(280,65%,75%)]" },
+    { icon: Gamepad2, label: "Games", labelVi: "Game", path: "/games", emoji: "🎮", color: "from-[hsl(280,65%,75%)] to-[hsl(200,70%,75%)]" },
+    { icon: Trophy, label: "Rank", labelVi: "BXH", path: "/leaderboard", emoji: "🏆", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
   ];
 
   // Add upload tab for developers, wallet for others
   const navItems = isDev 
     ? [
         ...baseNavItems.slice(0, 2),
-        { icon: Upload, label: "Upload", labelVi: "Tải lên", path: "/upload-game", emoji: "📤" },
+        { icon: Upload, label: "Upload", labelVi: "Tải lên", path: "/upload-game", emoji: "📤", color: "from-[hsl(160,55%,70%)] to-[hsl(180,60%,65%)]" },
         ...baseNavItems.slice(2),
-        { icon: User, label: "Profile", labelVi: "Cá nhân", path: user ? "/profile" : "/auth", emoji: "👤" },
+        { icon: User, label: "Profile", labelVi: "Cá nhân", path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
       ]
     : [
         ...baseNavItems,
-        { icon: Wallet, label: "Wallet", labelVi: "Ví", path: user ? "/wallet" : "/auth", emoji: "💰" },
-        { icon: User, label: "Profile", labelVi: "Cá nhân", path: user ? "/profile" : "/auth", emoji: "👤" },
+        { icon: Wallet, label: "Wallet", labelVi: "Ví", path: user ? "/wallet" : "/auth", emoji: "💰", color: "from-[hsl(45,85%,70%)] to-[hsl(340,70%,75%)]" },
+        { icon: User, label: "Profile", labelVi: "Cá nhân", path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
       ];
 
   const isActive = (path: string) => {
@@ -47,16 +48,19 @@ export const MobileBottomNavEnhanced = () => {
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-xl border-t-2 border-primary/20 shadow-[0_-4px_30px_rgba(0,0,0,0.15)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-card/98 via-card/95 to-card/90 backdrop-blur-xl border-t-2 border-primary/30 shadow-[0_-8px_40px_hsla(280,65%,65%,0.15),0_-2px_16px_hsla(340,70%,75%,0.1)]"
       style={{ 
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
+      {/* ✨ Sparkle decoration */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      
       <div className={cn(
-        "grid h-[72px] max-w-lg mx-auto",
+        "grid h-[76px] max-w-lg mx-auto",
         "grid-cols-5"
       )}>
-        {navItems.map((item) => {
+        {navItems.map((item, index) => {
           const Icon = item.icon;
           const active = isActive(item.path);
           
@@ -65,43 +69,65 @@ export const MobileBottomNavEnhanced = () => {
               key={item.label}
               to={item.path}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 transition-all duration-200 touch-manipulation active:scale-95 min-h-[72px] relative",
+                "flex flex-col items-center justify-center gap-1 transition-all duration-300 touch-manipulation active:scale-90 min-h-[76px] relative group",
                 active 
                   ? "text-primary" 
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {/* Active indicator */}
+              {/* 🌈 Active rainbow indicator */}
               {active && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"
+                  className={cn(
+                    "absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-gradient-to-r",
+                    item.color
+                  )}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               
+              {/* 💎 Icon container with diamond effect */}
               <motion.div 
                 className={cn(
-                  "relative p-2 rounded-xl transition-all duration-200",
-                  active && "bg-primary/15"
+                  "relative p-2.5 rounded-2xl transition-all duration-300",
+                  active && "bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/10 shadow-[0_0_20px_hsla(280,65%,65%,0.3)]"
                 )}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.85 }}
+                whileHover={{ scale: 1.1 }}
               >
                 <Icon 
                   className={cn(
-                    "w-5 h-5 sm:w-6 sm:h-6 transition-all duration-200",
-                    active && "scale-110"
+                    "w-6 h-6 transition-all duration-300",
+                    active && "scale-110 drop-shadow-[0_0_8px_hsla(280,65%,65%,0.6)]"
                   )} 
                   strokeWidth={active ? 2.5 : 2} 
                 />
+                
+                {/* ✨ Sparkle on active */}
+                {active && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="absolute -top-1 -right-1"
+                  >
+                    <Sparkles className="w-3 h-3 text-yellow-400" />
+                  </motion.div>
+                )}
               </motion.div>
               
+              {/* 📝 Label */}
               <span className={cn(
-                "text-[10px] sm:text-xs font-medium transition-all duration-200",
-                active ? "text-primary font-bold" : "text-muted-foreground"
+                "text-xs font-bold transition-all duration-300",
+                active ? "text-primary" : "text-muted-foreground"
               )}>
                 {item.labelVi}
               </span>
+              
+              {/* 🎯 Badge for notifications (example) */}
+              {item.label === "Profile" && user && (
+                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-[hsl(340,70%,65%)] to-[hsl(0,65%,60%)] rounded-full animate-pulse" />
+              )}
             </Link>
           );
         })}
