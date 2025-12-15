@@ -10,6 +10,7 @@ interface Particle {
   color: string;
 }
 
+// 🎀 PASTEL CUTE BUTTON PARTICLES - Kids Gaming 2025
 export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
@@ -22,25 +23,27 @@ export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // 🌈 Pastel rainbow colors
     const colors = [
-      "rgba(180, 130, 255, 0.8)", // Purple
-      "rgba(100, 200, 255, 0.8)", // Cyan
-      "rgba(255, 255, 255, 0.9)", // White
-      "rgba(150, 100, 255, 0.7)", // Deep purple
-      "rgba(0, 255, 255, 0.6)",   // Bright cyan
+      "rgba(236, 72, 153, 0.9)",   // Pink
+      "rgba(168, 85, 247, 0.9)",   // Purple
+      "rgba(96, 165, 250, 0.9)",   // Blue
+      "rgba(52, 211, 153, 0.9)",   // Mint
+      "rgba(251, 191, 36, 0.9)",   // Yellow
+      "rgba(255, 255, 255, 0.95)", // White sparkle
     ];
 
     const createParticle = () => {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 0.5 + Math.random() * 1.5;
+      const speed = 0.8 + Math.random() * 2;
       
       particlesRef.current.push({
         x: canvas.width / 2,
         y: canvas.height / 2,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1, // Slight upward bias
+        vy: Math.sin(angle) * speed - 1.5, // Upward bias for magical feel
         life: 1,
-        size: 2 + Math.random() * 3,
+        size: 2 + Math.random() * 4,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     };
@@ -58,8 +61,9 @@ export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
       // Create particles when hovering
       if (isHovered) {
         particleTimer += deltaTime;
-        if (particleTimer > 50) { // Create particles every 50ms
+        if (particleTimer > 40) { // Create particles every 40ms
           createParticle();
+          createParticle(); // Double for more magic!
           particleTimer = 0;
         }
       }
@@ -68,23 +72,34 @@ export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
       particlesRef.current = particlesRef.current.filter((particle) => {
         particle.x += particle.vx;
         particle.y += particle.vy;
-        particle.life -= 0.01;
+        particle.life -= 0.015;
 
         if (particle.life <= 0) return false;
 
         ctx.save();
         ctx.globalAlpha = particle.life;
         ctx.fillStyle = particle.color;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 15;
         ctx.shadowColor = particle.color;
         
-        // Draw diamond shape
+        // Draw star shape for sparkle effect ✨
         ctx.beginPath();
-        const halfSize = particle.size / 2;
-        ctx.moveTo(particle.x, particle.y - halfSize);
-        ctx.lineTo(particle.x + halfSize, particle.y);
-        ctx.lineTo(particle.x, particle.y + halfSize);
-        ctx.lineTo(particle.x - halfSize, particle.y);
+        const spikes = 4;
+        const outerRadius = particle.size;
+        const innerRadius = particle.size / 2;
+        
+        for (let i = 0; i < spikes * 2; i++) {
+          const radius = i % 2 === 0 ? outerRadius : innerRadius;
+          const angle = (i * Math.PI) / spikes;
+          const x = particle.x + Math.cos(angle) * radius;
+          const y = particle.y + Math.sin(angle) * radius;
+          
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
         ctx.closePath();
         ctx.fill();
         
@@ -110,7 +125,7 @@ export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
       ref={canvasRef}
       width={200}
       height={100}
-      className="absolute inset-0 pointer-events-none"
+      className="absolute inset-0 pointer-events-none z-20"
       style={{ width: "100%", height: "100%" }}
     />
   );
