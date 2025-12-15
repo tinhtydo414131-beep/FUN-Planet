@@ -51,8 +51,8 @@ export default function ClaimPage() {
   const isVN = i18n.language === 'vi';
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { camlyBalance, walletAddress, isConnected, claimDailyCheckin, claimToWallet, canClaimDailyCheckin, isLoading, CAMLY_CONTRACT_ADDRESS } = useWeb3Rewards();
-  const { isClaiming, hasClaimed, claimAirdrop, celebrateClaim, triggerHaptic, checkHasClaimed, getRemainingPool } = useClaimToWallet();
+  const { camlyBalance, claimDailyCheckin, claimToWallet, canClaimDailyCheckin, isLoading, CAMLY_CONTRACT_ADDRESS } = useWeb3Rewards();
+  const { isClaiming, hasClaimed, claimAirdrop, celebrateClaim, triggerHaptic, checkHasClaimed, getRemainingPool, isConnected, walletAddress, openWalletModal } = useClaimToWallet();
   const [showDashboard, setShowDashboard] = useState(false);
   const [airdropClaimed, setAirdropClaimed] = useState(false);
   const [remainingPool, setRemainingPool] = useState("0");
@@ -101,12 +101,19 @@ export default function ClaimPage() {
       return;
     }
 
+    // Open wallet modal if not connected
+    if (!isConnected) {
+      await openWalletModal();
+      return;
+    }
+
     const result = await claimAirdrop();
     
     if (result.success && result.txHash) {
       setAirdropClaimed(true);
       setLastTxHash(result.txHash);
       setShowSuccessModal(true);
+      celebrateClaim();
       await fetchRewardHistory();
     } else {
       toast.error(result.error || (isVN ? 'Claim thất bại' : 'Claim failed'));
@@ -372,15 +379,22 @@ export default function ClaimPage() {
               >
                 <Button
                   onClick={handleRealAirdropClaim}
-                  disabled={isClaiming || airdropClaimed}
+                  disabled={isClaiming || airdropClaimed || hasClaimed}
                   size="lg"
-                  className="h-32 w-64 md:h-40 md:w-80 text-xl md:text-2xl font-black rounded-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-400 hover:via-orange-400 hover:to-red-400 shadow-2xl hover:scale-105 transition-all duration-300"
+                  className={`h-32 w-64 md:h-40 md:w-80 text-xl md:text-2xl font-black rounded-full shadow-2xl hover:scale-105 transition-all duration-300 ${
+                    !isConnected 
+                      ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500'
+                      : airdropClaimed || hasClaimed
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600'
+                        : 'bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-400 hover:via-orange-400 hover:to-red-400'
+                  }`}
                 >
                   <div className="flex flex-col items-center gap-2">
                     <Wallet className="w-10 h-10 md:w-12 md:h-12 animate-bounce" />
                     <span>
                       {isClaiming ? (isVN ? 'Đang claim...' : 'Claiming...') : 
-                       airdropClaimed ? (isVN ? 'Đã nhận Airdrop ✓' : 'Airdrop Claimed ✓') :
+                       airdropClaimed || hasClaimed ? (isVN ? 'Đã nhận Airdrop ✓' : 'Airdrop Claimed ✓') :
+                       !isConnected ? (isVN ? 'Kết nối Ví & Claim!' : 'Connect Wallet & Claim!') :
                        (isVN ? 'Claim 50K CAMLY về Ví!' : 'Claim 50K CAMLY to Wallet!')}
                     </span>
                   </div>
