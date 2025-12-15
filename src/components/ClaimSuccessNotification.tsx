@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Diamond, ExternalLink, Copy, CheckCircle2, Sparkles, PartyPopper, Wallet } from 'lucide-react';
+import { Diamond, ExternalLink, Copy, CheckCircle2, Sparkles, PartyPopper, Wallet, X } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 import { useTranslation } from 'react-i18next';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
+import { useFullscreen } from '@/hooks/useFullscreen';
 
 interface ClaimSuccessNotificationProps {
   isOpen: boolean;
@@ -15,6 +16,24 @@ interface ClaimSuccessNotificationProps {
   amount: number;
   walletAddress?: string;
 }
+
+// Haptic feedback utility
+const triggerHaptic = (pattern: 'light' | 'medium' | 'heavy' | 'success' = 'medium') => {
+  if (!('vibrate' in navigator)) return;
+  
+  const patterns = {
+    light: [10],
+    medium: [30],
+    heavy: [50],
+    success: [50, 30, 50, 30, 100]
+  };
+  
+  try {
+    navigator.vibrate(patterns[pattern]);
+  } catch (e) {
+    // Vibration not supported
+  }
+};
 
 // Play celebration sound at 528Hz (Love frequency)
 const playCelebrationSound = () => {
@@ -145,25 +164,36 @@ export const ClaimSuccessNotification = ({
         setTimeout(() => fireRainbowConfetti(), 1500);
       }
       
-      // Haptic feedback
-      if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100, 50, 200]);
-      }
+      // Strong haptic feedback for success
+      triggerHaptic('success');
     }
   }, [isOpen, preferences.soundEnabled, preferences.confettiEnabled, playNotificationSound]);
 
-  const handleCopyTxHash = () => {
+  const handleCopyTxHash = useCallback(() => {
+    triggerHaptic('light');
     navigator.clipboard.writeText(txHash);
     setCopied(true);
     toast.success(isVN ? 'Đã sao chép!' : 'Copied!');
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [txHash, isVN]);
+
+  const handleButtonPress = useCallback((callback: () => void) => {
+    triggerHaptic('medium');
+    callback();
+  }, []);
 
   const bscscanUrl = `https://bscscan.com/tx/${txHash}`;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md border-2 border-primary/50 bg-gradient-to-b from-background via-background to-primary/5 overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleButtonPress(onClose)}>
+      <DialogContent className="sm:max-w-md max-w-full w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:rounded-xl rounded-none border-0 sm:border-2 border-primary/50 bg-gradient-to-b from-background via-background to-primary/5 overflow-auto p-0 sm:p-6">
+        {/* Mobile close button */}
+        <button 
+          onClick={() => handleButtonPress(onClose)}
+          className="absolute top-4 right-4 z-50 sm:hidden p-2 rounded-full bg-muted/80 backdrop-blur-sm active:scale-95 transition-transform"
+        >
+          <X className="w-5 h-5" />
+        </button>
         {/* Animated background sparkles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(20)].map((_, i) => (
@@ -190,7 +220,7 @@ export const ClaimSuccessNotification = ({
           ))}
         </div>
 
-        <div className="text-center py-6 relative z-10">
+        <div className="text-center py-8 sm:py-6 px-6 relative z-10 flex flex-col justify-center min-h-[100dvh] sm:min-h-0">
           {/* Success Icon */}
           <motion.div
             initial={{ scale: 0 }}
@@ -297,12 +327,12 @@ export const ClaimSuccessNotification = ({
               </code>
               <button
                 onClick={handleCopyTxHash}
-                className="p-1.5 hover:bg-muted rounded transition-colors"
+                className="p-2 hover:bg-muted rounded-lg transition-all active:scale-90"
               >
                 {copied ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
                 ) : (
-                  <Copy className="w-4 h-4" />
+                  <Copy className="w-5 h-5" />
                 )}
               </button>
             </div>
@@ -316,8 +346,8 @@ export const ClaimSuccessNotification = ({
             className="space-y-3"
           >
             <Button
-              onClick={() => window.open(bscscanUrl, '_blank')}
-              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold h-12"
+              onClick={() => handleButtonPress(() => window.open(bscscanUrl, '_blank'))}
+              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold h-14 sm:h-12 text-base active:scale-[0.98] transition-transform"
             >
               <ExternalLink className="w-5 h-5 mr-2" />
               {isVN ? 'Xem trên BscScan' : 'View on BscScan'}
@@ -325,8 +355,8 @@ export const ClaimSuccessNotification = ({
 
             <Button
               variant="outline"
-              onClick={onClose}
-              className="w-full"
+              onClick={() => handleButtonPress(onClose)}
+              className="w-full h-14 sm:h-10 text-base active:scale-[0.98] transition-transform"
             >
               {isVN ? 'Đóng' : 'Close'}
             </Button>
