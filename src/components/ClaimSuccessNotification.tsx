@@ -6,6 +6,7 @@ import { Diamond, ExternalLink, Copy, CheckCircle2, Sparkles, PartyPopper, Walle
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 import { useTranslation } from 'react-i18next';
+import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 
 interface ClaimSuccessNotificationProps {
   isOpen: boolean;
@@ -128,24 +129,28 @@ export const ClaimSuccessNotification = ({
   const { i18n } = useTranslation();
   const isVN = i18n.language === 'vi';
   const [copied, setCopied] = useState(false);
+  const { preferences, playNotificationSound } = useNotificationPreferences();
 
   useEffect(() => {
     if (isOpen) {
-      // Trigger effects
-      fireRainbowConfetti();
-      playCelebrationSound();
+      // Play selected notification sound from settings
+      if (preferences.soundEnabled) {
+        playNotificationSound();
+      }
+      
+      // Trigger confetti if enabled
+      if (preferences.confettiEnabled) {
+        fireRainbowConfetti();
+        // Second wave
+        setTimeout(() => fireRainbowConfetti(), 1500);
+      }
       
       // Haptic feedback
       if ('vibrate' in navigator) {
         navigator.vibrate([100, 50, 100, 50, 200]);
       }
-
-      // Second wave of confetti
-      setTimeout(() => {
-        fireRainbowConfetti();
-      }, 1500);
     }
-  }, [isOpen]);
+  }, [isOpen, preferences.soundEnabled, preferences.confettiEnabled, playNotificationSound]);
 
   const handleCopyTxHash = () => {
     navigator.clipboard.writeText(txHash);
