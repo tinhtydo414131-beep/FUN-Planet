@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { useNotificationPreferences, NOTIFICATION_THEMES, NotificationTheme } from "@/hooks/useNotificationPreferences";
+import { useNotificationPreferences, NOTIFICATION_THEMES, NOTIFICATION_SOUNDS, NotificationTheme, NotificationSound } from "@/hooks/useNotificationPreferences";
 import confetti from "canvas-confetti";
 import camlyCoinIcon from "@/assets/camly-coin-notification.png";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
@@ -70,7 +70,8 @@ export default function Settings() {
   const {
     preferences,
     updatePreferences,
-    resetPreferences
+    resetPreferences,
+    previewSound
   } = useNotificationPreferences();
   useEffect(() => {
     if (!authLoading && !user) {
@@ -540,6 +541,67 @@ export default function Settings() {
                   volume: value
                 })} max={100} step={5} className="w-full" />
                   </div>}
+              </div>
+
+              <Separator />
+
+              {/* Sound Selection */}
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <Label className="text-base font-fredoka text-foreground flex items-center gap-2">
+                    🎵 Chọn nhạc thông báo
+                  </Label>
+                  <p className="text-sm text-muted-foreground font-comic">
+                    Nhấn vào để nghe thử và chọn âm thanh yêu thích
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  {(Object.entries(NOTIFICATION_SOUNDS) as [NotificationSound, typeof NOTIFICATION_SOUNDS[NotificationSound]][]).map(([key, sound]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        updatePreferences({ selectedSound: key });
+                        previewSound(key, preferences.customSoundUrl);
+                      }}
+                      disabled={!preferences.enabled || !preferences.soundEnabled}
+                      className={`p-3 rounded-xl border-2 text-left transition-all ${
+                        preferences.selectedSound === key
+                          ? 'border-primary bg-primary/10 shadow-md'
+                          : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                      } ${(!preferences.enabled || !preferences.soundEnabled) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{sound.icon}</span>
+                        <div>
+                          <p className="font-medium text-sm">{sound.name}</p>
+                          <p className="text-[10px] text-muted-foreground">{sound.nameEn}</p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom Sound URL */}
+                {preferences.selectedSound === 'custom' && (
+                  <div className="space-y-2 pl-2 border-l-2 border-primary/30">
+                    <Label className="text-sm">URL nhạc tùy chỉnh</Label>
+                    <Input
+                      placeholder="https://example.com/sound.mp3"
+                      value={preferences.customSoundUrl}
+                      onChange={(e) => updatePreferences({ customSoundUrl: e.target.value })}
+                      disabled={!preferences.enabled || !preferences.soundEnabled}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => previewSound('custom', preferences.customSoundUrl)}
+                      disabled={!preferences.customSoundUrl}
+                    >
+                      🔊 Nghe thử
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <Separator />
