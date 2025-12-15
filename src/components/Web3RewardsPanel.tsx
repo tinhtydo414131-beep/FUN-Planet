@@ -117,7 +117,7 @@ export const Web3RewardsPanel = () => {
             )}
             <Button
               onClick={handleDailyCheckin}
-              disabled={!canClaimDailyCheckin() || isCheckingIn}
+              disabled={!canClaimDailyCheckin || isCheckingIn}
               variant="outline"
               className="w-full border-yellow-500/30 hover:bg-yellow-500/10"
             >
