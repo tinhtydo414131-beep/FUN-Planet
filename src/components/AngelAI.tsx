@@ -34,10 +34,7 @@ const ANGEL_MESSAGES = {
     `Chào ${name}! 🚀 Angel có tin vui: Soul NFT của bé đang phát sáng đẹp lắm!`
   ],
   
-  charity_reminder: () => 
-    `Bé ơi, hôm nay có 11% từ doanh thu game đã vào Quỹ Ánh Sáng rồi đó! 💝`,
-  
-  game_suggestion: (gameName: string) => 
+  game_suggestion: (gameName: string) =>
     `Angel thấy bé thích ${gameName}! Có muốn chơi tiếp không? 🎮`,
   
   parent_time_reminder: (minutes: number) => 

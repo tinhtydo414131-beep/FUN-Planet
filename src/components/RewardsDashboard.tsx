@@ -24,7 +24,6 @@ interface RewardTransaction {
 
 interface RewardStats {
   totalEarned: number;
-  charityTotal: number;
   todayEarned: number;
   weeklyEarned: number;
   byType: {
@@ -49,10 +48,7 @@ const TYPE_CONFIG: Record<string, { name: string; nameEn: string; color: string;
   first_wallet_connect: { name: 'Kết nối ví', nameEn: 'Wallet', color: '#EC4899', icon: Wallet },
   airdrop_claim: { name: 'Airdrop', nameEn: 'Airdrop', color: '#FFD700', icon: Gift },
   wallet_withdrawal: { name: 'Rút tiền', nameEn: 'Withdraw', color: '#EF4444', icon: ArrowUpRight },
-  charity_donation: { name: 'Từ thiện', nameEn: 'Charity', color: '#F472B6', icon: Heart },
 };
-
-const CHARITY_PERCENTAGE = 0.11;
 
 export const RewardsDashboard = () => {
   const { t, i18n } = useTranslation();
@@ -60,7 +56,6 @@ export const RewardsDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState<RewardStats>({
     totalEarned: 0,
-    charityTotal: 0,
     todayEarned: 0,
     weeklyEarned: 0,
     byType: [],
@@ -121,8 +116,6 @@ export const RewardsDashboard = () => {
           }
         });
 
-        const charityTotal = Math.floor(total * CHARITY_PERCENTAGE);
-
         const byType = Object.entries(typeTotals)
           .filter(([_, value]) => value > 0)
           .map(([type, value]) => ({
@@ -157,7 +150,6 @@ export const RewardsDashboard = () => {
 
         setStats({
           totalEarned: total,
-          charityTotal,
           todayEarned: todayTotal,
           weeklyEarned: weeklyTotal,
           byType,
@@ -278,21 +270,6 @@ export const RewardsDashboard = () => {
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <Card className="bg-gradient-to-br from-pink-500/10 to-red-500/10 border-pink-500/30">
-            <CardContent className="p-3 text-center">
-              <Heart className="w-6 h-6 mx-auto mb-1 text-pink-500" />
-              <p className="text-[10px] text-muted-foreground">{isVN ? 'Từ thiện 11%' : 'Charity 11%'}</p>
-              <p className="text-lg font-bold text-pink-500">
-                {stats.charityTotal.toLocaleString()}
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
       </div>
 
       {/* Charts Row */}

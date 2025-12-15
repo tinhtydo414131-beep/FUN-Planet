@@ -4,9 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
-import { CAMLY_CONTRACT_ADDRESS, CAMLY_AIRDROP_CONTRACT_ADDRESS, CHARITY_WALLET_ADDRESS, CAMLY_ABI } from '@/lib/web3';
-
-const CHARITY_PERCENTAGE = 0.11; // 11% for charity
+import { CAMLY_CONTRACT_ADDRESS, CAMLY_AIRDROP_CONTRACT_ADDRESS, CAMLY_ABI } from '@/lib/web3';
 
 interface ClaimResult {
   success: boolean;
@@ -130,13 +128,11 @@ export const useClaimToWallet = () => {
         .single();
 
       const AIRDROP_AMOUNT = 50000;
-      const charityAmount = Math.floor(AIRDROP_AMOUNT * CHARITY_PERCENTAGE);
-      const userAmount = AIRDROP_AMOUNT - charityAmount;
 
       await supabase
         .from('profiles')
         .update({ 
-          wallet_balance: (profile?.wallet_balance || 0) + userAmount,
+          wallet_balance: (profile?.wallet_balance || 0) + AIRDROP_AMOUNT,
           wallet_address: address
         })
         .eq('id', user.id);
@@ -144,26 +140,17 @@ export const useClaimToWallet = () => {
       // Record transaction
       await supabase.from('web3_reward_transactions').insert({
         user_id: user.id,
-        amount: userAmount,
+        amount: AIRDROP_AMOUNT,
         reward_type: 'airdrop_claim',
         description: `Airdrop claimed to wallet ${address.slice(0, 10)}...`,
         transaction_hash: txHash,
         claimed_to_wallet: true
       });
 
-      // Record charity donation
-      await supabase.from('web3_reward_transactions').insert({
-        user_id: user.id,
-        amount: charityAmount,
-        reward_type: 'charity_donation',
-        description: `11% charity: ${charityAmount.toLocaleString()} CAMLY`,
-        transaction_hash: txHash
-      });
-
-      // Update charity stats
+      // Update wallet balance
       await supabase.rpc('update_wallet_balance', { 
         p_user_id: user.id, 
-        p_amount: userAmount,
+        p_amount: AIRDROP_AMOUNT,
         p_operation: 'add'
       });
 
@@ -215,16 +202,11 @@ export const useClaimToWallet = () => {
         return { success: false, error: 'Insufficient balance' };
       }
 
-      // Calculate charity amount (11%)
-      const charityAmount = Math.floor(amount * CHARITY_PERCENTAGE);
-      const userAmount = amount - charityAmount;
-
       // Create claim message
       const timestamp = Date.now();
       const message = `FUN Planet Claim Request
 
-Amount: ${userAmount.toLocaleString()} CAMLY
-Charity (11%): ${charityAmount.toLocaleString()} CAMLY
+Amount: ${amount.toLocaleString()} CAMLY
 Wallet: ${address}
 Timestamp: ${timestamp}
 
@@ -254,24 +236,15 @@ Sign to confirm your withdrawal.`;
         })
         .eq('user_id', user.id);
 
-      // Record transactions
-      await supabase.from('web3_reward_transactions').insert([
-        {
-          user_id: user.id,
-          amount: -userAmount,
-          reward_type: 'wallet_withdrawal',
-          description: `Withdrawn to wallet ${address.slice(0, 10)}...`,
-          transaction_hash: txHash,
-          claimed_to_wallet: true
-        },
-        {
-          user_id: user.id,
-          amount: charityAmount,
-          reward_type: 'charity_donation',
-          description: `11% charity donation`,
-          transaction_hash: txHash
-        }
-      ]);
+      // Record transaction
+      await supabase.from('web3_reward_transactions').insert({
+        user_id: user.id,
+        amount: -amount,
+        reward_type: 'wallet_withdrawal',
+        description: `Withdrawn to wallet ${address.slice(0, 10)}...`,
+        transaction_hash: txHash,
+        claimed_to_wallet: true
+      });
 
       setIsClaiming(false);
       return { success: true, txHash };

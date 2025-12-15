@@ -2,7 +2,6 @@
 // This file is kept for backwards compatibility
 export {
   CAMLY_CONTRACT_ADDRESS,
-  CHARITY_WALLET_ADDRESS,
   REWARDS,
   CAMLY_ABI,
   wagmiAdapter,

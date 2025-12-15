@@ -362,15 +362,6 @@ export const ClaimSuccessNotification = ({
             </Button>
           </motion.div>
 
-          {/* Charity note */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-            className="text-xs text-muted-foreground mt-4"
-          >
-            💝 {isVN ? '11% đã được chuyển cho từ thiện' : '11% donated to charity'}
-          </motion.p>
         </div>
       </DialogContent>
     </Dialog>
