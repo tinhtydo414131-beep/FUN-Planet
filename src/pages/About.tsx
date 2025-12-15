@@ -20,7 +20,6 @@ import {
 
 const About = () => {
   const { t, i18n } = useTranslation();
-  const [charityTotal, setCharityTotal] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
 
   useEffect(() => {
@@ -29,16 +28,6 @@ const About = () => {
 
   const fetchStats = async () => {
     try {
-      // Fetch charity stats
-      const { data: charityData } = await supabase
-        .from('charity_wallet_stats')
-        .select('total_donated')
-        .single();
-      
-      if (charityData) {
-        setCharityTotal(charityData.total_donated);
-      }
-
       // Fetch total users
       const { count } = await supabase
         .from('profiles')
@@ -56,9 +45,8 @@ const About = () => {
 
   // Revenue split data for pie chart - Updated to match blueprint
   const revenueSplitData = [
-    { name: isVN ? 'Developers' : 'Developers', value: 70, color: '#8B5CF6' },
-    { name: isVN ? 'Cộng đồng' : 'Community', value: 19, color: '#F97316' },
-    { name: isVN ? 'Từ thiện' : 'Charity', value: 11, color: '#10B981' },
+    { name: isVN ? 'Developers' : 'Developers', value: 80, color: '#8B5CF6' },
+    { name: isVN ? 'Cộng đồng' : 'Community', value: 20, color: '#F97316' },
   ];
 
   // Core Values Radar Data
@@ -200,10 +188,9 @@ const About = () => {
         </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {[
             { icon: Users, value: totalUsers.toLocaleString(), label: isVN ? 'Người chơi' : 'Players', color: 'text-blue-500' },
-            { icon: Heart, value: `$${(charityTotal / 1000).toFixed(1)}K`, label: isVN ? 'Từ thiện' : 'Charity', color: 'text-pink-500' },
             { icon: Sparkles, value: '50+', label: isVN ? 'Trò chơi' : 'Games', color: 'text-yellow-500' },
             { icon: Shield, value: '100%', label: isVN ? 'An toàn' : 'Safe', color: 'text-green-500' },
           ].map((stat, i) => (

@@ -723,28 +723,6 @@ export default function ClaimPage() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Charity Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-pink-500/10 to-red-500/10 border border-pink-500/30"
-        >
-          <div className="flex items-center gap-3">
-            <Heart className="w-8 h-8 text-pink-500" />
-            <div>
-              <h3 className="font-bold text-pink-500">
-                {isVN ? '11% Từ Thiện' : '11% Charity'}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {isVN 
-                  ? 'Mỗi giao dịch rút tiền, 11% được quyên góp cho trẻ em nghèo 💝'
-                  : 'Each withdrawal, 11% is donated to children in need 💝'
-                }
-              </p>
-            </div>
-          </div>
-        </motion.div>
       </div>
 
       {/* Smooth Claim Modal */}

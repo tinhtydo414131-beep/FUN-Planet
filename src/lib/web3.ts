@@ -11,9 +11,6 @@ export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e41
 // CAMLY Airdrop Contract on BSC Mainnet (for claiming airdrop)
 export const CAMLY_AIRDROP_CONTRACT_ADDRESS = '0xf9FfF1976FADEf8712319fa46881DB0E0FB2f828';
 
-// Charity wallet receives 11% of all rewards
-export const CHARITY_WALLET_ADDRESS = '0x1234567890123456789012345678901234567890';
-
 // Reward amounts
 export const REWARDS = {
   FIRST_WALLET_CONNECT: 50000,
