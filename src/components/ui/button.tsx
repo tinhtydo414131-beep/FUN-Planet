@@ -104,8 +104,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
         {...props}
       >
-      {enableEffects && (
+        {enableEffects && (
           <>
+            <ButtonFacets />
             <ButtonLightRays isHovered={isHovered} />
             <ButtonParticles isHovered={isHovered} />
           </>
