@@ -532,11 +532,9 @@ export const useWeb3Rewards = () => {
     }
   }, [user, state.walletAddress, state.camlyBalance]);
 
-  // Check if daily checkin is available
-  const canClaimDailyCheckin = useCallback(() => {
-    const today = new Date().toISOString().split('T')[0];
-    return state.lastDailyCheckin !== today;
-  }, [state.lastDailyCheckin]);
+  // Check if daily checkin is available (computed boolean, not function)
+  const today = new Date().toISOString().split('T')[0];
+  const canClaimDailyCheckin = state.lastDailyCheckin !== today;
 
   const clearPendingReward = useCallback(() => {
     setPendingReward(null);
