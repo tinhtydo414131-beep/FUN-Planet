@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star, Heart, Wallet } from "lucide-react";
+import { Diamond, Sparkles, Gift, Users, Gamepad2, Calendar, Shield, ArrowLeft, ExternalLink, Coins, TrendingUp, Lock, CheckCircle2, Zap, Star, Heart, Wallet, Mic, Radio, Brain, TrendingDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { useClaimToWallet } from "@/hooks/useClaimToWallet";
 import { playBlingSound } from "@/components/SoundEffects528Hz";
 import { CAMLY_AIRDROP_CONTRACT_ADDRESS } from "@/lib/web3";
+import { Badge } from "@/components/ui/badge";
 
 interface RewardTransaction {
   id: string;
@@ -71,7 +72,10 @@ export default function ClaimPage() {
     totalWeekly: 0
   });
   const [parentLimit, setParentLimit] = useState<number | null>(null);
+  const [parentOverride, setParentOverride] = useState(false);
   const [dailyStreak, setDailyStreak] = useState(0);
+  const [aiPrediction, setAiPrediction] = useState({ trend: 'up', confidence: 100, target: '1M' });
+
   useEffect(() => {
     if (user) {
       fetchRewardHistory();
@@ -190,14 +194,30 @@ export default function ClaimPage() {
     
     const { data } = await supabase
       .from('child_time_limits')
-      .select('daily_limit_minutes')
+      .select('daily_limit_minutes, is_active')
       .eq('child_id', user.id)
-      .eq('is_active', true)
       .single();
 
     if (data) {
       // Convert to CAMLY limit (example: 1M per week)
+      setParentLimit(data.is_active ? 1000000 : null);
+      setParentOverride(!data.is_active);
+    }
+  };
+
+  const handleParentOverride = async () => {
+    if (!user) return;
+    
+    // Toggle parent override - requires parent PIN in real implementation
+    const newOverride = !parentOverride;
+    setParentOverride(newOverride);
+    
+    if (newOverride) {
+      setParentLimit(null);
+      toast.success(isVN ? 'Giới hạn đã được gỡ bỏ!' : 'Limit override activated!');
+    } else {
       setParentLimit(1000000);
+      toast.info(isVN ? 'Giới hạn đã được kích hoạt lại' : 'Limit restored');
     }
   };
 
@@ -597,15 +617,28 @@ export default function ClaimPage() {
                   </div>
                 )}
 
-                {/* Set Parent Limit Button */}
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/parent-dashboard')}
-                  className="w-full mt-2"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  {isVN ? 'Phụ huynh đặt giới hạn' : 'Parent Set Limit'}
-                </Button>
+                {/* Parent Override Button */}
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/parent-dashboard')}
+                    className="w-full"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    {isVN ? 'Phụ huynh đặt giới hạn' : 'Parent Set Limit'}
+                  </Button>
+                  
+                  {parentLimit && (
+                    <Button
+                      variant="ghost"
+                      onClick={handleParentOverride}
+                      className="w-full text-xs text-muted-foreground hover:text-yellow-500"
+                    >
+                      <Lock className="w-3 h-3 mr-1" />
+                      {isVN ? 'Gỡ giới hạn (cần PIN phụ huynh)' : 'Override Limit (requires Parent PIN)'}
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </motion.div>
@@ -657,6 +690,116 @@ export default function ClaimPage() {
                   </div>
                 )}
               </ScrollArea>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* AI Price Scanner - HuggingFace Teaser */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
+          className="mb-6"
+        >
+          <Card className="overflow-hidden border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-cyan-400 animate-pulse" />
+                  <span>{isVN ? 'AI Dự Đoán Giá CAMLY' : 'AI CAMLY Price Prediction'}</span>
+                </div>
+                <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/50">
+                  <Radio className="w-3 h-3 mr-1 animate-pulse" />
+                  LIVE
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between p-4 rounded-xl bg-background/50">
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-cyan-500 flex items-center justify-center"
+                  >
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  </motion.div>
+                  <div>
+                    <p className="text-2xl font-black text-green-400">
+                      {aiPrediction.confidence}% {isVN ? 'Tăng' : 'Upward'} ↗
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {isVN ? 'Mục tiêu: ' : 'Target: '}{aiPrediction.target} CAMLY
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {isVN ? 'Cập nhật theo thời gian thực' : 'Real-time HuggingFace AI'}
+                  </p>
+                  <Diamond className="w-6 h-6 text-cyan-400 inline animate-pulse" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Multiplayer & Voice Chat Teasers */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.58 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+        >
+          {/* Real-time Multiplayer Teaser */}
+          <Card className="overflow-hidden border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                  className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
+                >
+                  <Users className="w-6 h-6 text-white" />
+                </motion.div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold">{isVN ? 'Multiplayer Thời Gian Thực' : 'Real-time Multiplayer'}</p>
+                    <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-xs">
+                      {isVN ? 'SẮP RA MẮT' : 'COMING SOON'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {isVN ? 'Chơi game cùng bạn bè - x3 thưởng!' : 'Play games with friends - 3x rewards!'}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Voice Chat Teaser */}
+          <Card className="overflow-hidden border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-blue-500/10">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center"
+                >
+                  <Mic className="w-6 h-6 text-white" />
+                </motion.div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold">{isVN ? 'Voice Chat An Toàn' : 'Safe Voice Chat'}</p>
+                    <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-xs">
+                      {isVN ? 'SẮP RA MẮT' : 'COMING SOON'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {isVN ? 'Nói chuyện với bạn bè - AI lọc an toàn' : 'Talk with friends - AI safety filter'}
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

@@ -165,6 +165,16 @@ export const useClaimToWallet = () => {
       setHasClaimed(true);
       setIsClaiming(false);
 
+      // Show success toast with BSCScan link
+      toast.success(`🎉 Claim successful! +50,000 CAMLY`, {
+        duration: 10000,
+        description: `View on BSCScan: https://bscscan.com/tx/${txHash}`,
+        action: {
+          label: 'View TX ↗',
+          onClick: () => window.open(`https://bscscan.com/tx/${txHash}`, '_blank')
+        }
+      });
+
       return { success: true, txHash };
     } catch (error: any) {
       console.error('Claim error:', error);
