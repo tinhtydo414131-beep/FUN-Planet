@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { SmoothClaimModal } from "@/components/SmoothClaimModal";
 import { RewardsDashboard } from "@/components/RewardsDashboard";
+import { ClaimSuccessNotification } from "@/components/ClaimSuccessNotification";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DiamondConfetti, fireDiamondConfetti } from "@/components/DiamondConfetti";
@@ -59,6 +60,8 @@ export default function ClaimPage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [lastTxHash, setLastTxHash] = useState("");
   const [rewardHistory, setRewardHistory] = useState<RewardTransaction[]>([]);
   const [weeklyLimits, setWeeklyLimits] = useState<WeeklyLimits>({
     uploadRewards: 0,
@@ -100,15 +103,10 @@ export default function ClaimPage() {
 
     const result = await claimAirdrop();
     
-    if (result.success) {
+    if (result.success && result.txHash) {
       setAirdropClaimed(true);
-      celebrateClaim();
-      playBlingSound();
-      toast.success(
-        isVN 
-          ? `✨ Claim thành công! TX: ${result.txHash?.slice(0, 10)}...` 
-          : `✨ Claimed successfully! TX: ${result.txHash?.slice(0, 10)}...`
-      );
+      setLastTxHash(result.txHash);
+      setShowSuccessModal(true);
       await fetchRewardHistory();
     } else {
       toast.error(result.error || (isVN ? 'Claim thất bại' : 'Claim failed'));
@@ -754,6 +752,15 @@ export default function ClaimPage() {
         isOpen={showClaimModal}
         onClose={() => setShowClaimModal(false)}
         camlyBalance={camlyBalance}
+      />
+
+      {/* Claim Success Notification with confetti, sound & BscScan link */}
+      <ClaimSuccessNotification
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        txHash={lastTxHash}
+        amount={50000}
+        walletAddress={walletAddress}
       />
     </div>
   );
