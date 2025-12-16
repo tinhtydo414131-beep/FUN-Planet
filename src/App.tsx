@@ -14,6 +14,7 @@ import { RoleSelectionModal } from "@/components/RoleSelectionModal";
 import { FloatingChatWindows, useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { CallProvider } from "@/components/private-chat/CallProvider";
 import { UploadGameFAB } from "@/components/UploadGameFAB";
+import { FloatingRewardButton } from "@/components/FloatingRewardButton";
 import { WelcomeCreatorPopup } from "@/components/WelcomeCreatorPopup";
 import { GameCompleteClaimPopup } from "@/components/GameCompleteClaimPopup";
 import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
@@ -189,6 +190,9 @@ const AppContent = () => {
         
         {/* Upload Game FAB - Always visible */}
         <UploadGameFAB />
+        
+        {/* Floating Reward Button - Gift from Father Universe */}
+        <FloatingRewardButton />
         
         {/* Welcome Creator Popup - Shows for new users */}
         <WelcomeCreatorPopup />
