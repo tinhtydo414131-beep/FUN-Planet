@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
-export type ClaimType = 'welcome' | 'playgame' | 'uploadgame' | 'daily_checkin';
+export type ClaimType = 'welcome' | 'playgame' | 'uploadgame' | 'daily_checkin' | 'claim_pending';
 
 interface ClaimResult {
   success: boolean;
