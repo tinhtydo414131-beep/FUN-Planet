@@ -41,7 +41,8 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const treasuryPrivateKey = Deno.env.get('REWARDS_SIGNER_PRIVATE_KEY');
-    const camlyContractAddress = Deno.env.get('REWARDS_CLAIM_CONTRACT_ADDRESS') || '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
+    // CAMLY Token Contract on BSC Mainnet
+    const camlyContractAddress = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
 
     // Validate environment variables
     if (!treasuryPrivateKey) {
