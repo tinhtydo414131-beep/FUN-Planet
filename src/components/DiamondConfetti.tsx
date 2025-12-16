@@ -84,7 +84,7 @@ export const fireDiamondConfetti = (type: 'celebration' | 'reward' | 'achievemen
         particleCount: 30,
         angle: 60,
         spread: 50,
-        origin: { x: 0. },
+        origin: { x: 0 },
         colors
       });
       confetti({

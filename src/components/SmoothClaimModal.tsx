@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -6,39 +6,109 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
   Diamond, Wallet, ArrowRight, CheckCircle2, ExternalLink, 
-  Shield, AlertCircle, Sparkles, Copy, Gift
+  Shield, AlertCircle, Sparkles, Copy, Gift, PartyPopper, Star
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useClaimToWallet } from '@/hooks/useClaimToWallet';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { CAMLY_CONTRACT_ADDRESS } from '@/lib/web3';
+import { fireDiamondConfetti } from './DiamondConfetti';
 
 interface SmoothClaimModalProps {
   isOpen: boolean;
   onClose: () => void;
   camlyBalance: number;
+  onBalanceUpdate?: () => void;
 }
 
 export const SmoothClaimModal = ({
   isOpen,
   onClose,
   camlyBalance,
+  onBalanceUpdate,
 }: SmoothClaimModalProps) => {
   const [amount, setAmount] = useState('');
   const [step, setStep] = useState<'input' | 'confirm' | 'processing' | 'success'>('input');
   const [txHash, setTxHash] = useState('');
+  const [displayBalance, setDisplayBalance] = useState(camlyBalance);
+  const [isMobile, setIsMobile] = useState(false);
   
   const { isClaiming, claimBalanceToWallet, celebrateClaim, triggerHaptic } = useClaimToWallet();
   const { walletAddress } = useWeb3Rewards();
 
   const claimAmount = parseFloat(amount) || 0;
 
+  // Check if mobile
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
+  // Sync balance
+  useEffect(() => {
+    setDisplayBalance(camlyBalance);
+  }, [camlyBalance]);
+
+  // Heavy vibration for mobile celebration
+  const heavyVibration = () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate([100, 50, 200, 50, 300, 50, 400]);
+    }
+  };
+
+  // Play 528Hz celebration sound
+  const playBlingSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioContext) {
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(528, ctx.currentTime);
+        osc.frequency.setValueAtTime(659, ctx.currentTime + 0.2);
+        osc.frequency.setValueAtTime(784, ctx.currentTime + 0.4);
+        gain.gain.setValueAtTime(0.4, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 2);
+      }
+    } catch (e) {
+      console.log('Audio not available');
+    }
+  };
+
+  // Big celebration effect
+  const bigCelebration = () => {
+    // Play sound
+    playBlingSound();
+    
+    // Strong vibration on mobile
+    if (isMobile) {
+      heavyVibration();
+    } else {
+      triggerHaptic();
+    }
+    
+    // Fire rainbow confetti multiple times
+    fireDiamondConfetti('rainbow');
+    setTimeout(() => fireDiamondConfetti('rainbow'), 300);
+    setTimeout(() => fireDiamondConfetti('celebration'), 600);
+    setTimeout(() => fireDiamondConfetti('reward'), 900);
+    
+    // Call hook celebration too
+    celebrateClaim();
+  };
+
   const handleClaim = async () => {
     if (isNaN(claimAmount) || claimAmount <= 0) {
       toast.error('Vui lòng nhập số tiền hợp lệ');
       return;
     }
-    if (claimAmount > camlyBalance) {
+    if (claimAmount > displayBalance) {
       toast.error('Số dư không đủ');
       return;
     }
@@ -55,9 +125,38 @@ export const SmoothClaimModal = ({
     
     if (result.success && result.txHash) {
       setTxHash(result.txHash);
-      celebrateClaim();
+      
+      // Update balance immediately without reload
+      setDisplayBalance(prev => prev - claimAmount);
+      
+      // Call parent to refresh balance
+      onBalanceUpdate?.();
+      
+      // Big celebration!
+      bigCelebration();
+      
       setStep('success');
-      toast.success(`🎉 Đã nhận ${claimAmount.toLocaleString()} CAMLY vào ví!`);
+      
+      // Show festive toast
+      toast.success(
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-lg font-bold">
+            <PartyPopper className="w-6 h-6 text-yellow-500" />
+            <span>Chúc mừng bé! 🌟</span>
+          </div>
+          <p className="text-sm">{claimAmount.toLocaleString()} CAMLY đã về ví thật rồi nè!</p>
+          <a 
+            href={`https://bscscan.com/tx/${result.txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-cyan-400 hover:text-cyan-300 underline flex items-center gap-1"
+          >
+            <ExternalLink className="w-3 h-3" />
+            Xem giao dịch thật trên BscScan nè!
+          </a>
+        </div>,
+        { duration: 15000 }
+      );
     } else {
       toast.error(result.error || 'Có lỗi xảy ra');
       setStep('input');
@@ -65,6 +164,10 @@ export const SmoothClaimModal = ({
   };
 
   const handleClose = () => {
+    if (step === 'success') {
+      // Don't reload, just close
+      onBalanceUpdate?.();
+    }
     setStep('input');
     setAmount('');
     setTxHash('');
@@ -80,7 +183,11 @@ export const SmoothClaimModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg bg-gradient-to-br from-background via-background to-primary/5 border-2 border-primary/20 max-h-[90vh] overflow-y-auto">
+      <DialogContent className={`bg-gradient-to-br from-background via-background to-primary/5 border-2 border-primary/20 overflow-y-auto ${
+        isMobile && step === 'success' 
+          ? 'w-full h-full max-w-full max-h-full rounded-none' 
+          : 'sm:max-w-lg max-h-[90vh]'
+      }`}>
         <DialogHeader className="text-center">
           <DialogTitle className="text-2xl font-bold flex items-center justify-center gap-2">
             <Diamond className="w-8 h-8 text-cyan-400 animate-pulse" />
@@ -100,17 +207,21 @@ export const SmoothClaimModal = ({
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6 py-4"
             >
-              {/* Balance display */}
+              {/* Balance display - realtime update */}
               <div className="p-4 rounded-2xl bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Số dư khả dụng</span>
+                  <span className="text-sm text-muted-foreground flex items-center gap-1">
+                    <Wallet className="w-4 h-4" />
+                    Ví của bé
+                  </span>
                   <motion.span 
-                    key={camlyBalance}
-                    initial={{ scale: 1.1 }}
-                    animate={{ scale: 1 }}
-                    className="text-2xl font-bold text-yellow-500"
+                    key={displayBalance}
+                    initial={{ scale: 1.2, color: '#22c55e' }}
+                    animate={{ scale: 1, color: '#eab308' }}
+                    transition={{ duration: 0.5 }}
+                    className="text-2xl font-bold"
                   >
-                    {camlyBalance.toLocaleString()} CAMLY
+                    {displayBalance.toLocaleString()} CAMLY
                   </motion.span>
                 </div>
               </div>
@@ -306,36 +417,116 @@ export const SmoothClaimModal = ({
               key="success"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="py-6 text-center space-y-6"
+              className={`text-center space-y-6 ${isMobile ? 'py-12 px-4' : 'py-6'}`}
             >
+              {/* Big animated success icon */}
               <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', damping: 10 }}
-                className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', damping: 8, stiffness: 100 }}
+                className={`mx-auto rounded-full bg-gradient-to-br from-green-500/30 via-emerald-500/20 to-cyan-500/30 flex items-center justify-center shadow-2xl ${
+                  isMobile ? 'w-36 h-36' : 'w-28 h-28'
+                }`}
               >
-                <CheckCircle2 className="w-14 h-14 text-green-500" />
+                <motion.div
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <PartyPopper className={`text-green-500 ${isMobile ? 'w-20 h-20' : 'w-16 h-16'}`} />
+                </motion.div>
               </motion.div>
+
+              {/* Floating stars animation */}
+              <div className="relative h-8">
+                {[...Array(5)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20, x: (i - 2) * 30 }}
+                    animate={{ 
+                      opacity: [0, 1, 0], 
+                      y: [-10, -40, -60],
+                      x: (i - 2) * 40
+                    }}
+                    transition={{ 
+                      duration: 2, 
+                      repeat: Infinity, 
+                      delay: i * 0.2 
+                    }}
+                    className="absolute left-1/2"
+                  >
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  </motion.div>
+                ))}
+              </div>
 
               <div>
                 <motion.h3 
-                  initial={{ y: 10 }}
-                  animate={{ y: 0 }}
-                  className="text-2xl font-bold text-green-500 mb-2"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className={`font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-3 ${
+                    isMobile ? 'text-4xl' : 'text-3xl'
+                  }`}
                 >
-                  Thành công! 🎉
+                  🎉 Chúc mừng bé! 🎉
                 </motion.h3>
-                <p className="text-muted-foreground">
-                  Đã nhận <strong className="text-green-500">{claimAmount.toLocaleString()} CAMLY</strong> vào ví!
-                </p>
+                <motion.p 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className={`text-muted-foreground ${isMobile ? 'text-xl' : 'text-lg'}`}
+                >
+                  <strong className="text-green-400 text-2xl">{claimAmount.toLocaleString()} CAMLY</strong>
+                  <br />
+                  đã về ví thật rồi nè! 🌟
+                </motion.p>
               </div>
 
-              {/* Transaction hash */}
+              {/* Updated balance display */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="p-4 rounded-2xl bg-gradient-to-r from-green-500/10 to-cyan-500/10 border border-green-500/30"
+              >
+                <p className="text-sm text-muted-foreground mb-1">Ví của bé giờ còn</p>
+                <motion.p
+                  initial={{ scale: 1.5 }}
+                  animate={{ scale: 1 }}
+                  className="text-2xl font-bold text-green-400"
+                >
+                  {displayBalance.toLocaleString()} CAMLY
+                </motion.p>
+              </motion.div>
+
+              {/* Transaction link - prominent */}
               {txHash && (
-                <div className="p-4 bg-muted/30 rounded-xl space-y-2">
-                  <p className="text-xs text-muted-foreground">Transaction Hash:</p>
-                  <div className="flex items-center gap-2 justify-center">
-                    <code className="text-xs font-mono">{txHash.slice(0, 20)}...</code>
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="space-y-3"
+                >
+                  <a 
+                    href={`https://bscscan.com/tx/${txHash}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-14 text-lg border-cyan-500/50 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400"
+                    >
+                      <ExternalLink className="w-5 h-5 mr-2" />
+                      Xem giao dịch thật trên BscScan nè! 🔗
+                    </Button>
+                  </a>
+                  
+                  <div className="flex items-center gap-2 justify-center text-xs text-muted-foreground">
+                    <code className="font-mono bg-muted/30 px-2 py-1 rounded">{txHash.slice(0, 16)}...{txHash.slice(-8)}</code>
                     <Button 
                       size="icon" 
                       variant="ghost" 
@@ -344,26 +535,25 @@ export const SmoothClaimModal = ({
                     >
                       <Copy className="w-3 h-3" />
                     </Button>
-                    <a 
-                      href={`https://bscscan.com/tx/${txHash}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      <Button size="icon" variant="ghost" className="h-6 w-6">
-                        <ExternalLink className="w-3 h-3" />
-                      </Button>
-                    </a>
                   </div>
-                </div>
+                </motion.div>
               )}
 
-              <Button 
-                onClick={handleClose} 
-                className="w-full bg-gradient-to-r from-primary to-cyan-500"
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
               >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Hoàn tất
-              </Button>
+                <Button 
+                  onClick={handleClose} 
+                  className={`w-full bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500 shadow-xl ${
+                    isMobile ? 'h-16 text-xl' : 'h-14 text-lg'
+                  }`}
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Tuyệt vời! Đóng thôi 🎊
+                </Button>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
