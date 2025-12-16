@@ -185,13 +185,13 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
                 </div>
 
                 <div className="relative z-10">
-                  <p className="text-sm text-muted-foreground mb-1">Total Balance</p>
+                  <p className="text-sm text-muted-foreground mb-1">Reward History</p>
                   <motion.p
                     className="text-4xl font-bold text-amber-500"
                     initial={{ scale: 0.9 }}
                     animate={{ scale: 1 }}
                   >
-                    {formatCamly(camlyBalance)} CAMLY
+                    {formatCamly(camlyBalance)} REWARDS
                   </motion.p>
                 {bnbBalance && (
                     <p className="text-sm text-muted-foreground mt-1">
