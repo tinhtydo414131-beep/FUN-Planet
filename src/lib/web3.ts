@@ -13,7 +13,7 @@ export const CAMLY_AIRDROP_CONTRACT_ADDRESS = '0xf9FfF1976FADEf8712319fa46881DB0
 
 // CAMLY Rewards Claim Contract on BSC Mainnet (for withdrawing in-app balance)
 // TODO: Update after deploying CamlyRewardsClaim.sol
-export const CAMLY_REWARDS_CLAIM_CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const CAMLY_REWARDS_CLAIM_CONTRACT_ADDRESS = '0x6F3dE6cb59C2525c2f3C609878d1864F8F32Dda6';
 
 // Reward amounts
 export const REWARDS = {
