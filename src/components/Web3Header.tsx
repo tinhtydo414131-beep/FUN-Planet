@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wallet, Copy, Check, ChevronDown, LogOut, Gift, Sparkles, X } from 'lucide-react';
+import { Wallet, Copy, Check, ChevronDown, LogOut, Gift, Sparkles, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -12,36 +12,44 @@ import {
 import { useAccount, useDisconnect } from 'wagmi';
 import { web3Modal, shortenAddress, formatCamly, REWARDS } from '@/lib/web3';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
+import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import camlyCoin from '@/assets/camly-coin.png';
 import { toast } from 'sonner';
 
 export function Web3Header() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
-  const { camlyBalance, isLoading, firstWalletClaimed, connectWallet } = useWeb3Rewards();
+  const { camlyBalance, isLoading, firstWalletClaimed, loadRewards } = useWeb3Rewards();
+  const { claimReward, checkCanClaim, isClaiming } = useCamlyClaim();
   const [copied, setCopied] = useState(false);
   const [showAirdrop, setShowAirdrop] = useState(false);
-  const [claiming, setClaiming] = useState(false);
+  const [canClaimFirstWallet, setCanClaimFirstWallet] = useState(false);
 
-  // Check for first connect airdrop
+  // Check for first connect airdrop - now checks on-chain claim status
   useEffect(() => {
-    if (isConnected && address && !firstWalletClaimed) {
-      const timer = setTimeout(() => setShowAirdrop(true), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isConnected, address, firstWalletClaimed]);
+    const checkClaim = async () => {
+      if (isConnected && address) {
+        const result = await checkCanClaim('first_wallet');
+        setCanClaimFirstWallet(result.canClaim);
+        if (result.canClaim && !firstWalletClaimed) {
+          setTimeout(() => setShowAirdrop(true), 500);
+        }
+      }
+    };
+    checkClaim();
+  }, [isConnected, address, firstWalletClaimed, checkCanClaim]);
 
   const handleConnect = () => {
     web3Modal.open();
   };
 
   const handleClaimAirdrop = async () => {
-    setClaiming(true);
-    const result = await connectWallet();
-    setClaiming(false);
-    if (result) {
+    const result = await claimReward('first_wallet');
+    if (result.success && result.status === 'completed') {
       setShowAirdrop(false);
-      toast.success(`🎉 Airdrop claimed! +${formatCamly(REWARDS.FIRST_WALLET_CONNECT)} CAMLY`);
+      setCanClaimFirstWallet(false);
+      loadRewards(); // Refresh balance
+      toast.success(`🎉 Airdrop claimed! TX: ${result.txHash?.slice(0, 10)}...`);
     }
   };
 
@@ -126,20 +134,18 @@ export function Web3Header() {
 
                 <Button
                   onClick={handleClaimAirdrop}
-                  disabled={claiming}
+                  disabled={isClaiming}
                   className="w-full h-14 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold text-lg shadow-lg"
                 >
-                  {claiming ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    >
-                      <Sparkles className="w-5 h-5" />
+                  {isClaiming ? (
+                    <motion.div className="flex items-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending tokens...
                     </motion.div>
                   ) : (
                     <>
                       <Gift className="w-5 h-5 mr-2" />
-                      Claim Airdrop
+                      Claim 50,000 CAMLY
                     </>
                   )}
                 </Button>
