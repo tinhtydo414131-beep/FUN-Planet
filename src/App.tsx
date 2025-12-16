@@ -57,6 +57,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import LovableGamePlay from "./pages/LovableGamePlay";
 import SampleGames from "./pages/SampleGames";
+import RewardGalaxy from "./pages/RewardGalaxy";
 
 
 const queryClient = new QueryClient();
@@ -101,6 +102,7 @@ const AnimatedRoutes = () => {
         <Route path="/airdrop" element={<GlobalAirdrop />} />
         <Route path="/global-airdrop" element={<GlobalAirdrop />} />
         <Route path="/rewards-history" element={<RewardsHistory />} />
+        <Route path="/reward-galaxy" element={<RewardGalaxy />} />
         
         {/* Social & Community */}
         <Route path="/friends" element={<Friends />} />
