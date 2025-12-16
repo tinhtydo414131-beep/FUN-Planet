@@ -31,7 +31,6 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { AngelAI, AngelAIButton } from "@/components/AngelAI";
 import { FunIDOnboarding } from "@/components/FunIDOnboarding";
 import { useFunId } from "@/hooks/useFunId";
-import RewardsButton from "@/components/rewards/RewardsButton";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -199,9 +198,6 @@ const Index = () => {
       {user && funId && !showAngelChat && (
         <AngelAIButton onClick={() => setShowAngelChat(true)} />
       )}
-
-      {/* Floating Rewards Button */}
-      <RewardsButton variant="floating" />
 
       {/* Legend Particle Effect */}
       <LegendParticleEffect isLegend={isLegend} />

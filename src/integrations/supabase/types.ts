@@ -1692,56 +1692,6 @@ export type Database = {
         }
         Relationships: []
       }
-      pending_rewards: {
-        Row: {
-          amount: number
-          claimed: boolean
-          claimed_at: string | null
-          created_at: string
-          game_id: string | null
-          id: string
-          source: string
-          tx_hash: string | null
-          updated_at: string
-          user_id: string | null
-          wallet_address: string
-        }
-        Insert: {
-          amount?: number
-          claimed?: boolean
-          claimed_at?: string | null
-          created_at?: string
-          game_id?: string | null
-          id?: string
-          source: string
-          tx_hash?: string | null
-          updated_at?: string
-          user_id?: string | null
-          wallet_address: string
-        }
-        Update: {
-          amount?: number
-          claimed?: boolean
-          claimed_at?: string | null
-          created_at?: string
-          game_id?: string | null
-          id?: string
-          source?: string
-          tx_hash?: string | null
-          updated_at?: string
-          user_id?: string | null
-          wallet_address?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "pending_rewards_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "uploaded_games"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       playlist_items: {
         Row: {
           added_at: string | null
@@ -2994,13 +2944,9 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
-          metadata: Json | null
           reward_type: string
-          status: string | null
           transaction_hash: string | null
-          tx_hash: string | null
           user_id: string
-          wallet_address: string | null
         }
         Insert: {
           amount: number
@@ -3008,13 +2954,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          metadata?: Json | null
           reward_type: string
-          status?: string | null
           transaction_hash?: string | null
-          tx_hash?: string | null
           user_id: string
-          wallet_address?: string | null
         }
         Update: {
           amount?: number
@@ -3022,13 +2964,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          metadata?: Json | null
           reward_type?: string
-          status?: string | null
           transaction_hash?: string | null
-          tx_hash?: string | null
           user_id?: string
-          wallet_address?: string | null
         }
         Relationships: [
           {
@@ -3164,16 +3102,6 @@ export type Database = {
       }
     }
     Functions: {
-      add_pending_reward: {
-        Args: {
-          p_amount: number
-          p_game_id?: string
-          p_source: string
-          p_user_id?: string
-          p_wallet_address: string
-        }
-        Returns: string
-      }
       check_file_hash_exists: {
         Args: { p_file_hash: string; p_user_id: string }
         Returns: {
@@ -3190,10 +3118,6 @@ export type Database = {
           p_user_id: string
         }
         Returns: boolean
-      }
-      claim_pending_rewards: {
-        Args: { p_tx_hash: string; p_wallet_address: string }
-        Returns: number
       }
       cleanup_expired_nonces: { Args: never; Returns: undefined }
       cleanup_old_deleted_games: { Args: never; Returns: undefined }
@@ -3212,10 +3136,6 @@ export type Database = {
           remaining_rewards: number
           reward_count: number
         }[]
-      }
-      get_pending_rewards_total: {
-        Args: { p_wallet_address: string }
-        Returns: number
       }
       has_role: {
         Args: {

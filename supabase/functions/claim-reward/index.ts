@@ -8,12 +8,11 @@ const corsHeaders = {
 };
 
 // Reward amounts in CAMLY (with 18 decimals)
-const REWARD_AMOUNTS: Record<string, bigint> = {
-  welcome: ethers.parseUnits("50000", 18),
-  playgame: ethers.parseUnits("10000", 18),
-  uploadgame: ethers.parseUnits("500000", 18),
-  daily_checkin: ethers.parseUnits("5000", 18),
-  claim_pending: BigInt(0), // Will be calculated from pending rewards
+const REWARD_AMOUNTS = {
+  welcome: ethers.parseUnits("50000", 18), // 50,000 CAMLY for first wallet connect
+  playgame: ethers.parseUnits("10000", 18), // 10,000 CAMLY per game complete
+  uploadgame: ethers.parseUnits("500000", 18), // 500,000 CAMLY for uploading a game
+  daily_checkin: ethers.parseUnits("5000", 18), // 5,000 CAMLY for daily check-in
 };
 
 // ERC20 Transfer ABI
@@ -24,7 +23,7 @@ const ERC20_ABI = [
 
 interface ClaimRequest {
   walletAddress: string;
-  claimType: 'welcome' | 'playgame' | 'uploadgame' | 'daily_checkin' | 'claim_pending';
+  claimType: 'welcome' | 'playgame' | 'uploadgame' | 'daily_checkin';
   signature: string;
   message: string;
   gameId?: string;
@@ -41,14 +40,21 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const treasuryPrivateKey = Deno.env.get('REWARDS_SIGNER_PRIVATE_KEY');
-    // CAMLY Token Contract on BSC Mainnet
-    const camlyContractAddress = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
+    const camlyContractAddress = Deno.env.get('REWARDS_CLAIM_CONTRACT_ADDRESS');
 
     // Validate environment variables
     if (!treasuryPrivateKey) {
       console.error('REWARDS_SIGNER_PRIVATE_KEY not configured');
       return new Response(
         JSON.stringify({ error: 'Server configuration error: Treasury key not set' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!camlyContractAddress) {
+      console.error('REWARDS_CLAIM_CONTRACT_ADDRESS not configured');
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error: Contract address not set' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -75,7 +81,7 @@ serve(async (req) => {
     }
 
     // Validate claim type
-    if (!(claimType in REWARD_AMOUNTS)) {
+    if (!REWARD_AMOUNTS[claimType]) {
       return new Response(
         JSON.stringify({ error: 'Invalid claim type' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -105,39 +111,10 @@ serve(async (req) => {
 
     console.log(`Signature verified for wallet: ${walletAddress}`);
 
-    // Step 2: Check claim conditions and calculate reward amount
+    // Step 2: Check claim conditions based on type
     const checksumAddress = ethers.getAddress(walletAddress);
-    let rewardAmount: bigint;
 
-    if (claimType === 'claim_pending') {
-      // Claim all pending rewards for this wallet
-      const { data: pendingRewards, error: pendingError } = await supabase
-        .from('pending_rewards')
-        .select('id, amount')
-        .eq('wallet_address', walletAddress.toLowerCase())
-        .eq('claimed', false);
-
-      if (pendingError) {
-        console.error('Error fetching pending rewards:', pendingError);
-        return new Response(
-          JSON.stringify({ error: 'Failed to fetch pending rewards' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      if (!pendingRewards || pendingRewards.length === 0) {
-        return new Response(
-          JSON.stringify({ error: 'No pending rewards to claim' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      // Calculate total pending amount
-      const totalPending = pendingRewards.reduce((sum, r) => sum + Number(r.amount), 0);
-      rewardAmount = ethers.parseUnits(totalPending.toString(), 18);
-      
-      console.log(`Claiming ${totalPending} pending CAMLY for wallet ${walletAddress}`);
-    } else if (claimType === 'welcome') {
+    if (claimType === 'welcome') {
       // Check if user has already claimed welcome reward
       const { data: existingClaim, error: checkError } = await supabase
         .from('web3_reward_transactions')
@@ -160,9 +137,9 @@ serve(async (req) => {
           { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
-      rewardAmount = REWARD_AMOUNTS[claimType];
-    } else if (claimType === 'uploadgame') {
+    }
+
+    if (claimType === 'uploadgame') {
       if (!gameId) {
         return new Response(
           JSON.stringify({ error: 'gameId required for upload game reward' }),
@@ -173,7 +150,7 @@ serve(async (req) => {
       // Check if game exists and is approved
       const { data: game, error: gameError } = await supabase
         .from('uploaded_games')
-        .select('id, status, user_id')
+        .select('id, status, uploader_id')
         .eq('id', gameId)
         .single();
 
@@ -197,6 +174,7 @@ serve(async (req) => {
         .select('id')
         .eq('wallet_address', checksumAddress)
         .eq('reward_type', 'upload_game')
+        .eq('metadata->>gameId', gameId)
         .limit(1);
 
       if (existingGameClaim && existingGameClaim.length > 0) {
@@ -205,9 +183,9 @@ serve(async (req) => {
           { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
-      rewardAmount = REWARD_AMOUNTS[claimType];
-    } else if (claimType === 'daily_checkin') {
+    }
+
+    if (claimType === 'daily_checkin') {
       // Check if user already checked in today
       const today = new Date().toISOString().split('T')[0];
       const { data: existingCheckin } = await supabase
@@ -224,10 +202,6 @@ serve(async (req) => {
           { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      
-      rewardAmount = REWARD_AMOUNTS[claimType];
-    } else {
-      rewardAmount = REWARD_AMOUNTS[claimType];
     }
 
     // Step 3: Connect to BSC and transfer tokens
@@ -238,6 +212,7 @@ serve(async (req) => {
 
     // Check treasury balance
     const treasuryBalance = await camlyContract.balanceOf(treasuryWallet.address);
+    const rewardAmount = REWARD_AMOUNTS[claimType];
 
     if (treasuryBalance < rewardAmount) {
       console.error('Insufficient treasury balance:', ethers.formatUnits(treasuryBalance, 18));
@@ -247,8 +222,7 @@ serve(async (req) => {
       );
     }
 
-    const formattedAmount = ethers.formatUnits(rewardAmount, 18);
-    console.log(`Transferring ${formattedAmount} CAMLY to ${walletAddress}`);
+    console.log(`Transferring ${ethers.formatUnits(rewardAmount, 18)} CAMLY to ${walletAddress}`);
 
     // Execute the transfer
     const tx = await camlyContract.transfer(walletAddress, rewardAmount);
@@ -258,27 +232,23 @@ serve(async (req) => {
     const receipt = await tx.wait();
     console.log('Transaction confirmed:', receipt.hash);
 
-    // Step 4: Record the transaction and update pending rewards
-    const rewardTypeMap: Record<string, string> = {
+    // Step 4: Record the transaction in database
+    const rewardTypeMap = {
       welcome: 'first_wallet_connect',
       playgame: 'game_complete',
       uploadgame: 'upload_game',
       daily_checkin: 'daily_checkin',
-      claim_pending: 'pending_claim',
     };
 
-    // Insert transaction record
     const { error: insertError } = await supabase
       .from('web3_reward_transactions')
       .insert({
         user_id: userId || null,
         wallet_address: checksumAddress,
         reward_type: rewardTypeMap[claimType],
-        amount: Number(formattedAmount),
+        amount: Number(ethers.formatUnits(rewardAmount, 18)),
         tx_hash: receipt.hash,
-        transaction_hash: receipt.hash,
         status: 'completed',
-        claimed_to_wallet: true,
         metadata: {
           claimType,
           gameId: gameId || null,
@@ -289,31 +259,14 @@ serve(async (req) => {
 
     if (insertError) {
       console.error('Failed to record transaction:', insertError);
-    }
-
-    // Mark pending rewards as claimed if this was a pending claim
-    if (claimType === 'claim_pending') {
-      const { error: updateError } = await supabase
-        .from('pending_rewards')
-        .update({
-          claimed: true,
-          claimed_at: new Date().toISOString(),
-          tx_hash: receipt.hash,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('wallet_address', walletAddress.toLowerCase())
-        .eq('claimed', false);
-
-      if (updateError) {
-        console.error('Failed to update pending rewards:', updateError);
-      }
+      // Transaction already succeeded, so we still return success
     }
 
     // Update user's wallet balance in profiles if userId provided
     if (userId) {
       const { error: balanceError } = await supabase.rpc('update_wallet_balance', {
         p_user_id: userId,
-        p_amount: Number(formattedAmount),
+        p_amount: Number(ethers.formatUnits(rewardAmount, 18)),
         p_operation: 'add',
       });
 
@@ -328,7 +281,7 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         txHash: receipt.hash,
-        amount: formattedAmount,
+        amount: ethers.formatUnits(rewardAmount, 18),
         claimType,
         walletAddress,
       }),
