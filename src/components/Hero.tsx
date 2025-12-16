@@ -123,22 +123,6 @@ export const Hero = () => {
             🚀 Build Your Planet – Play & Earn Joy! 💎✨
           </motion.p>
 
-          {/* Hero Claim Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-          >
-            <Button
-              onClick={() => navigate(user ? '/claim' : '/auth')}
-              size="lg"
-              className="h-16 px-8 text-xl font-black rounded-2xl bg-gradient-to-r from-yellow-500 via-pink-500 to-cyan-500 hover:from-yellow-400 hover:via-pink-400 hover:to-cyan-400 shadow-[0_0_40px_rgba(236,72,153,0.5)] hover:shadow-[0_0_60px_rgba(236,72,153,0.7)] hover:scale-105 transition-all duration-300 border-2 border-white/30"
-            >
-              <Diamond className="w-6 h-6 mr-2 animate-bounce" />
-              Connect & Claim 50K CAMLY Free!
-              <Rocket className="w-6 h-6 ml-2" />
-            </Button>
-          </motion.div>
 
           {/* Search bar */}
           <motion.form initial={{

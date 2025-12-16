@@ -14,7 +14,6 @@ import { RoleSelectionModal } from "@/components/RoleSelectionModal";
 import { FloatingChatWindows, useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { CallProvider } from "@/components/private-chat/CallProvider";
 import { UploadGameFAB } from "@/components/UploadGameFAB";
-import { ClaimFAB } from "@/components/ClaimFAB";
 import { WelcomeCreatorPopup } from "@/components/WelcomeCreatorPopup";
 import { GameCompleteClaimPopup } from "@/components/GameCompleteClaimPopup";
 import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
@@ -58,7 +57,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import LovableGamePlay from "./pages/LovableGamePlay";
 import SampleGames from "./pages/SampleGames";
-import ClaimPage from "./pages/ClaimPage";
+
 
 const queryClient = new QueryClient();
 
@@ -99,7 +98,6 @@ const AnimatedRoutes = () => {
         {/* Wallet & Airdrop */}
         <Route path="/wallet" element={<FunWallet />} />
         <Route path="/wallet-guide" element={<WalletGuide />} />
-        <Route path="/claim" element={<ClaimPage />} />
         <Route path="/airdrop" element={<GlobalAirdrop />} />
         <Route path="/global-airdrop" element={<GlobalAirdrop />} />
         <Route path="/rewards-history" element={<RewardsHistory />} />
@@ -189,9 +187,6 @@ const AppContent = () => {
         
         {/* Upload Game FAB - Always visible */}
         <UploadGameFAB />
-        
-        {/* Claim FAB - Always visible */}
-        <ClaimFAB />
         
         {/* Welcome Creator Popup - Shows for new users */}
         <WelcomeCreatorPopup />
