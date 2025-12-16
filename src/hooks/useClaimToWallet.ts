@@ -252,8 +252,23 @@ export const useClaimToWallet = () => {
 
       const { signature, nonce, amount_wei, contract_address } = response.data;
 
+      console.log('Withdrawal signature received:', { 
+        contract_address, 
+        amount_wei, 
+        nonce: nonce?.slice(0, 20) + '...', 
+        signature: signature?.slice(0, 20) + '...' 
+      });
+
+      // Validate contract address
+      if (!contract_address || contract_address === '0x0000000000000000000000000000000000000000') {
+        setIsClaiming(false);
+        return { success: false, error: 'Contract chưa được cấu hình. Liên hệ admin!' };
+      }
+
       // Call smart contract
       toast.info('Vui lòng xác nhận giao dịch trong ví...');
+      
+      console.log('Calling claimRewards on contract:', contract_address);
       
       const txHash = await writeContractAsync({
         address: contract_address as `0x${string}`,
@@ -261,6 +276,8 @@ export const useClaimToWallet = () => {
         functionName: 'claimRewards',
         args: [BigInt(amount_wei), nonce as `0x${string}`, signature as `0x${string}`],
       } as any);
+      
+      console.log('Transaction hash:', txHash);
 
       setPendingTxHash(txHash as `0x${string}`);
       toast.info('Giao dịch đã gửi! Đang chờ xác nhận...');
@@ -299,8 +316,18 @@ export const useClaimToWallet = () => {
       if (error.message?.includes('insufficient funds') || error.message?.includes('gas')) {
         return { success: false, error: 'Không đủ BNB để trả gas (~0.003 BNB cần thiết)' };
       }
-      if (error.message?.includes('Insufficient pool')) {
+      if (error.message?.includes('Insufficient pool') || error.message?.includes('InsufficientPool')) {
         return { success: false, error: 'Pool rút tiền tạm hết. Vui lòng liên hệ admin!' };
+      }
+      if (error.message?.includes('InvalidSignature')) {
+        return { success: false, error: 'Chữ ký không hợp lệ. Vui lòng thử lại!' };
+      }
+      if (error.message?.includes('NonceUsed')) {
+        return { success: false, error: 'Giao dịch đã xử lý. Vui lòng thử lại!' };
+      }
+      if (error.message?.includes('execution reverted') || error.message?.includes('revert')) {
+        console.error('Contract reverted:', error);
+        return { success: false, error: 'Contract từ chối giao dịch. Pool có thể chưa có token!' };
       }
       
       return { success: false, error: error.shortMessage || error.message || 'Rút tiền thất bại' };
