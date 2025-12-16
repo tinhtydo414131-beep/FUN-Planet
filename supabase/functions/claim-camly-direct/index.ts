@@ -154,13 +154,18 @@ serve(async (req) => {
 
     if (rewardBalance < amountWei) {
       console.error("Insufficient CAMLY in reward wallet");
+
+      // Return 200 so the client can read the JSON body (avoids FunctionsHttpError)
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
+          success: false,
           error: "Reward pool insufficient",
           pool_balance: ethers.formatEther(rewardBalance),
-          requested: amount
+          requested: amount,
+          reward_wallet: wallet.address,
+          token_address: CAMLY_TOKEN_ADDRESS,
         }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 

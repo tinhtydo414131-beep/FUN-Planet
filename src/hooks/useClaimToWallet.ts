@@ -233,16 +233,24 @@ export const useClaimToWallet = () => {
 
       console.log('Claim response:', response);
 
+      // Edge function always returns 200 with a JSON body for business-rule errors
       if (response.error) {
         setIsClaiming(false);
-        const errorMsg = response.error?.message || 'Không thể claim';
-        return { success: false, error: errorMsg };
+        return { success: false, error: response.error.message || 'Không thể claim' };
       }
 
       if (!response.data?.success) {
         setIsClaiming(false);
-        const errorMsg = response.data?.error || 'Claim thất bại';
-        return { success: false, error: errorMsg };
+
+        const poolBalance = response.data?.pool_balance;
+        if (response.data?.error === 'Reward pool insufficient') {
+          return {
+            success: false,
+            error: `Pool CAMLY không đủ (hiện còn ${poolBalance ?? '0'} CAMLY). Vui lòng nạp thêm vào ví reward.`
+          };
+        }
+
+        return { success: false, error: response.data?.error || 'Claim thất bại' };
       }
 
       const { tx_hash, bscscan_url } = response.data;
