@@ -87,55 +87,87 @@ const playCelebrationSound = () => {
   }
 };
 
-// Fire rainbow diamond confetti
+// Fire epic rainbow diamond confetti - ENHANCED
 const fireRainbowConfetti = () => {
-  const colors = ['#FFD700', '#FF69B4', '#00FFFF', '#FF6B00', '#8B5CF6', '#10B981'];
+  const colors = ['#FFD700', '#FF69B4', '#00FFFF', '#FF6B00', '#8B5CF6', '#10B981', '#FF4444', '#44FF44'];
   
-  // Center burst
+  // Center mega burst
   confetti({
-    particleCount: 150,
+    particleCount: 250,
     spread: 180,
     origin: { y: 0.5 },
     colors,
     shapes: ['circle', 'square'],
-    scalar: 1.5,
-    gravity: 0.8,
-    ticks: 300
+    scalar: 2,
+    gravity: 0.6,
+    ticks: 400
   });
 
   // Left burst
   setTimeout(() => {
     confetti({
-      particleCount: 80,
+      particleCount: 120,
       angle: 60,
-      spread: 70,
+      spread: 80,
       origin: { x: 0, y: 0.6 },
-      colors
+      colors,
+      scalar: 1.5
     });
   }, 100);
 
   // Right burst
   setTimeout(() => {
     confetti({
-      particleCount: 80,
+      particleCount: 120,
       angle: 120,
-      spread: 70,
+      spread: 80,
       origin: { x: 1, y: 0.6 },
-      colors
+      colors,
+      scalar: 1.5
     });
   }, 100);
 
-  // Rain effect
+  // Rain effect - top
   setTimeout(() => {
     confetti({
-      particleCount: 100,
-      spread: 100,
+      particleCount: 150,
+      spread: 120,
       origin: { y: 0 },
       colors,
       gravity: 1.5,
-      scalar: 0.8
+      scalar: 1
     });
   }, 300);
+
+  // Extra bursts for epic effect
+  setTimeout(() => {
+    confetti({
+      particleCount: 100,
+      spread: 360,
+      origin: { x: 0.5, y: 0.4 },
+      colors,
+      scalar: 1.8,
+      gravity: 0.5
+    });
+  }, 500);
+
+  // Cannon shots from corners
+  setTimeout(() => {
+    confetti({ particleCount: 80, angle: 45, spread: 50, origin: { x: 0, y: 1 }, colors, scalar: 1.2 });
+    confetti({ particleCount: 80, angle: 135, spread: 50, origin: { x: 1, y: 1 }, colors, scalar: 1.2 });
+  }, 700);
+
+  // Final sparkle burst
+  setTimeout(() => {
+    confetti({
+      particleCount: 200,
+      spread: 100,
+      origin: { y: 0.6 },
+      colors,
+      scalar: 1.5,
+      gravity: 0.8
+    });
+  }, 1000);
 };
 
 export const ClaimSuccessNotification = ({
