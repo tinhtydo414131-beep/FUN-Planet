@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gem, Gamepad2, Upload, Users, Gift, Heart } from 'lucide-react';
+import { Gem, Gamepad2, Upload, Users, Gift } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCamly } from '@/lib/web3';
 import { fireDiamondConfetti } from '@/components/DiamondConfetti';
 
-export type EarnType = 'game' | 'upload' | 'referral' | 'daily' | 'charity';
+export type EarnType = 'game' | 'upload' | 'referral' | 'daily';
 
 interface EarnConfig {
   icon: typeof Gem;
@@ -38,12 +38,6 @@ const earnConfigs: Record<EarnType, EarnConfig> = {
     color: 'text-amber-500',
     bgColor: 'from-amber-500/20 to-yellow-500/20',
     borderColor: 'border-amber-500/30',
-  },
-  charity: {
-    icon: Heart,
-    color: 'text-pink-500',
-    bgColor: 'from-pink-500/20 to-rose-500/20',
-    borderColor: 'border-pink-500/30',
   },
 };
 
@@ -145,8 +139,6 @@ const getDefaultMessage = (type: EarnType): string => {
       return 'Your friend joined FUN Planet! 👥';
     case 'daily':
       return 'Welcome back! See you tomorrow! 🌟';
-    case 'charity':
-      return 'Spreading light to the world! 💖';
     default:
       return 'Joy earned! ✨';
   }
