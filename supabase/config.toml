@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.r2-upload]
 verify_jwt = false
+
+[functions.claim-reward]
+verify_jwt = false
