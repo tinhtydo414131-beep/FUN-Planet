@@ -207,6 +207,62 @@ export type Database = {
           },
         ]
       }
+      camly_claims: {
+        Row: {
+          amount: number
+          claim_type: Database["public"]["Enums"]["claim_type"]
+          claimed_at: string | null
+          created_at: string
+          game_id: string | null
+          id: string
+          parent_approval_required: boolean | null
+          parent_approved_at: string | null
+          parent_approved_by: string | null
+          status: string
+          tx_hash: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          amount: number
+          claim_type: Database["public"]["Enums"]["claim_type"]
+          claimed_at?: string | null
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          parent_approval_required?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
+          status?: string
+          tx_hash?: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          amount?: number
+          claim_type?: Database["public"]["Enums"]["claim_type"]
+          claimed_at?: string | null
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          parent_approval_required?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
+          status?: string
+          tx_hash?: string | null
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camly_claims_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       camly_coin_transactions: {
         Row: {
           amount: number
@@ -3217,6 +3273,17 @@ export type Database = {
         Args: { p_wallet_address: string }
         Returns: number
       }
+      has_claimed_first_wallet: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
+      has_claimed_today: {
+        Args: {
+          p_claim_type: Database["public"]["Enums"]["claim_type"]
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3239,6 +3306,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "kid" | "parent" | "dev"
+      claim_type: "first_wallet" | "game_completion" | "game_upload"
       game_category:
         | "action"
         | "puzzle"
@@ -3384,6 +3452,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "kid", "parent", "dev"],
+      claim_type: ["first_wallet", "game_completion", "game_upload"],
       game_category: [
         "action",
         "puzzle",
