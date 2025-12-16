@@ -7,8 +7,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// CAMLY Token contract address on BSC (checksummed)
-const CAMLY_TOKEN_ADDRESS = "0xf9fff1976fadef8712319fa46881db0e0fb2f828";
+// CAMLY Token contract address on BSC
+const CAMLY_TOKEN_ADDRESS = "0x0910320181889feFDE0BB1Ca63962b0A8882e413";
 
 // ERC20 Transfer ABI
 const ERC20_ABI = [
