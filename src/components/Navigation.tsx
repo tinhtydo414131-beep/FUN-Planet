@@ -28,6 +28,7 @@ import {
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { MessengerButton } from "./MessengerButton";
 import { LightWalletButton } from "./LightWallet";
+import RewardsButton from "./rewards/RewardsButton";
 
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -251,7 +252,8 @@ export const Navigation = () => {
               {/* Light Wallet Button */}
               <LightWalletButton variant="header" />
 
-
+              {/* CAMLY Rewards Button */}
+              <RewardsButton variant="header" />
               {user && (
                 <>
                   {/* Search Button */}
