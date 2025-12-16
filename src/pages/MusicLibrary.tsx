@@ -17,6 +17,7 @@ import {
   ValidationResponse,
   ValidationCodeIcons 
 } from "@/utils/musicUploadValidation";
+import { uploadToR2 } from "@/utils/r2Upload";
 
 interface MusicFile {
   name: string;
@@ -165,23 +166,18 @@ export default function MusicLibrary() {
 
       setValidating(false);
 
-      // ===== BƯỚC 2: UPLOAD FILE NẾU ĐƯỢC PHÉP =====
+      // ===== BƯỚC 2: UPLOAD FILE LÊN R2 =====
       setUploading(true);
 
-      // Sanitize filename
-      const sanitizedFileName = file.name
-        .replace(/[^\w\s.-]/g, '')
-        .replace(/\s+/g, '_')
-        .replace(/_{2,}/g, '_')
-        .toLowerCase();
+      toast.info("📤 Đang tải lên Cloudflare R2...");
       
-      const filePath = `${user.id}/${Date.now()}-${sanitizedFileName}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('music')
-        .upload(filePath, file);
+      const uploadResult = await uploadToR2(file, 'music');
 
-      if (uploadError) throw uploadError;
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || 'Upload failed');
+      }
+
+      console.log('✅ R2 Upload successful:', uploadResult.url);
 
       // Hiển thị kết quả
       if (validation.canReceiveReward) {
