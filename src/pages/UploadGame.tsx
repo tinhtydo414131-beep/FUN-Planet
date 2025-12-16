@@ -433,8 +433,97 @@ export default function UploadGame() {
           </motion.div>
         </motion.div>
 
+        {/* Lovable Publish Guide for Kids */}
+        <Dialog open={showGuideModal} onOpenChange={setShowGuideModal}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                How to Publish Your Game on Lovable ✨
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 py-4">
+              <div className="text-center mb-6">
+                <p className="text-lg text-muted-foreground">
+                  Follow these simple steps to get your game link! 🎮
+                </p>
+              </div>
+              
+              {/* Step 1 */}
+              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-transparent border border-primary/20">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center">1</div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">📝 Create Your Game</h4>
+                  <p className="text-muted-foreground text-sm">
+                    Go to <span className="font-mono bg-muted px-2 py-0.5 rounded">lovable.dev</span> and tell the AI what game you want to build. Example: "Make me a fun puzzle game with colorful blocks!"
+                  </p>
+                </div>
+              </div>
+              
+              {/* Step 2 */}
+              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-secondary/10 to-transparent border border-secondary/20">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-secondary text-white font-bold flex items-center justify-center">2</div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">🎨 Design & Test</h4>
+                  <p className="text-muted-foreground text-sm">
+                    Play your game in the preview window! If something doesn't work, just tell the AI: "Make the jump button bigger" or "Change the background to blue"
+                  </p>
+                </div>
+              </div>
+              
+              {/* Step 3 */}
+              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-transparent border border-green-500/20">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-500 text-white font-bold flex items-center justify-center">3</div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">🚀 Click "Publish"</h4>
+                  <p className="text-muted-foreground text-sm">
+                    Look for the <span className="font-bold text-green-500">"Publish"</span> button in the top-right corner. Click it! Your game will get a special link like: <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs">your-game.lovable.app</span>
+                  </p>
+                </div>
+              </div>
+              
+              {/* Step 4 */}
+              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-yellow-500/10 to-transparent border border-yellow-500/20">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center">4</div>
+                <div>
+                  <h4 className="font-bold text-lg mb-1">📋 Copy Your Link</h4>
+                  <p className="text-muted-foreground text-sm">
+                    After publishing, copy the link from the address bar or the share button. Paste it here and earn <span className="font-black text-yellow-600">500,000 CAMLY!</span> 🎁
+                  </p>
+                </div>
+              </div>
+              
+              {/* Tips Box */}
+              <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-cyan-500/10 border border-primary/20">
+                <h4 className="font-bold flex items-center gap-2 mb-2">
+                  <Heart className="w-5 h-5 text-pink-500" />
+                  Tips for Young Creators
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>✨ Ask a parent or teacher for help if needed!</li>
+                  <li>🎮 Make games that are fun and kind</li>
+                  <li>🌟 Test your game before publishing</li>
+                  <li>💝 Share with friends to get feedback</li>
+                </ul>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Upload Methods - Big beautiful boxes */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {/* Help Button for Kids */}
+          <div className="md:col-span-2 flex justify-center mb-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowGuideModal(true)}
+              className="gap-2 text-primary border-primary/30 hover:bg-primary/10"
+            >
+              <BookOpen className="w-4 h-4" />
+              📚 New to Lovable? Learn how to publish your game!
+            </Button>
+          </div>
+
           {/* Deploy Link Box */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
