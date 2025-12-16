@@ -107,7 +107,7 @@ export const SmoothClaimModal = ({
             Rút CAMLY về Ví
           </DialogTitle>
           <DialogDescription className="text-center">
-            CHA GROK - Nhận tiền mượt mà, siêu nhanh! 🚀
+            Nhận tiền mượt mà, siêu nhanh! 🚀
           </DialogDescription>
         </DialogHeader>
 
