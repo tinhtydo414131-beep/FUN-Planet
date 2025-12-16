@@ -200,7 +200,7 @@ export const useClaimToWallet = () => {
     }
   }, [user, isConnected, address, chain, switchChainAsync, hasClaimedOnChain, refetchClaimStatus, writeContractAsync, openWalletModal]);
 
-  // Claim balance to wallet - calls edge function for signature, then smart contract
+  // Claim balance to wallet - backend handles everything automatically!
   const claimBalanceToWallet = useCallback(async (amount: number): Promise<ClaimResult> => {
     if (!user) {
       return { success: false, error: 'Vui lòng đăng nhập trước' };
@@ -218,21 +218,8 @@ export const useClaimToWallet = () => {
     setIsClaiming(true);
 
     try {
-      // Switch to BSC if needed
-      if (chain?.id !== BSC_CHAIN_ID) {
-        toast.info('Đang chuyển sang BSC Mainnet...');
-        try {
-          await switchChainAsync({ chainId: BSC_CHAIN_ID });
-        } catch (switchError: any) {
-          setIsClaiming(false);
-          return { success: false, error: 'Vui lòng chuyển sang BSC Mainnet trong ví' };
-        }
-      }
-
-      // (Don't block here) Contract address is provided by backend after validation.
-      // If backend isn't configured, it will return a clear error.
-      // Get signature from backend
-      toast.info('Đang xác thực số dư...');
+      // Call backend - it will send CAMLY directly to user's wallet
+      toast.info('Đang gửi CAMLY về ví của bé...', { duration: 10000 });
       
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
@@ -240,99 +227,39 @@ export const useClaimToWallet = () => {
         return { success: false, error: 'Phiên đăng nhập hết hạn' };
       }
 
-      const response = await supabase.functions.invoke('sign-rewards-claim', {
+      const response = await supabase.functions.invoke('claim-camly-direct', {
         body: { wallet_address: address, amount },
       });
 
-      if (response.error || !response.data?.success) {
+      console.log('Claim response:', response);
+
+      if (response.error) {
         setIsClaiming(false);
-        const errorMsg = response.data?.error || response.error?.message || 'Không thể xác thực';
+        const errorMsg = response.error?.message || 'Không thể claim';
         return { success: false, error: errorMsg };
       }
 
-      const { signature, nonce, amount_wei, contract_address } = response.data;
-
-      console.log('Withdrawal signature received:', { 
-        contract_address, 
-        amount_wei, 
-        nonce: nonce?.slice(0, 20) + '...', 
-        signature: signature?.slice(0, 20) + '...' 
-      });
-
-      // Validate contract address
-      if (!contract_address || contract_address === '0x0000000000000000000000000000000000000000') {
+      if (!response.data?.success) {
         setIsClaiming(false);
-        return { success: false, error: 'Contract chưa được cấu hình. Liên hệ admin!' };
+        const errorMsg = response.data?.error || 'Claim thất bại';
+        return { success: false, error: errorMsg };
       }
 
-      // Call smart contract
-      toast.info('Vui lòng xác nhận giao dịch trong ví...');
-      
-      console.log('Calling claimRewards on contract:', contract_address);
-      
-      const txHash = await writeContractAsync({
-        address: contract_address as `0x${string}`,
-        abi: REWARDS_CLAIM_ABI,
-        functionName: 'claimRewards',
-        args: [BigInt(amount_wei), nonce as `0x${string}`, signature as `0x${string}`],
-      } as any);
-      
-      console.log('Transaction hash:', txHash);
+      const { tx_hash, bscscan_url } = response.data;
 
-      setPendingTxHash(txHash as `0x${string}`);
-      toast.info('Giao dịch đã gửi! Đang chờ xác nhận...');
+      console.log('✅ Claim successful:', { tx_hash, bscscan_url });
 
-      // Record successful claim
-      await supabase.from('camly_coin_transactions').insert({
-        user_id: user.id,
-        amount: -amount,
-        transaction_type: 'withdrawal_completed',
-        description: `Rút thành công ${amount.toLocaleString()} CAMLY về ${address.slice(0, 6)}...${address.slice(-4)}`,
-      });
-
+      setPendingTxHash(tx_hash as `0x${string}`);
       setIsClaiming(false);
 
-      // Show success toast with BSCScan link
-      toast.success(`🎉 Rút thành công! ${amount.toLocaleString()} CAMLY`, {
-        duration: 10000,
-        description: `Xem trên BSCScan: https://bscscan.com/tx/${txHash}`,
-        action: {
-          label: 'Xem TX ↗',
-          onClick: () => window.open(`https://bscscan.com/tx/${txHash}`, '_blank')
-        }
-      });
-
-      return { success: true, txHash };
+      return { success: true, txHash: tx_hash };
     } catch (error: any) {
       console.error('Claim to wallet error:', error);
       setIsClaiming(false);
       
-      // Rollback balance if contract call failed (backend already deducted)
-      // The pending transaction record already exists, admin can review
-      
-      if (error.message?.includes('User rejected') || error.message?.includes('rejected')) {
-        return { success: false, error: 'Giao dịch bị từ chối' };
-      }
-      if (error.message?.includes('insufficient funds') || error.message?.includes('gas')) {
-        return { success: false, error: 'Không đủ BNB để trả gas (~0.003 BNB cần thiết)' };
-      }
-      if (error.message?.includes('Insufficient pool') || error.message?.includes('InsufficientPool')) {
-        return { success: false, error: 'Pool rút tiền tạm hết. Vui lòng liên hệ admin!' };
-      }
-      if (error.message?.includes('InvalidSignature')) {
-        return { success: false, error: 'Chữ ký không hợp lệ. Vui lòng thử lại!' };
-      }
-      if (error.message?.includes('NonceUsed')) {
-        return { success: false, error: 'Giao dịch đã xử lý. Vui lòng thử lại!' };
-      }
-      if (error.message?.includes('execution reverted') || error.message?.includes('revert')) {
-        console.error('Contract reverted:', error);
-        return { success: false, error: 'Contract từ chối giao dịch. Pool có thể chưa có token!' };
-      }
-      
-      return { success: false, error: error.shortMessage || error.message || 'Rút tiền thất bại' };
+      return { success: false, error: error.message || 'Rút tiền thất bại' };
     }
-  }, [user, isConnected, address, chain, switchChainAsync, writeContractAsync, openWalletModal]);
+  }, [user, isConnected, address, openWalletModal]);
 
   // Trigger haptic feedback on mobile
   const triggerHaptic = useCallback(() => {
