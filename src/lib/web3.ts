@@ -8,6 +8,9 @@ const projectId = 'a01e309e8e50a5c1e4cc4f9f05e0d5a1';
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
 
+// CAMLY Airdrop Contract on BSC Mainnet (for claiming airdrop)
+export const CAMLY_AIRDROP_CONTRACT_ADDRESS = '0xf9FfF1976FADEf8712319fa46881DB0E0FB2f828';
+
 // Reward amounts
 export const REWARDS = {
   FIRST_WALLET_CONNECT: 50000,
