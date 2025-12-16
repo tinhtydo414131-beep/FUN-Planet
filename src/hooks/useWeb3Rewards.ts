@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
-import { useClaimToWallet } from './useClaimToWallet';
 
 const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
 const POINTS_TO_CAMLY_RATIO = 100; // 1 point = 100 Camly
@@ -54,7 +53,6 @@ const getStreakMultiplier = (streak: number): number => {
 
 export const useWeb3Rewards = () => {
   const { user } = useAuth();
-  const { claimBalanceToWallet, isConnected: walletConnected, walletAddress: connectedWalletAddress } = useClaimToWallet();
   
   const [state, setState] = useState<Web3RewardsState>({
     camlyBalance: 0,
@@ -439,63 +437,6 @@ export const useWeb3Rewards = () => {
     }
   }, [user]);
 
-  // Claim Camly to wallet - calls the smart contract via useClaimToWallet
-  const claimToWallet = useCallback(async (amount: number): Promise<{ success: boolean; txHash?: string }> => {
-    if (!user || amount <= 0 || amount > state.camlyBalance) {
-      toast.error('Invalid claim amount');
-      return { success: false };
-    }
-
-    try {
-      // Use the real on-chain claim function from useClaimToWallet
-      const result = await claimBalanceToWallet(amount);
-      
-      if (result.success) {
-        // Update local state after successful claim
-        setState(prev => ({
-          ...prev,
-          camlyBalance: prev.camlyBalance - amount,
-        }));
-        
-        // Also update web3_rewards table
-        const newBalance = state.camlyBalance - amount;
-        const { data: current } = await supabase
-          .from('web3_rewards')
-          .select('total_claimed_to_wallet')
-          .eq('user_id', user.id)
-          .single();
-
-        const newTotalClaimed = (Number(current?.total_claimed_to_wallet) || 0) + amount;
-
-        await supabase
-          .from('web3_rewards')
-          .update({
-            camly_balance: newBalance,
-            total_claimed_to_wallet: newTotalClaimed,
-          })
-          .eq('user_id', user.id);
-
-        // Record in web3_reward_transactions
-        await supabase.from('web3_reward_transactions').insert({
-          user_id: user.id,
-          amount: -amount,
-          reward_type: 'claim_to_wallet',
-          description: `Claimed ${amount.toLocaleString()} CAMLY on-chain`,
-          transaction_hash: result.txHash,
-          claimed_to_wallet: true,
-        });
-
-        return { success: true, txHash: result.txHash };
-      }
-
-      return { success: false };
-    } catch (error: any) {
-      console.error('Claim error:', error);
-      toast.error(error.message || 'Failed to claim to wallet');
-      return { success: false };
-    }
-  }, [user, state.camlyBalance, claimBalanceToWallet]);
-
 
   const today = new Date().toISOString().split('T')[0];
   const canClaimDailyCheckin = state.lastDailyCheckin !== today;
@@ -504,20 +445,13 @@ export const useWeb3Rewards = () => {
     setPendingReward(null);
   }, []);
 
-  // Use connected wallet from useClaimToWallet if available
-  const effectiveWalletAddress = connectedWalletAddress || state.walletAddress;
-  const effectiveIsConnected = walletConnected || state.isConnected;
-
   return {
     ...state,
-    walletAddress: effectiveWalletAddress,
-    isConnected: effectiveIsConnected,
     pendingReward,
     connectWallet,
     claimFirstGameReward,
     claimDailyCheckin,
     convertPointsToCamly,
-    claimToWallet,
     canClaimDailyCheckin,
     clearPendingReward,
     loadRewards,

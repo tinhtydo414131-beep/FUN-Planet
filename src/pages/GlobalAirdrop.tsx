@@ -12,7 +12,6 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AirdropButton } from "@/components/AirdropButton";
-import { ClaimCamlyOnChain } from "@/components/ClaimCamlyOnChain";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -177,11 +176,6 @@ const GlobalAirdrop = () => {
                   {isVN ? 'Bạn đã nhận!' : 'You claimed!'}
                 </Badge>
               )}
-            </div>
-
-            {/* On-Chain Claim Section */}
-            <div className="max-w-md mx-auto mt-8">
-              <ClaimCamlyOnChain />
             </div>
 
             {/* Live Stats */}

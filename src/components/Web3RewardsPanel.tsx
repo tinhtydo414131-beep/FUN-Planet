@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wallet, Coins, Gift, Calendar, ArrowUpRight, Loader2, History, Flame, Trophy } from 'lucide-react';
+import { Wallet, Coins, Calendar, Loader2, History, Flame, Trophy } from 'lucide-react';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { WalletConnectModal } from './WalletConnectModal';
-import { ClaimRewardsModal } from './ClaimRewardsModal';
 import { Web3RewardNotification } from './Web3RewardNotification';
 import { motion } from 'framer-motion';
 
@@ -16,22 +15,17 @@ export const Web3RewardsPanel = () => {
     walletAddress,
     isConnected,
     isLoading,
-    lastDailyCheckin,
     dailyStreak,
     pendingReward,
     connectWallet,
     claimDailyCheckin,
-    claimToWallet,
     canClaimDailyCheckin,
     clearPendingReward,
     REWARDS,
-    STREAK_BONUSES,
     getStreakMultiplier,
-    CAMLY_CONTRACT_ADDRESS,
   } = useWeb3Rewards();
 
   const [showConnectModal, setShowConnectModal] = useState(false);
-  const [showClaimModal, setShowClaimModal] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
 
   const handleDailyCheckin = async () => {
@@ -133,18 +127,6 @@ export const Web3RewardsPanel = () => {
             </Button>
           </div>
 
-          {/* Claim to Wallet */}
-          {isConnected && camlyBalance > 0 && (
-            <Button
-              onClick={() => setShowClaimModal(true)}
-              variant="outline"
-              className="w-full border-green-500/30 hover:bg-green-500/10"
-            >
-              <ArrowUpRight className="w-4 h-4 mr-2" />
-              Claim to Wallet
-            </Button>
-          )}
-
           {/* Leaderboard */}
           <Button
             onClick={() => navigate('/camly-leaderboard')}
@@ -190,15 +172,6 @@ export const Web3RewardsPanel = () => {
         onConnect={connectWallet}
         isConnected={isConnected}
         walletAddress={walletAddress}
-      />
-
-      <ClaimRewardsModal
-        isOpen={showClaimModal}
-        onClose={() => setShowClaimModal(false)}
-        camlyBalance={camlyBalance}
-        walletAddress={walletAddress}
-        onClaim={claimToWallet}
-        contractAddress={CAMLY_CONTRACT_ADDRESS}
       />
 
       {/* Reward Notification */}

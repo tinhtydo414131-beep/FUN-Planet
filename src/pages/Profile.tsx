@@ -20,11 +20,9 @@ import { PhotosSection } from "@/components/profile/PhotosSection";
 import { HonorBoard } from "@/components/profile/HonorBoard";
 import { MyGamesSection } from "@/components/profile/MyGamesSection";
 import { WalletConnectModal } from "@/components/WalletConnectModal";
-import { ClaimRewardsModal } from "@/components/ClaimRewardsModal";
 import { Web3RewardNotification } from "@/components/Web3RewardNotification";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DashboardClaimBanner } from "@/components/DashboardClaimBanner";
 
 interface Profile {
   id: string;
@@ -66,7 +64,6 @@ export default function Profile() {
   const [posts, setPosts] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("posts");
   const [showConnectModal, setShowConnectModal] = useState(false);
-  const [showClaimModal, setShowClaimModal] = useState(false);
 
   const {
     camlyBalance,
@@ -74,9 +71,7 @@ export default function Profile() {
     isConnected,
     pendingReward,
     connectWallet,
-    claimToWallet,
     clearPendingReward,
-    CAMLY_CONTRACT_ADDRESS,
   } = useWeb3Rewards();
 
   useEffect(() => {
@@ -294,11 +289,6 @@ export default function Profile() {
     <div className="min-h-screen bg-muted/30 pb-24">
       <Navigation />
       
-      {/* Claim Bonus Banner at top */}
-      <div className="max-w-6xl mx-auto px-4 pt-24 pb-4">
-        <DashboardClaimBanner />
-      </div>
-      
       {/* Cover Photo & Avatar */}
       <ProfileCover 
         profile={profile} 
@@ -337,15 +327,6 @@ export default function Profile() {
         onConnect={connectWallet}
         isConnected={isConnected}
         walletAddress={walletAddress}
-      />
-
-      <ClaimRewardsModal
-        isOpen={showClaimModal}
-        onClose={() => setShowClaimModal(false)}
-        camlyBalance={camlyBalance}
-        walletAddress={walletAddress}
-        onClaim={claimToWallet}
-        contractAddress={CAMLY_CONTRACT_ADDRESS}
       />
 
       <Web3RewardNotification
