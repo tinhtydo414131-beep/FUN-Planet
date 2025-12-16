@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { 
-  Diamond, Wallet, ArrowRight, Loader2, CheckCircle2, ExternalLink, 
-  Shield, AlertCircle, Heart, Sparkles, Zap, Copy, Gift
+  Diamond, Wallet, ArrowRight, CheckCircle2, ExternalLink, 
+  Shield, AlertCircle, Sparkles, Copy, Gift
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useClaimToWallet } from '@/hooks/useClaimToWallet';
@@ -21,9 +19,6 @@ interface SmoothClaimModalProps {
   camlyBalance: number;
 }
 
-const CHARITY_PERCENTAGE = 11;
-const CHART_COLORS = ['#8B5CF6', '#EC4899', '#06B6D4', '#F59E0B', '#10B981'];
-
 export const SmoothClaimModal = ({
   isOpen,
   onClose,
@@ -32,28 +27,13 @@ export const SmoothClaimModal = ({
   const [amount, setAmount] = useState('');
   const [step, setStep] = useState<'input' | 'confirm' | 'processing' | 'success'>('input');
   const [txHash, setTxHash] = useState('');
-  const [charityAmount, setCharityAmount] = useState(0);
-  const [userAmount, setUserAmount] = useState(0);
   
   const { isClaiming, claimBalanceToWallet, celebrateClaim, triggerHaptic } = useClaimToWallet();
   const { walletAddress } = useWeb3Rewards();
 
-  // Calculate amounts when input changes
-  useEffect(() => {
-    const inputAmount = parseFloat(amount) || 0;
-    const charity = Math.floor(inputAmount * (CHARITY_PERCENTAGE / 100));
-    setCharityAmount(charity);
-    setUserAmount(inputAmount - charity);
-  }, [amount]);
-
-  // Chart data for distribution
-  const chartData = [
-    { name: 'Bạn nhận', value: userAmount, color: '#8B5CF6' },
-    { name: 'Từ thiện 11%', value: charityAmount, color: '#EC4899' },
-  ].filter(d => d.value > 0);
+  const claimAmount = parseFloat(amount) || 0;
 
   const handleClaim = async () => {
-    const claimAmount = parseFloat(amount);
     if (isNaN(claimAmount) || claimAmount <= 0) {
       toast.error('Vui lòng nhập số tiền hợp lệ');
       return;
@@ -71,13 +51,13 @@ export const SmoothClaimModal = ({
     triggerHaptic();
     setStep('processing');
 
-    const result = await claimBalanceToWallet(parseFloat(amount));
+    const result = await claimBalanceToWallet(claimAmount);
     
     if (result.success && result.txHash) {
       setTxHash(result.txHash);
       celebrateClaim();
       setStep('success');
-      toast.success(`🎉 Đã nhận ${userAmount.toLocaleString()} CAMLY vào ví!`);
+      toast.success(`🎉 Đã nhận ${claimAmount.toLocaleString()} CAMLY vào ví!`);
     } else {
       toast.error(result.error || 'Có lỗi xảy ra');
       setStep('input');
@@ -176,7 +156,7 @@ export const SmoothClaimModal = ({
                   </Button>
                 </div>
                 
-                {parseFloat(amount) > camlyBalance && (
+                {claimAmount > camlyBalance && (
                   <p className="text-xs text-destructive flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
                     Số dư không đủ
@@ -200,51 +180,15 @@ export const SmoothClaimModal = ({
                 ))}
               </div>
 
-              {/* Distribution preview */}
-              {parseFloat(amount) > 0 && (
+              {/* Amount preview */}
+              {claimAmount > 0 && (
                 <motion.div 
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="p-4 rounded-xl bg-muted/30 border"
+                  className="p-4 rounded-xl bg-primary/10 border border-primary/30 text-center"
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <Heart className="w-4 h-4 text-pink-500" />
-                    <span className="text-sm font-medium">Phân phối:</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 rounded-lg bg-primary/10">
-                      <p className="text-xs text-muted-foreground mb-1">Bạn nhận</p>
-                      <p className="text-lg font-bold text-primary">{userAmount.toLocaleString()}</p>
-                    </div>
-                    <div className="text-center p-3 rounded-lg bg-pink-500/10">
-                      <p className="text-xs text-muted-foreground mb-1">Từ thiện 11%</p>
-                      <p className="text-lg font-bold text-pink-500">{charityAmount.toLocaleString()}</p>
-                    </div>
-                  </div>
-
-                  {chartData.length > 0 && (
-                    <div className="h-24 mt-3">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={chartData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={25}
-                            outerRadius={40}
-                            paddingAngle={5}
-                            dataKey="value"
-                          >
-                            {chartData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value: number) => `${value.toLocaleString()} CAMLY`} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  )}
+                  <p className="text-sm text-muted-foreground mb-1">Bạn sẽ nhận</p>
+                  <p className="text-2xl font-bold text-primary">{claimAmount.toLocaleString()} CAMLY</p>
                 </motion.div>
               )}
 
@@ -262,7 +206,7 @@ export const SmoothClaimModal = ({
               {/* Claim button */}
               <Button
                 onClick={handleClaim}
-                disabled={!amount || parseFloat(amount) <= 0 || parseFloat(amount) > camlyBalance}
+                disabled={!amount || claimAmount <= 0 || claimAmount > camlyBalance}
                 className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:from-purple-500 hover:via-pink-500 hover:to-cyan-500 shadow-xl active:scale-95 transition-all"
               >
                 <Wallet className="w-5 h-5 mr-2" />
@@ -301,10 +245,7 @@ export const SmoothClaimModal = ({
               <div>
                 <h3 className="text-xl font-bold mb-2">Xác nhận rút tiền</h3>
                 <p className="text-muted-foreground text-sm">
-                  Bạn sẽ nhận <strong className="text-primary">{userAmount.toLocaleString()} CAMLY</strong> vào ví
-                </p>
-                <p className="text-muted-foreground text-xs mt-1">
-                  ({charityAmount.toLocaleString()} CAMLY dành cho từ thiện 💝)
+                  Bạn sẽ nhận <strong className="text-primary">{claimAmount.toLocaleString()} CAMLY</strong> vào ví
                 </p>
               </div>
 
@@ -385,18 +326,8 @@ export const SmoothClaimModal = ({
                   Thành công! 🎉
                 </motion.h3>
                 <p className="text-muted-foreground">
-                  Đã nhận <strong className="text-green-500">{userAmount.toLocaleString()} CAMLY</strong> vào ví!
+                  Đã nhận <strong className="text-green-500">{claimAmount.toLocaleString()} CAMLY</strong> vào ví!
                 </p>
-              </div>
-
-              {/* Charity highlight */}
-              <div className="p-4 rounded-xl bg-pink-500/10 border border-pink-500/30">
-                <div className="flex items-center justify-center gap-2 text-pink-500">
-                  <Heart className="w-5 h-5" />
-                  <span className="font-medium">
-                    {charityAmount.toLocaleString()} CAMLY đã được quyên góp từ thiện 💝
-                  </span>
-                </div>
               </div>
 
               {/* Transaction hash */}
@@ -440,5 +371,3 @@ export const SmoothClaimModal = ({
     </Dialog>
   );
 };
-
-export default SmoothClaimModal;
