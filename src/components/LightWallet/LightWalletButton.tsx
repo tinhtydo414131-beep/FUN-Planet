@@ -144,7 +144,7 @@ export const LightWalletButton = ({ variant = 'header', className }: LightWallet
                 />
               )}
               <span className="font-bold text-white text-sm">
-                {formatCamly(camlyBalance)} REWARDS
+                {formatCamly(camlyBalance)} CAMLY
               </span>
             </div>
           ) : (
@@ -230,7 +230,7 @@ export const LightWalletButton = ({ variant = 'header', className }: LightWallet
                 {shortenAddress(address)}
               </span>
               <span className="font-bold text-amber-500 text-sm">
-                {formatCamly(camlyBalance)} REWARDS
+                {formatCamly(camlyBalance)} CAMLY
               </span>
             </div>
             <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />
