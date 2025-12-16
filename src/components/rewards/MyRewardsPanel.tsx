@@ -81,8 +81,8 @@ const MyRewardsPanel = ({ onClose }: MyRewardsPanelProps) => {
 
     if (totalPending <= 0) return;
 
-    // For now, claim as 'daily_checkin' type - in production you'd have a dedicated endpoint
-    const result = await claimReward('daily_checkin' as ClaimType);
+    // Claim all pending rewards
+    const result = await claimReward('claim_pending');
     
     if (result.success) {
       setClaimSuccess(true);

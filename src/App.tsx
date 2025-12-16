@@ -20,6 +20,8 @@ import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import WelcomeRewardModal from "@/components/rewards/WelcomeRewardModal";
+import { useWelcomeReward } from "@/hooks/useWelcomeReward";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
 import GamePlay from "./pages/GamePlay";
@@ -161,6 +163,7 @@ const AppContent = () => {
   const { user } = useAuth();
   const { needsRoleSelection, loading: roleLoading } = useUserRole();
   const { isOpen: gameCompleteOpen, score, gameName, bonusAmount, hidePopup } = useGameCompletePopup();
+  const { showWelcomeModal, setShowWelcomeModal, checkWelcomeClaimed } = useWelcomeReward();
 
   return (
     <>
@@ -198,6 +201,13 @@ const AppContent = () => {
           score={score}
           gameName={gameName}
           bonusAmount={bonusAmount}
+        />
+        
+        {/* Welcome Reward Modal - Auto shows after first wallet connect */}
+        <WelcomeRewardModal
+          isOpen={showWelcomeModal}
+          onClose={() => setShowWelcomeModal(false)}
+          onSuccess={() => checkWelcomeClaimed()}
         />
         
       </BrowserRouter>
