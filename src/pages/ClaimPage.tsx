@@ -52,7 +52,7 @@ export default function ClaimPage() {
   const isVN = i18n.language === 'vi';
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { camlyBalance, claimDailyCheckin, claimToWallet, canClaimDailyCheckin, isLoading, CAMLY_CONTRACT_ADDRESS } = useWeb3Rewards();
+  const { camlyBalance, claimDailyCheckin, claimToWallet, canClaimDailyCheckin, isLoading, CAMLY_CONTRACT_ADDRESS, loadRewards } = useWeb3Rewards();
   const { isClaiming, hasClaimed, claimAirdrop, celebrateClaim, triggerHaptic, checkHasClaimed, getRemainingPool, isConnected, walletAddress, openWalletModal } = useClaimToWallet();
   const [showDashboard, setShowDashboard] = useState(false);
   const [airdropClaimed, setAirdropClaimed] = useState(false);
@@ -887,6 +887,7 @@ export default function ClaimPage() {
         isOpen={showClaimModal}
         onClose={() => setShowClaimModal(false)}
         camlyBalance={camlyBalance}
+        onBalanceUpdate={loadRewards}
       />
 
       {/* Claim Success Notification with confetti, sound & BscScan link */}
