@@ -8,7 +8,6 @@ import confetti from 'canvas-confetti';
 import { 
   CAMLY_AIRDROP_CONTRACT_ADDRESS, 
   CAMLY_ABI, 
-  CAMLY_REWARDS_CLAIM_CONTRACT_ADDRESS,
   REWARDS_CLAIM_ABI,
   appKit 
 } from '@/lib/web3';
@@ -230,12 +229,8 @@ export const useClaimToWallet = () => {
         }
       }
 
-      // Check if Rewards Claim contract is configured
-      if (CAMLY_REWARDS_CLAIM_CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000') {
-        setIsClaiming(false);
-        return { success: false, error: 'Tính năng rút tiền đang được chuẩn bị. Vui lòng thử lại sau!' };
-      }
-
+      // (Don't block here) Contract address is provided by backend after validation.
+      // If backend isn't configured, it will return a clear error.
       // Get signature from backend
       toast.info('Đang xác thực số dư...');
       
