@@ -41,7 +41,7 @@ export const GameCompleteClaimPopup = ({
     if (!user) {
       navigate('/auth');
     } else {
-      navigate('/claim');
+      navigate('/reward-galaxy');
     }
     onClose();
   };
