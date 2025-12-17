@@ -127,9 +127,11 @@ export default function RewardGalaxy() {
     }
     
     const result = await claimReward('first_wallet');
-    if (result.success && result.status === 'completed') {
+    if (result.success) {
       setCanClaimWallet(false);
       fireDiamondConfetti('rainbow');
+      // Reload pending balance
+      await loadRewards();
       // Play success sound
       const audio = new Audio('/sounds/coin-collect.mp3');
       audio.play().catch(() => {});
@@ -143,9 +145,11 @@ export default function RewardGalaxy() {
     }
     
     const result = await claimReward('game_completion');
-    if (result.success && result.status === 'completed') {
+    if (result.success) {
       setCanClaimGame(false);
       fireDiamondConfetti('celebration');
+      // Reload pending balance
+      await loadRewards();
     }
   };
 
