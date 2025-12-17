@@ -715,6 +715,10 @@ const LightTreasureCard = ({ game, type, index, playersOnline, onPlay }: LightTr
     if ('thumbnail_url' in game && game.thumbnail_url) return game.thumbnail_url;
     if ('image_url' in game && game.image_url) return game.image_url;
     if ('thumbnail_path' in game && game.thumbnail_path) {
+      // Handle local paths (starting with /) or http URLs directly
+      if (game.thumbnail_path.startsWith('/') || game.thumbnail_path.startsWith('http')) {
+        return game.thumbnail_path;
+      }
       return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/game-thumbnails/${game.thumbnail_path}`;
     }
     return null;
