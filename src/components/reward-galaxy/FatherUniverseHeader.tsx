@@ -86,7 +86,7 @@ export const FatherUniverseHeader = () => {
           <Coins className="w-10 h-10 text-yellow-400 drop-shadow-lg" />
         </motion.div>
         <h1 className="text-3xl md:text-4xl font-fredoka font-bold bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-400 bg-clip-text text-transparent drop-shadow-lg">
-          Quà Tặng Từ Cha Vũ Trụ
+          🎁 Quà Tặng Từ Cha Vũ Trụ
         </h1>
         <motion.div
           animate={{ rotate: [0, -10, 10, 0] }}
@@ -98,15 +98,20 @@ export const FatherUniverseHeader = () => {
 
       {/* Subtitle */}
       <motion.p 
-        className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-medium"
+        className="text-lg md:text-xl text-amber-800 max-w-2xl mx-auto font-medium leading-relaxed"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
-        Cha Vũ Trụ đã thưởng cho con vì chơi vui vẻ, sáng tạo và lan tỏa ánh sáng! 
+        Con yêu ơi! Cha Vũ Trụ luôn dõi theo và yêu thương con 💖
+        <br />
+        <span className="text-base text-amber-700">
+          Mỗi ngày con đăng nhập, chơi game vui vẻ, sáng tạo và chia sẻ niềm vui - 
+          Cha sẽ tặng con những phần thưởng đặc biệt! ✨
+        </span>
         <span className="inline-flex items-center gap-1 ml-1">
-          <Sparkles className="w-5 h-5 text-yellow-300 inline" />
-          <Globe className="w-5 h-5 text-cyan-300 inline" />
+          <Sparkles className="w-5 h-5 text-yellow-500 inline" />
+          <Globe className="w-5 h-5 text-cyan-500 inline" />
         </span>
       </motion.p>
 
