@@ -802,6 +802,33 @@ export type Database = {
           },
         ]
       }
+      daily_claim_logs: {
+        Row: {
+          amount_claimed: number
+          claim_date: string
+          created_at: string
+          id: string
+          tx_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_claimed?: number
+          claim_date?: string
+          created_at?: string
+          id?: string
+          tx_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_claimed?: number
+          claim_date?: string
+          created_at?: string
+          id?: string
+          tx_hash?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_combo_challenges: {
         Row: {
           challenge_date: string
@@ -2847,6 +2874,51 @@ export type Database = {
           },
         ]
       }
+      user_rewards: {
+        Row: {
+          claimed_amount: number
+          created_at: string
+          daily_claimed: number
+          id: string
+          last_claim_amount: number | null
+          last_claim_at: string | null
+          last_claim_date: string | null
+          pending_amount: number
+          total_earned: number
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          claimed_amount?: number
+          created_at?: string
+          daily_claimed?: number
+          id?: string
+          last_claim_amount?: number | null
+          last_claim_at?: string | null
+          last_claim_date?: string | null
+          pending_amount?: number
+          total_earned?: number
+          updated_at?: string
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          claimed_amount?: number
+          created_at?: string
+          daily_claimed?: number
+          id?: string
+          last_claim_amount?: number | null
+          last_claim_at?: string | null
+          last_claim_date?: string | null
+          pending_amount?: number
+          total_earned?: number
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
       user_role_selections: {
         Row: {
           id: string
@@ -3230,6 +3302,10 @@ export type Database = {
         }
         Returns: string
       }
+      add_user_pending_reward: {
+        Args: { p_amount: number; p_source: string; p_user_id: string }
+        Returns: number
+      }
       check_file_hash_exists: {
         Args: { p_file_hash: string; p_user_id: string }
         Returns: {
@@ -3247,6 +3323,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      claim_from_pending: {
+        Args: { p_amount: number; p_user_id: string; p_wallet_address: string }
+        Returns: {
+          daily_remaining: number
+          error_message: string
+          new_claimed: number
+          new_pending: number
+          success: boolean
+        }[]
+      }
       claim_pending_rewards: {
         Args: { p_tx_hash: string; p_wallet_address: string }
         Returns: number
@@ -3261,6 +3347,10 @@ export type Database = {
           wallet_address: string
         }[]
       }
+      get_daily_claim_remaining: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       get_or_create_daily_reward: {
         Args: { p_user_id: string }
         Returns: {
@@ -3268,6 +3358,29 @@ export type Database = {
           remaining_rewards: number
           reward_count: number
         }[]
+      }
+      get_or_create_user_rewards: {
+        Args: { p_user_id: string }
+        Returns: {
+          claimed_amount: number
+          created_at: string
+          daily_claimed: number
+          id: string
+          last_claim_amount: number | null
+          last_claim_at: string | null
+          last_claim_date: string | null
+          pending_amount: number
+          total_earned: number
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_rewards"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       get_pending_rewards_total: {
         Args: { p_wallet_address: string }
