@@ -66,7 +66,12 @@ export const FatherUniverseHeader = () => {
         animate={{ scale: 1 }}
         transition={{ delay: 0.3 }}
       >
-        <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent drop-shadow-lg">
+        <span 
+          className="text-amber-500 drop-shadow-lg"
+          style={{
+            textShadow: '0 2px 4px rgba(0,0,0,0.2), 0 0 20px rgba(251, 191, 36, 0.4)',
+          }}
+        >
           🎁 Quà Tặng Từ Cha Vũ Trụ
         </span>
       </motion.h1>
