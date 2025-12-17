@@ -1,6 +1,17 @@
 import { motion } from 'framer-motion';
+import camlyCoin from '@/assets/camly-coin.png';
 
 export const CosmicBackground = () => {
+  // Generate random coin positions and animations
+  const flyingCoins = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    initialX: Math.random() * 100,
+    initialY: Math.random() * 100,
+    size: 40 + Math.random() * 40,
+    duration: 8 + Math.random() * 6,
+    delay: Math.random() * 5,
+  }));
+
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {/* Base gradient - Pale sky blue to warm rose gold */}
@@ -17,15 +28,15 @@ export const CosmicBackground = () => {
       </div>
       
       {/* Sparkling gold particles */}
-      {[...Array(80)].map((_, i) => (
+      {[...Array(60)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
-            width: `${2 + Math.random() * 5}px`,
-            height: `${2 + Math.random() * 5}px`,
+            width: `${2 + Math.random() * 4}px`,
+            height: `${2 + Math.random() * 4}px`,
             background: i % 4 === 0 
               ? 'linear-gradient(135deg, #FFD700, #FFAA00)' 
               : i % 4 === 1 
@@ -47,13 +58,57 @@ export const CosmicBackground = () => {
         />
       ))}
       
+      {/* Flying Camly Coins */}
+      {flyingCoins.map((coin) => (
+        <motion.div
+          key={`coin-${coin.id}`}
+          className="absolute"
+          style={{
+            left: `${coin.initialX}%`,
+            top: `${coin.initialY}%`,
+            width: coin.size,
+            height: coin.size,
+          }}
+          animate={{
+            x: [0, 100, -50, 80, 0],
+            y: [0, -80, 50, -100, 0],
+            rotate: [0, 360, 720, 1080, 1440],
+            scale: [1, 1.1, 0.9, 1.15, 1],
+          }}
+          transition={{
+            duration: coin.duration,
+            repeat: Infinity,
+            delay: coin.delay,
+            ease: "easeInOut",
+          }}
+        >
+          <motion.img
+            src={camlyCoin}
+            alt="Camly Coin"
+            className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,215,0,0.8)]"
+            animate={{
+              filter: [
+                'drop-shadow(0 0 15px rgba(255,215,0,0.8))',
+                'drop-shadow(0 0 25px rgba(255,215,0,1))',
+                'drop-shadow(0 0 15px rgba(255,215,0,0.8))',
+              ],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.div>
+      ))}
+      
       {/* Slow-moving gold meteors */}
-      {[...Array(6)].map((_, i) => (
+      {[...Array(4)].map((_, i) => (
         <motion.div
           key={`meteor-${i}`}
           className="absolute"
           style={{
-            left: `${10 + i * 15}%`,
+            left: `${10 + i * 20}%`,
             top: '-5%',
           }}
           animate={{
@@ -62,23 +117,23 @@ export const CosmicBackground = () => {
             opacity: [0, 1, 1, 0],
           }}
           transition={{
-            duration: 6 + i * 0.5,
+            duration: 8 + i * 0.5,
             repeat: Infinity,
-            delay: i * 4,
+            delay: i * 5,
             ease: "linear",
           }}
         >
           {/* Meteor head */}
           <div 
-            className="w-4 h-4 rounded-full"
+            className="w-3 h-3 rounded-full"
             style={{
               background: 'radial-gradient(circle at 30% 30%, #FFF8DC, #FFD700, #DAA520)',
-              boxShadow: '0 0 20px #FFD700, 0 0 40px #FFAA00',
+              boxShadow: '0 0 15px #FFD700, 0 0 30px #FFAA00',
             }}
           />
           {/* Meteor tail */}
           <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-20 rounded-full"
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-16 rounded-full"
             style={{
               background: 'linear-gradient(to bottom, #FFD700, transparent)',
               filter: 'blur(2px)',
@@ -87,86 +142,36 @@ export const CosmicBackground = () => {
         </motion.div>
       ))}
       
-      {/* Floating gold orbs */}
-      <motion.div
-        className="absolute top-[15%] left-[8%] w-20 h-20 rounded-full"
-        style={{
-          background: 'radial-gradient(circle at 30% 30%, #FFF8DC, #FFD700, #DAA520)',
-          boxShadow: '0 0 40px rgba(255, 215, 0, 0.6), inset 0 -10px 20px rgba(218, 165, 32, 0.5)',
-        }}
-        animate={{ 
-          y: [0, -20, 0],
-          rotate: 360,
-        }}
-        transition={{ 
-          y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-          rotate: { duration: 25, repeat: Infinity, ease: "linear" }
-        }}
-      />
-      
-      <motion.div
-        className="absolute top-[25%] right-[12%] w-14 h-14 rounded-full"
-        style={{
-          background: 'radial-gradient(circle at 30% 30%, #FFEC8B, #FFD700, #B8860B)',
-          boxShadow: '0 0 30px rgba(255, 215, 0, 0.7), inset 0 -8px 15px rgba(184, 134, 11, 0.5)',
-        }}
-        animate={{ 
-          y: [0, -25, 0],
-          rotate: -360,
-        }}
-        transition={{ 
-          y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-          rotate: { duration: 20, repeat: Infinity, ease: "linear" }
-        }}
-      />
-      
-      <motion.div
-        className="absolute bottom-[20%] left-[5%] w-12 h-12 rounded-full"
-        style={{
-          background: 'radial-gradient(circle at 30% 30%, #FFF8DC, #FFAA00, #CD853F)',
-          boxShadow: '0 0 25px rgba(255, 170, 0, 0.6)',
-        }}
-        animate={{ 
-          y: [0, -15, 0],
-          x: [0, 15, 0],
-        }}
-        transition={{ 
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-
       {/* Large decorative gold planet - bottom right */}
       <motion.div
-        className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full opacity-70"
+        className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-60"
         style={{
           background: 'radial-gradient(circle at 30% 30%, #FFF8DC, #FFD700, #B8860B)',
-          boxShadow: '0 0 80px rgba(255, 215, 0, 0.5), inset 0 -30px 60px rgba(184, 134, 11, 0.6)',
+          boxShadow: '0 0 60px rgba(255, 215, 0, 0.4), inset 0 -25px 50px rgba(184, 134, 11, 0.5)',
         }}
         animate={{ rotate: 360 }}
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
       >
         {/* Planet ring - gold */}
         <div 
-          className="absolute inset-[-20px] rounded-full border-4 border-[#FFD700]/50"
+          className="absolute inset-[-15px] rounded-full border-4 border-[#FFD700]/40"
           style={{ 
             transform: 'rotateX(75deg)',
-            boxShadow: '0 0 20px rgba(255, 215, 0, 0.3)',
+            boxShadow: '0 0 15px rgba(255, 215, 0, 0.2)',
           }}
         />
       </motion.div>
       
       {/* Ambient gold light rays */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-20">
-        {[...Array(8)].map((_, i) => (
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-15">
+        {[...Array(6)].map((_, i) => (
           <motion.div
             key={`ray-${i}`}
             className="absolute top-0 left-1/2 w-2 origin-top"
             style={{
               height: '100vh',
               background: 'linear-gradient(to bottom, #FFD700, transparent)',
-              transform: `rotate(${i * 45}deg) translateX(-50%)`,
+              transform: `rotate(${i * 60}deg) translateX(-50%)`,
               filter: 'blur(8px)',
             }}
             animate={{
@@ -175,7 +180,7 @@ export const CosmicBackground = () => {
             transition={{
               duration: 3,
               repeat: Infinity,
-              delay: i * 0.3,
+              delay: i * 0.4,
             }}
           />
         ))}
