@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ButtonFacets } from "@/components/ui/button-facets";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Home, Upload, Sparkles, Star, Flame, X, Play, Users, Coins, Baby, Rocket, Sparkle, Heart, Globe, Palette, Brain } from "lucide-react";
+import { Search, Home, Upload, Sparkles, Star, Flame, X, Play, Users, Coins, Baby, Rocket, Sparkle, Heart, Globe, Palette, Brain, Maximize2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -18,6 +18,22 @@ import confetti from "canvas-confetti";
 import { useLegendStatus } from "@/hooks/useLegendStatus";
 import LegendParticleEffect from "@/components/LegendParticleEffect";
 import { AIGameSuggestions } from "@/components/AIGameSuggestions";
+
+// Sample game cover imports
+import cover2048 from "@/assets/sample-games/cover-2048.png";
+import coverDrawingCanvas from "@/assets/sample-games/cover-drawing-canvas.png";
+import coverEcoBuilder from "@/assets/sample-games/cover-eco-builder.png";
+import coverGratitudeJournal from "@/assets/sample-games/cover-gratitude-journal.png";
+import coverStarExplorer from "@/assets/sample-games/cover-star-explorer.png";
+
+// Sample games data
+const SAMPLE_GAMES = [
+  { id: "2048-puzzle", title: "2048 Puzzle", icon: "🧩", gradient: "from-purple-500 to-indigo-600", coverImage: cover2048, path: "/games/2048-puzzle.html", category: "Brain" },
+  { id: "drawing-canvas", title: "Drawing Canvas", icon: "🎨", gradient: "from-pink-500 to-rose-600", coverImage: coverDrawingCanvas, path: "/games/drawing-canvas.html", category: "Creative" },
+  { id: "eco-builder", title: "Eco Builder 3D", icon: "🌍", gradient: "from-green-500 to-emerald-600", coverImage: coverEcoBuilder, path: "/games/eco-builder.html", category: "3D Builder" },
+  { id: "gratitude-journal", title: "Gratitude Journal", icon: "💖", gradient: "from-amber-500 to-orange-600", coverImage: coverGratitudeJournal, path: "/games/gratitude-journal.html", category: "Mindfulness" },
+  { id: "star-explorer", title: "Star Explorer", icon: "🚀", gradient: "from-blue-500 to-cyan-600", coverImage: coverStarExplorer, path: "/games/star-explorer.html", category: "Adventure" },
+];
 
 interface UploadedGame {
   id: string;
@@ -137,6 +153,10 @@ const Games = () => {
   
   // Fullscreen game
   const [fullscreenGame, setFullscreenGame] = useState<Game | UploadedGame | LovableGame | null>(null);
+  
+  // Sample game modal
+  const [activeSampleGame, setActiveSampleGame] = useState<typeof SAMPLE_GAMES[0] | null>(null);
+  const [sampleGameFullscreen, setSampleGameFullscreen] = useState(false);
   
   // Realtime players count
   const [playersOnline, setPlayersOnline] = useState<Record<string, number>>({});
@@ -411,6 +431,51 @@ const Games = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Sample Game Modal */}
+      <AnimatePresence>
+        {activeSampleGame && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black"
+          >
+            {/* Header */}
+            <div className="absolute top-0 left-0 right-0 z-50">
+              <div className="relative flex items-center justify-between p-4">
+                <div className="absolute inset-0 overflow-hidden">
+                  <img src={activeSampleGame.coverImage} alt="" className="h-full w-full object-cover opacity-60 blur-[2px]" />
+                  <div className="absolute inset-0 bg-black/60" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-transparent" />
+                </div>
+                <div className="relative flex items-center gap-3">
+                  <img src={activeSampleGame.coverImage} alt="" className="h-10 w-16 rounded-md object-cover ring-1 ring-white/20" />
+                  <span className="text-3xl">{activeSampleGame.icon}</span>
+                  <div>
+                    <h2 className="text-white font-bold">{activeSampleGame.title}</h2>
+                    <p className="text-white/70 text-sm">{activeSampleGame.category}</p>
+                  </div>
+                </div>
+                <div className="relative flex gap-2">
+                  <Button onClick={() => setSampleGameFullscreen(!sampleGameFullscreen)} variant="ghost" size="icon" className="text-white hover:bg-white/20">
+                    <Maximize2 className="w-5 h-5" />
+                  </Button>
+                  <Button onClick={() => { setActiveSampleGame(null); setSampleGameFullscreen(false); }} className="bg-red-500 hover:bg-red-600 rounded-full" size="icon">
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <iframe
+              src={activeSampleGame.path}
+              className={`w-full border-0 ${sampleGameFullscreen ? 'h-full' : 'h-[calc(100%-80px)] mt-[80px]'}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              title={activeSampleGame.title}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <section className="pt-20 md:pt-24 pb-20 px-4 pb-safe">
         <div className="container mx-auto max-w-7xl">
@@ -478,6 +543,58 @@ const Games = () => {
               <AIGameSuggestions />
             </motion.div>
           )}
+
+          {/* 5 Sample Games Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="mb-10"
+          >
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Star className="w-5 h-5 text-yellow-500" />
+              <h2 className="text-xl font-bold text-center">5 Sample Games</h2>
+              <Star className="w-5 h-5 text-yellow-500" />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {SAMPLE_GAMES.map((game, index) => (
+                <motion.div
+                  key={game.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.12 + index * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    fireDiamondConfetti();
+                    setActiveSampleGame(game);
+                  }}
+                  className="cursor-pointer group"
+                >
+                  <div className="relative rounded-xl overflow-hidden shadow-lg border-2 border-transparent hover:border-primary/50 transition-all">
+                    <img
+                      src={game.coverImage}
+                      alt={game.title}
+                      className="w-full aspect-[4/3] object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${game.gradient} opacity-20`} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-2">
+                      <div className="flex items-center gap-1">
+                        <span className="text-lg">{game.icon}</span>
+                        <span className="text-white text-xs font-bold truncate">{game.title}</span>
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
+                      <div className="bg-white/90 rounded-full p-2">
+                        <Play className="w-5 h-5 text-primary" />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
           {/* Search Bar */}
           <motion.div
