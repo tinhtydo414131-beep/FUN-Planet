@@ -95,7 +95,7 @@ export const FatherUniverseHeader = () => {
         </p>
         
         <motion.p
-          className="text-sm md:text-base font-jakarta font-medium text-pastel-yellow max-w-md mx-auto"
+          className="text-sm md:text-base font-jakarta font-medium text-white max-w-md mx-auto"
           animate={{ opacity: [0.8, 1, 0.8] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
