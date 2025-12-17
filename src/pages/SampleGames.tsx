@@ -126,30 +126,51 @@ export default function SampleGames() {
             className="fixed inset-0 z-50 bg-black"
           >
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{activeGame.icon}</span>
-                <div>
-                  <h2 className="text-white font-bold">{activeGame.title}</h2>
-                  <p className="text-white/70 text-sm">{activeGame.category}</p>
+            <div className="absolute top-0 left-0 right-0 z-50">
+              <div className="relative flex items-center justify-between p-4">
+                {/* Cover art backdrop */}
+                <div className="absolute inset-0 overflow-hidden">
+                  <img
+                    src={activeGame.coverImage}
+                    alt={`${activeGame.title} cover art`}
+                    className="h-full w-full object-cover opacity-60 blur-[2px]"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/60" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-transparent" />
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => setIsFullscreen(!isFullscreen)}
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/20"
-                >
-                  <Maximize2 className="w-5 h-5" />
-                </Button>
-                <Button
-                  onClick={handleCloseGame}
-                  className="bg-red-500 hover:bg-red-600 rounded-full"
-                  size="icon"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
+
+                <div className="relative flex items-center gap-3">
+                  <img
+                    src={activeGame.coverImage}
+                    alt={`${activeGame.title} thumbnail`}
+                    className="h-10 w-16 rounded-md object-cover ring-1 ring-white/20"
+                    loading="lazy"
+                  />
+                  <span className="text-3xl" aria-hidden="true">{activeGame.icon}</span>
+                  <div>
+                    <h2 className="text-white font-bold leading-tight">{activeGame.title}</h2>
+                    <p className="text-white/70 text-sm">{activeGame.category}</p>
+                  </div>
+                </div>
+
+                <div className="relative flex gap-2">
+                  <Button
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/20"
+                  >
+                    <Maximize2 className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    onClick={handleCloseGame}
+                    className="bg-red-500 hover:bg-red-600 rounded-full"
+                    size="icon"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
             </div>
             
