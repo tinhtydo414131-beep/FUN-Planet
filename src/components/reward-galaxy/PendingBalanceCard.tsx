@@ -141,10 +141,10 @@ export function PendingBalanceCard({
                 <Gift className="w-10 h-10 text-white" />
               </div>
             </motion.div>
-            <h2 className="text-3xl font-fredoka font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
-              💰 Số Dư Chờ Nhận 💰
-            </h2>
-            <p className="text-muted-foreground mt-2">Phần thưởng từ Cha Vũ Trụ đang chờ bé!</p>
+          <h2 className="text-3xl font-fredoka font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
+            💰 Số Dư Chờ Rút 💰
+          </h2>
+          <p className="text-muted-foreground mt-2">Hoàn thành nhiệm vụ để tích lũy → Rút về ví bất kỳ lúc nào!</p>
           </div>
 
           {/* Pending Balance Display */}

@@ -80,6 +80,11 @@ export function useCamlyClaim() {
           toast.success(`Successfully claimed ${result.amount?.toLocaleString()} CAMLY!`, {
             description: `TX: ${result.txHash?.slice(0, 10)}...`,
           });
+        } else if (result.status === 'pending_balance') {
+          fireDiamondConfetti('celebration');
+          toast.success(`🎉 +${result.amount?.toLocaleString()} $C đã thêm vào số dư chờ nhận!`, {
+            description: 'Nhấn "Nhận" để rút về ví của bạn.',
+          });
         } else if (result.status === 'pending_approval') {
           toast.info('Claim requires parental approval', {
             description: 'Your parent will need to approve this claim.',
@@ -115,7 +120,7 @@ export function useCamlyClaim() {
           .select('id')
           .eq('user_id', user.id)
           .eq('claim_type', 'first_wallet')
-          .eq('status', 'completed')
+          .in('status', ['completed', 'pending_balance'])
           .maybeSingle();
 
         if (data) {
@@ -130,7 +135,7 @@ export function useCamlyClaim() {
           .eq('user_id', user.id)
           .eq('claim_type', claimType)
           .gte('created_at', today)
-          .in('status', ['pending', 'completed']);
+          .in('status', ['pending', 'completed', 'pending_balance']);
 
         if (data && data.length > 0) {
           return { canClaim: false, reason: 'Already claimed today' };
@@ -143,7 +148,7 @@ export function useCamlyClaim() {
           .select('id')
           .eq('game_id', gameId)
           .eq('claim_type', 'game_upload')
-          .eq('status', 'completed')
+          .in('status', ['completed', 'pending_balance'])
           .maybeSingle();
 
         if (existingClaim) {
