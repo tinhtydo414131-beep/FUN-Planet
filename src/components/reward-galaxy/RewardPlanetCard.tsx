@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Loader2, Heart, Sparkles, Check } from 'lucide-react';
+import { Loader2, Heart, Sparkles, Check, CalendarCheck } from 'lucide-react';
 import { ReactNode } from 'react';
 
 interface RewardPlanetCardProps {
@@ -19,6 +19,7 @@ interface RewardPlanetCardProps {
   isSpecial?: boolean;
   showHeart?: boolean;
   delay?: number;
+  cardGradient?: string;
 }
 
 export const RewardPlanetCard = ({
@@ -37,27 +38,49 @@ export const RewardPlanetCard = ({
   isSpecial,
   showHeart,
   delay = 0,
+  cardGradient,
 }: RewardPlanetCardProps) => {
+  // Default card gradient if not provided
+  const bgGradient = cardGradient || 'from-white/90 to-white/70';
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay, type: "spring", stiffness: 100 }}
-      whileHover={{ scale: 1.03, y: -5 }}
+      transition={{ delay, type: "spring", stiffness: 80, damping: 15 }}
+      whileHover={{ scale: 1.05, y: -8 }}
       className="relative group"
     >
-      {/* Glow effect on hover */}
-      <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${gradientFrom} ${gradientTo} opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500`} />
+      {/* Glow border effect */}
+      <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-r from-[#FFFACD] via-[#FFE4B5] to-[#FFFACD] opacity-70 blur-sm group-hover:opacity-100 group-hover:blur-md transition-all duration-500" />
       
-      <div className="relative p-6 rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 overflow-hidden h-full">
+      {/* Card background with pastel gradient */}
+      <div className={`relative p-6 rounded-3xl bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-2 border-[#FFFACD]/60 overflow-hidden h-full shadow-lg shadow-[#FFD700]/10`}>
+        {/* Sparkle effects on hover */}
+        <motion.div
+          className="absolute top-4 left-4 w-2 h-2 rounded-full bg-[#FFD700]"
+          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+        />
+        <motion.div
+          className="absolute top-8 right-6 w-1.5 h-1.5 rounded-full bg-[#FF69B4]"
+          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+        />
+        <motion.div
+          className="absolute bottom-12 left-6 w-1.5 h-1.5 rounded-full bg-[#87CEEB]"
+          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+        />
+        
         {/* Special badge */}
         {isSpecial && (
           <div className="absolute top-3 right-3">
             <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
+              animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <span className="text-2xl">👑</span>
+              <span className="text-2xl drop-shadow-lg">👑</span>
             </motion.div>
           </div>
         )}
@@ -66,66 +89,90 @@ export const RewardPlanetCard = ({
         {showHeart && (
           <div className="absolute top-3 right-3">
             <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
+              animate={{ scale: [1, 1.3, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
             >
-              <Heart className="w-6 h-6 text-pink-400 fill-pink-400" />
+              <Heart className="w-7 h-7 text-[#FF69B4] fill-[#FF69B4] drop-shadow-lg" />
             </motion.div>
           </div>
         )}
 
-        {/* Planet Icon */}
+        {/* Planet Icon with glow */}
         <motion.div 
-          className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center shadow-2xl mb-4`}
+          className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center mb-4 relative`}
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.15 }}
           style={{
-            boxShadow: `0 0 30px rgba(255,255,255,0.3), 0 10px 40px rgba(0,0,0,0.3)`,
+            boxShadow: `0 0 25px rgba(255, 215, 0, 0.4), 0 8px 30px rgba(0,0,0,0.15)`,
           }}
         >
+          {/* Inner glow */}
+          <div className="absolute inset-0 rounded-full bg-white/20 blur-sm" />
+          
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="text-white"
+            className="text-white relative z-10 drop-shadow-lg"
           >
             {icon}
+          </motion.div>
+          
+          {/* Sparkle on icon */}
+          <motion.div
+            className="absolute -top-1 -right-1 w-4 h-4"
+            animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Sparkles className="w-4 h-4 text-[#FFD700] fill-[#FFD700]" />
           </motion.div>
         </motion.div>
 
         {/* Content */}
         <div className="text-center">
-          <h3 className="text-xl font-fredoka font-bold text-white mb-1">{title}</h3>
-          <p className="text-sm text-white/60 mb-3">{subtitle}</p>
+          <h3 className="text-xl font-fredoka font-bold text-[#4A4A4A] mb-1 drop-shadow-sm">{title}</h3>
+          <p className="text-sm text-[#6B6B6B] mb-3">{subtitle}</p>
           
-          {/* Amount */}
-          <div className="flex items-center justify-center gap-1 mb-3">
+          {/* Amount with gold gradient and shimmer */}
+          <div className="flex items-center justify-center gap-1 mb-3 relative">
             <motion.span 
-              className="text-3xl font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              className="text-3xl font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #FFD700, #FFA500, #FFD700)',
+                backgroundSize: '200% 200%',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 2px 10px rgba(255, 215, 0, 0.3)',
+              }}
+              animate={{ 
+                scale: [1, 1.05, 1],
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
             >
               {amount.toLocaleString()}
             </motion.span>
-            <span className="text-lg text-yellow-300 font-bold">$C</span>
+            <span className="text-lg font-bold text-[#FFD700] drop-shadow-sm">$C</span>
           </div>
           
-          <p className="text-xs text-white/50 mb-4">{description}</p>
+          <p className="text-xs text-[#8B8B8B] mb-4">{description}</p>
 
-          {/* Claim Button */}
+          {/* Claim Button - Pastel style */}
           <Button
             onClick={onClaim}
             disabled={isClaiming || (!canClaim && !buttonText)}
-            className={`w-full relative overflow-hidden rounded-xl font-bold py-5 ${
+            className={`w-full relative overflow-hidden rounded-2xl font-bold py-5 transition-all duration-300 ${
               canClaim || buttonText
-                ? `bg-gradient-to-r ${gradientFrom} ${gradientTo} hover:opacity-90 text-white shadow-lg`
-                : 'bg-white/10 text-white/50'
+                ? 'bg-gradient-to-r from-[#98FB98] to-[#90EE90] hover:from-[#7CFC00] hover:to-[#98FB98] text-[#2E7D32] shadow-lg shadow-[#98FB98]/30 border-2 border-[#7CFC00]/30'
+                : !canClaim && !buttonText
+                ? 'bg-gradient-to-r from-[#98FB98]/80 to-[#90EE90]/80 text-[#2E7D32] border-2 border-[#7CFC00]/30'
+                : 'bg-gradient-to-r from-[#DDA0DD] to-[#E6E6FA] text-[#6B5B95] border-2 border-[#DDA0DD]/30'
             }`}
           >
             {/* Shimmer effect */}
             {(canClaim || buttonText) && (
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 animate={{ x: ['-100%', '100%'] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
               />
@@ -140,7 +187,7 @@ export const RewardPlanetCard = ({
               ) : !canClaim && !buttonText ? (
                 <>
                   <Check className="w-5 h-5" />
-                  Đã nhận
+                  Đã nhận hôm nay! ✨
                 </>
               ) : (
                 <>
@@ -150,25 +197,39 @@ export const RewardPlanetCard = ({
               )}
             </span>
           </Button>
+
+          {/* "Back Tomorrow" indicator */}
+          {!canClaim && !buttonText && (
+            <motion.div 
+              className="mt-3 flex items-center justify-center gap-1 text-xs text-[#9370DB]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <CalendarCheck className="w-4 h-4" />
+              <span>Quay lại ngày mai nhé! 😊</span>
+            </motion.div>
+          )}
         </div>
 
-        {/* Floating particles */}
-        {[...Array(3)].map((_, i) => (
+        {/* Floating particles on hover */}
+        {[...Array(4)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 rounded-full bg-white/40"
+            className="absolute w-2 h-2 rounded-full opacity-0 group-hover:opacity-100"
             style={{
-              left: `${20 + i * 30}%`,
-              bottom: '20%',
+              left: `${15 + i * 25}%`,
+              bottom: '15%',
+              background: i % 2 === 0 ? '#FFD700' : '#FF69B4',
             }}
             animate={{
-              y: [0, -30, 0],
+              y: [0, -40, 0],
               opacity: [0, 1, 0],
             }}
             transition={{
               duration: 2,
               repeat: Infinity,
-              delay: i * 0.5,
+              delay: i * 0.3,
             }}
           />
         ))}
