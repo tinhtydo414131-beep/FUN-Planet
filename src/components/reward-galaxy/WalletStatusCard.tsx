@@ -110,7 +110,7 @@ export const WalletStatusCard = ({
                   className="text-xl font-bold"
                   style={{
                     color: '#FFFFFF',
-                    textShadow: '-1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333, 0 0 15px rgba(255,215,0,0.3)',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.3)',
                   }}
                 >
                   {isConnected ? '✨ Ví Ánh Sáng Của Con' : 'Kết nối ví để nhận thưởng'}
@@ -120,7 +120,7 @@ export const WalletStatusCard = ({
                     className="text-2xl font-mono font-bold"
                     style={{
                       color: '#FFD700',
-                      textShadow: '-2px -2px 0 #8B4513, 2px -2px 0 #8B4513, -2px 2px 0 #8B4513, 2px 2px 0 #8B4513, 0 0 20px #FFD700',
+                      textShadow: '0 0 15px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
                     }}
                   >
                     {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
@@ -191,7 +191,7 @@ export const WalletStatusCard = ({
                     className="text-lg font-bold"
                     style={{
                       color: '#FFFFFF',
-                      textShadow: '-1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333',
+                      textShadow: '0 1px 3px rgba(0,0,0,0.5)',
                     }}
                   >
                     Số dư CAMLY
@@ -200,7 +200,7 @@ export const WalletStatusCard = ({
                     className="text-4xl font-bold font-fredoka"
                     style={{
                       color: '#FFD700',
-                      textShadow: '-2px -2px 0 #8B4513, 2px -2px 0 #8B4513, -2px 2px 0 #8B4513, 2px 2px 0 #8B4513, 0 0 25px #FFD700',
+                      textShadow: '0 0 20px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
                     }}
                   >
                     {camlyBalance.toLocaleString()} <span className="text-2xl">$C</span>

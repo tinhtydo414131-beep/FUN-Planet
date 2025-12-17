@@ -86,19 +86,33 @@ export const FatherUniverseHeader = () => {
         ))}
       </motion.div>
 
-      {/* Title with metallic gold and strong outline */}
+      {/* Title with metallic gold gradient and strong glow */}
       <motion.h1 
         className="text-4xl md:text-6xl font-fredoka font-bold mb-4 relative inline-block"
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.3 }}
       >
-        {/* Main text with dark outline for visibility */}
+        {/* Outer glow layer */}
+        <span 
+          className="absolute inset-0 blur-lg opacity-70"
+          style={{
+            background: 'linear-gradient(135deg, #FFD700, #FFAA00, #FFD700)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          🎁 Quà Tặng Từ Cha Vũ Trụ
+        </span>
+        
+        {/* Main text with metallic gold */}
         <span 
           className="relative"
           style={{
-            color: '#FFD700',
-            textShadow: '-3px -3px 0 #8B4513, 3px -3px 0 #8B4513, -3px 3px 0 #8B4513, 3px 3px 0 #8B4513, 0 0 50px #FFD700, 0 5px 10px rgba(0,0,0,0.7)',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FFF8DC 25%, #FFAA00 50%, #FFD700 75%, #FFF8DC 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 0 30px rgba(255,215,0,0.8))',
           }}
         >
           🎁 Quà Tặng Từ Cha Vũ Trụ
