@@ -8,12 +8,19 @@ import { useNavigate } from "react-router-dom";
 import { haptics } from "@/utils/haptics";
 import confetti from "canvas-confetti";
 
+import cover2048 from "@/assets/sample-games/cover-2048.png";
+import coverDrawingCanvas from "@/assets/sample-games/cover-drawing-canvas.png";
+import coverEcoBuilder from "@/assets/sample-games/cover-eco-builder.png";
+import coverGratitudeJournal from "@/assets/sample-games/cover-gratitude-journal.png";
+import coverStarExplorer from "@/assets/sample-games/cover-star-explorer.png";
+
 interface SampleGame {
   id: string;
   title: string;
   description: string;
   icon: string;
   gradient: string;
+  coverImage: string;
   path: string;
   category: string;
 }
@@ -25,6 +32,7 @@ const SAMPLE_GAMES: SampleGame[] = [
     description: "Merge tiles to reach 2048! A classic brain teaser.",
     icon: "🧩",
     gradient: "from-purple-500 to-indigo-600",
+    coverImage: cover2048,
     path: "/games/2048-puzzle.html",
     category: "Brain"
   },
@@ -34,6 +42,7 @@ const SAMPLE_GAMES: SampleGame[] = [
     description: "Express your creativity with colors and brushes!",
     icon: "🎨",
     gradient: "from-pink-500 to-rose-600",
+    coverImage: coverDrawingCanvas,
     path: "/games/drawing-canvas.html",
     category: "Creative"
   },
@@ -43,6 +52,7 @@ const SAMPLE_GAMES: SampleGame[] = [
     description: "Build a beautiful eco-friendly world in 3D!",
     icon: "🌍",
     gradient: "from-green-500 to-emerald-600",
+    coverImage: coverEcoBuilder,
     path: "/games/eco-builder.html",
     category: "3D Builder"
   },
@@ -52,6 +62,7 @@ const SAMPLE_GAMES: SampleGame[] = [
     description: "Write what you're thankful for and track your happiness!",
     icon: "💖",
     gradient: "from-amber-500 to-orange-600",
+    coverImage: coverGratitudeJournal,
     path: "/games/gratitude-journal.html",
     category: "Mindfulness"
   },
@@ -61,6 +72,7 @@ const SAMPLE_GAMES: SampleGame[] = [
     description: "Fly through space, collect stars, avoid asteroids!",
     icon: "🚀",
     gradient: "from-blue-500 to-cyan-600",
+    coverImage: coverStarExplorer,
     path: "/games/star-explorer.html",
     category: "Adventure"
   }
@@ -201,23 +213,33 @@ export default function SampleGames() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-primary/30">
-                  {/* Gradient Header */}
-                  <div className={`h-32 bg-gradient-to-br ${game.gradient} flex items-center justify-center relative overflow-hidden`}>
+                  {/* Cover Art Header */}
+                  <div className="h-32 relative overflow-hidden">
+                    <img
+                      src={game.coverImage}
+                      alt={`${game.title} cover art`}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${game.gradient} opacity-35`} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+
                     <motion.div
-                      animate={{ 
+                      animate={{
                         y: [0, -10, 0],
                         rotate: [0, 5, -5, 0]
                       }}
-                      transition={{ 
+                      transition={{
                         duration: 3,
                         repeat: Infinity,
                         ease: "easeInOut"
                       }}
-                      className="text-6xl"
+                      className="absolute left-4 top-4 text-4xl drop-shadow"
+                      aria-hidden="true"
                     >
                       {game.icon}
                     </motion.div>
-                    
+
                     {/* Floating particles */}
                     <div className="absolute inset-0 overflow-hidden">
                       {[...Array(5)].map((_, i) => (
