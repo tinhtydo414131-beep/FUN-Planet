@@ -81,7 +81,10 @@ export default function RewardGalaxy() {
     dailyLimit,
     isClaiming: isClaimingArbitrary,
     claimArbitrary,
-    loadRewards
+    loadRewards,
+    rewardHistory,
+    isLoadingHistory: isLoadingRewardHistory,
+    totalFromHistory
   } = useUserRewards();
   
   const [canClaimWallet, setCanClaimWallet] = useState<boolean | null>(null);
@@ -199,6 +202,9 @@ export default function RewardGalaxy() {
             isClaiming={isClaimingArbitrary}
             onClaim={handleClaimArbitrary}
             onConnect={() => open()}
+            rewardHistory={rewardHistory}
+            isLoadingHistory={isLoadingRewardHistory}
+            totalFromHistory={totalFromHistory}
           />
 
           {/* Reward Categories - Planet Cards */}

@@ -16,6 +16,15 @@ interface UserRewards {
   last_claim_at: string | null;
 }
 
+export interface RewardHistoryItem {
+  id: string;
+  reward_type: string;
+  amount: number;
+  description: string | null;
+  created_at: string;
+  claimed_to_wallet: boolean;
+}
+
 const DAILY_LIMIT = 5000000; // 5 million CAMLY per day
 
 export function useUserRewards() {
@@ -24,6 +33,8 @@ export function useUserRewards() {
   const [isLoading, setIsLoading] = useState(true);
   const [dailyRemaining, setDailyRemaining] = useState(DAILY_LIMIT);
   const [isClaiming, setIsClaiming] = useState(false);
+  const [rewardHistory, setRewardHistory] = useState<RewardHistoryItem[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   const loadRewards = useCallback(async () => {
     if (!user) {
@@ -55,9 +66,35 @@ export function useUserRewards() {
     }
   }, [user]);
 
+  const loadRewardHistory = useCallback(async () => {
+    if (!user) {
+      setRewardHistory([]);
+      return;
+    }
+
+    setIsLoadingHistory(true);
+    try {
+      const { data, error } = await supabase
+        .from('web3_reward_transactions')
+        .select('id, reward_type, amount, description, created_at, claimed_to_wallet')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      setRewardHistory(data || []);
+    } catch (error) {
+      console.error('Error loading reward history:', error);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     loadRewards();
-  }, [loadRewards]);
+    loadRewardHistory();
+  }, [loadRewards, loadRewardHistory]);
 
   const addPendingReward = useCallback(async (amount: number, source: string) => {
     if (!user) return null;
@@ -73,12 +110,13 @@ export function useUserRewards() {
       if (error) throw error;
 
       await loadRewards();
+      await loadRewardHistory();
       return data;
     } catch (error) {
       console.error('Error adding pending reward:', error);
       return null;
     }
-  }, [user, loadRewards]);
+  }, [user, loadRewards, loadRewardHistory]);
 
   const claimArbitrary = useCallback(async (
     amount: number, 
@@ -132,6 +170,7 @@ export function useUserRewards() {
 
       // Reload rewards after successful claim
       await loadRewards();
+      await loadRewardHistory();
 
       return { 
         success: true, 
@@ -143,7 +182,12 @@ export function useUserRewards() {
     } finally {
       setIsClaiming(false);
     }
-  }, [user, rewards, dailyRemaining, loadRewards]);
+  }, [user, rewards, dailyRemaining, loadRewards, loadRewardHistory]);
+
+  // Calculate total earned from history (positive amounts only)
+  const totalFromHistory = rewardHistory
+    .filter(item => item.amount > 0)
+    .reduce((sum, item) => sum + item.amount, 0);
 
   return {
     rewards,
@@ -154,5 +198,9 @@ export function useUserRewards() {
     loadRewards,
     addPendingReward,
     claimArbitrary,
+    rewardHistory,
+    isLoadingHistory,
+    loadRewardHistory,
+    totalFromHistory,
   };
 }
