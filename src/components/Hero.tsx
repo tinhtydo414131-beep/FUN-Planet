@@ -53,7 +53,7 @@ export const Hero = () => {
         muted 
         playsInline 
         poster="/images/games/dream-world.jpg" 
-        className="absolute inset-0 w-full h-full object-cover contrast-105 brightness-125 saturate-110 z-0 opacity-100" 
+        className="absolute inset-0 w-full h-full object-cover contrast-100 brightness-150 saturate-115 z-0 opacity-100" 
         style={{ minHeight: "100%" }}
       >
         <source src={backgroundVideo} type="video/mp4" />
@@ -62,7 +62,7 @@ export const Hero = () => {
       </video>
       
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/10 to-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/30" />
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center space-y-6 sm:space-y-8">
