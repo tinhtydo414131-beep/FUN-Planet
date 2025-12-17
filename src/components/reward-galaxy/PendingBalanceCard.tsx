@@ -196,7 +196,7 @@ export function PendingBalanceCard({
                 className="text-4xl md:text-5xl font-fredoka font-bold mb-3"
                 style={{
                   color: '#FFD700',
-                  textShadow: '0 0 30px #FFD700, 0 3px 6px rgba(0,0,0,0.5)',
+                  textShadow: '-2px -2px 0 #8B4513, 2px -2px 0 #8B4513, -2px 2px 0 #8B4513, 2px 2px 0 #8B4513, 0 0 40px #FFD700, 0 4px 8px rgba(0,0,0,0.7)',
                 }}
               >
                 💰 Số Dư Chờ Rút 💰
@@ -205,7 +205,7 @@ export function PendingBalanceCard({
                 className="text-xl md:text-2xl font-bold"
                 style={{
                   color: '#FFFFFF',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                  textShadow: '-1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333, 0 2px 4px rgba(0,0,0,0.6)',
                 }}
               >
                 Hoàn thành nhiệm vụ để tích lũy → Rút về ví bất kỳ lúc nào!
@@ -256,7 +256,7 @@ export function PendingBalanceCard({
                     className="text-5xl md:text-6xl font-bold font-fredoka"
                     style={{
                       color: '#FFD700',
-                      textShadow: '0 0 25px #FFD700, 0 3px 6px rgba(0,0,0,0.6)',
+                      textShadow: '-2px -2px 0 #8B4513, 2px -2px 0 #8B4513, -2px 2px 0 #8B4513, 2px 2px 0 #8B4513, 0 0 30px #FFD700, 0 4px 8px rgba(0,0,0,0.8)',
                     }}
                   >
                     {pendingAmount.toLocaleString()}
@@ -265,7 +265,7 @@ export function PendingBalanceCard({
                     className="text-2xl md:text-3xl font-bold"
                     style={{
                       color: '#FFD700',
-                      textShadow: '0 0 15px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
+                      textShadow: '-1px -1px 0 #8B4513, 1px -1px 0 #8B4513, -1px 1px 0 #8B4513, 1px 1px 0 #8B4513, 0 0 20px #FFD700',
                     }}
                   >
                     $C
