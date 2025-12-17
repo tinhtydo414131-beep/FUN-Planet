@@ -51,11 +51,15 @@ export const RewardPlanetCard = ({
       whileHover={{ scale: 1.05, y: -8 }}
       className="relative group"
     >
-      {/* Glow border effect */}
-      <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-r from-[#FFFACD] via-[#FFE4B5] to-[#FFFACD] opacity-70 blur-sm group-hover:opacity-100 group-hover:blur-md transition-all duration-500" />
+      {/* Metallic gold gradient border */}
+      <div className="absolute -inset-[3px] rounded-[30px] bg-gradient-to-br from-[#FFD700] via-[#FFF8DC] via-[#FFD700] via-[#DAA520] to-[#FFD700] opacity-90 group-hover:opacity-100 transition-all duration-500" />
+      <div className="absolute -inset-[2px] rounded-[29px] bg-gradient-to-tr from-[#DAA520] via-[#FFD700] via-[#FFFACD] to-[#DAA520] opacity-80" />
+      
+      {/* Glow effect */}
+      <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-[#FFD700]/40 via-[#FFF8DC]/30 to-[#FFD700]/40 blur-md group-hover:blur-lg transition-all duration-500" />
       
       {/* Card background with pastel gradient */}
-      <div className={`relative p-6 rounded-3xl bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-2 border-[#FFFACD]/60 overflow-hidden h-full shadow-lg shadow-[#FFD700]/10`}>
+      <div className={`relative p-6 rounded-3xl bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-0 overflow-hidden h-full shadow-lg shadow-[#FFD700]/10`}>
         {/* Sparkle effects on hover */}
         <motion.div
           className="absolute top-4 left-4 w-2 h-2 rounded-full bg-[#FFD700]"
