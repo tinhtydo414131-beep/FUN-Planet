@@ -225,12 +225,22 @@ export default function RewardGalaxy() {
 
           {/* Reward Categories - Planet Cards */}
           <div className="mb-12">
-            <h2 className="text-2xl font-fredoka font-bold text-center mb-8 bg-gradient-to-r from-fun-yellow via-fun-orange to-fun-pink bg-clip-text text-transparent">
+            <motion.h2 
+              className="text-2xl md:text-3xl font-fredoka font-bold text-center mb-8"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                background: 'linear-gradient(135deg, #FFD700, #FF69B4, #87CEEB)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 2px 20px rgba(255, 215, 0, 0.3)',
+              }}
+            >
               🌟 Các Hành Tinh Phần Thưởng 🌟
-            </h2>
+            </motion.h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-              {/* Daily Login Reward - NEW */}
+              {/* Daily Login Reward - Mint green to warm yellow */}
               <DailyLoginRewardCard
                 canClaim={canClaimDailyLogin}
                 isClaiming={isClaimingDailyLogin}
@@ -239,14 +249,15 @@ export default function RewardGalaxy() {
                 delay={0}
               />
 
-              {/* Welcome Bonus */}
+              {/* Welcome Bonus - Sunny orange to pink */}
               <RewardPlanetCard
                 title="Chào Mừng"
                 subtitle="Welcome Bonus"
                 amount={50000}
                 icon={<Wallet className="w-8 h-8" />}
-                gradientFrom="from-amber-400"
-                gradientTo="to-orange-500"
+                gradientFrom="from-[#FFA500]"
+                gradientTo="to-[#FF69B4]"
+                cardGradient="from-[#FFE4B5]/90 via-[#FFF8DC]/95 to-[#FFB6C1]/90"
                 description="Kết nối ví lần đầu"
                 canClaim={canClaimWallet ?? false}
                 isClaiming={isClaiming}
@@ -255,14 +266,15 @@ export default function RewardGalaxy() {
                 delay={0.1}
               />
 
-              {/* Game Play Bonus */}
+              {/* Game Play Bonus - Cheerful blue to light purple */}
               <RewardPlanetCard
                 title="Chơi Game"
                 subtitle="Game Play Bonus"
                 amount={10000}
                 icon={<Gamepad2 className="w-8 h-8" />}
-                gradientFrom="from-cyan-400"
-                gradientTo="to-blue-500"
+                gradientFrom="from-[#87CEEB]"
+                gradientTo="to-[#DDA0DD]"
+                cardGradient="from-[#E0FFFF]/90 via-[#F0F8FF]/95 to-[#E6E6FA]/90"
                 description="Hoàn thành 1 game"
                 canClaim={canClaimGame ?? false}
                 isClaiming={isClaiming}
@@ -271,14 +283,15 @@ export default function RewardGalaxy() {
                 delay={0.2}
               />
 
-              {/* Game Upload Bonus */}
+              {/* Game Upload Bonus - Creative pink to yellow */}
               <RewardPlanetCard
                 title="Upload Game"
                 subtitle="Creator Reward"
                 amount={1000000}
                 icon={<Upload className="w-8 h-8" />}
-                gradientFrom="from-purple-400"
-                gradientTo="to-pink-500"
+                gradientFrom="from-[#FF69B4]"
+                gradientTo="to-[#FFD700]"
+                cardGradient="from-[#FFB6C1]/90 via-[#FFF0F5]/95 to-[#FFFACD]/90"
                 description="Game được duyệt"
                 canClaim={false}
                 isClaiming={false}
@@ -289,14 +302,15 @@ export default function RewardGalaxy() {
                 delay={0.3}
               />
 
-              {/* Referral Bonus */}
+              {/* Referral Bonus - Heart pink to warm orange */}
               <RewardPlanetCard
                 title="Mời Bạn Bè"
                 subtitle="Referral Bonus"
                 amount={REFERRAL_REWARD_FOR_REFERRER}
                 icon={<Users className="w-8 h-8" />}
-                gradientFrom="from-pink-400"
-                gradientTo="to-red-500"
+                gradientFrom="from-[#FF69B4]"
+                gradientTo="to-[#FFA500]"
+                cardGradient="from-[#FFB6C1]/90 via-[#FFF0F5]/95 to-[#FFE4B5]/90"
                 description="Mỗi bạn mời thành công"
                 canClaim={true}
                 isClaiming={false}
