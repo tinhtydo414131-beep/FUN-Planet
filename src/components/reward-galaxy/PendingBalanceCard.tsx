@@ -193,18 +193,21 @@ export function PendingBalanceCard({
               </motion.div>
               
               <h2 
-                className="text-4xl font-fredoka font-bold mb-2"
+                className="text-4xl md:text-5xl font-fredoka font-bold mb-3"
                 style={{
-                  background: 'linear-gradient(135deg, #FFD700, #FFF8DC, #FFAA00, #FFD700)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.5))',
-                  textShadow: '0 0 40px rgba(255,215,0,0.3)',
+                  color: '#FFD700',
+                  textShadow: '0 0 30px #FFD700, 0 3px 6px rgba(0,0,0,0.5)',
                 }}
               >
                 💰 Số Dư Chờ Rút 💰
               </h2>
-              <p className="text-white text-lg font-medium drop-shadow-lg">
+              <p 
+                className="text-xl md:text-2xl font-bold"
+                style={{
+                  color: '#FFFFFF',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                }}
+              >
                 Hoàn thành nhiệm vụ để tích lũy → Rút về ví bất kỳ lúc nào!
               </p>
             </div>
@@ -233,32 +236,54 @@ export function PendingBalanceCard({
               />
               
               <div className="flex items-center justify-between mb-4 relative z-10">
-                <span className="text-xl font-medium text-white/90">Số dư chờ nhận:</span>
+                <span 
+                  className="text-xl md:text-2xl font-bold"
+                  style={{
+                    color: '#FFFFFF',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                  }}
+                >
+                  Số dư chờ nhận:
+                </span>
                 <motion.div
                   key={pendingAmount}
                   initial={{ scale: 1.2 }}
                   animate={{ scale: 1 }}
                   className="flex items-center gap-3"
                 >
-                  <Coins className="w-10 h-10 text-[#FFD700] drop-shadow-[0_0_15px_#FFD700]" />
+                  <Coins className="w-12 h-12 text-[#FFD700] drop-shadow-[0_0_20px_#FFD700]" />
                   <span 
-                    className="text-5xl font-bold font-fredoka"
+                    className="text-5xl md:text-6xl font-bold font-fredoka"
                     style={{
-                      background: 'linear-gradient(135deg, #FFD700, #FFF8DC, #FFD700)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 0 15px rgba(255,215,0,0.6))',
+                      color: '#FFD700',
+                      textShadow: '0 0 25px #FFD700, 0 3px 6px rgba(0,0,0,0.6)',
                     }}
                   >
                     {pendingAmount.toLocaleString()}
                   </span>
-                  <span className="text-2xl text-[#FFD700] font-bold drop-shadow-[0_0_10px_#FFD700]">$C</span>
+                  <span 
+                    className="text-2xl md:text-3xl font-bold"
+                    style={{
+                      color: '#FFD700',
+                      textShadow: '0 0 15px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    $C
+                  </span>
                 </motion.div>
               </div>
 
-              <div className="flex items-center justify-between text-base relative z-10">
-                <span className="text-white/80 text-lg">Giới hạn hôm nay còn:</span>
-                <Badge 
+              <div className="flex items-center justify-between relative z-10">
+                <span 
+                  className="text-lg md:text-xl font-bold"
+                  style={{
+                    color: '#FFFFFF',
+                    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                  }}
+                >
+                  Giới hạn hôm nay còn:
+                </span>
+                <Badge
                   className="text-base px-4 py-1 font-bold"
                   style={{
                     background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(129, 199, 132, 0.3))',

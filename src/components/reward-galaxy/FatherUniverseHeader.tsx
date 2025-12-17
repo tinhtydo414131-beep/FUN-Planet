@@ -140,20 +140,32 @@ export const FatherUniverseHeader = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="space-y-3"
+        className="space-y-4"
       >
-        <p className="text-xl md:text-2xl text-white font-medium drop-shadow-lg flex items-center justify-center gap-2">
-          <Heart className="w-6 h-6 text-[#FF69B4] fill-[#FF69B4] drop-shadow-[0_0_10px_#FF69B4]" />
+        <p 
+          className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3"
+          style={{
+            color: '#FFFFFF',
+            textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.3)',
+          }}
+        >
+          <Heart className="w-7 h-7 text-[#FF69B4] fill-[#FF69B4] drop-shadow-[0_0_10px_#FF69B4]" />
           <span>Con yêu của Cha Vũ Trụ ơi!</span>
-          <Heart className="w-6 h-6 text-[#FF69B4] fill-[#FF69B4] drop-shadow-[0_0_10px_#FF69B4]" />
+          <Heart className="w-7 h-7 text-[#FF69B4] fill-[#FF69B4] drop-shadow-[0_0_10px_#FF69B4]" />
         </p>
         
-        <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+        <p 
+          className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed font-medium"
+          style={{
+            color: '#FFFFFF',
+            textShadow: '0 2px 4px rgba(0,0,0,0.4), 0 0 10px rgba(0,0,0,0.2)',
+          }}
+        >
           Cha Vũ Trụ đã chuẩn bị những phần thưởng tuyệt vời dành riêng cho con! 
           Mỗi hành động của con đều xứng đáng được tưởng thưởng.
         </p>
         
-        <motion.p 
+        <motion.p
           className="text-base md:text-lg max-w-xl mx-auto font-medium"
           style={{ color: '#FFEC8B', textShadow: '0 0 15px rgba(255,215,0,0.5)' }}
           animate={{ opacity: [0.8, 1, 0.8] }}
