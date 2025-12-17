@@ -27,11 +27,15 @@ export function DailyLoginRewardCard({
       whileHover={{ scale: 1.05, y: -8 }}
       className="relative group"
     >
-      {/* Glow border effect - Light yellow */}
-      <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-r from-[#FFFACD] via-[#FFE4B5] to-[#98FB98] opacity-70 blur-sm group-hover:opacity-100 group-hover:blur-md transition-all duration-500" />
+      {/* Metallic gold gradient border */}
+      <div className="absolute -inset-[3px] rounded-[30px] bg-gradient-to-br from-[#FFD700] via-[#FFF8DC] via-[#FFD700] via-[#DAA520] to-[#FFD700] opacity-90 group-hover:opacity-100 transition-all duration-500" />
+      <div className="absolute -inset-[2px] rounded-[29px] bg-gradient-to-tr from-[#DAA520] via-[#FFD700] via-[#FFFACD] to-[#DAA520] opacity-80" />
+      
+      {/* Glow effect */}
+      <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-[#FFD700]/40 via-[#FFF8DC]/30 to-[#FFD700]/40 blur-md group-hover:blur-lg transition-all duration-500" />
       
       {/* Card with mint green to warm yellow gradient */}
-      <Card className="relative overflow-hidden bg-gradient-to-br from-[#98FB98]/90 via-[#F0FFF0]/95 to-[#FFFACD]/90 border-2 border-[#FFFACD]/60 rounded-3xl backdrop-blur-sm shadow-lg shadow-[#98FB98]/20 h-full">
+      <Card className="relative overflow-hidden bg-gradient-to-br from-[#98FB98]/90 via-[#F0FFF0]/95 to-[#FFFACD]/90 border-0 rounded-3xl backdrop-blur-sm shadow-lg shadow-[#98FB98]/20 h-full">
         <CardContent className="p-6">
           {/* Sparkle effects */}
           <motion.div
