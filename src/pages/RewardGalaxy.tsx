@@ -226,28 +226,18 @@ export default function RewardGalaxy() {
           {/* Reward Categories - Planet Cards */}
           <div className="mb-12">
             <motion.h2 
-              className="text-3xl md:text-4xl font-fredoka font-bold text-center mb-8"
+              className="text-2xl md:text-3xl font-fredoka font-bold text-center mb-8"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               style={{
-                background: 'linear-gradient(135deg, #FFD700 0%, #FFAA00 30%, #FFD700 60%, #FFEC8B 100%)',
-                backgroundSize: '200% 200%',
+                background: 'linear-gradient(135deg, #FFD700, #FF69B4, #87CEEB)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 2px 4px rgba(255, 170, 0, 0.5))',
-                animation: 'shimmer 3s ease-in-out infinite',
+                textShadow: '0 2px 20px rgba(255, 215, 0, 0.3)',
               }}
             >
               🌟 Các Hành Tinh Phần Thưởng 🌟
             </motion.h2>
-            
-            {/* CSS for shimmer animation */}
-            <style>{`
-              @keyframes shimmer {
-                0%, 100% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-              }
-            `}</style>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               {/* Daily Login Reward - Mint green to warm yellow */}
