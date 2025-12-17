@@ -213,12 +213,15 @@ export default function SampleGames() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-primary/30">
-                  {/* Cover Art Header */}
-                  <div className="h-32 relative overflow-hidden">
+                  {/* Cover Art Header - Clickable */}
+                  <div 
+                    className="h-32 relative overflow-hidden cursor-pointer"
+                    onClick={() => handlePlayGame(game)}
+                  >
                     <img
                       src={game.coverImage}
                       alt={`${game.title} cover art`}
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                       loading="lazy"
                     />
                     <div className={`absolute inset-0 bg-gradient-to-br ${game.gradient} opacity-35`} />
