@@ -17,10 +17,13 @@ import { UploadGameFAB } from "@/components/UploadGameFAB";
 import { FloatingRewardButton } from "@/components/FloatingRewardButton";
 import { WelcomeCreatorPopup } from "@/components/WelcomeCreatorPopup";
 import { GameCompleteClaimPopup } from "@/components/GameCompleteClaimPopup";
+import { DailyLoginRewardPopup } from "@/components/reward-galaxy/DailyLoginRewardPopup";
 import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
+import { useDailyLoginReward } from "@/hooks/useDailyLoginReward";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useEffect, useRef } from "react";
 import Index from "./pages/Index";
 import Games from "./pages/Games";
 import GamePlay from "./pages/GamePlay";
@@ -166,6 +169,29 @@ const AppContent = () => {
   const { user } = useAuth();
   const { needsRoleSelection, loading: roleLoading } = useUserRole();
   const { isOpen: gameCompleteOpen, score, gameName, bonusAmount, hidePopup } = useGameCompletePopup();
+  const { 
+    showRewardPopup, 
+    claimedAmount, 
+    closeRewardPopup, 
+    autoClaimOnLogin 
+  } = useDailyLoginReward();
+  
+  const hasAutoClaimedRef = useRef(false);
+
+  // Auto-claim daily login reward when user logs in
+  useEffect(() => {
+    if (user && !hasAutoClaimedRef.current) {
+      hasAutoClaimedRef.current = true;
+      // Small delay to ensure everything is loaded
+      const timer = setTimeout(() => {
+        autoClaimOnLogin();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+    if (!user) {
+      hasAutoClaimedRef.current = false;
+    }
+  }, [user, autoClaimOnLogin]);
 
   return (
     <>
@@ -206,6 +232,13 @@ const AppContent = () => {
           score={score}
           gameName={gameName}
           bonusAmount={bonusAmount}
+        />
+        
+        {/* Daily Login Reward Popup - Shows on login */}
+        <DailyLoginRewardPopup
+          isOpen={showRewardPopup}
+          amount={claimedAmount}
+          onClose={closeRewardPopup}
         />
         
       </BrowserRouter>
