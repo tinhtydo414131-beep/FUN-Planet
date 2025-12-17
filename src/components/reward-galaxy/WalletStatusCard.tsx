@@ -106,11 +106,23 @@ export const WalletStatusCard = ({
               </motion.div>
               
               <div>
-                <p className="text-lg font-bold text-white drop-shadow-lg">
+                <p 
+                  className="text-xl font-bold"
+                  style={{
+                    color: '#FFFFFF',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.3)',
+                  }}
+                >
                   {isConnected ? '✨ Ví Ánh Sáng Của Con' : 'Kết nối ví để nhận thưởng'}
                 </p>
                 {isConnected && walletAddress ? (
-                  <p className="text-xl font-mono text-[#FFD700] font-bold drop-shadow-[0_0_10px_#FFD700]">
+                  <p 
+                    className="text-2xl font-mono font-bold"
+                    style={{
+                      color: '#FFD700',
+                      textShadow: '0 0 15px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
+                    }}
+                  >
                     {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                   </p>
                 ) : (
@@ -175,17 +187,23 @@ export const WalletStatusCard = ({
                 </div>
                 
                 <div className="relative z-10">
-                  <p className="text-base text-white/90 font-medium">Số dư CAMLY</p>
                   <p 
-                    className="text-3xl font-bold font-fredoka"
+                    className="text-lg font-bold"
                     style={{
-                      background: 'linear-gradient(135deg, #FFD700, #FFF8DC, #FFD700)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.5))',
+                      color: '#FFFFFF',
+                      textShadow: '0 1px 3px rgba(0,0,0,0.5)',
                     }}
                   >
-                    {camlyBalance.toLocaleString()} <span className="text-xl">$C</span>
+                    Số dư CAMLY
+                  </p>
+                  <p 
+                    className="text-4xl font-bold font-fredoka"
+                    style={{
+                      color: '#FFD700',
+                      textShadow: '0 0 20px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    {camlyBalance.toLocaleString()} <span className="text-2xl">$C</span>
                   </p>
                 </div>
               </motion.div>
