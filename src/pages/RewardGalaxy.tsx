@@ -204,8 +204,8 @@ export default function RewardGalaxy() {
           {/* Father Universe Header */}
           <FatherUniverseHeader />
 
-          {/* Camly Balance Card - Show total (claimed + pending) */}
-          <CamlyBalanceCard balance={camlyBalance + (rewards?.pending_amount || 0)} />
+          {/* Camly Balance Card */}
+          <CamlyBalanceCard balance={camlyBalance} />
 
           {/* Wallet Status */}
           <WalletStatusCard 
