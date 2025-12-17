@@ -395,6 +395,10 @@ export default function GameDetails() {
   };
 
   const getThumbnailUrl = (path: string) => {
+    // Handle local paths (starting with /) or http URLs directly
+    if (path.startsWith('/') || path.startsWith('http')) {
+      return path;
+    }
     const { data } = supabase.storage
       .from('uploaded-games')
       .getPublicUrl(path);
