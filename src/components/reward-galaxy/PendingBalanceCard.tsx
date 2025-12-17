@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Coins, 
   Sparkles, 
@@ -13,10 +14,22 @@ import {
   Loader2,
   ExternalLink,
   Gift,
-  Zap
+  Zap,
+  ChevronDown,
+  ChevronUp,
+  History,
+  Gamepad2,
+  Wallet,
+  Users,
+  Trophy,
+  Calendar,
+  Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { fireDiamondConfetti } from '@/components/DiamondConfetti';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { RewardHistoryItem } from '@/hooks/useUserRewards';
 
 interface PendingBalanceCardProps {
   pendingAmount: number;
@@ -27,7 +40,81 @@ interface PendingBalanceCardProps {
   isClaiming: boolean;
   onClaim: (amount: number) => Promise<{ success: boolean; txHash?: string; error?: string }>;
   onConnect: () => void;
+  rewardHistory?: RewardHistoryItem[];
+  isLoadingHistory?: boolean;
+  totalFromHistory?: number;
 }
+
+const getRewardIcon = (type: string) => {
+  switch (type) {
+    case 'first_wallet':
+    case 'airdrop_claim':
+      return <Wallet className="w-4 h-4" />;
+    case 'game_completion':
+    case 'first_game_play':
+      return <Gamepad2 className="w-4 h-4" />;
+    case 'referral_bonus':
+      return <Users className="w-4 h-4" />;
+    case 'ranking_reward':
+      return <Trophy className="w-4 h-4" />;
+    case 'daily_checkin':
+      return <Calendar className="w-4 h-4" />;
+    case 'game_upload':
+      return <Upload className="w-4 h-4" />;
+    case 'wallet_withdrawal':
+      return <ExternalLink className="w-4 h-4" />;
+    default:
+      return <Gift className="w-4 h-4" />;
+  }
+};
+
+const getRewardLabel = (type: string) => {
+  switch (type) {
+    case 'first_wallet':
+      return 'Kết nối ví';
+    case 'airdrop_claim':
+      return 'Airdrop';
+    case 'game_completion':
+      return 'Hoàn thành game';
+    case 'first_game_play':
+      return 'Chơi game lần đầu';
+    case 'referral_bonus':
+      return 'Mời bạn bè';
+    case 'ranking_reward':
+      return 'Thưởng xếp hạng';
+    case 'daily_checkin':
+      return 'Điểm danh';
+    case 'game_upload':
+      return 'Upload game';
+    case 'wallet_withdrawal':
+      return 'Rút về ví';
+    default:
+      return type;
+  }
+};
+
+const getRewardColor = (type: string) => {
+  switch (type) {
+    case 'first_wallet':
+    case 'airdrop_claim':
+      return 'from-purple-500 to-pink-500';
+    case 'game_completion':
+    case 'first_game_play':
+      return 'from-cyan-500 to-blue-500';
+    case 'referral_bonus':
+      return 'from-pink-500 to-red-500';
+    case 'ranking_reward':
+      return 'from-yellow-500 to-orange-500';
+    case 'daily_checkin':
+      return 'from-green-500 to-emerald-500';
+    case 'game_upload':
+      return 'from-indigo-500 to-purple-500';
+    case 'wallet_withdrawal':
+      return 'from-gray-500 to-gray-600';
+    default:
+      return 'from-amber-500 to-yellow-500';
+  }
+};
 
 export function PendingBalanceCard({
   pendingAmount,
@@ -37,11 +124,15 @@ export function PendingBalanceCard({
   isConnected,
   isClaiming,
   onClaim,
-  onConnect
+  onConnect,
+  rewardHistory = [],
+  isLoadingHistory = false,
+  totalFromHistory = 0
 }: PendingBalanceCardProps) {
   const [claimAmount, setClaimAmount] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   const maxClaimable = Math.min(pendingAmount, dailyRemaining);
   const sliderPercentage = maxClaimable > 0 ? (claimAmount / maxClaimable) * 100 : 0;
@@ -97,6 +188,9 @@ export function PendingBalanceCard({
   const setQuickAmount = (percentage: number) => {
     setClaimAmount(Math.floor(maxClaimable * percentage));
   };
+
+  // Filter to show only positive (earned) rewards for history
+  const earnedRewards = rewardHistory.filter(item => item.amount > 0);
 
   return (
     <motion.div
@@ -171,6 +265,87 @@ export function PendingBalanceCard({
                 {dailyRemaining.toLocaleString()} / {dailyLimit.toLocaleString()} $C
               </Badge>
             </div>
+          </div>
+
+          {/* Reward History Toggle */}
+          <div className="mb-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowHistory(!showHistory)}
+              className="w-full border-yellow-400/30 hover:bg-yellow-400/10"
+            >
+              <History className="w-4 h-4 mr-2" />
+              Lịch sử tích lũy ({earnedRewards.length} giao dịch)
+              {showHistory ? (
+                <ChevronUp className="w-4 h-4 ml-2" />
+              ) : (
+                <ChevronDown className="w-4 h-4 ml-2" />
+              )}
+            </Button>
+
+            <AnimatePresence>
+              {showHistory && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-4 bg-background/30 rounded-xl border border-yellow-400/20 p-4">
+                    {/* Total Summary */}
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-yellow-400/20">
+                      <span className="text-sm font-medium text-muted-foreground">Tổng đã tích lũy:</span>
+                      <span className="text-lg font-bold text-green-400">
+                        +{totalFromHistory.toLocaleString()} $C
+                      </span>
+                    </div>
+
+                    {isLoadingHistory ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin text-yellow-400" />
+                      </div>
+                    ) : earnedRewards.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Gift className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                        <p>Chưa có phần thưởng nào</p>
+                      </div>
+                    ) : (
+                      <ScrollArea className="h-[300px]">
+                        <div className="space-y-2">
+                          {earnedRewards.map((item, index) => (
+                            <motion.div
+                              key={item.id}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className="flex items-center gap-3 p-3 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
+                            >
+                              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getRewardColor(item.reward_type)} flex items-center justify-center text-white`}>
+                                {getRewardIcon(item.reward_type)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm truncate">
+                                  {getRewardLabel(item.reward_type)}
+                                </p>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {item.description || format(new Date(item.created_at), 'dd/MM/yyyy HH:mm', { locale: vi })}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <span className="font-bold text-green-400">
+                                  +{item.amount.toLocaleString()}
+                                </span>
+                                <span className="text-xs text-muted-foreground ml-1">$C</span>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Claim Slider */}
