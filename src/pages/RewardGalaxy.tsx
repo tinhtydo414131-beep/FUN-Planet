@@ -6,6 +6,7 @@ import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { useReferral } from '@/hooks/useReferral';
 import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import { useUserRewards } from '@/hooks/useUserRewards';
+import { useDailyLoginReward } from '@/hooks/useDailyLoginReward';
 import { useAppKit } from '@reown/appkit/react';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,7 +34,8 @@ import {
   Heart,
   Rocket,
   Crown,
-  ExternalLink
+  ExternalLink,
+  Calendar
 } from 'lucide-react';
 import { fireDiamondConfetti } from '@/components/DiamondConfetti';
 import { RewardPlanetCard } from '@/components/reward-galaxy/RewardPlanetCard';
@@ -43,6 +45,8 @@ import { ReferralShareCard } from '@/components/reward-galaxy/ReferralShareCard'
 import { ClaimHistoryCard } from '@/components/reward-galaxy/ClaimHistoryCard';
 import { WalletStatusCard } from '@/components/reward-galaxy/WalletStatusCard';
 import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCard';
+import { DailyLoginRewardCard } from '@/components/reward-galaxy/DailyLoginRewardCard';
+import { DailyLoginRewardPopup } from '@/components/reward-galaxy/DailyLoginRewardPopup';
 
 interface ClaimHistory {
   id: string;
@@ -83,6 +87,16 @@ export default function RewardGalaxy() {
     claimArbitrary,
     loadRewards
   } = useUserRewards();
+
+  const {
+    canClaim: canClaimDailyLogin,
+    isChecking: isCheckingDailyLogin,
+    isClaiming: isClaimingDailyLogin,
+    showRewardPopup,
+    claimedAmount,
+    claimDailyReward,
+    closeRewardPopup,
+  } = useDailyLoginReward();
   
   const [canClaimWallet, setCanClaimWallet] = useState<boolean | null>(null);
   const [canClaimGame, setCanClaimGame] = useState<boolean | null>(null);
@@ -153,6 +167,14 @@ export default function RewardGalaxy() {
     }
   };
 
+  const handleClaimDailyLogin = async () => {
+    const result = await claimDailyReward(walletAddress || undefined);
+    if (result.success) {
+      fireDiamondConfetti('rainbow');
+      await loadRewards();
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -207,7 +229,16 @@ export default function RewardGalaxy() {
               🌟 Các Hành Tinh Phần Thưởng 🌟
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+              {/* Daily Login Reward - NEW */}
+              <DailyLoginRewardCard
+                canClaim={canClaimDailyLogin}
+                isClaiming={isClaimingDailyLogin}
+                isChecking={isCheckingDailyLogin}
+                onClaim={handleClaimDailyLogin}
+                delay={0}
+              />
+
               {/* Welcome Bonus */}
               <RewardPlanetCard
                 title="Chào Mừng"
@@ -221,7 +252,7 @@ export default function RewardGalaxy() {
                 isClaiming={isClaiming}
                 isConnected={isConnected}
                 onClaim={handleClaimFirstWallet}
-                delay={0}
+                delay={0.1}
               />
 
               {/* Game Play Bonus */}
@@ -237,7 +268,7 @@ export default function RewardGalaxy() {
                 isClaiming={isClaiming}
                 isConnected={isConnected}
                 onClaim={handleClaimGameCompletion}
-                delay={0.1}
+                delay={0.2}
               />
 
               {/* Game Upload Bonus */}
@@ -255,7 +286,7 @@ export default function RewardGalaxy() {
                 onClaim={() => navigate('/upload')}
                 buttonText="Upload Game"
                 isSpecial
-                delay={0.2}
+                delay={0.3}
               />
 
               {/* Referral Bonus */}
@@ -273,7 +304,7 @@ export default function RewardGalaxy() {
                 onClaim={() => copyReferralLink()}
                 buttonText="Copy Link"
                 showHeart
-                delay={0.3}
+                delay={0.4}
               />
             </div>
           </div>
@@ -294,6 +325,13 @@ export default function RewardGalaxy() {
           />
         </div>
       </section>
+
+      {/* Daily Login Reward Popup */}
+      <DailyLoginRewardPopup
+        isOpen={showRewardPopup}
+        amount={claimedAmount}
+        onClose={closeRewardPopup}
+      />
     </div>
   );
 }

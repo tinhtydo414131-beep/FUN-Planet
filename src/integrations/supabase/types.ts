@@ -867,6 +867,36 @@ export type Database = {
           },
         ]
       }
+      daily_login_rewards: {
+        Row: {
+          amount: number
+          claim_date: string
+          claimed_at: string
+          created_at: string
+          id: string
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          amount?: number
+          claim_date?: string
+          claimed_at?: string
+          created_at?: string
+          id?: string
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          amount?: number
+          claim_date?: string
+          claimed_at?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
       daily_upload_rewards: {
         Row: {
           created_at: string
@@ -3306,6 +3336,7 @@ export type Database = {
         Args: { p_amount: number; p_source: string; p_user_id: string }
         Returns: number
       }
+      can_claim_daily_login: { Args: { p_user_id: string }; Returns: boolean }
       check_file_hash_exists: {
         Args: { p_file_hash: string; p_user_id: string }
         Returns: {
@@ -3322,6 +3353,15 @@ export type Database = {
           p_user_id: string
         }
         Returns: boolean
+      }
+      claim_daily_login_reward: {
+        Args: { p_user_id: string; p_wallet_address?: string }
+        Returns: {
+          already_claimed: boolean
+          amount: number
+          message: string
+          success: boolean
+        }[]
       }
       claim_from_pending: {
         Args: { p_amount: number; p_user_id: string; p_wallet_address: string }
@@ -3350,6 +3390,14 @@ export type Database = {
       get_daily_claim_remaining: {
         Args: { p_user_id: string }
         Returns: number
+      }
+      get_daily_login_stats: {
+        Args: { p_date?: string }
+        Returns: {
+          total_amount: number
+          total_claims: number
+          unique_users: number
+        }[]
       }
       get_or_create_daily_reward: {
         Args: { p_user_id: string }
