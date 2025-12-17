@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ExternalLink, Home, Send, Zap, Shield, QrCode, ArrowLeft, LogOut } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Wallet, Sparkles, Copy, CheckCircle, ExternalLink, Home, Send, Zap, Shield, QrCode, ArrowLeft, LogOut, Gem, Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AirdropConfirmModal } from "@/components/AirdropConfirmModal";
 import { OnChainTransactionHistory } from "@/components/OnChainTransactionHistory";
@@ -1182,6 +1182,27 @@ export default function FunWallet() {
               <span className="relative z-10">🦊 CONNECT METAMASK</span>
             </Button>
           </motion.div> : <>
+            {/* Compact Wallet Status Header */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center justify-center gap-3 mb-6 p-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30"
+            >
+              <motion.div
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              >
+                <Gem className="w-6 h-6 text-amber-500" />
+              </motion.div>
+              <Gift className="w-5 h-5 text-amber-400" />
+              <span className="text-sm font-mono text-muted-foreground">
+                {account.slice(0, 6)}...{account.slice(-4)}
+              </span>
+              <span className="font-bold text-amber-500 text-lg">
+                {camlyBalance} CAMLY
+              </span>
+            </motion.div>
+
             {/* Main Wallet Card */}
             <motion.div initial={{
           y: -50,
