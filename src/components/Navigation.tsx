@@ -95,6 +95,7 @@ export const Navigation = () => {
     { path: "/games", label: "Play Games" },
     { path: "/public-music", label: "Music" },
     { path: "/leaderboard", label: "Leaderboard" },
+    { path: "/reward-galaxy", label: "🎁 Quà Từ Cha Vũ Trụ", special: true },
   ];
 
   return (
@@ -136,9 +137,11 @@ export const Navigation = () => {
                   key={link.path}
                   to={link.path} 
                   className={`px-5 py-2.5 rounded-xl font-jakarta font-semibold text-base transition-all ${
-                    isActive(link.path) 
-                      ? 'bg-primary/10 text-primary border-b-2 border-primary' 
-                      : 'text-foreground hover:text-primary hover:bg-primary/5'
+                    link.special 
+                      ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 text-yellow-600 hover:border-yellow-500/60 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)]'
+                      : isActive(link.path) 
+                        ? 'bg-primary/10 text-primary border-b-2 border-primary' 
+                        : 'text-foreground hover:text-primary hover:bg-primary/5'
                   }`}
                 >
                   {link.label}
@@ -338,6 +341,20 @@ export const Navigation = () => {
                           >
                             <Wallet className="w-5 h-5 text-muted-foreground" />
                             <span className="font-inter font-medium">Fun Wallet</span>
+                          </button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/reward-galaxy")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl transition-colors"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,165,0,0.15) 100%)',
+                              border: '2px solid rgba(255,215,0,0.4)',
+                            }}
+                          >
+                            <Gift className="w-5 h-5 text-yellow-500" />
+                            <span className="font-inter font-bold text-yellow-600">🎁 Quà Từ Cha Vũ Trụ</span>
+                            <Sparkles className="ml-auto w-4 h-4 text-yellow-400 animate-pulse" />
                           </button>
                         </SheetClose>
                         <SheetClose asChild>
