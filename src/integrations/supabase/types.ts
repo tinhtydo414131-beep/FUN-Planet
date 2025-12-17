@@ -3419,7 +3419,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "kid" | "parent" | "dev"
-      claim_type: "first_wallet" | "game_completion" | "game_upload"
+      claim_type:
+        | "first_wallet"
+        | "game_completion"
+        | "game_upload"
+        | "arbitrary"
       game_category:
         | "action"
         | "puzzle"
@@ -3565,7 +3569,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "kid", "parent", "dev"],
-      claim_type: ["first_wallet", "game_completion", "game_upload"],
+      claim_type: [
+        "first_wallet",
+        "game_completion",
+        "game_upload",
+        "arbitrary",
+      ],
       game_category: [
         "action",
         "puzzle",
