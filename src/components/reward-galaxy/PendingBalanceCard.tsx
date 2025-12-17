@@ -73,7 +73,6 @@ export function PendingBalanceCard({
       setLastTxHash(result.txHash || null);
       fireDiamondConfetti('celebration');
       
-      // Play celebration sound
       const audio = new Audio('/sounds/coin-collect.mp3');
       audio.play().catch(() => {});
 
@@ -84,7 +83,6 @@ export function PendingBalanceCard({
         </div>
       );
 
-      // Reset after animation
       setTimeout(() => {
         setShowSuccess(false);
         setClaimAmount(0);
@@ -105,225 +103,322 @@ export function PendingBalanceCard({
       transition={{ duration: 0.5 }}
       className="mb-12"
     >
-      <Card className="relative overflow-hidden bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-orange-500/20 border-2 border-yellow-400/50 shadow-2xl shadow-yellow-500/20">
-        {/* Animated background stars */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-yellow-300 rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                opacity: [0.3, 1, 0.3],
-                scale: [1, 1.5, 1],
-              }}
-              transition={{
-                duration: 2 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
-        </div>
+      {/* Golden glow border */}
+      <div className="relative">
+        <div 
+          className="absolute -inset-[2px] rounded-[26px] opacity-80"
+          style={{
+            background: 'linear-gradient(135deg, #FFD700, #FFEC8B, #FFD700, #FFAA00)',
+            boxShadow: '0 0 40px rgba(255, 215, 0, 0.5)',
+          }}
+        />
+        
+        {/* Glassmorphism card */}
+        <div 
+          className="relative rounded-3xl overflow-hidden"
+          style={{
+            background: 'rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.3), 0 10px 40px rgba(0,0,0,0.1)',
+          }}
+        >
+          {/* Inner glossy reflection */}
+          <div 
+            className="absolute inset-x-0 top-0 h-1/3 opacity-15 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(255,255,255,0.5), transparent)',
+              borderRadius: '24px 24px 50% 50%',
+            }}
+          />
 
-        <CardContent className="relative z-10 p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="inline-block mb-4"
-            >
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/50">
-                <Gift className="w-10 h-10 text-white" />
-              </div>
-            </motion.div>
-          <h2 className="text-3xl font-fredoka font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
-            💰 Số Dư Chờ Rút 💰
-          </h2>
-          <p className="text-muted-foreground mt-2">Hoàn thành nhiệm vụ để tích lũy → Rút về ví bất kỳ lúc nào!</p>
-          </div>
-
-          {/* Pending Balance Display */}
-          <div className="bg-background/50 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-yellow-400/30">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-lg font-medium text-muted-foreground">Số dư chờ nhận:</span>
+          {/* Animated golden particles background */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(25)].map((_, i) => (
               <motion.div
-                key={pendingAmount}
-                initial={{ scale: 1.2 }}
-                animate={{ scale: 1 }}
-                className="flex items-center gap-2"
-              >
-                <Coins className="w-8 h-8 text-yellow-400" />
-                <span className="text-4xl font-bold text-yellow-400 font-fredoka">
-                  {pendingAmount.toLocaleString()}
-                </span>
-                <span className="text-xl text-yellow-400/80">$C</span>
-              </motion.div>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Giới hạn hôm nay còn:</span>
-              <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
-                {dailyRemaining.toLocaleString()} / {dailyLimit.toLocaleString()} $C
-              </Badge>
-            </div>
-          </div>
-
-          {/* Claim Slider */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Số lượng muốn nhận:</span>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="text"
-                  value={claimAmount.toLocaleString()}
-                  onChange={handleInputChange}
-                  className="w-32 text-right font-bold text-lg"
-                  disabled={isClaiming || maxClaimable === 0}
-                />
-                <span className="text-muted-foreground">$C</span>
-              </div>
-            </div>
-
-            {/* Fun Slider */}
-            <div className="relative py-4">
-              <Slider
-                value={[claimAmount]}
-                onValueChange={handleSliderChange}
-                max={maxClaimable}
-                step={1000}
-                disabled={isClaiming || maxClaimable === 0}
-                className="cursor-pointer"
+                key={i}
+                className="absolute w-1.5 h-1.5 rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  background: '#FFD700',
+                  boxShadow: '0 0 6px #FFD700',
+                }}
+                animate={{
+                  opacity: [0.3, 1, 0.3],
+                  scale: [1, 1.5, 1],
+                }}
+                transition={{
+                  duration: 2 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
               />
-              {/* Slider decoration */}
-              <motion.div
-                className="absolute -top-2 pointer-events-none"
-                style={{ left: `calc(${sliderPercentage}% - 12px)` }}
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <Rocket className="w-6 h-6 text-primary rotate-45" />
-              </motion.div>
-            </div>
-
-            {/* Quick Amount Buttons */}
-            <div className="flex gap-2 flex-wrap justify-center">
-              {[0.25, 0.5, 0.75, 1].map((percentage) => (
-                <Button
-                  key={percentage}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setQuickAmount(percentage)}
-                  disabled={isClaiming || maxClaimable === 0}
-                  className="border-yellow-400/50 hover:bg-yellow-400/20"
-                >
-                  {percentage === 1 ? 'MAX' : `${percentage * 100}%`}
-                </Button>
-              ))}
-            </div>
-
-            {/* Claim Button */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button
-                onClick={handleClaim}
-                disabled={isClaiming || claimAmount <= 0 || !isConnected}
-                className="w-full h-14 text-xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 hover:from-yellow-500 hover:via-orange-600 hover:to-pink-600 shadow-lg shadow-orange-500/30"
-              >
-                {isClaiming ? (
-                  <>
-                    <Loader2 className="w-6 h-6 mr-2 animate-spin" />
-                    Đang gửi phần thưởng...
-                  </>
-                ) : !isConnected ? (
-                  <>
-                    <Zap className="w-6 h-6 mr-2" />
-                    Kết nối ví để nhận
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-6 h-6 mr-2" />
-                    Nhận {claimAmount.toLocaleString()} $C 🚀
-                  </>
-                )}
-              </Button>
-            </motion.div>
-
-            {/* Last Transaction */}
-            {lastTxHash && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center"
-              >
-                <a
-                  href={`https://bscscan.com/tx/${lastTxHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Xem giao dịch trên BscScan
-                </a>
-              </motion.div>
-            )}
+            ))}
           </div>
 
-          {/* Success Animation Overlay */}
-          <AnimatePresence>
-            {showSuccess && (
+          <CardContent className="relative z-10 p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-20 rounded-xl"
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="inline-block mb-4"
               >
+                <div 
+                  className="w-24 h-24 rounded-full flex items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFD700 0%, #FFAA00 50%, #FF8C00 100%)',
+                    boxShadow: '0 0 40px rgba(255, 215, 0, 0.6), inset 0 2px 4px rgba(255,255,255,0.3)',
+                  }}
+                >
+                  <Gift className="w-12 h-12 text-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }} />
+                </div>
+              </motion.div>
+              <h2 
+                className="text-3xl font-fredoka font-bold"
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFAA00 30%, #FFD700 60%, #FFEC8B 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 2px 4px rgba(255, 170, 0, 0.5))',
+                }}
+              >
+                💰 Số Dư Chờ Rút 💰
+              </h2>
+              <p className="mt-2 text-lg" style={{ color: '#FFF8DC', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                Hoàn thành nhiệm vụ để tích lũy → Rút về ví bất kỳ lúc nào!
+              </p>
+            </div>
+
+            {/* Pending Balance Display */}
+            <div 
+              className="rounded-2xl p-6 mb-6"
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '2px solid rgba(255, 215, 0, 0.4)',
+                boxShadow: '0 0 20px rgba(255, 215, 0, 0.15), inset 0 1px 1px rgba(255,255,255,0.1)',
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-lg font-medium" style={{ color: '#FFF8DC' }}>Số dư chờ nhận:</span>
                 <motion.div
-                  initial={{ scale: 0 }}
+                  key={pendingAmount}
+                  initial={{ scale: 1.2 }}
                   animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
+                  className="flex items-center gap-2"
+                >
+                  <Coins className="w-10 h-10 text-[#FFD700]" style={{ filter: 'drop-shadow(0 0 8px #FFD700)' }} />
+                  <span 
+                    className="text-5xl font-bold font-fredoka"
+                    style={{
+                      background: 'linear-gradient(135deg, #FFD700 0%, #FFAA00 50%, #FFEC8B 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 2px 4px rgba(255, 170, 0, 0.5))',
+                    }}
+                  >
+                    {pendingAmount.toLocaleString()}
+                  </span>
+                  <span className="text-2xl font-bold text-[#FFEC8B]">$C</span>
+                </motion.div>
+              </div>
+
+              <div className="flex items-center justify-between text-base">
+                <span style={{ color: '#FFF8DC' }}>Giới hạn hôm nay còn:</span>
+                <Badge 
+                  className="px-3 py-1 text-sm font-bold"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(102, 187, 106, 0.3))',
+                    border: '1px solid rgba(76, 175, 80, 0.5)',
+                    color: '#90EE90',
+                  }}
+                >
+                  {dailyRemaining.toLocaleString()} / {dailyLimit.toLocaleString()} $C
+                </Badge>
+              </div>
+            </div>
+
+            {/* Claim Slider */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-lg" style={{ color: '#FFF8DC' }}>Số lượng muốn nhận:</span>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    value={claimAmount.toLocaleString()}
+                    onChange={handleInputChange}
+                    className="w-36 text-right font-bold text-xl"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '2px solid rgba(255, 215, 0, 0.4)',
+                      color: '#FFEC8B',
+                    }}
+                    disabled={isClaiming || maxClaimable === 0}
+                  />
+                  <span style={{ color: '#FFEC8B' }} className="text-lg">$C</span>
+                </div>
+              </div>
+
+              {/* Slider */}
+              <div className="relative py-4">
+                <Slider
+                  value={[claimAmount]}
+                  onValueChange={handleSliderChange}
+                  max={maxClaimable}
+                  step={1000}
+                  disabled={isClaiming || maxClaimable === 0}
+                  className="cursor-pointer"
+                />
+                <motion.div
+                  className="absolute -top-2 pointer-events-none"
+                  style={{ left: `calc(${sliderPercentage}% - 12px)` }}
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                >
+                  <Rocket className="w-6 h-6 text-[#FFD700] rotate-45" style={{ filter: 'drop-shadow(0 0 4px #FFD700)' }} />
+                </motion.div>
+              </div>
+
+              {/* Quick Amount Buttons */}
+              <div className="flex gap-2 flex-wrap justify-center">
+                {[0.25, 0.5, 0.75, 1].map((percentage) => (
+                  <Button
+                    key={percentage}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setQuickAmount(percentage)}
+                    disabled={isClaiming || maxClaimable === 0}
+                    className="font-bold"
+                    style={{
+                      background: 'rgba(255, 215, 0, 0.1)',
+                      border: '2px solid rgba(255, 215, 0, 0.4)',
+                      color: '#FFEC8B',
+                    }}
+                  >
+                    {percentage === 1 ? 'MAX' : `${percentage * 100}%`}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Claim Button - Diamond glow on hover */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  onClick={handleClaim}
+                  disabled={isClaiming || claimAmount <= 0 || !isConnected}
+                  className="w-full h-16 text-xl font-bold rounded-2xl relative overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, #FFD700 0%, #FFAA00 30%, #FF8C00 70%, #FFD700 100%)',
+                    boxShadow: '0 0 30px rgba(255, 215, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.3)',
+                    color: '#FFFFFF',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  {/* Shimmer effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                  />
+                  <span className="relative flex items-center justify-center gap-2">
+                    {isClaiming ? (
+                      <>
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        Đang gửi phần thưởng...
+                      </>
+                    ) : !isConnected ? (
+                      <>
+                        <Zap className="w-6 h-6" />
+                        Kết nối ví để nhận
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-6 h-6" />
+                        Nhận {claimAmount.toLocaleString()} $C 🚀
+                      </>
+                    )}
+                  </span>
+                </Button>
+              </motion.div>
+
+              {/* Last Transaction */}
+              {lastTxHash && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className="text-center"
                 >
-                  {[...Array(12)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute"
-                      initial={{ 
-                        x: 0, 
-                        y: 0,
-                        opacity: 1 
-                      }}
-                      animate={{ 
-                        x: Math.cos(i * 30 * Math.PI / 180) * 100,
-                        y: Math.sin(i * 30 * Math.PI / 180) * 100,
-                        opacity: 0
-                      }}
-                      transition={{ duration: 1, delay: 0.2 }}
-                    >
-                      <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
-                    </motion.div>
-                  ))}
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 0.5, repeat: 2 }}
+                  <a
+                    href={`https://bscscan.com/tx/${lastTxHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm hover:underline"
+                    style={{ color: '#FFEC8B' }}
                   >
-                    <Star className="w-24 h-24 text-yellow-400 fill-yellow-400 mx-auto" />
-                  </motion.div>
-                  <p className="text-2xl font-bold text-yellow-400 mt-4 font-fredoka">
-                    Chúc mừng bé! 🎉
-                  </p>
+                    <ExternalLink className="w-4 h-4" />
+                    Xem giao dịch trên BscScan
+                  </a>
                 </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardContent>
-      </Card>
+              )}
+            </div>
+
+            {/* Success Animation Overlay */}
+            <AnimatePresence>
+              {showSuccess && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center z-20 rounded-3xl"
+                  style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="text-center relative"
+                  >
+                    {[...Array(12)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute"
+                        style={{ left: '50%', top: '50%' }}
+                        initial={{ x: 0, y: 0, opacity: 1 }}
+                        animate={{ 
+                          x: Math.cos(i * 30 * Math.PI / 180) * 100,
+                          y: Math.sin(i * 30 * Math.PI / 180) * 100,
+                          opacity: 0
+                        }}
+                        transition={{ duration: 1, delay: 0.2 }}
+                      >
+                        <Star className="w-6 h-6 text-[#FFD700] fill-[#FFD700]" style={{ filter: 'drop-shadow(0 0 6px #FFD700)' }} />
+                      </motion.div>
+                    ))}
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.5, repeat: 2 }}
+                    >
+                      <Star className="w-28 h-28 text-[#FFD700] fill-[#FFD700] mx-auto" style={{ filter: 'drop-shadow(0 0 20px #FFD700)' }} />
+                    </motion.div>
+                    <p 
+                      className="text-3xl font-bold mt-4 font-fredoka"
+                      style={{
+                        background: 'linear-gradient(135deg, #FFD700, #FFEC8B)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                      }}
+                    >
+                      Chúc mừng bé! 🎉
+                    </p>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </CardContent>
+        </div>
+      </div>
     </motion.div>
   );
 }
