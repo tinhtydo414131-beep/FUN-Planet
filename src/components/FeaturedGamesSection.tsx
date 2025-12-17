@@ -49,7 +49,7 @@ export function FeaturedGamesSection() {
 
   const getThumbnailUrl = (path: string | null) => {
     if (!path) return null;
-    if (path.startsWith('http')) return path;
+    if (path.startsWith('http') || path.startsWith('/')) return path;
     const { data } = supabase.storage.from('uploaded-games').getPublicUrl(path);
     return data.publicUrl;
   };
