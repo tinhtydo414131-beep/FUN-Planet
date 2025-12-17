@@ -1,0 +1,158 @@
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './useAuth';
+import { toast } from 'sonner';
+
+interface UserRewards {
+  id: string;
+  user_id: string;
+  wallet_address: string | null;
+  pending_amount: number;
+  claimed_amount: number;
+  total_earned: number;
+  daily_claimed: number;
+  last_claim_date: string | null;
+  last_claim_amount: number | null;
+  last_claim_at: string | null;
+}
+
+const DAILY_LIMIT = 5000000; // 5 million CAMLY per day
+
+export function useUserRewards() {
+  const { user } = useAuth();
+  const [rewards, setRewards] = useState<UserRewards | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dailyRemaining, setDailyRemaining] = useState(DAILY_LIMIT);
+  const [isClaiming, setIsClaiming] = useState(false);
+
+  const loadRewards = useCallback(async () => {
+    if (!user) {
+      setRewards(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Get or create user rewards
+      const { data, error } = await supabase
+        .rpc('get_or_create_user_rewards', { p_user_id: user.id });
+
+      if (error) throw error;
+
+      setRewards(data);
+
+      // Calculate daily remaining
+      const today = new Date().toISOString().split('T')[0];
+      if (data.last_claim_date === today) {
+        setDailyRemaining(Math.max(0, DAILY_LIMIT - (data.daily_claimed || 0)));
+      } else {
+        setDailyRemaining(DAILY_LIMIT);
+      }
+    } catch (error) {
+      console.error('Error loading rewards:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadRewards();
+  }, [loadRewards]);
+
+  const addPendingReward = useCallback(async (amount: number, source: string) => {
+    if (!user) return null;
+
+    try {
+      const { data, error } = await supabase
+        .rpc('add_user_pending_reward', {
+          p_user_id: user.id,
+          p_amount: amount,
+          p_source: source
+        });
+
+      if (error) throw error;
+
+      await loadRewards();
+      return data;
+    } catch (error) {
+      console.error('Error adding pending reward:', error);
+      return null;
+    }
+  }, [user, loadRewards]);
+
+  const claimArbitrary = useCallback(async (
+    amount: number, 
+    walletAddress: string,
+    parentSignature?: string
+  ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    if (amount <= 0) {
+      return { success: false, error: 'Invalid amount' };
+    }
+
+    if (amount > (rewards?.pending_amount || 0)) {
+      return { success: false, error: 'Insufficient pending balance' };
+    }
+
+    if (amount > dailyRemaining) {
+      return { success: false, error: `Daily limit exceeded. Remaining: ${dailyRemaining.toLocaleString()} $C` };
+    }
+
+    setIsClaiming(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await supabase.functions.invoke('claim-arbitrary', {
+        body: { 
+          walletAddress, 
+          amount,
+          parentSignature 
+        },
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`
+        }
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      const result = response.data;
+
+      if (!result.success) {
+        if (result.requiresParentApproval) {
+          return { success: false, error: 'Requires parent approval' };
+        }
+        return { success: false, error: result.error };
+      }
+
+      // Reload rewards after successful claim
+      await loadRewards();
+
+      return { 
+        success: true, 
+        txHash: result.txHash 
+      };
+    } catch (error: any) {
+      console.error('Claim error:', error);
+      return { success: false, error: error.message };
+    } finally {
+      setIsClaiming(false);
+    }
+  }, [user, rewards, dailyRemaining, loadRewards]);
+
+  return {
+    rewards,
+    isLoading,
+    dailyRemaining,
+    dailyLimit: DAILY_LIMIT,
+    isClaiming,
+    loadRewards,
+    addPendingReward,
+    claimArbitrary,
+  };
+}

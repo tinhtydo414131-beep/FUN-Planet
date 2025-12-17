@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { useReferral } from '@/hooks/useReferral';
 import { useCamlyClaim } from '@/hooks/useCamlyClaim';
+import { useUserRewards } from '@/hooks/useUserRewards';
 import { useAppKit } from '@reown/appkit/react';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,6 +42,7 @@ import { FatherUniverseHeader } from '@/components/reward-galaxy/FatherUniverseH
 import { ReferralShareCard } from '@/components/reward-galaxy/ReferralShareCard';
 import { ClaimHistoryCard } from '@/components/reward-galaxy/ClaimHistoryCard';
 import { WalletStatusCard } from '@/components/reward-galaxy/WalletStatusCard';
+import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCard';
 
 interface ClaimHistory {
   id: string;
@@ -73,6 +75,14 @@ export default function RewardGalaxy() {
     claimHistory,
     isLoadingHistory
   } = useCamlyClaim();
+  const {
+    rewards,
+    dailyRemaining,
+    dailyLimit,
+    isClaiming: isClaimingArbitrary,
+    claimArbitrary,
+    loadRewards
+  } = useUserRewards();
   
   const [canClaimWallet, setCanClaimWallet] = useState<boolean | null>(null);
   const [canClaimGame, setCanClaimGame] = useState<boolean | null>(null);
@@ -102,6 +112,13 @@ export default function RewardGalaxy() {
     checkClaims();
     loadClaimHistory();
   }, [user, checkCanClaim, loadClaimHistory]);
+
+  const handleClaimArbitrary = async (amount: number) => {
+    if (!walletAddress) {
+      return { success: false, error: 'Please connect your wallet first' };
+    }
+    return claimArbitrary(amount, walletAddress);
+  };
 
   const handleClaimFirstWallet = async () => {
     if (!isConnected) {
@@ -165,6 +182,18 @@ export default function RewardGalaxy() {
             isConnected={isConnected}
             walletAddress={walletAddress}
             camlyBalance={camlyBalance}
+            onConnect={() => open()}
+          />
+
+          {/* Pending Balance & Claim Section - NEW */}
+          <PendingBalanceCard
+            pendingAmount={rewards?.pending_amount || 0}
+            dailyRemaining={dailyRemaining}
+            dailyLimit={dailyLimit}
+            walletAddress={walletAddress}
+            isConnected={isConnected}
+            isClaiming={isClaimingArbitrary}
+            onClaim={handleClaimArbitrary}
             onConnect={() => open()}
           />
 
