@@ -45,7 +45,6 @@ import { ReferralShareCard } from '@/components/reward-galaxy/ReferralShareCard'
 import { ClaimHistoryCard } from '@/components/reward-galaxy/ClaimHistoryCard';
 import { WalletStatusCard } from '@/components/reward-galaxy/WalletStatusCard';
 import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCard';
-import { CamlyBalanceCard } from '@/components/reward-galaxy/CamlyBalanceCard';
 import { DailyLoginRewardCard } from '@/components/reward-galaxy/DailyLoginRewardCard';
 import { DailyLoginRewardPopup } from '@/components/reward-galaxy/DailyLoginRewardPopup';
 
@@ -203,9 +202,6 @@ export default function RewardGalaxy() {
         <div className="container mx-auto max-w-6xl">
           {/* Father Universe Header */}
           <FatherUniverseHeader />
-
-          {/* Camly Balance Card */}
-          <CamlyBalanceCard balance={camlyBalance} />
 
           {/* Wallet Status */}
           <WalletStatusCard 
