@@ -205,6 +205,9 @@ export default function RewardGalaxy() {
 
           {/* Wallet Status */}
           <WalletStatusCard 
+            isConnected={isConnected}
+            walletAddress={walletAddress}
+            camlyBalance={camlyBalance}
             onConnect={() => open()}
           />
 
