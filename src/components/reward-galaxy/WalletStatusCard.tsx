@@ -1,20 +1,16 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Wallet, Check, Coins, Sparkles } from 'lucide-react';
+import { Wallet, Check, Coins, Sparkles, Loader2, RefreshCw } from 'lucide-react';
+import { useCamlyBalance } from '@/hooks/useCamlyBalance';
+import camlyCoinImg from '@/assets/camly-coin.png';
 
 interface WalletStatusCardProps {
-  isConnected: boolean;
-  walletAddress: string | undefined;
-  camlyBalance: number;
   onConnect: () => void;
 }
 
-export const WalletStatusCard = ({ 
-  isConnected, 
-  walletAddress, 
-  camlyBalance, 
-  onConnect 
-}: WalletStatusCardProps) => {
+export const WalletStatusCard = ({ onConnect }: WalletStatusCardProps) => {
+  const { balance, isLoading, refetch, isConnected, walletAddress } = useCamlyBalance();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -78,7 +74,7 @@ export const WalletStatusCard = ({
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Wallet Status */}
             <div className="flex items-center gap-4">
-              {/* 3D Gold icon */}
+              {/* 3D Gold icon with glow */}
               <motion.div 
                 className="w-20 h-20 rounded-2xl flex items-center justify-center relative"
                 style={{
@@ -86,10 +82,18 @@ export const WalletStatusCard = ({
                     ? 'linear-gradient(135deg, #FFD700, #DAA520, #B8860B)'
                     : 'linear-gradient(135deg, #C0C0C0, #A9A9A9, #808080)',
                   boxShadow: isConnected
-                    ? '0 8px 25px rgba(255, 215, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.2)'
+                    ? '0 8px 25px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3), inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.2)'
                     : '0 8px 20px rgba(128, 128, 128, 0.3)',
                 }}
                 whileHover={{ scale: 1.05 }}
+                animate={isConnected ? { 
+                  boxShadow: [
+                    '0 8px 25px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)',
+                    '0 8px 35px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.5)',
+                    '0 8px 25px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)',
+                  ]
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
               >
                 {/* Reflection on icon */}
                 <div 
@@ -107,13 +111,13 @@ export const WalletStatusCard = ({
               
               <div>
                 <p 
-                  className="text-xl font-bold"
+                  className="text-xl font-bold font-jakarta"
                   style={{
                     color: '#FFFFFF',
                     textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.3)',
                   }}
                 >
-                  {isConnected ? '✨ Ví Ánh Sáng Của Con' : 'Kết nối ví để nhận thưởng'}
+                  {isConnected ? '✨ Ví Ánh Sáng Của Con' : 'Kết nối ví để xem số dư CAMLY thật! 🌟'}
                 </p>
                 {isConnected && walletAddress ? (
                   <p 
@@ -143,7 +147,7 @@ export const WalletStatusCard = ({
               </div>
             </div>
 
-            {/* CAMLY Balance */}
+            {/* CAMLY Balance - Real-time from blockchain */}
             {isConnected && (
               <motion.div 
                 className="flex items-center gap-4 p-5 rounded-2xl relative overflow-hidden"
@@ -169,42 +173,70 @@ export const WalletStatusCard = ({
                   transition={{ duration: 2, repeat: Infinity }}
                 />
                 
-                {/* 3D Gold coin icon */}
-                <div 
+                {/* Camly Coin image with glow */}
+                <motion.div 
                   className="w-16 h-16 rounded-xl flex items-center justify-center relative"
+                  animate={{ 
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
                   style={{
-                    background: 'linear-gradient(135deg, #FFD700, #DAA520, #B8860B)',
-                    boxShadow: '0 6px 20px rgba(255, 215, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.4)',
+                    filter: 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.6))',
                   }}
                 >
-                  <div 
-                    className="absolute inset-0 rounded-xl"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%)',
-                    }}
+                  <img 
+                    src={camlyCoinImg} 
+                    alt="CAMLY Coin" 
+                    className="w-14 h-14 object-contain"
                   />
-                  <Coins className="w-9 h-9 text-white drop-shadow-lg relative z-10" />
-                </div>
+                </motion.div>
                 
                 <div className="relative z-10">
-                  <p 
-                    className="text-lg font-bold"
-                    style={{
-                      color: '#FFFFFF',
-                      textShadow: '0 1px 3px rgba(0,0,0,0.5)',
-                    }}
-                  >
-                    Số dư CAMLY
-                  </p>
-                  <p 
-                    className="text-4xl font-bold font-fredoka"
-                    style={{
-                      color: '#FFD700',
-                      textShadow: '0 0 20px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
-                    }}
-                  >
-                    {camlyBalance.toLocaleString()} <span className="text-2xl">$C</span>
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p 
+                      className="text-lg font-bold font-jakarta"
+                      style={{
+                        color: '#FFFFFF',
+                        textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                      }}
+                    >
+                      Số dư CAMLY
+                    </p>
+                    {/* Refresh button */}
+                    <motion.button
+                      onClick={() => refetch()}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-1 rounded-full hover:bg-white/20 transition-colors"
+                      disabled={isLoading}
+                    >
+                      <RefreshCw 
+                        className={`w-4 h-4 text-white/70 ${isLoading ? 'animate-spin' : ''}`}
+                      />
+                    </motion.button>
+                  </div>
+                  
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-6 h-6 animate-spin text-[#FFD700]" />
+                      <span className="text-[#FFD700] text-lg">Đang tải...</span>
+                    </div>
+                  ) : (
+                    <motion.p 
+                      className="text-4xl font-bold font-fredoka"
+                      style={{
+                        color: '#FFD700',
+                        textShadow: '0 0 20px #FFD700, 0 0 40px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
+                      }}
+                      key={balance}
+                      initial={{ scale: 1.2, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                    >
+                      {balance.toLocaleString('vi-VN')} <span className="text-2xl">$C</span>
+                    </motion.p>
+                  )}
                 </div>
               </motion.div>
             )}
