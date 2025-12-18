@@ -12,8 +12,10 @@ import { toast } from "sonner";
 import { 
   Upload, Loader2, Link, FileArchive, CheckCircle, XCircle, 
   AlertTriangle, Sparkles, Play, Diamond, Wand2, Image, Video,
-  BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette
+  BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette,
+  Gift, Zap, Star
 } from "lucide-react";
+import uploadGameHero from "@/assets/upload-game-hero.png";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -394,23 +396,71 @@ export default function UploadGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50/80 via-purple-50/50 to-blue-50/80 dark:from-background dark:via-primary/5 dark:to-secondary/5">
       <Navigation />
       
       <div className="container max-w-4xl mx-auto py-8 px-4 pt-24 pb-32">
+        {/* Cute Hero Image */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="relative mb-8"
+        >
+          <img 
+            src={uploadGameHero} 
+            alt="Creative Paradise Gateway" 
+            className="w-full max-w-2xl mx-auto rounded-2xl shadow-2xl shadow-primary/20"
+          />
+          
+          {/* Floating decorative elements */}
+          <motion.div
+            animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            className="absolute -top-4 -left-4 md:left-10 w-16 h-16 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg"
+          >
+            <Star className="w-8 h-8 text-white fill-white" />
+          </motion.div>
+          
+          <motion.div
+            animate={{ y: [0, 10, 0], rotate: [0, -5, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+            className="absolute -top-2 -right-4 md:right-10 w-14 h-14 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg"
+          >
+            <Heart className="w-7 h-7 text-white fill-white" />
+          </motion.div>
+          
+          <motion.div
+            animate={{ y: [0, -8, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            className="absolute -bottom-4 left-1/4 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg"
+          >
+            <Zap className="w-6 h-6 text-white" />
+          </motion.div>
+          
+          <motion.div
+            animate={{ y: [0, 8, 0], rotate: [0, 10, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, delay: 0.3 }}
+            className="absolute -bottom-2 right-1/4 w-14 h-14 bg-gradient-to-br from-purple-400 to-violet-500 rounded-2xl flex items-center justify-center shadow-lg"
+          >
+            <Gift className="w-7 h-7 text-white" />
+          </motion.div>
+        </motion.div>
+
         {/* Magical Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full mb-4">
-            <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-            <span className="font-bold text-sm">CREATIVE PARADISE GATEWAY</span>
-            <Sparkles className="w-5 h-5 text-secondary animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-pink-200/80 to-purple-200/80 dark:from-primary/20 dark:to-secondary/20 rounded-full mb-4 shadow-md">
+            <Sparkles className="w-5 h-5 text-pink-500 animate-pulse" />
+            <span className="font-bold text-sm text-purple-700 dark:text-foreground">CREATIVE PARADISE GATEWAY</span>
+            <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-4">
             Hello Light Creators! ✨
           </h1>
           
@@ -426,10 +476,10 @@ export default function UploadGame() {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-gradient-to-r from-yellow-400/90 to-orange-500/90 rounded-full shadow-lg"
+            className="inline-flex items-center gap-2 mt-6 px-8 py-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-full shadow-xl shadow-orange-500/30"
           >
-            <Diamond className="w-6 h-6 text-white" />
-            <span className="font-black text-white text-lg">+500,000 CAMLY</span>
+            <Diamond className="w-7 h-7 text-white" />
+            <span className="font-black text-white text-xl">+500,000 CAMLY</span>
           </motion.div>
         </motion.div>
 
