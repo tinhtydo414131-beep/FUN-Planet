@@ -7,14 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { 
   Upload, Loader2, Link, FileArchive, CheckCircle, XCircle, 
-  AlertTriangle, Sparkles, Play, Diamond, Wand2, Image, Video,
-  BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette
+  Sparkles, Play, Diamond, Wand2, Image,
+  BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette, Star
 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
@@ -51,6 +49,42 @@ const AGE_OPTIONS = [
   { value: "9+", label: "👦 9+ years", emoji: "🚀" },
   { value: "12+", label: "🧑 12+ years", emoji: "💫" },
 ];
+
+// Cute floating star component
+const FloatingStar = ({ delay = 0, x = "50%", size = 16 }: { delay?: number; x?: string; size?: number }) => (
+  <motion.div
+    initial={{ y: 100, opacity: 0, rotate: 0 }}
+    animate={{ 
+      y: [-20, -40, -20], 
+      opacity: [0.4, 0.8, 0.4],
+      rotate: [0, 180, 360]
+    }}
+    transition={{ 
+      duration: 4, 
+      delay, 
+      repeat: Infinity,
+      ease: "easeInOut"
+    }}
+    className="absolute pointer-events-none"
+    style={{ left: x, top: "20%" }}
+  >
+    <Star className="text-yellow-300 fill-yellow-200 drop-shadow-lg" style={{ width: size, height: size }} />
+  </motion.div>
+);
+
+// Cute blob character
+const CuteBlob = ({ color, emoji, className = "" }: { color: string; emoji: string; className?: string }) => (
+  <div className={`relative ${className}`}>
+    <div className={`w-16 h-16 rounded-[40%_60%_60%_40%/60%_40%_60%_40%] ${color} flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform`}>
+      <span className="text-2xl">{emoji}</span>
+    </div>
+    <motion.div
+      animate={{ scale: [1, 1.2, 1] }}
+      transition={{ duration: 2, repeat: Infinity }}
+      className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full opacity-80"
+    />
+  </div>
+);
 
 export default function UploadGame() {
   const { user } = useAuth();
@@ -130,7 +164,6 @@ export default function UploadGame() {
     }
     setIsGeneratingDesc(true);
     try {
-      // Simple AI-like suggestion based on title and topics
       const topicLabels = selectedTopics.map(t => TOPIC_OPTIONS.find(o => o.id === t)?.label || t).join(", ");
       const suggestion = `${formData.title} is a delightful ${topicLabels || "fun"} game designed for children. Players will enjoy interactive challenges that develop creativity, problem-solving skills, and bring joy to every moment of play! 🌟`;
       setFormData(prev => ({ ...prev, description: suggestion }));
@@ -220,8 +253,7 @@ export default function UploadGame() {
   const fireDiamondConfetti = () => {
     const duration = 3000;
     const end = Date.now() + duration;
-
-    const colors = ['#00BFFF', '#FF69B4', '#FFD700', '#00FF7F', '#FF6347', '#9370DB'];
+    const colors = ['#FFB6C1', '#DDA0DD', '#87CEEB', '#FFD700', '#98FB98', '#FFA07A'];
     
     (function frame() {
       confetti({
@@ -246,7 +278,6 @@ export default function UploadGame() {
       }
     }());
 
-    // Big burst in center
     confetti({
       particleCount: 150,
       spread: 100,
@@ -291,7 +322,6 @@ export default function UploadGame() {
     try {
       let thumbnailPath = "";
       
-      // Upload thumbnail if provided
       if (thumbnail) {
         setUploadProgress(20);
         const thumbnailFileName = `${user.id}/${Date.now()}_${thumbnail.name}`;
@@ -305,7 +335,6 @@ export default function UploadGame() {
 
       let gameFilePath = "deployed-game";
       
-      // Upload ZIP if provided
       if (uploadMethod === "zip" && gameFile) {
         const gameFileName = `${user.id}/${Date.now()}_${gameFile.name}`;
         const { error: gameError } = await supabase.storage
@@ -316,7 +345,6 @@ export default function UploadGame() {
       }
       setUploadProgress(70);
 
-      // Insert game record
       const category = selectedTopics[0] || 'casual';
       const { data: insertedGame, error: insertError } = await supabase
         .from('uploaded_games')
@@ -338,7 +366,6 @@ export default function UploadGame() {
       if (insertError) throw insertError;
       setUploadProgress(85);
 
-      // Award 500,000 CAMLY coins!
       const rewardAmount = 500000;
       
       await supabase
@@ -363,7 +390,6 @@ export default function UploadGame() {
 
       setUploadProgress(100);
 
-      // Fire celebration!
       fireDiamondConfetti();
       
       toast.success(
@@ -375,7 +401,6 @@ export default function UploadGame() {
         { duration: 5000 }
       );
 
-      // Navigate to the new game after a short delay
       setTimeout(() => {
         if (insertedGame?.id) {
           navigate(`/game/${insertedGame.id}`);
@@ -394,266 +419,277 @@ export default function UploadGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Dreamy pastel gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-pink-100 via-purple-100 via-blue-50 to-pink-50" />
+      
+      {/* Soft gradient orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-pink-200/40 rounded-full blur-3xl" />
+        <div className="absolute top-40 right-20 w-80 h-80 bg-purple-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-blue-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 right-10 w-64 h-64 bg-yellow-100/40 rounded-full blur-3xl" />
+      </div>
+
+      {/* Floating stars */}
+      <FloatingStar delay={0} x="10%" size={20} />
+      <FloatingStar delay={0.5} x="25%" size={14} />
+      <FloatingStar delay={1} x="75%" size={18} />
+      <FloatingStar delay={1.5} x="85%" size={12} />
+      <FloatingStar delay={2} x="50%" size={16} />
+
+      {/* Sparkle particles */}
+      <div className="fixed inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0, 1.5, 0],
+            }}
+            transition={{
+              duration: 2 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 3,
+            }}
+          />
+        ))}
+      </div>
+
       <Navigation />
       
-      <div className="container max-w-4xl mx-auto py-8 px-4 pt-24 pb-32">
-        {/* Magical Header */}
+      <div className="relative container max-w-4xl mx-auto py-8 px-4 pt-24 pb-32">
+        {/* Cute Header Section */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full mb-4">
-            <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-            <span className="font-bold text-sm">CREATIVE PARADISE GATEWAY</span>
-            <Sparkles className="w-5 h-5 text-secondary animate-pulse" />
-          </div>
+          {/* Top badge */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-5 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-pink-200/50 shadow-lg mb-6"
+          >
+            <Sparkles className="w-4 h-4 text-pink-400" />
+            <span className="font-bold text-sm text-pink-600 tracking-wide">CREATIVE PARADISE GATEWAY</span>
+            <Sparkles className="w-4 h-4 text-pink-400" />
+          </motion.div>
           
-          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
-            Hello Light Creators! ✨
-          </h1>
+          {/* Main title with cute styling */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-4xl md:text-5xl lg:text-6xl font-black mb-4"
+          >
+            <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Hello Light Creators!
+            </span>
+            <span className="ml-2">🌟</span>
+          </motion.h1>
           
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          {/* Subtitle */}
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-lg md:text-xl text-purple-600/80 max-w-2xl mx-auto mb-6"
+          >
             Upload your game and receive{" "}
-            <span className="font-black text-2xl bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+            <span className="font-black text-2xl bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
               500K CAMLY
             </span>{" "}
             instantly! 🎁
-          </p>
+          </motion.p>
 
-          {/* Floating reward badge */}
+          {/* Floating reward badge - cute pill style */}
           <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-gradient-to-r from-yellow-400/90 to-orange-500/90 rounded-full shadow-lg"
+            initial={{ scale: 0, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0, y: [0, -6, 0] }}
+            transition={{ 
+              scale: { type: "spring", delay: 0.5 },
+              y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-300 via-orange-300 to-amber-300 rounded-full shadow-xl shadow-orange-200/50 border-2 border-white/50"
           >
-            <Diamond className="w-6 h-6 text-white" />
-            <span className="font-black text-white text-lg">+500,000 CAMLY</span>
+            <Diamond className="w-6 h-6 text-orange-700" />
+            <span className="font-black text-orange-800 text-xl">+500,000 CAMLY</span>
           </motion.div>
         </motion.div>
 
-        {/* Lovable Publish Guide for Kids */}
-        <Dialog open={showGuideModal} onOpenChange={setShowGuideModal}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-black flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-primary" />
-                How to Publish Your Game on Lovable ✨
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-6 py-4">
-              <div className="text-center mb-6">
-                <p className="text-lg text-muted-foreground">
-                  Follow these simple steps to get your game link! 🎮
-                </p>
+        {/* Guide Button - Cute style */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="flex justify-center mb-8"
+        >
+          <Dialog open={showGuideModal} onOpenChange={setShowGuideModal}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="gap-2 bg-white/70 backdrop-blur-sm border-purple-200 hover:bg-white/90 text-purple-600 rounded-full px-6 py-5 shadow-lg hover:shadow-xl transition-all"
+              >
+                <BookOpen className="w-5 h-5" />
+                📚 New to Lovable? Learn how to publish your game!
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-black flex items-center gap-2 text-purple-600">
+                  <Sparkles className="w-6 h-6 text-pink-400" />
+                  How to Publish Your Game on Lovable ✨
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                {[
+                  { step: 1, title: "📝 Create Your Game", desc: "Go to lovable.dev and tell the AI what game you want to build!", color: "pink" },
+                  { step: 2, title: "🎨 Design & Test", desc: "Play your game in preview! Tell AI to make changes.", color: "purple" },
+                  { step: 3, title: "🚀 Click Publish", desc: "Find the Publish button in top-right. Get your link!", color: "green" },
+                  { step: 4, title: "📋 Paste & Earn", desc: "Copy your link, paste here, earn 500,000 CAMLY!", color: "amber" },
+                ].map((item) => (
+                  <div key={item.step} className={`flex gap-4 p-4 rounded-2xl bg-${item.color}-100/50 border border-${item.color}-200/50`}>
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full bg-${item.color}-400 text-white font-bold flex items-center justify-center`}>
+                      {item.step}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">{item.title}</h4>
+                      <p className="text-muted-foreground text-sm">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              
-              {/* Step 1 */}
-              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-transparent border border-primary/20">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center">1</div>
-                <div>
-                  <h4 className="font-bold text-lg mb-1">📝 Create Your Game</h4>
-                  <p className="text-muted-foreground text-sm">
-                    Go to <span className="font-mono bg-muted px-2 py-0.5 rounded">lovable.dev</span> and tell the AI what game you want to build. Example: "Make me a fun puzzle game with colorful blocks!"
-                  </p>
-                </div>
-              </div>
-              
-              {/* Step 2 */}
-              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-secondary/10 to-transparent border border-secondary/20">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-secondary text-white font-bold flex items-center justify-center">2</div>
-                <div>
-                  <h4 className="font-bold text-lg mb-1">🎨 Design & Test</h4>
-                  <p className="text-muted-foreground text-sm">
-                    Play your game in the preview window! If something doesn't work, just tell the AI: "Make the jump button bigger" or "Change the background to blue"
-                  </p>
-                </div>
-              </div>
-              
-              {/* Step 3 */}
-              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-transparent border border-green-500/20">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-500 text-white font-bold flex items-center justify-center">3</div>
-                <div>
-                  <h4 className="font-bold text-lg mb-1">🚀 Click "Publish"</h4>
-                  <p className="text-muted-foreground text-sm">
-                    Look for the <span className="font-bold text-green-500">"Publish"</span> button in the top-right corner. Click it! Your game will get a special link like: <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs">your-game.lovable.app</span>
-                  </p>
-                </div>
-              </div>
-              
-              {/* Step 4 */}
-              <div className="flex gap-4 p-4 rounded-xl bg-gradient-to-r from-yellow-500/10 to-transparent border border-yellow-500/20">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500 text-white font-bold flex items-center justify-center">4</div>
-                <div>
-                  <h4 className="font-bold text-lg mb-1">📋 Copy Your Link</h4>
-                  <p className="text-muted-foreground text-sm">
-                    After publishing, copy the link from the address bar or the share button. Paste it here and earn <span className="font-black text-yellow-600">500,000 CAMLY!</span> 🎁
-                  </p>
-                </div>
-              </div>
-              
-              {/* Tips Box */}
-              <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-cyan-500/10 border border-primary/20">
-                <h4 className="font-bold flex items-center gap-2 mb-2">
-                  <Heart className="w-5 h-5 text-pink-500" />
-                  Tips for Young Creators
-                </h4>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>✨ Ask a parent or teacher for help if needed!</li>
-                  <li>🎮 Make games that are fun and kind</li>
-                  <li>🌟 Test your game before publishing</li>
-                  <li>💝 Share with friends to get feedback</li>
-                </ul>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </motion.div>
 
-        {/* Upload Methods - Big beautiful boxes */}
+        {/* Upload Methods - Cute card boxes */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Help Button for Kids */}
-          <div className="md:col-span-2 flex justify-center mb-2">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowGuideModal(true)}
-              className="gap-2 text-primary border-primary/30 hover:bg-primary/10"
-            >
-              <BookOpen className="w-4 h-4" />
-              📚 New to Lovable? Learn how to publish your game!
-            </Button>
-          </div>
-
           {/* Deploy Link Box */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.7 }}
             onClick={() => setUploadMethod("link")}
-            className={`relative cursor-pointer rounded-3xl p-6 border-3 transition-all duration-300 ${
+            className={`relative cursor-pointer rounded-3xl p-6 transition-all duration-300 ${
               uploadMethod === "link" 
-                ? "border-primary bg-primary/10 shadow-xl shadow-primary/20" 
-                : "border-border hover:border-primary/50 hover:bg-primary/5"
+                ? "bg-white/90 shadow-2xl shadow-pink-200/50 border-2 border-pink-300 scale-[1.02]" 
+                : "bg-white/60 backdrop-blur-sm border-2 border-white/50 hover:bg-white/80 hover:shadow-xl"
             }`}
           >
-            <div className="absolute top-3 right-3">
-              <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+            {/* Fastest badge */}
+            <div className="absolute -top-3 right-4">
+              <Badge className="bg-gradient-to-r from-green-400 to-emerald-400 text-white font-bold shadow-lg px-3 py-1 rounded-full">
                 ⚡ FASTEST
               </Badge>
             </div>
             
-            <div className="flex flex-col items-center text-center gap-4">
-              <div className={`p-4 rounded-2xl ${uploadMethod === "link" ? "bg-primary/20" : "bg-muted"}`}>
-                <Link className={`w-12 h-12 ${uploadMethod === "link" ? "text-primary" : "text-muted-foreground"}`} />
-              </div>
+            <div className="flex flex-col items-center text-center gap-4 pt-2">
+              {/* Cute blob character */}
+              <CuteBlob color="bg-gradient-to-br from-amber-300 to-orange-300" emoji="🌟" />
+              
               <div>
-                <h3 className="text-xl font-bold mb-1">Paste Deploy Link</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="text-xl font-bold text-purple-700 mb-1">Paste Deploy Link</h3>
+                <p className="text-sm text-purple-500/70">
                   Lovable, Vercel, Netlify, Glitch...
                 </p>
               </div>
+              
               {uploadMethod === "link" && (
-                <CheckCircle className="w-6 h-6 text-primary" />
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-4 left-4"
+                >
+                  <CheckCircle className="w-6 h-6 text-pink-500" />
+                </motion.div>
               )}
             </div>
           </motion.div>
 
           {/* ZIP Upload Box */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.8 }}
             onClick={() => setUploadMethod("zip")}
-            className={`relative cursor-pointer rounded-3xl p-6 border-3 transition-all duration-300 ${
+            className={`relative cursor-pointer rounded-3xl p-6 transition-all duration-300 ${
               uploadMethod === "zip" 
-                ? "border-secondary bg-secondary/10 shadow-xl shadow-secondary/20" 
-                : "border-border hover:border-secondary/50 hover:bg-secondary/5"
+                ? "bg-white/90 shadow-2xl shadow-purple-200/50 border-2 border-purple-300 scale-[1.02]" 
+                : "bg-white/60 backdrop-blur-sm border-2 border-white/50 hover:bg-white/80 hover:shadow-xl"
             }`}
           >
-            <div className="absolute top-3 right-3">
-              <Badge variant="secondary">📦 CLASSIC</Badge>
+            {/* Classic badge */}
+            <div className="absolute -top-3 right-4">
+              <Badge className="bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold shadow-lg px-3 py-1 rounded-full">
+                📦 CLASSIC
+              </Badge>
             </div>
             
-            <div className="flex flex-col items-center text-center gap-4">
-              <div className={`p-4 rounded-2xl ${uploadMethod === "zip" ? "bg-secondary/20" : "bg-muted"}`}>
-                <FileArchive className={`w-12 h-12 ${uploadMethod === "zip" ? "text-secondary" : "text-muted-foreground"}`} />
-              </div>
+            <div className="flex flex-col items-center text-center gap-4 pt-2">
+              {/* Cute blob character */}
+              <CuteBlob color="bg-gradient-to-br from-purple-400 to-pink-400" emoji="🎁" />
+              
               <div>
-                <h3 className="text-xl font-bold mb-1">Drag & Drop ZIP</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="text-xl font-bold text-purple-700 mb-1">Drag & Drop ZIP</h3>
+                <p className="text-sm text-purple-500/70">
                   Upload your dist/build folder
                 </p>
               </div>
+              
               {uploadMethod === "zip" && (
-                <CheckCircle className="w-6 h-6 text-secondary" />
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-4 left-4"
+                >
+                  <CheckCircle className="w-6 h-6 text-purple-500" />
+                </motion.div>
               )}
             </div>
           </motion.div>
         </div>
 
         {/* 30-second Guide Button */}
-        <div className="flex justify-center mb-8">
-          <Dialog open={showGuideModal} onOpenChange={setShowGuideModal}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2 rounded-full px-6">
-                <Video className="w-4 h-4" />
-                30-second Build Guide
-                <Play className="w-4 h-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-2xl flex items-center gap-2">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                  Quick Build Guide
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
-                  <div className="text-center">
-                    <Play className="w-16 h-16 text-primary mx-auto mb-4" />
-                    <p className="text-lg font-medium">Deploy to Vercel in 30 seconds!</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      1. Push your game to GitHub<br/>
-                      2. Connect to Vercel (free)<br/>
-                      3. Get your deploy link!
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="p-3 bg-muted rounded-xl">
-                    <span className="text-2xl">🚀</span>
-                    <p className="text-sm mt-1">Vercel</p>
-                  </div>
-                  <div className="p-3 bg-muted rounded-xl">
-                    <span className="text-2xl">💜</span>
-                    <p className="text-sm mt-1">Lovable</p>
-                  </div>
-                  <div className="p-3 bg-muted rounded-xl">
-                    <span className="text-2xl">🎸</span>
-                    <p className="text-sm mt-1">Glitch</p>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="flex justify-center mb-8"
+        >
+          <Button 
+            variant="outline" 
+            onClick={() => setShowGuideModal(true)}
+            className="gap-2 bg-white/70 backdrop-blur-sm border-purple-200 hover:bg-white/90 text-purple-600 rounded-full px-6 shadow-md"
+          >
+            <span className="text-lg">📖</span>
+            30-second Build Guide
+            <Play className="w-4 h-4" />
+          </Button>
+        </motion.div>
 
-        {/* Upload Form - Shows when method is selected */}
+        {/* Upload Form */}
         <AnimatePresence>
           {uploadMethod && (
             <motion.form
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               onSubmit={handleSubmit}
-              className="space-y-6 bg-card rounded-3xl p-6 md:p-8 border shadow-xl"
+              className="space-y-6 bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 border-2 border-pink-100 shadow-xl"
             >
               {/* Deploy Link Input */}
               {uploadMethod === "link" && (
                 <div className="space-y-3">
-                  <Label className="text-lg font-bold flex items-center gap-2">
-                    <Link className="w-5 h-5 text-primary" />
+                  <Label className="text-lg font-bold text-purple-700 flex items-center gap-2">
+                    <Link className="w-5 h-5 text-pink-500" />
                     Deploy Link
                   </Label>
                   <div className="relative">
@@ -662,24 +698,26 @@ export default function UploadGame() {
                       placeholder="https://my-game.vercel.app"
                       value={formData.deployUrl}
                       onChange={(e) => setFormData({ ...formData, deployUrl: e.target.value })}
-                      className={`text-lg py-6 pr-12 rounded-xl ${urlValidated ? 'border-green-500 bg-green-500/5' : ''}`}
+                      className={`text-lg py-6 pr-12 rounded-2xl border-2 bg-white/70 ${
+                        urlValidated ? 'border-green-400 bg-green-50/50' : 'border-pink-200'
+                      }`}
                     />
                     {urlValidated && (
                       <CheckCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-green-500" />
                     )}
                   </div>
                   
-                  {/* Real-time iframe preview */}
+                  {/* Live preview */}
                   {urlValidated && formData.deployUrl && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       className="mt-4"
                     >
-                      <Label className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+                      <Label className="text-sm text-purple-500 mb-2 flex items-center gap-2">
                         <Play className="w-4 h-4" /> Live Preview
                       </Label>
-                      <div className="aspect-video rounded-xl overflow-hidden border-2 border-primary/30 bg-muted">
+                      <div className="aspect-video rounded-2xl overflow-hidden border-2 border-pink-200 bg-white/50">
                         <iframe
                           src={formData.deployUrl}
                           className="w-full h-full"
@@ -695,8 +733,8 @@ export default function UploadGame() {
               {/* ZIP Drop Zone */}
               {uploadMethod === "zip" && (
                 <div className="space-y-3">
-                  <Label className="text-lg font-bold flex items-center gap-2">
-                    <FileArchive className="w-5 h-5 text-secondary" />
+                  <Label className="text-lg font-bold text-purple-700 flex items-center gap-2">
+                    <FileArchive className="w-5 h-5 text-purple-500" />
                     Game ZIP File
                   </Label>
                   <div
@@ -705,10 +743,10 @@ export default function UploadGame() {
                     onDrop={handleGameDrop}
                     className={`relative border-3 border-dashed rounded-2xl p-8 text-center transition-all ${
                       isDraggingGame 
-                        ? 'border-secondary bg-secondary/10 scale-[1.02]' 
+                        ? 'border-purple-400 bg-purple-100/50 scale-[1.02]' 
                         : gameFile 
-                          ? 'border-green-500 bg-green-500/10' 
-                          : 'border-muted-foreground/30 hover:border-secondary/50'
+                          ? 'border-green-400 bg-green-50/50' 
+                          : 'border-pink-300 hover:border-purple-400 bg-pink-50/30'
                     }`}
                   >
                     <input
@@ -727,69 +765,42 @@ export default function UploadGame() {
                       <div className="flex flex-col items-center gap-3">
                         <CheckCircle className="w-12 h-12 text-green-500" />
                         <p className="font-bold text-green-600">{gameFile.name}</p>
-                        <p className="text-sm text-muted-foreground">Ready to upload!</p>
+                        <p className="text-sm text-purple-500">Ready to upload!</p>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-3">
-                        <FileArchive className="w-12 h-12 text-muted-foreground" />
-                        <p className="font-medium">Drag & drop your game ZIP here</p>
-                        <p className="text-sm text-muted-foreground">or click to browse</p>
+                        <FileArchive className="w-12 h-12 text-purple-400" />
+                        <p className="font-medium text-purple-600">Drag & drop your game ZIP here</p>
+                        <p className="text-sm text-purple-400">or click to browse</p>
                       </div>
                     )}
                   </div>
-
-                  {/* Diamond progress bar during upload */}
-                  {loading && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="flex items-center gap-2">
-                          <Diamond className="w-4 h-4 text-primary animate-pulse" />
-                          Uploading...
-                        </span>
-                        <span className="font-bold">{uploadProgress}%</span>
-                      </div>
-                      <div className="relative h-4 bg-muted rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${uploadProgress}%` }}
-                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-full"
-                          style={{
-                            backgroundSize: "200% 100%",
-                            animation: "shimmer 2s linear infinite",
-                          }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Diamond className="w-3 h-3 text-white drop-shadow" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
               {/* Game Name */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold">🎮 Game Name</Label>
+                <Label className="text-lg font-bold text-purple-700">🎮 Game Name</Label>
                 <Input
                   placeholder="My Awesome Game"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="text-lg py-5 rounded-xl"
+                  className="text-lg py-5 rounded-2xl border-2 border-pink-200 bg-white/70"
                   required
                 />
               </div>
 
-              {/* Description with AI Suggestion */}
+              {/* Description with AI */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-lg font-bold">📝 Description</Label>
+                  <Label className="text-lg font-bold text-purple-700">📝 Description</Label>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={generateDescription}
                     disabled={isGeneratingDesc}
-                    className="gap-2 text-primary hover:text-primary"
+                    className="gap-2 text-pink-500 hover:text-pink-600 hover:bg-pink-50"
                   >
                     {isGeneratingDesc ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -804,53 +815,52 @@ export default function UploadGame() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={4}
-                  className="rounded-xl resize-none"
+                  className="rounded-2xl border-2 border-pink-200 bg-white/70 resize-none"
                   required
                 />
               </div>
 
-              {/* Age Rating */}
+              {/* Age Rating - Cute bubbles */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold">👶 Age Rating</Label>
+                <Label className="text-lg font-bold text-purple-700">👶 Age Rating</Label>
                 <div className="grid grid-cols-4 gap-3">
                   {AGE_OPTIONS.map((age) => (
                     <button
                       key={age.value}
                       type="button"
                       onClick={() => setFormData({ ...formData, ageAppropriate: age.value })}
-                      className={`p-3 rounded-xl border-2 transition-all ${
+                      className={`p-3 rounded-2xl border-2 transition-all ${
                         formData.ageAppropriate === age.value
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border hover:border-primary/50'
+                          ? 'border-pink-400 bg-pink-100/80 scale-105 shadow-lg'
+                          : 'border-pink-200 bg-white/50 hover:border-pink-300 hover:bg-pink-50/50'
                       }`}
                     >
                       <span className="text-2xl">{age.emoji}</span>
-                      <p className="text-sm font-medium mt-1">{age.value}</p>
+                      <p className="text-sm font-medium text-purple-600 mt-1">{age.value}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Topic Checkboxes */}
+              {/* Topics */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold">🏷️ Topics (select multiple)</Label>
+                <Label className="text-lg font-bold text-purple-700">🏷️ Topics (select multiple)</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {TOPIC_OPTIONS.map((topic) => {
-                    const Icon = topic.icon;
                     const isSelected = selectedTopics.includes(topic.id);
                     return (
                       <button
                         key={topic.id}
                         type="button"
                         onClick={() => toggleTopic(topic.id)}
-                        className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all text-left ${
+                        className={`flex items-center gap-2 p-3 rounded-2xl border-2 transition-all text-left ${
                           isSelected
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:border-primary/50'
+                            ? 'border-purple-400 bg-purple-100/80 shadow-md'
+                            : 'border-pink-200 bg-white/50 hover:border-purple-300 hover:bg-purple-50/30'
                         }`}
                       >
-                        <Checkbox checked={isSelected} className="pointer-events-none" />
-                        <span className="text-sm font-medium">{topic.label}</span>
+                        <Checkbox checked={isSelected} className="pointer-events-none border-purple-300" />
+                        <span className="text-sm font-medium text-purple-600">{topic.label}</span>
                       </button>
                     );
                   })}
@@ -859,11 +869,10 @@ export default function UploadGame() {
 
               {/* Thumbnail */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold">🖼️ Thumbnail</Label>
+                <Label className="text-lg font-bold text-purple-700">🖼️ Thumbnail</Label>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {/* URL Input */}
                   <div className="space-y-2">
-                    <Label className="text-sm text-muted-foreground">Paste image URL</Label>
+                    <Label className="text-sm text-purple-500">Paste image URL</Label>
                     <Input
                       type="url"
                       placeholder="https://example.com/thumbnail.png"
@@ -872,19 +881,18 @@ export default function UploadGame() {
                         setFormData({ ...formData, thumbnailUrl: e.target.value });
                         setThumbnail(null);
                       }}
-                      className="rounded-xl"
+                      className="rounded-2xl border-2 border-pink-200 bg-white/70"
                     />
                   </div>
                   
-                  {/* Upload */}
                   <div className="space-y-2">
-                    <Label className="text-sm text-muted-foreground">Or upload file</Label>
+                    <Label className="text-sm text-purple-500">Or upload file</Label>
                     <div
                       onDragOver={handleThumbDragOver}
                       onDragLeave={handleThumbDragLeave}
                       onDrop={handleThumbDrop}
-                      className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all ${
-                        isDraggingThumb ? 'border-primary bg-primary/10' : 'border-muted-foreground/30'
+                      className={`relative border-2 border-dashed rounded-2xl p-4 text-center transition-all ${
+                        isDraggingThumb ? 'border-pink-400 bg-pink-100/50' : 'border-pink-300 bg-pink-50/30'
                       }`}
                     >
                       <input
@@ -899,29 +907,28 @@ export default function UploadGame() {
                         }}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
-                      <Image className="w-6 h-6 mx-auto text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground mt-1">Drag or click</p>
+                      <Image className="w-6 h-6 mx-auto text-pink-400" />
+                      <p className="text-xs text-purple-500 mt-1">Drag or click</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Thumbnail Preview */}
                 {thumbnailPreview && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="relative w-40 h-24 rounded-xl overflow-hidden border-2 border-primary/30"
+                    className="relative w-40 h-24 rounded-2xl overflow-hidden border-2 border-pink-300 shadow-lg"
                   >
                     <img src={thumbnailPreview} alt="Preview" className="w-full h-full object-cover" />
                   </motion.div>
                 )}
               </div>
 
-              {/* AI Safety Scan Status */}
+              {/* Safety Scan Status */}
               {scanning && (
-                <div className="p-4 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center gap-3">
-                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                  <span className="font-medium">Angel AI scanning content...</span>
+                <div className="p-4 rounded-2xl bg-purple-100/50 border-2 border-purple-200 flex items-center justify-center gap-3">
+                  <Loader2 className="w-5 h-5 animate-spin text-purple-500" />
+                  <span className="font-medium text-purple-600">Angel AI scanning content...</span>
                 </div>
               )}
 
@@ -929,10 +936,10 @@ export default function UploadGame() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`p-4 rounded-xl border ${
+                  className={`p-4 rounded-2xl border-2 ${
                     scanResult.safe 
-                      ? 'bg-green-500/10 border-green-500/30' 
-                      : 'bg-red-500/10 border-red-500/30'
+                      ? 'bg-green-100/50 border-green-300' 
+                      : 'bg-red-100/50 border-red-300'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -942,14 +949,14 @@ export default function UploadGame() {
                       <XCircle className="w-6 h-6 text-red-500" />
                     )}
                     <div>
-                      <p className="font-bold">{scanResult.safe ? '✅ Content Approved!' : '❌ Content Flagged'}</p>
-                      <p className="text-sm text-muted-foreground">{scanResult.reason}</p>
+                      <p className="font-bold text-purple-700">{scanResult.safe ? '✅ Content Approved!' : '❌ Content Flagged'}</p>
+                      <p className="text-sm text-purple-500">{scanResult.reason}</p>
                     </div>
                   </div>
                 </motion.div>
               )}
 
-              {/* Big Diamond Submit Button */}
+              {/* Submit Button - Cute gradient */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -958,7 +965,7 @@ export default function UploadGame() {
                 <Button
                   type="submit"
                   disabled={loading || scanning}
-                  className="w-full py-8 text-xl font-black rounded-2xl bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:animate-shimmer shadow-2xl shadow-primary/30 border-2 border-white/20"
+                  className="w-full py-8 text-xl font-black rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 hover:from-pink-500 hover:via-purple-500 hover:to-pink-500 text-white shadow-xl shadow-pink-200/50 border-2 border-white/30"
                 >
                   {loading ? (
                     <span className="flex items-center gap-3">
@@ -977,31 +984,31 @@ export default function UploadGame() {
 
               {/* Upload Progress Overlay */}
               {loading && uploadProgress > 0 && (
-                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-pink-50/90 backdrop-blur-sm flex items-center justify-center z-50">
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="bg-card p-8 rounded-3xl shadow-2xl border max-w-md w-full mx-4 text-center"
+                    className="bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-2xl border-2 border-pink-200 max-w-md w-full mx-4 text-center"
                   >
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                       className="inline-block mb-4"
                     >
-                      <Diamond className="w-16 h-16 text-primary" />
+                      <Diamond className="w-16 h-16 text-pink-500" />
                     </motion.div>
-                    <h3 className="text-2xl font-bold mb-4">Uploading Your Creation...</h3>
-                    <div className="relative h-6 bg-muted rounded-full overflow-hidden mb-4">
+                    <h3 className="text-2xl font-bold text-purple-700 mb-4">Uploading Your Creation...</h3>
+                    <div className="relative h-6 bg-pink-100 rounded-full overflow-hidden mb-4">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${uploadProgress}%` }}
-                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-full"
+                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 rounded-full"
                       />
                     </div>
-                    <p className="text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    <p className="text-4xl font-black bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
                       {uploadProgress}%
                     </p>
-                    <p className="text-sm text-muted-foreground mt-2">
+                    <p className="text-sm text-purple-500 mt-2">
                       {uploadProgress < 50 ? "📤 Uploading files..." : 
                        uploadProgress < 80 ? "✨ Processing..." : 
                        "🎁 Claiming your reward..."}
@@ -1013,29 +1020,18 @@ export default function UploadGame() {
           )}
         </AnimatePresence>
 
-        {/* Not selected state - Show prompt */}
+        {/* Not selected state */}
         {!uploadMethod && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-16 text-muted-foreground"
+            className="text-center py-16"
           >
-            <Gamepad2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">Choose an upload method above to get started!</p>
+            <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-purple-300" />
+            <p className="text-lg text-purple-400">Choose an upload method above to get started!</p>
           </motion.div>
         )}
       </div>
-
-      {/* Shimmer animation keyframes */}
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        .hover\\:animate-shimmer:hover {
-          animation: shimmer 3s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }
