@@ -145,11 +145,13 @@ export const WalletConnect = () => {
       }
 
       // Use UPDATE with retry for mobile reliability
+      const normalizedAddress = address.toLowerCase();
+      
       const updateFn = async () => {
         return await supabase
           .from("profiles")
           .update({ 
-            wallet_address: address,
+            wallet_address: normalizedAddress,
             wallet_balance: walletBalance
           })
           .eq("id", user.id);
@@ -164,6 +166,19 @@ export const WalletConnect = () => {
         console.error("Error updating wallet:", error);
         toast.error(formatErrorMessage(error));
       }
+
+      // Also update fun_id table
+      await supabase
+        .from("fun_id")
+        .update({ wallet_address: normalizedAddress })
+        .eq("user_id", user.id);
+
+      // Also update user_rewards if exists
+      await supabase
+        .from("user_rewards")
+        .update({ wallet_address: normalizedAddress })
+        .eq("user_id", user.id);
+
     } catch (error: any) {
       console.error("Error updating wallet:", error);
       toast.error(formatErrorMessage(error));

@@ -490,9 +490,22 @@ export default function FunWallet() {
     if (!user) return;
     try {
       const normalized = address.toLowerCase();
+      
+      // Update profiles table
       await supabase.from("profiles").update({
         wallet_address: normalized
       }).eq("id", user.id);
+
+      // Also update fun_id table
+      await supabase.from("fun_id").update({
+        wallet_address: normalized
+      }).eq("user_id", user.id);
+
+      // Also update user_rewards if exists
+      await supabase.from("user_rewards").update({
+        wallet_address: normalized
+      }).eq("user_id", user.id);
+      
     } catch (error) {
       console.error("Error updating wallet:", error);
     }
