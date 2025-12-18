@@ -1,0 +1,114 @@
+import { lazy } from "react";
+
+// Lazy load pages for better performance
+export const Index = lazy(() => import("@/pages/Index"));
+export const Games = lazy(() => import("@/pages/Games"));
+export const GamePlay = lazy(() => import("@/pages/GamePlay"));
+export const GameDetails = lazy(() => import("@/pages/GameDetails"));
+export const LovableGamePlay = lazy(() => import("@/pages/LovableGamePlay"));
+export const RecentlyPlayed = lazy(() => import("@/pages/RecentlyPlayed"));
+export const MyGames = lazy(() => import("@/pages/MyGames"));
+export const EditGame = lazy(() => import("@/pages/EditGame"));
+export const SampleGames = lazy(() => import("@/pages/SampleGames"));
+export const UploadGame = lazy(() => import("@/pages/UploadGame"));
+export const PlanetExplorer = lazy(() => import("@/pages/PlanetExplorer"));
+export const Auth = lazy(() => import("@/pages/Auth"));
+export const Profile = lazy(() => import("@/pages/Profile"));
+export const PublicProfile = lazy(() => import("@/pages/PublicProfile"));
+export const Settings = lazy(() => import("@/pages/Settings"));
+export const NFTGallery = lazy(() => import("@/pages/NFTGallery"));
+export const FunWallet = lazy(() => import("@/pages/FunWallet"));
+export const WalletGuide = lazy(() => import("@/pages/WalletGuide"));
+export const GlobalAirdrop = lazy(() => import("@/pages/GlobalAirdrop"));
+export const RewardsHistory = lazy(() => import("@/pages/RewardsHistory"));
+export const RewardGalaxy = lazy(() => import("@/pages/RewardGalaxy"));
+export const Friends = lazy(() => import("@/pages/Friends"));
+export const FindFriends = lazy(() => import("@/pages/FindFriends"));
+export const Chat = lazy(() => import("@/pages/Chat"));
+export const PrivateMessages = lazy(() => import("@/pages/PrivateMessages"));
+export const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
+export const NexusLeaderboard = lazy(() => import("@/pages/NexusLeaderboard"));
+export const ComboLeaderboard = lazy(() => import("@/pages/ComboLeaderboard"));
+export const CamlyLeaderboard = lazy(() => import("@/pages/CamlyLeaderboard"));
+export const MusicLibrary = lazy(() => import("@/pages/MusicLibrary"));
+export const PublicMusic = lazy(() => import("@/pages/PublicMusic"));
+export const ParentDashboard = lazy(() => import("@/pages/ParentDashboard"));
+export const Education = lazy(() => import("@/pages/Education"));
+export const AdminGameReview = lazy(() => import("@/pages/AdminGameReview"));
+export const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
+export const AdminRewardsDashboard = lazy(() => import("@/pages/AdminRewardsDashboard"));
+export const About = lazy(() => import("@/pages/About"));
+export const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+export const Install = lazy(() => import("@/pages/Install"));
+export const NotFound = lazy(() => import("@/pages/NotFound"));
+
+// Route configuration for easy management
+export const routeConfig = {
+  // Main
+  home: "/",
+  homeAlt: "/home",
+  
+  // Games
+  games: "/games",
+  gamePlay: "/game/:gameId",
+  gameDetails: "/game-details/:id",
+  lovableGame: "/lovable-game/:id",
+  recentlyPlayed: "/recently-played",
+  myGames: "/my-games",
+  editGame: "/edit-game/:id",
+  sampleGames: "/sample-games",
+  
+  // Upload & Creator
+  upload: "/upload",
+  uploadGame: "/upload-game",
+  builder: "/builder",
+  planetExplorer: "/planet-explorer",
+  
+  // Auth & Profile
+  auth: "/auth",
+  profile: "/profile",
+  publicProfile: "/profile/:userId",
+  dashboard: "/dashboard",
+  settings: "/settings",
+  nftGallery: "/nft-gallery",
+  nft: "/nft",
+  
+  // Wallet & Airdrop
+  wallet: "/wallet",
+  walletGuide: "/wallet-guide",
+  airdrop: "/airdrop",
+  globalAirdrop: "/global-airdrop",
+  rewardsHistory: "/rewards-history",
+  rewardGalaxy: "/reward-galaxy",
+  
+  // Social & Community
+  friends: "/friends",
+  findFriends: "/find-friends",
+  chat: "/chat",
+  community: "/community",
+  messages: "/messages",
+  
+  // Leaderboards
+  leaderboard: "/leaderboard",
+  nexusLeaderboard: "/nexus-leaderboard",
+  comboLeaderboard: "/combo-leaderboard",
+  camlyLeaderboard: "/camly-leaderboard",
+  
+  // Music
+  music: "/music",
+  publicMusic: "/public-music",
+  
+  // Parent & Education
+  parentDashboard: "/parent-dashboard",
+  education: "/education",
+  
+  // Admin
+  adminGameReview: "/admin/game-review",
+  adminDashboard: "/admin-dashboard",
+  adminRewards: "/admin/rewards",
+  
+  // Other
+  about: "/about",
+  resetPassword: "/reset-password",
+  install: "/install",
+} as const;
