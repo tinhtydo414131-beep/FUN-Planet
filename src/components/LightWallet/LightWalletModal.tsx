@@ -83,11 +83,26 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
     if (!user || !address) return;
     
     try {
-      // Just update the wallet address in profile (reward handled by useWeb3Rewards)
+      const normalizedAddress = address.toLowerCase();
+      
+      // Update wallet address in profiles table
       await supabase
         .from('profiles')
-        .update({ wallet_address: address })
+        .update({ wallet_address: normalizedAddress })
         .eq('id', user.id);
+
+      // Also update wallet address in fun_id table
+      await supabase
+        .from('fun_id')
+        .update({ wallet_address: normalizedAddress })
+        .eq('user_id', user.id);
+
+      // Also update in user_rewards if exists
+      await supabase
+        .from('user_rewards')
+        .update({ wallet_address: normalizedAddress })
+        .eq('user_id', user.id);
+        
     } catch (error) {
       console.error('Error updating wallet address:', error);
     }
