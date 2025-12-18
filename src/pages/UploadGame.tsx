@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadToR2 } from "@/utils/r2Upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -322,26 +323,30 @@ export default function UploadGame() {
     try {
       let thumbnailPath = "";
       
+      // Upload thumbnail to R2
       if (thumbnail) {
         setUploadProgress(20);
-        const thumbnailFileName = `${user.id}/${Date.now()}_${thumbnail.name}`;
-        const { error: thumbError } = await supabase.storage
-          .from('uploaded-games')
-          .upload(thumbnailFileName, thumbnail);
-        if (thumbError) throw thumbError;
-        thumbnailPath = thumbnailFileName;
+        toast.info("📤 Uploading thumbnail to R2...");
+        const thumbResult = await uploadToR2(thumbnail, 'games');
+        if (!thumbResult.success) {
+          throw new Error(thumbResult.error || 'Thumbnail upload failed');
+        }
+        thumbnailPath = thumbResult.url!;
+        console.log('✅ Thumbnail uploaded to R2:', thumbnailPath);
       }
       setUploadProgress(40);
 
       let gameFilePath = "deployed-game";
       
+      // Upload game ZIP to R2
       if (uploadMethod === "zip" && gameFile) {
-        const gameFileName = `${user.id}/${Date.now()}_${gameFile.name}`;
-        const { error: gameError } = await supabase.storage
-          .from('uploaded-games')
-          .upload(gameFileName, gameFile);
-        if (gameError) throw gameError;
-        gameFilePath = gameFileName;
+        toast.info("📤 Uploading game file to R2...");
+        const gameResult = await uploadToR2(gameFile, 'games');
+        if (!gameResult.success) {
+          throw new Error(gameResult.error || 'Game file upload failed');
+        }
+        gameFilePath = gameResult.url!;
+        console.log('✅ Game file uploaded to R2:', gameFilePath);
       }
       setUploadProgress(70);
 
