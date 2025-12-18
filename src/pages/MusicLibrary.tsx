@@ -17,11 +17,15 @@ import {
   ValidationResponse,
   ValidationCodeIcons 
 } from "@/utils/musicUploadValidation";
-import { uploadToR2 } from "@/utils/r2Upload";
+import { uploadToR2, deleteFromR2 } from "@/utils/r2Upload";
 
 interface MusicFile {
-  name: string;
-  path: string;
+  id: string;
+  title: string;
+  artist: string | null;
+  storage_path: string;
+  file_size: number | null;
+  duration: string | null; // Database returns string
   created_at: string;
 }
 
@@ -84,21 +88,16 @@ export default function MusicLibrary() {
     
     setLoading(true);
     try {
-      const { data, error } = await supabase.storage
-        .from('music')
-        .list(`${user.id}/`, {
-          limit: 100,
-          offset: 0,
-          sortBy: { column: 'created_at', order: 'desc' }
-        });
+      const { data, error } = await supabase
+        .from('user_music')
+        .select('id, title, artist, storage_path, file_size, duration, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(100);
 
       if (error) throw error;
 
-      setMusicFiles(data.map(file => ({
-        name: file.name,
-        path: `${user.id}/${file.name}`,
-        created_at: file.created_at
-      })));
+      setMusicFiles(data || []);
     } catch (error) {
       console.error('Error loading music files:', error);
       toast.error("Không thể tải danh sách nhạc");
@@ -179,6 +178,25 @@ export default function MusicLibrary() {
 
       console.log('✅ R2 Upload successful:', uploadResult.url);
 
+      // Save to user_music table
+      const { error: dbError } = await supabase
+        .from('user_music')
+        .insert({
+          user_id: user.id,
+          title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
+          artist: null,
+          storage_path: uploadResult.url!, // R2 public URL
+          file_size: file.size,
+          duration: null,
+          parent_approved: true,
+          pending_approval: false
+        });
+
+      if (dbError) {
+        console.error('Error saving to database:', dbError);
+        toast.warning("File đã tải lên nhưng không thể lưu vào database");
+      }
+
       // Hiển thị kết quả
       if (validation.canReceiveReward) {
         toast.success(validation.message, {
@@ -204,15 +222,27 @@ export default function MusicLibrary() {
     }
   };
 
-  const handleDelete = async (path: string) => {
+  const handleDelete = async (id: string, storagePath: string) => {
     if (!confirm("Bạn có chắc muốn xóa file nhạc này?")) return;
 
     try {
-      const { error } = await supabase.storage
-        .from('music')
-        .remove([path]);
+      // Delete from database
+      const { error } = await supabase
+        .from('user_music')
+        .delete()
+        .eq('id', id);
 
       if (error) throw error;
+
+      // Try to delete from R2 if it's an R2 URL
+      if (storagePath.includes('r2.dev') || storagePath.includes('cloudflare')) {
+        const key = storagePath.split('/').slice(-2).join('/'); // Get folder/filename
+        try {
+          await deleteFromR2(key);
+        } catch (r2Error) {
+          console.warn('Could not delete from R2:', r2Error);
+        }
+      }
 
       toast.success("Đã xóa file nhạc");
       loadMusicFiles();
@@ -222,11 +252,21 @@ export default function MusicLibrary() {
     }
   };
 
-  const getPublicUrl = (path: string) => {
-    const { data } = supabase.storage
-      .from('music')
-      .getPublicUrl(path);
-    return data.publicUrl;
+  // Format duration in mm:ss
+  const formatDuration = (duration: string | null) => {
+    if (!duration) return '--:--';
+    const seconds = parseFloat(duration);
+    if (isNaN(seconds)) return duration; // Return as-is if not a number
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Format file size
+  const formatFileSize = (bytes: number | null) => {
+    if (!bytes) return '--';
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -419,22 +459,32 @@ export default function MusicLibrary() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {musicFiles.map((file, index) => (
+                    {musicFiles.map((file) => (
                       <div
-                        key={index}
+                        key={file.id}
                         className="flex items-center justify-between p-4 border-2 border-border rounded-xl hover:bg-accent/50 transition-colors"
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <Music className="w-5 h-5 text-primary shrink-0" />
                           <div className="min-w-0 flex-1">
                             <p className="font-fredoka font-bold truncate">
-                              {file.name}
+                              {file.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {file.artist || 'Unknown Artist'} • {formatDuration(file.duration)} • {formatFileSize(file.file_size)}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {new Date(file.created_at).toLocaleDateString('vi-VN')}
                             </p>
                           </div>
                         </div>
+                        
+                        {/* Audio Player */}
+                        <audio 
+                          controls 
+                          className="h-8 w-32 md:w-48 mx-2"
+                          src={file.storage_path}
+                        />
                         
                         <div className="flex items-center gap-2 shrink-0">
                           <Button
@@ -444,7 +494,7 @@ export default function MusicLibrary() {
                             className="border-2 border-primary/30"
                           >
                             <a
-                              href={getPublicUrl(file.path)}
+                              href={file.storage_path}
                               download
                               target="_blank"
                               rel="noopener noreferrer"
@@ -456,7 +506,7 @@ export default function MusicLibrary() {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() => handleDelete(file.path)}
+                            onClick={() => handleDelete(file.id, file.storage_path)}
                             className="border-2 border-destructive/30 hover:bg-destructive/10"
                           >
                             <Trash2 className="w-4 h-4 text-destructive" />
