@@ -8,6 +8,7 @@ import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import { useUserRewards } from '@/hooks/useUserRewards';
 import { useDailyLoginReward } from '@/hooks/useDailyLoginReward';
 import { useAppKit } from '@reown/appkit/react';
+import { useAccount } from 'wagmi';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -62,7 +63,12 @@ export default function RewardGalaxy() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { open } = useAppKit();
-  const { camlyBalance, walletAddress, isConnected } = useWeb3Rewards();
+  const { address: appKitWalletAddress, isConnected: appKitIsConnected } = useAccount();
+  const { camlyBalance, walletAddress: dbWalletAddress, isConnected: dbIsConnected, loadRewards: loadWeb3Rewards } = useWeb3Rewards();
+  
+  // Use AppKit wallet if connected, otherwise fall back to database wallet
+  const actualWalletAddress = appKitWalletAddress || dbWalletAddress;
+  const actualIsConnected = appKitIsConnected || dbIsConnected;
   const { 
     referralCode, 
     totalReferrals, 
@@ -108,6 +114,45 @@ export default function RewardGalaxy() {
     }
   }, [user, authLoading, navigate]);
 
+  // Sync AppKit wallet to database when connected
+  useEffect(() => {
+    const syncWalletToDb = async () => {
+      if (!user || !appKitWalletAddress) return;
+      
+      const normalizedAddress = appKitWalletAddress.toLowerCase();
+      
+      try {
+        // Update profiles table
+        await supabase
+          .from('profiles')
+          .update({ wallet_address: normalizedAddress })
+          .eq('id', user.id);
+
+        // Update web3_rewards table
+        await supabase
+          .from('web3_rewards')
+          .upsert({
+            user_id: user.id,
+            wallet_address: normalizedAddress,
+          }, { onConflict: 'user_id' });
+
+        // Update user_rewards table
+        await supabase
+          .from('user_rewards')
+          .update({ wallet_address: normalizedAddress })
+          .eq('user_id', user.id);
+
+        // Reload rewards data
+        loadWeb3Rewards();
+        loadRewards();
+      } catch (error) {
+        console.error('Error syncing wallet to database:', error);
+      }
+    };
+
+    syncWalletToDb();
+  }, [user, appKitWalletAddress, loadWeb3Rewards, loadRewards]);
+
   useEffect(() => {
     const checkClaims = async () => {
       if (!user) return;
@@ -128,14 +173,14 @@ export default function RewardGalaxy() {
   }, [user, checkCanClaim, loadClaimHistory]);
 
   const handleClaimArbitrary = async (amount: number) => {
-    if (!walletAddress) {
+    if (!actualWalletAddress) {
       return { success: false, error: 'Please connect your wallet first' };
     }
-    return claimArbitrary(amount, walletAddress);
+    return claimArbitrary(amount, actualWalletAddress);
   };
 
   const handleClaimFirstWallet = async () => {
-    if (!isConnected) {
+    if (!actualIsConnected) {
       open();
       return;
     }
@@ -153,7 +198,7 @@ export default function RewardGalaxy() {
   };
 
   const handleClaimGameCompletion = async () => {
-    if (!isConnected) {
+    if (!actualIsConnected) {
       open();
       return;
     }
@@ -168,7 +213,7 @@ export default function RewardGalaxy() {
   };
 
   const handleClaimDailyLogin = async () => {
-    const result = await claimDailyReward(walletAddress || undefined);
+    const result = await claimDailyReward(actualWalletAddress || undefined);
     if (result.success) {
       fireDiamondConfetti('rainbow');
       await loadRewards();
@@ -205,8 +250,8 @@ export default function RewardGalaxy() {
 
           {/* Wallet Status */}
           <WalletStatusCard 
-            isConnected={isConnected}
-            walletAddress={walletAddress}
+            isConnected={actualIsConnected}
+            walletAddress={actualWalletAddress}
             camlyBalance={camlyBalance}
             onConnect={() => open()}
           />
@@ -216,8 +261,8 @@ export default function RewardGalaxy() {
             pendingAmount={rewards?.pending_amount || 0}
             dailyRemaining={dailyRemaining}
             dailyLimit={dailyLimit}
-            walletAddress={walletAddress}
-            isConnected={isConnected}
+            walletAddress={actualWalletAddress}
+            isConnected={actualIsConnected}
             isClaiming={isClaimingArbitrary}
             onClaim={handleClaimArbitrary}
             onConnect={() => open()}
@@ -261,7 +306,7 @@ export default function RewardGalaxy() {
                 description="Kết nối ví lần đầu"
                 canClaim={canClaimWallet ?? false}
                 isClaiming={isClaiming}
-                isConnected={isConnected}
+                isConnected={actualIsConnected}
                 onClaim={handleClaimFirstWallet}
                 delay={0.1}
               />
@@ -278,7 +323,7 @@ export default function RewardGalaxy() {
                 description="Hoàn thành 1 game"
                 canClaim={canClaimGame ?? false}
                 isClaiming={isClaiming}
-                isConnected={isConnected}
+                isConnected={actualIsConnected}
                 onClaim={handleClaimGameCompletion}
                 delay={0.2}
               />
@@ -295,7 +340,7 @@ export default function RewardGalaxy() {
                 description="Game được duyệt"
                 canClaim={false}
                 isClaiming={false}
-                isConnected={isConnected}
+                isConnected={actualIsConnected}
                 onClaim={() => navigate('/upload')}
                 buttonText="Upload Game"
                 isSpecial
