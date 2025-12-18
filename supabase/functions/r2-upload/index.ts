@@ -35,6 +35,15 @@ serve(async (req) => {
     const endpoint = Deno.env.get('R2_ENDPOINT');
     const publicUrl = Deno.env.get('R2_PUBLIC_URL');
 
+    // Helpful diagnostics (do not log secrets)
+    console.log('🧩 R2 config', {
+      bucketName,
+      endpoint,
+      publicUrl: publicUrl ? publicUrl.replace(/\/$/, '') : null,
+      hasAccessKey: Boolean(accessKeyId),
+      hasSecretKey: Boolean(secretAccessKey),
+    });
+
     if (!accessKeyId || !secretAccessKey || !endpoint || !publicUrl) {
       console.error('Missing R2 configuration');
       return new Response(
@@ -86,17 +95,18 @@ serve(async (req) => {
       );
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomId = crypto.randomUUID().slice(0, 8);
-    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').slice(0, 50);
-    const key = `${folder}/${timestamp}-${randomId}-${safeName}`;
+    // Generate unique key (UUID) while preserving extension when possible
+    const originalName = file.name || 'upload';
+    const ext = originalName.includes('.') ? `.${originalName.split('.').pop()}` : '';
+    const key = `${folder}/${crypto.randomUUID()}${ext}`;
+
+    console.log(`🧾 Generated key: ${key}`);
 
     // Read file as ArrayBuffer
     const fileBuffer = await file.arrayBuffer();
     
     // Determine content type
-    const contentType = file.type || getContentType(safeName);
+    const contentType = file.type || getContentType(originalName);
     
     // Initialize S3 client
     const client = getR2Client();
