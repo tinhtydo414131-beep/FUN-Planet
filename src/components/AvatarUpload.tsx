@@ -84,42 +84,16 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
       // Create File from Blob for R2 upload
       const file = new File([croppedBlob], `avatar-${Date.now()}.jpg`, { type: 'image/jpeg' });
 
-      // Upload to R2 (new uploads go to R2)
+      // Upload to R2
+      toast.info("📤 Uploading avatar to R2...");
       const r2Result = await uploadToR2(file, 'avatars');
       
-      let publicUrl: string;
-      
-      if (r2Result.success && r2Result.url) {
-        publicUrl = r2Result.url;
-        console.log('✅ Avatar uploaded to R2:', publicUrl);
-      } else {
-        // Fallback to Supabase Storage if R2 fails
-        console.log('⚠️ R2 upload failed, falling back to Supabase Storage');
-        const fileName = `${user.id}/${Date.now()}.jpg`;
-
-        const uploadResult = await withRetry(
-          async () => {
-            const result = await supabase.storage
-              .from('avatars')
-              .upload(fileName, croppedBlob, { 
-                upsert: true,
-                contentType: 'image/jpeg'
-              });
-            return result;
-          },
-          { operationName: "Tải ảnh lên", maxRetries: 3 }
-        );
-
-        if (uploadResult.error) {
-          throw uploadResult.error;
-        }
-
-        const { data: { publicUrl: supabaseUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(fileName);
-        
-        publicUrl = supabaseUrl;
+      if (!r2Result.success || !r2Result.url) {
+        throw new Error(r2Result.error || 'Avatar upload failed');
       }
+      
+      const publicUrl = r2Result.url;
+      console.log('✅ Avatar uploaded to R2:', publicUrl);
 
       // Update profile with retry
       const updateResult = await withRetry(
