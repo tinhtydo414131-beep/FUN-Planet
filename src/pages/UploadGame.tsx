@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import confetti from "canvas-confetti";
+import uploadGameHero from "@/assets/upload-game-hero.png";
 import {
   Dialog,
   DialogContent,
@@ -430,6 +431,29 @@ export default function UploadGame() {
           >
             <Diamond className="w-6 h-6 text-white" />
             <span className="font-black text-white text-lg">+500,000 CAMLY</span>
+          </motion.div>
+
+          {/* Cute Hero Image */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mt-8"
+          >
+            <motion.img
+              src={uploadGameHero}
+              alt="Upload Game Hero"
+              className="mx-auto max-w-full h-auto rounded-2xl shadow-xl"
+              style={{ maxHeight: '300px' }}
+              animate={{ 
+                boxShadow: [
+                  "0 10px 30px -10px rgba(139, 92, 246, 0.3)",
+                  "0 20px 40px -10px rgba(236, 72, 153, 0.3)",
+                  "0 10px 30px -10px rgba(139, 92, 246, 0.3)"
+                ]
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
           </motion.div>
         </motion.div>
 
