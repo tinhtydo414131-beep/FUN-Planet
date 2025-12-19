@@ -28,7 +28,8 @@ export async function uploadToR2(
     formData.append('file', file);
     formData.append('folder', folder);
 
-    const { data, error } = await supabase.functions.invoke('r2-upload', {
+    // Use the dedicated upload function for R2 uploads
+    const { data, error } = await supabase.functions.invoke('upload-to-r2', {
       body: formData,
     });
 
@@ -37,8 +38,8 @@ export async function uploadToR2(
       return { success: false, error: error.message };
     }
 
-    if (!data.success) {
-      return { success: false, error: data.error || 'Upload failed' };
+    if (!data?.success) {
+      return { success: false, error: data?.error || 'Upload failed' };
     }
 
     return {
@@ -51,9 +52,9 @@ export async function uploadToR2(
     };
   } catch (err) {
     console.error('R2 upload exception:', err);
-    return { 
-      success: false, 
-      error: err instanceof Error ? err.message : 'Unknown error' 
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Unknown error',
     };
   }
 }

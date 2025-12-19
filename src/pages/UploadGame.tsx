@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadToR2 } from "@/utils/r2Upload";
+import { uploadImageToR2, uploadToR2 } from "@/utils/r2Upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -323,11 +323,11 @@ export default function UploadGame() {
     try {
       let thumbnailPath = "";
       
-      // Upload thumbnail to R2
+      // Upload thumbnail to R2 (store optimized delivery URL)
       if (thumbnail) {
         setUploadProgress(20);
         toast.info("📤 Uploading thumbnail to R2...");
-        const thumbResult = await uploadToR2(thumbnail, 'games');
+        const thumbResult = await uploadImageToR2(thumbnail, 'games', 'gameThumbnail');
         if (!thumbResult.success) {
           throw new Error(thumbResult.error || 'Thumbnail upload failed');
         }
