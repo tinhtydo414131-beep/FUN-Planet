@@ -1,20 +1,37 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from "https://esm.sh/@aws-sdk/client-s3@3.540.0";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "https://esm.sh/@aws-sdk/client-s3@3.758.0?target=deno";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+function getEnvOrThrow(name: string): string {
+  const v = Deno.env.get(name);
+  if (!v) throw new Error(`Missing environment variable: ${name}`);
+  return v;
+}
+
+function sanitizeFilename(name: string): string {
+  return name
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .replace(/_+/g, "_")
+    .slice(0, 120);
+}
 
 // Initialize S3 client for Cloudflare R2
 function getR2Client(): S3Client {
-  const accessKeyId = Deno.env.get('R2_ACCESS_KEY_ID')!;
-  const secretAccessKey = Deno.env.get('R2_SECRET_ACCESS_KEY')!;
-  const endpoint = Deno.env.get('R2_ENDPOINT')!;
+  const accessKeyId = getEnvOrThrow("R2_ACCESS_KEY_ID");
+  const secretAccessKey = getEnvOrThrow("R2_SECRET_ACCESS_KEY");
+  const endpoint = getEnvOrThrow("R2_ENDPOINT");
 
   return new S3Client({
-    region: 'auto',
-    endpoint: endpoint,
+    region: "auto",
+    endpoint,
     credentials: {
       accessKeyId,
       secretAccessKey,
@@ -29,34 +46,24 @@ serve(async (req) => {
   }
 
   try {
-    const accessKeyId = Deno.env.get('R2_ACCESS_KEY_ID');
-    const secretAccessKey = Deno.env.get('R2_SECRET_ACCESS_KEY');
-    const bucketName = Deno.env.get('R2_BUCKET_NAME') || 'funplanet-media';
-    const endpoint = Deno.env.get('R2_ENDPOINT');
-    const publicUrl = Deno.env.get('R2_PUBLIC_URL');
+    const bucketName = getEnvOrThrow("R2_BUCKET_NAME");
+    const endpoint = getEnvOrThrow("R2_ENDPOINT");
+    const publicUrl = getEnvOrThrow("R2_PUBLIC_URL");
 
     // Helpful diagnostics (do not log secrets)
-    console.log('🧩 R2 config', {
+    console.log("🧩 R2 config", {
       bucketName,
-      endpoint,
-      publicUrl: publicUrl ? publicUrl.replace(/\/$/, '') : null,
-      hasAccessKey: Boolean(accessKeyId),
-      hasSecretKey: Boolean(secretAccessKey),
+      endpointPresent: Boolean(endpoint),
+      publicUrl: publicUrl.replace(/\/$/, ""),
+      hasAccessKey: Boolean(Deno.env.get("R2_ACCESS_KEY_ID")),
+      hasSecretKey: Boolean(Deno.env.get("R2_SECRET_ACCESS_KEY")),
     });
 
-    if (!accessKeyId || !secretAccessKey || !endpoint || !publicUrl) {
-      console.error('Missing R2 configuration');
-      return new Response(
-        JSON.stringify({ error: 'R2 configuration not complete' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const formData = await req.formData();
-    const file = formData.get('file') as File;
-    const folder = formData.get('folder') as string || 'uploads';
-    const action = formData.get('action') as string || 'upload';
-    const deleteKey = formData.get('key') as string;
+    const file = formData.get("file") as File | null;
+    const folder = ((formData.get("folder") as string) || "uploads").replace(/^\/+|\/+$/g, "");
+    const action = (formData.get("action") as string) || "upload";
+    const deleteKey = (formData.get("key") as string) || "";
     
     // Handle delete action
     if (action === 'delete' && deleteKey) {
@@ -95,10 +102,10 @@ serve(async (req) => {
       );
     }
 
-    // Generate unique key (UUID) while preserving extension when possible
-    const originalName = file.name || 'upload';
-    const ext = originalName.includes('.') ? `.${originalName.split('.').pop()}` : '';
-    const key = `${folder}/${crypto.randomUUID()}${ext}`;
+    // Generate unique key: uuid + original filename (sanitized for safety)
+    const originalName = file.name || "upload";
+    const safeName = sanitizeFilename(originalName);
+    const key = `${folder}/${crypto.randomUUID()}-${safeName}`;
 
     console.log(`🧾 Generated key: ${key}`);
 

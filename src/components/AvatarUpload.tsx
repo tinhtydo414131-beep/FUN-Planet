@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { ImageCropDialog } from "./ImageCropDialog";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
-import { uploadToR2 } from "@/utils/r2Upload";
+import { uploadImageToR2 } from "@/utils/r2Upload";
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -84,14 +84,14 @@ export const AvatarUpload = ({ currentAvatarUrl, onAvatarUpdate }: AvatarUploadP
       // Create File from Blob for R2 upload
       const file = new File([croppedBlob], `avatar-${Date.now()}.jpg`, { type: 'image/jpeg' });
 
-      // Upload to R2
+      // Upload to R2 (return optimized delivery URL for display)
       toast.info("📤 Uploading avatar to R2...");
-      const r2Result = await uploadToR2(file, 'avatars');
-      
+      const r2Result = await uploadImageToR2(file, 'avatars', 'avatar');
+
       if (!r2Result.success || !r2Result.url) {
         throw new Error(r2Result.error || 'Avatar upload failed');
       }
-      
+
       const publicUrl = r2Result.url;
       console.log('✅ Avatar uploaded to R2:', publicUrl);
 
