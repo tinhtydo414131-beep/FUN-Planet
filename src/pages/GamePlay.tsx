@@ -223,16 +223,16 @@ const GamePlay = () => {
     if (!game || !user) return;
 
     try {
-      // Update game plays
+      // Update game plays count only (no rewards until level completion)
       await supabase
         .from("games")
         .update({ total_plays: game.total_plays + 1 })
         .eq("id", game.id);
 
-      // Update user profile plays and award Camly Coins
+      // Update user profile plays count only
       const { data: profile } = await supabase
         .from("profiles")
-        .select("total_plays, wallet_balance")
+        .select("total_plays")
         .eq("id", user.id)
         .single();
 
@@ -240,21 +240,9 @@ const GamePlay = () => {
         await supabase
           .from("profiles")
           .update({ 
-            total_plays: (profile.total_plays || 0) + 1,
-            wallet_balance: (profile.wallet_balance || 0) + 10000
+            total_plays: (profile.total_plays || 0) + 1
           })
           .eq("id", user.id);
-        
-        // Log transaction (CoinNotification component will handle the notification via realtime)
-        await supabase.from("camly_coin_transactions").insert({
-          user_id: user.id,
-          amount: 10000,
-          transaction_type: "game_play",
-          description: `Played ${game.title}`
-        });
-
-        // Claim first game reward (10,000 CAMLY bonus) - only triggers once
-        await claimFirstGameReward();
       }
     } catch (error) {
       console.error("Error tracking play:", error);
@@ -281,6 +269,39 @@ const GamePlay = () => {
     
     // Haptic feedback for success
     haptics.success();
+
+    // Award 10,000 Camly coins for completing the level
+    if (user && game) {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("wallet_balance")
+          .eq("id", user.id)
+          .single();
+
+        if (profile) {
+          await supabase
+            .from("profiles")
+            .update({ 
+              wallet_balance: (profile.wallet_balance || 0) + 10000
+            })
+            .eq("id", user.id);
+          
+          // Log transaction
+          await supabase.from("camly_coin_transactions").insert({
+            user_id: user.id,
+            amount: 10000,
+            transaction_type: "game_complete",
+            description: `Completed level ${currentLevel} in ${game.title}`
+          });
+
+          // Claim first game reward bonus (only triggers once)
+          await claimFirstGameReward();
+        }
+      } catch (error) {
+        console.error("Error awarding game completion reward:", error);
+      }
+    }
     
     // Fire confetti 5 times
     const fireConfetti = () => {
