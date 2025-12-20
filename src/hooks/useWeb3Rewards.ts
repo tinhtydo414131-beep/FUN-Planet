@@ -128,14 +128,16 @@ export const useWeb3Rewards = () => {
       const accounts = await provider.send('eth_requestAccounts', []);
       const address = accounts[0];
 
-      // Check if this is first wallet connection
+      // Check if this is first wallet connection - check if already claimed the bonus
       const { data: existing } = await supabase
         .from('web3_rewards')
-        .select('first_wallet_claimed')
+        .select('first_wallet_claimed, wallet_address, camly_balance')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      const isFirstConnect = !existing;
+      // First connect bonus: only if never claimed before (first_wallet_claimed is false or no record)
+      const isFirstConnect = !existing?.first_wallet_claimed;
+      const currentBalance = Number(existing?.camly_balance) || 0;
 
       // Upsert rewards record
       const { error } = await supabase
@@ -144,12 +146,14 @@ export const useWeb3Rewards = () => {
           user_id: user.id,
           wallet_address: address,
           first_wallet_claimed: existing?.first_wallet_claimed ?? false,
-          camly_balance: isFirstConnect ? REWARDS.FIRST_WALLET_CONNECT : (existing ? undefined : 0),
+          camly_balance: isFirstConnect 
+            ? currentBalance + REWARDS.FIRST_WALLET_CONNECT 
+            : undefined,
         }, { onConflict: 'user_id' });
 
       if (error) throw error;
 
-      // Award first connection bonus
+      // Award first connection bonus only if not already claimed
       if (isFirstConnect) {
         await supabase.from('web3_reward_transactions').insert({
           user_id: user.id,
