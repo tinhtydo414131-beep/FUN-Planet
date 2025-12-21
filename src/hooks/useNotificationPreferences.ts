@@ -36,7 +36,7 @@ export const NOTIFICATION_SOUNDS: Record<NotificationSound, { name: string; name
   'coin-bling': { 
     name: 'Tiếng xu', 
     nameEn: 'Coin Bling',
-    url: 'https://media.funplanet.life/audio/coin-reward.mp3', 
+    url: 'https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/coin-reward.mp3', 
     icon: '🪙' 
   },
   '528hz-tone': { 
@@ -48,19 +48,19 @@ export const NOTIFICATION_SOUNDS: Record<NotificationSound, { name: string; name
   'magic-sparkle': { 
     name: 'Phép thuật', 
     nameEn: 'Magic Sparkle',
-    url: 'https://media.funplanet.life/audio/magic-sparkle.mp3', 
+    url: 'https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/magic-sparkle.mp3', 
     icon: '✨' 
   },
   'level-up': { 
     name: 'Lên cấp', 
     nameEn: 'Level Up',
-    url: 'https://media.funplanet.life/audio/level-up.mp3', 
+    url: 'https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/level-up.mp3', 
     icon: '🚀' 
   },
   'success-chime': { 
     name: 'Thành công', 
     nameEn: 'Success Chime',
-    url: 'https://media.funplanet.life/audio/success-chime.mp3', 
+    url: 'https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/success-chime.mp3', 
     icon: '🔔' 
   },
   'custom': { 

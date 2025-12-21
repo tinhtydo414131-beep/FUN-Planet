@@ -22,7 +22,7 @@ const videoOptions: VideoOption[] = [
   {
     id: "latest",
     name: "Video chính",
-    path: "https://media.funplanet.life/videos/hero-background-latest.mp4",
+    path: "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/videos/hero-background-latest.mp4",
     icon: <Sparkles className="h-6 w-6" />,
     description: "Video nền chính của FUN Planet",
   },
