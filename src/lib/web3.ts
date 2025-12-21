@@ -168,7 +168,7 @@ const metadata = {
   icons: ['https://funplanet.app/pwa-512x512.png'],
 };
 
-// Define BSC network using Reown's defineChain
+// BSC Mainnet configuration (Chain ID 56)
 const bscNetwork = defineChain({
   id: 56,
   caipNetworkId: 'eip155:56',
@@ -181,12 +181,19 @@ const bscNetwork = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ['https://bsc-dataseed.binance.org'],
+      http: [
+        'https://bsc-dataseed.binance.org',
+        'https://bsc-dataseed1.binance.org',
+        'https://bsc-dataseed2.binance.org',
+        'https://bsc-dataseed3.binance.org',
+        'https://bsc-dataseed4.binance.org',
+      ],
     },
   },
   blockExplorers: {
     default: { name: 'BscScan', url: 'https://bscscan.com' },
   },
+  testnet: false,
 });
 
 // Create Wagmi Adapter - only if projectId is configured
@@ -199,10 +206,12 @@ export const wagmiAdapter = projectId ? new WagmiAdapter({
 // Export wagmi config for provider (null if no projectId)
 export const wagmiConfig = wagmiAdapter?.wagmiConfig ?? null;
 
-// Create AppKit modal - only if projectId is configured to avoid 403 errors
+// Create AppKit modal - only if projectId is configured
+// Disable analytics and all external API calls to avoid 403 errors on pulse.walletconnect.org
 export const appKit = projectId ? createAppKit({
   adapters: wagmiAdapter ? [wagmiAdapter] : [],
   networks: [bscNetwork],
+  defaultNetwork: bscNetwork,
   projectId,
   metadata,
   themeMode: 'light',
@@ -211,10 +220,13 @@ export const appKit = projectId ? createAppKit({
     '--w3m-border-radius-master': '16px',
   },
   features: {
-    analytics: false,
+    analytics: false, // Disable pulse.walletconnect.org calls
     email: false,
     socials: [],
+    onramp: false,
+    swaps: false,
   },
+  enableWalletGuide: false,
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
     '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
