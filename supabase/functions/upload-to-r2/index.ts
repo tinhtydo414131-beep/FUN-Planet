@@ -5,6 +5,20 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // Use AWS SDK v3 (S3Client) via esm.sh so it works in the Deno edge runtime.
 import { S3Client, PutObjectCommand } from "https://esm.sh/@aws-sdk/client-s3@3.758.0?target=deno";
 
+// esm.sh node polyfills sometimes represent missing env vars as `null`.
+// AWS SDK's default config chain may try to read these and crash when they are null.
+// We normalize all `null` env entries to empty strings to avoid `path.join(..., null)` errors.
+const _processEnv = (globalThis as any)?.process?.env as Record<string, string | null | undefined> | undefined;
+if (_processEnv) {
+  for (const k of Object.keys(_processEnv)) {
+    if (_processEnv[k] === null) _processEnv[k] = "";
+  }
+  // Also ensure common HOME vars exist
+  if (_processEnv.HOME == null) _processEnv.HOME = "";
+  if (_processEnv.USERPROFILE == null) _processEnv.USERPROFILE = "";
+  if (_processEnv.HOMEPATH == null) _processEnv.HOMEPATH = "";
+}
+
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
