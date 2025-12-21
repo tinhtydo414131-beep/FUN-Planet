@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/popover";
 import { useDraggable } from "@/hooks/useDraggable";
 const PLAYLIST = [
-  { title: "Radiant Dreamland", src: "https://media.funplanet.life/audio/radiant-dreamland.mp3" },
-  { title: "Angel of the Stars", src: "https://media.funplanet.life/audio/angel-of-the-stars.mp3" }
+  { title: "Radiant Dreamland", src: "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/radiant-dreamland.mp3" },
+  { title: "Angel of the Stars", src: "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/angel-of-the-stars.mp3" }
 ];
 
 export const BackgroundMusicPlayer = () => {
