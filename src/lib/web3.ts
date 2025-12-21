@@ -2,8 +2,9 @@ import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { defineChain } from '@reown/appkit/networks';
 
-// Reown Cloud Project ID (from https://cloud.reown.com)
-const projectId = 'a01e309e8e50a5c1e4cc4f9f05e0d5a1';
+// Reown Cloud Project ID - use env var or empty string to disable
+// The old hardcoded ID 'a01e309e8e50a5c1e4cc4f9f05e0d5a1' causes 403 errors
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '';
 
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
@@ -188,19 +189,19 @@ const bscNetwork = defineChain({
   },
 });
 
-// Create Wagmi Adapter
-export const wagmiAdapter = new WagmiAdapter({
+// Create Wagmi Adapter - only if projectId is configured
+export const wagmiAdapter = projectId ? new WagmiAdapter({
   networks: [bscNetwork],
   projectId,
   ssr: false,
-});
+}) : null;
 
-// Export wagmi config for provider
-export const wagmiConfig = wagmiAdapter.wagmiConfig;
+// Export wagmi config for provider (null if no projectId)
+export const wagmiConfig = wagmiAdapter?.wagmiConfig ?? null;
 
-// Create AppKit modal
-export const appKit = createAppKit({
-  adapters: [wagmiAdapter],
+// Create AppKit modal - only if projectId is configured to avoid 403 errors
+export const appKit = projectId ? createAppKit({
+  adapters: wagmiAdapter ? [wagmiAdapter] : [],
   networks: [bscNetwork],
   projectId,
   metadata,
@@ -218,7 +219,7 @@ export const appKit = createAppKit({
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
     '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
   ],
-});
+}) : null;
 
 // Helper to format CAMLY amount
 export const formatCamly = (amount: number): string => {
@@ -239,3 +240,8 @@ export const shortenAddress = (address: string): string => {
 
 // Export web3Modal for backwards compatibility
 export const web3Modal = appKit;
+
+// Helper to check if Web3Modal is available
+export const isWeb3ModalAvailable = (): boolean => {
+  return Boolean(projectId && appKit);
+};

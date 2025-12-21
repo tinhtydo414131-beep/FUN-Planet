@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Gamepad2, User, Wallet, Mail, Lock } from "lucide-react";
-import { web3Modal } from '@/lib/web3';
+import { web3Modal, isWeb3ModalAvailable } from '@/lib/web3';
 import { useAccount, useDisconnect } from 'wagmi';
 import { z } from "zod";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
@@ -53,6 +53,10 @@ export default function Auth() {
   }, [navigate]);
 
   const handleConnect = async () => {
+    if (!isWeb3ModalAvailable() || !web3Modal) {
+      toast.error("Wallet connection is not configured. Please set VITE_WALLETCONNECT_PROJECT_ID.");
+      return;
+    }
     try {
       setLoading(true);
       
