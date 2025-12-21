@@ -103,12 +103,12 @@ export async function uploadToR2(
  */
 export async function deleteFromR2(key: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const formData = new FormData();
-    formData.append('action', 'delete');
-    formData.append('key', key);
-
-    const { data, error } = await supabase.functions.invoke('r2-upload', {
-      body: formData,
+    // Use JSON body for delete action
+    const { data, error } = await supabase.functions.invoke('upload-to-r2', {
+      body: {
+        action: 'delete',
+        key: key,
+      },
     });
 
     if (error) {
@@ -116,7 +116,7 @@ export async function deleteFromR2(key: string): Promise<{ success: boolean; err
       return { success: false, error: error.message };
     }
 
-    return { success: data.success, error: data.error };
+    return { success: data?.success ?? false, error: data?.error };
   } catch (err) {
     console.error('R2 delete exception:', err);
     return { 

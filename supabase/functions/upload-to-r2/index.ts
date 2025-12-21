@@ -150,12 +150,16 @@ serve(async (req) => {
 
     let file: File | null = null;
     let folder = "uploads";
+    let action = "upload";
+    let deleteKey: string | null = null;
 
     // Support BOTH multipart/form-data (browser direct) and JSON base64 (fallback)
     if (contentType.toLowerCase().includes("multipart/form-data")) {
       const form = await req.formData();
       const formFile = form.get("file");
       folder = (form.get("folder")?.toString() || "uploads").replace(/^\/+|\/+$/g, "");
+      action = form.get("action")?.toString() || "upload";
+      deleteKey = form.get("key")?.toString() || null;
 
       if (formFile instanceof File) file = formFile;
     } else if (contentType.toLowerCase().includes("application/json")) {
@@ -164,9 +168,13 @@ serve(async (req) => {
         fileName?: string;
         contentType?: string;
         folder?: string;
+        action?: string;
+        key?: string;
       };
 
       folder = (body?.folder || "uploads").replace(/^\/+|\/+$/g, "");
+      action = body?.action || "upload";
+      deleteKey = body?.key || null;
       const fileName = body?.fileName || "upload";
       const ct = body?.contentType || "application/octet-stream";
 
@@ -185,6 +193,41 @@ serve(async (req) => {
       );
     }
 
+    // Handle DELETE action
+    if (action === "delete" && deleteKey) {
+      console.log("🗑️ Deleting from R2:", deleteKey);
+      
+      const deleteUrl = new URL(`${endpoint}/${bucketName}/${deleteKey}`);
+      const deleteHeaders: Record<string, string> = {};
+      
+      const signedDeleteHeaders = await signRequest(
+        "DELETE",
+        deleteUrl,
+        deleteHeaders,
+        null,
+        accessKeyId,
+        secretAccessKey
+      );
+
+      const deleteResponse = await fetch(deleteUrl.toString(), {
+        method: "DELETE",
+        headers: signedDeleteHeaders,
+      });
+
+      if (!deleteResponse.ok && deleteResponse.status !== 404) {
+        const errorText = await deleteResponse.text();
+        console.error("❌ R2 delete failed:", deleteResponse.status, errorText);
+        throw new Error(`R2 delete failed: ${deleteResponse.status}`);
+      }
+
+      console.log("✅ Deleted from R2:", deleteKey);
+      return new Response(
+        JSON.stringify({ success: true, key: deleteKey }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Handle UPLOAD action (default)
     if (!(file instanceof File)) {
       return new Response(
         JSON.stringify({ success: false, error: "Missing file" }),

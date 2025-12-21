@@ -217,9 +217,12 @@ const fallbackWagmiConfig = createConfig({
 // Export wagmi config for provider - always provide a valid config
 export const wagmiConfig = wagmiAdapter?.wagmiConfig ?? fallbackWagmiConfig;
 
-// Create AppKit modal - only if projectId is configured
-// Disable analytics and all external API calls to avoid 403 errors on pulse.walletconnect.org
-export const appKit = projectId ? createAppKit({
+// Create AppKit modal - only if projectId is configured and valid
+// COMPLETELY disable all external API calls to avoid 403 errors on pulse.walletconnect.org and api.web3modal.org
+// Setting projectId to empty string or falsy value will disable all WalletConnect cloud features
+const hasValidProjectId = Boolean(projectId && projectId.length > 10 && projectId !== 'undefined');
+
+export const appKit = hasValidProjectId ? createAppKit({
   adapters: wagmiAdapter ? [wagmiAdapter] : [],
   networks: [bscNetwork],
   defaultNetwork: bscNetwork,
@@ -233,11 +236,14 @@ export const appKit = projectId ? createAppKit({
   features: {
     analytics: false, // Disable pulse.walletconnect.org calls
     email: false,
-    socials: [],
+    socials: false, // Use false instead of empty array
     onramp: false,
     swaps: false,
+    history: false, // Disable transaction history API calls
+    allWallets: false, // Disable fetching wallet list from API
   },
   enableWalletGuide: false,
+  allowUnsupportedChain: true,
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
     '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
@@ -266,5 +272,5 @@ export const web3Modal = appKit;
 
 // Helper to check if Web3Modal is available
 export const isWeb3ModalAvailable = (): boolean => {
-  return Boolean(projectId && appKit);
+  return Boolean(hasValidProjectId && appKit);
 };
