@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Wallet, Upload, Globe, Loader2 } from "lucide-react";
-import { web3Modal, REWARDS, formatCamly } from "@/lib/web3";
+import { web3Modal, REWARDS, formatCamly, isWeb3ModalAvailable } from "@/lib/web3";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { useAccount } from "wagmi";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ export function MobileActionBar() {
         fireConfetti();
         toast.success(`🎉 +${formatCamly(REWARDS.FIRST_WALLET_CONNECT)} CAMLY!`);
       }
-    } else if (!isConnected) {
+    } else if (!isConnected && isWeb3ModalAvailable() && web3Modal) {
       web3Modal.open();
     }
   };

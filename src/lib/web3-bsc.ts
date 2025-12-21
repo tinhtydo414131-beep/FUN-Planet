@@ -10,6 +10,7 @@ export {
   formatCamly,
   shortenAddress,
   web3Modal,
+  isWeb3ModalAvailable,
 } from './web3';
 
 // Backwards compatible exports

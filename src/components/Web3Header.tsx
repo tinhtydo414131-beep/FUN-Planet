@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import { useAccount, useDisconnect } from 'wagmi';
-import { web3Modal, shortenAddress, formatCamly, REWARDS } from '@/lib/web3';
+import { web3Modal, shortenAddress, formatCamly, REWARDS, isWeb3ModalAvailable } from '@/lib/web3';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import camlyCoin from '@/assets/camly-coin.png';
@@ -40,7 +40,9 @@ export function Web3Header() {
   }, [isConnected, address, firstWalletClaimed, checkCanClaim]);
 
   const handleConnect = () => {
-    web3Modal.open();
+    if (isWeb3ModalAvailable() && web3Modal) {
+      web3Modal.open();
+    }
   };
 
   const handleClaimAirdrop = async () => {
