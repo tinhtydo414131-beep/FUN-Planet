@@ -53,17 +53,46 @@ serve(async (req) => {
 
     const contentType = req.headers.get("content-type") || "";
 
-    // Expect multipart/form-data with fields: file (File), folder (string, optional)
-    if (!contentType.toLowerCase().includes("multipart/form-data")) {
+    let file: File | null = null;
+    let folder = "uploads";
+
+    // Support BOTH multipart/form-data (browser direct) and JSON base64 (fallback)
+    if (contentType.toLowerCase().includes("multipart/form-data")) {
+      // Expect multipart/form-data with fields: file (File), folder (string, optional)
+      const form = await req.formData();
+      const formFile = form.get("file");
+      folder = (form.get("folder")?.toString() || "uploads").replace(/^\/+|\/+$/g, "");
+
+      if (formFile instanceof File) file = formFile;
+    } else if (contentType.toLowerCase().includes("application/json")) {
+      // Expect JSON body: { fileBase64, fileName, contentType?, folder? }
+      const body = await req.json().catch(() => null) as null | {
+        fileBase64?: string;
+        fileName?: string;
+        contentType?: string;
+        folder?: string;
+      };
+
+      folder = (body?.folder || "uploads").replace(/^\/+|\/+$/g, "");
+
+      const fileName = body?.fileName || "upload";
+      const ct = body?.contentType || "application/octet-stream";
+
+      if (body?.fileBase64) {
+        // Support both raw base64 and data URLs
+        const raw = body.fileBase64.includes(",")
+          ? body.fileBase64.split(",")[1]
+          : body.fileBase64;
+
+        const bytes = Uint8Array.from(atob(raw), (c) => c.charCodeAt(0));
+        file = new File([bytes], fileName, { type: ct });
+      }
+    } else {
       return new Response(
-        JSON.stringify({ success: false, error: "Expected multipart/form-data" }),
+        JSON.stringify({ success: false, error: "Expected multipart/form-data or application/json" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
-
-    const form = await req.formData();
-    const file = form.get("file");
-    const folder = (form.get("folder")?.toString() || "uploads").replace(/^\/+|\/+$/g, "");
 
     if (!(file instanceof File)) {
       return new Response(
