@@ -27,6 +27,9 @@ verify_jwt = false
 [functions.r2-upload]
 verify_jwt = false
 
+[functions.upload-to-r2]
+verify_jwt = false
+
 [functions.claim-camly]
 verify_jwt = true
 
