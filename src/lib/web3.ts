@@ -1,6 +1,8 @@
 import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { defineChain } from '@reown/appkit/networks';
+import { http, createConfig } from 'wagmi';
+import { bsc } from 'wagmi/chains';
 
 // Reown Cloud Project ID - use env var or empty string to disable
 // The old hardcoded ID 'a01e309e8e50a5c1e4cc4f9f05e0d5a1' causes 403 errors
@@ -203,8 +205,17 @@ export const wagmiAdapter = projectId ? new WagmiAdapter({
   ssr: false,
 }) : null;
 
-// Export wagmi config for provider (null if no projectId)
-export const wagmiConfig = wagmiAdapter?.wagmiConfig ?? null;
+// Fallback wagmi config for when no project ID is set
+// This ensures wagmi hooks still work without WalletConnect
+const fallbackWagmiConfig = createConfig({
+  chains: [bsc],
+  transports: {
+    [bsc.id]: http('https://bsc-dataseed.binance.org'),
+  },
+});
+
+// Export wagmi config for provider - always provide a valid config
+export const wagmiConfig = wagmiAdapter?.wagmiConfig ?? fallbackWagmiConfig;
 
 // Create AppKit modal - only if projectId is configured
 // Disable analytics and all external API calls to avoid 403 errors on pulse.walletconnect.org
