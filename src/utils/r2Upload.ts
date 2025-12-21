@@ -24,31 +24,68 @@ export async function uploadToR2(
   folder: R2Folder = 'uploads'
 ): Promise<R2UploadResult> {
   try {
+    // Attempt #1: multipart/form-data (preferred)
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', folder);
 
-    // Use the dedicated upload function for R2 uploads
     const { data, error } = await supabase.functions.invoke('upload-to-r2', {
       body: formData,
     });
 
-    if (error) {
-      console.error('R2 upload error:', error);
-      return { success: false, error: error.message };
+    if (!error && data?.success) {
+      return {
+        success: true,
+        url: data.url,
+        key: data.key,
+        size: data.size,
+        type: data.type,
+        folder: data.folder,
+      };
     }
 
-    if (!data?.success) {
-      return { success: false, error: data?.error || 'Upload failed' };
+    // If the client/runtime sent a wrong Content-Type, the function may reject multipart.
+    // Attempt #2: JSON base64 fallback (more compatible across runtimes)
+    console.warn('⚠️ R2 multipart upload did not succeed, retrying with JSON base64 fallback...', { error, data });
+
+    const arrayBuffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+
+    // Convert to base64 in chunks to avoid call stack limits
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    }
+    const fileBase64 = btoa(binary);
+
+    const { data: data2, error: error2 } = await supabase.functions.invoke('upload-to-r2', {
+      body: {
+        folder,
+        fileName: file.name || 'upload',
+        contentType: file.type || 'application/octet-stream',
+        fileBase64,
+      },
+    });
+
+    if (error2) {
+      console.error('R2 upload error (fallback):', error2);
+      return { success: false, error: error2.message };
+    }
+
+    if (!data2?.success) {
+      const errMsg = data2?.error || error?.message || 'Upload failed';
+      console.error('R2 upload failed:', { errMsg, error, data, data2 });
+      return { success: false, error: errMsg };
     }
 
     return {
       success: true,
-      url: data.url,
-      key: data.key,
-      size: data.size,
-      type: data.type,
-      folder: data.folder,
+      url: data2.url,
+      key: data2.key,
+      size: data2.size,
+      type: data2.type,
+      folder: data2.folder,
     };
   } catch (err) {
     console.error('R2 upload exception:', err);
