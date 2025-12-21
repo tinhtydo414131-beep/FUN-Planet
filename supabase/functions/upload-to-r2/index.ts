@@ -5,7 +5,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
 
 const corsHeaders: Record<string, string> = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://planet.fun.rich",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 };
