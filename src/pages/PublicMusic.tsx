@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { uploadToR2 } from "@/utils/r2Upload";
 
 
 interface MusicTrack {
@@ -228,15 +229,20 @@ export default function PublicMusic() {
       if (error) throw error;
 
       const tracks: MusicTrack[] = data.map(music => {
-        const { data: urlData } = supabase.storage
-          .from('music')
-          .getPublicUrl(music.storage_path);
+        // Check if storage_path is already a full URL (R2) or a relative path (Supabase)
+        let audioSrc = music.storage_path;
+        if (!music.storage_path.startsWith('http')) {
+          const { data: urlData } = supabase.storage
+            .from('music')
+            .getPublicUrl(music.storage_path);
+          audioSrc = urlData.publicUrl;
+        }
 
         return {
           id: music.id,
           title: music.title,
           artist: music.artist || 'Người dùng',
-          src: urlData.publicUrl,
+          src: audioSrc,
           duration: music.duration || '0:00',
           genre: music.genre || 'other',
           isUserUpload: true,
@@ -267,15 +273,20 @@ export default function PublicMusic() {
       if (error) throw error;
 
       const tracks: MusicTrack[] = data.map(music => {
-        const { data: urlData } = supabase.storage
-          .from('music')
-          .getPublicUrl(music.storage_path);
+        // Check if storage_path is already a full URL (R2) or a relative path (Supabase)
+        let audioSrc = music.storage_path;
+        if (!music.storage_path.startsWith('http')) {
+          const { data: urlData } = supabase.storage
+            .from('music')
+            .getPublicUrl(music.storage_path);
+          audioSrc = urlData.publicUrl;
+        }
 
         return {
           id: music.id,
           title: music.title,
           artist: music.artist || 'Người dùng',
-          src: urlData.publicUrl,
+          src: audioSrc,
           duration: music.duration || '0:00',
           genre: music.genre || 'other',
           isUserUpload: true,
@@ -331,15 +342,20 @@ export default function PublicMusic() {
       if (musicError) throw musicError;
 
       const tracks: MusicTrack[] = musicData.map(music => {
-        const { data: urlData } = supabase.storage
-          .from('music')
-          .getPublicUrl(music.storage_path);
+        // Check if storage_path is already a full URL (R2) or a relative path (Supabase)
+        let audioSrc = music.storage_path;
+        if (!music.storage_path.startsWith('http')) {
+          const { data: urlData } = supabase.storage
+            .from('music')
+            .getPublicUrl(music.storage_path);
+          audioSrc = urlData.publicUrl;
+        }
 
         return {
           id: music.id,
           title: music.title,
           artist: music.artist || 'Người dùng',
-          src: urlData.publicUrl,
+          src: audioSrc,
           duration: music.duration || '0:00',
           genre: music.genre || 'other',
           isUserUpload: true,
@@ -474,21 +490,15 @@ export default function PublicMusic() {
 
     setUploading(true);
     try {
-      // Sanitize filename: remove emojis, special chars, keep only alphanumeric, hyphens, underscores, periods
-      const sanitizedFileName = uploadFile.name
-        .replace(/[^\w\s.-]/g, '') // Remove special chars and emojis
-        .replace(/\s+/g, '_') // Replace spaces with underscores
-        .replace(/_{2,}/g, '_') // Replace multiple underscores with single
-        .toLowerCase();
+      // Upload to R2 via edge function
+      console.log('📤 Uploading music to R2...');
+      const r2Result = await uploadToR2(uploadFile, 'music');
       
-      const filePath = `${user.id}/${Date.now()}-${sanitizedFileName}`;
+      if (!r2Result.success || !r2Result.url) {
+        throw new Error(r2Result.error || 'Upload to R2 failed');
+      }
       
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('music')
-        .upload(filePath, uploadFile);
-
-      if (uploadError) throw uploadError;
+      console.log('✅ R2 upload successful:', r2Result.url);
 
       // Get audio duration
       const audio = new Audio();
@@ -501,14 +511,14 @@ export default function PublicMusic() {
         };
       });
 
-      // Save metadata to database with auto-approval
+      // Save metadata to database with R2 URL as storage_path
       const { error: dbError } = await supabase
         .from('user_music')
         .insert({
           user_id: user.id,
           title: uploadTitle,
           artist: uploadArtist || user.email?.split('@')[0],
-          storage_path: filePath,
+          storage_path: r2Result.url, // Store R2 URL directly
           file_size: uploadFile.size,
           duration: audioDuration,
           genre: uploadGenre,
@@ -547,7 +557,7 @@ export default function PublicMusic() {
       loadUserTracks();
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error("Không thể tải nhạc lên");
+      toast.error("Không thể tải nhạc lên. Vui lòng thử lại!");
     } finally {
       setUploading(false);
     }
