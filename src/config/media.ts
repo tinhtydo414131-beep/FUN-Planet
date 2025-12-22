@@ -3,7 +3,7 @@
  * All media files are served from this CDN
  */
 
-export const R2_CDN_BASE = "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev";
+export const R2_CDN_BASE = "https://pub-f2a4321a84154942a59e7ed2e803b52c.r2.dev";
 
 /**
  * Get the full CDN URL for a media file
