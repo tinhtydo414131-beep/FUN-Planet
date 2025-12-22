@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Coins, Loader2, Sparkles, Check, X } from 'lucide-react';
 import { useCamlyClaim, ClaimType } from '@/hooks/useCamlyClaim';
-import { useAppKit } from '@reown/appkit/react';
+import { useAppKitSafe } from '@/hooks/useAppKitSafe';
 import { cn } from '@/lib/utils';
 
 interface CamlyClaimButtonProps {
@@ -28,7 +28,7 @@ export function CamlyClaimButton({
   variant = 'default'
 }: CamlyClaimButtonProps) {
   const { claimReward, checkCanClaim, isClaiming, isWalletConnected } = useCamlyClaim();
-  const { open } = useAppKit();
+  const { open } = useAppKitSafe();
   const [canClaim, setCanClaim] = useState<boolean | null>(null);
   const [claimReason, setClaimReason] = useState<string>();
   const [claimStatus, setClaimStatus] = useState<'idle' | 'success' | 'error'>('idle');
