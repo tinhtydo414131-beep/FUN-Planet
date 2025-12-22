@@ -1,10 +1,9 @@
 import { useState, useCallback, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { uploadToR2 } from '@/utils/r2Upload';
+import type { R2Folder } from '@/utils/r2Upload';
 
 interface UploadOptions {
-  bucket: string;
-  path: string;
+  folder: R2Folder;
   file: File;
   onProgress?: (percent: number) => void;
 }
@@ -16,9 +15,8 @@ interface UploadResult {
 }
 
 /**
- * Hook for reliable file uploads on mobile
- * Fixes: Upload nhạc stuck 99% trên iPhone Safari
- * Uses chunked upload + retry logic for mobile reliability
+ * Hook for reliable file uploads on mobile using R2
+ * Uses Cloudflare R2 via edge function for reliable uploads
  */
 export function useMobileUpload() {
   const [uploading, setUploading] = useState(false);
@@ -26,8 +24,7 @@ export function useMobileUpload() {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const upload = useCallback(async ({
-    bucket,
-    path,
+    folder,
     file,
     onProgress
   }: UploadOptions): Promise<UploadResult> => {
@@ -38,13 +35,37 @@ export function useMobileUpload() {
     abortControllerRef.current = new AbortController();
 
     try {
-      // For small files (< 5MB), use direct upload
-      if (file.size < 5 * 1024 * 1024) {
-        return await directUpload({ bucket, path, file, onProgress });
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setProgress(prev => {
+          const next = Math.min(prev + 10, 90);
+          onProgress?.(next);
+          return next;
+        });
+      }, 200);
+
+      // Upload to R2
+      console.log(`📤 [MobileUpload] Uploading to R2 folder: ${folder}`);
+      const result = await uploadToR2(file, folder);
+
+      clearInterval(progressInterval);
+
+      if (!result.success) {
+        console.error('[MobileUpload] R2 upload failed:', result.error);
+        return {
+          success: false,
+          error: result.error || 'Upload failed'
+        };
       }
 
-      // For larger files, use chunked upload simulation with progress
-      return await chunkedUpload({ bucket, path, file, onProgress });
+      console.log('✅ [MobileUpload] Upload successful:', result.url);
+      setProgress(100);
+      onProgress?.(100);
+
+      return {
+        success: true,
+        url: result.url
+      };
     } catch (error: any) {
       console.error('[MobileUpload] Error:', error);
       return {
@@ -57,132 +78,6 @@ export function useMobileUpload() {
       abortControllerRef.current = null;
     }
   }, []);
-
-  const directUpload = async ({
-    bucket,
-    path,
-    file,
-    onProgress
-  }: UploadOptions): Promise<UploadResult> => {
-    // Start progress simulation for mobile UX
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        const next = Math.min(prev + 10, 90);
-        onProgress?.(next);
-        return next;
-      });
-    }, 200);
-
-    try {
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      clearInterval(progressInterval);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(path);
-
-      setProgress(100);
-      onProgress?.(100);
-
-      return {
-        success: true,
-        url: urlData.publicUrl
-      };
-    } catch (error: any) {
-      clearInterval(progressInterval);
-      throw error;
-    }
-  };
-
-  const chunkedUpload = async ({
-    bucket,
-    path,
-    file,
-    onProgress
-  }: UploadOptions): Promise<UploadResult> => {
-    const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
-    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-    let uploadedChunks = 0;
-
-    // For Supabase, we still do single upload but simulate progress
-    // This is because Supabase doesn't support true chunked uploads via JS client
-    
-    const progressInterval = setInterval(() => {
-      uploadedChunks++;
-      const percent = Math.min((uploadedChunks / totalChunks) * 95, 95);
-      setProgress(percent);
-      onProgress?.(percent);
-      
-      if (uploadedChunks >= totalChunks) {
-        clearInterval(progressInterval);
-      }
-    }, Math.max(100, (file.size / CHUNK_SIZE) * 50));
-
-    try {
-      // Actual upload with retry
-      let retries = 3;
-      let lastError: any;
-
-      while (retries > 0) {
-        try {
-          const { error: uploadError } = await supabase.storage
-            .from(bucket)
-            .upload(path, file, {
-              cacheControl: '3600',
-              upsert: true
-            });
-
-          if (!uploadError) {
-            clearInterval(progressInterval);
-            
-            const { data: urlData } = supabase.storage
-              .from(bucket)
-              .getPublicUrl(path);
-
-            setProgress(100);
-            onProgress?.(100);
-
-            return {
-              success: true,
-              url: urlData.publicUrl
-            };
-          }
-
-          lastError = uploadError;
-          retries--;
-          
-          if (retries > 0) {
-            // Wait before retry
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        } catch (err) {
-          lastError = err;
-          retries--;
-          
-          if (retries > 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        }
-      }
-
-      clearInterval(progressInterval);
-      throw lastError;
-    } catch (error) {
-      clearInterval(progressInterval);
-      throw error;
-    }
-  };
 
   const cancelUpload = useCallback(() => {
     if (abortControllerRef.current) {
@@ -201,9 +96,7 @@ export function useMobileUpload() {
 }
 
 /**
- * Compress audio file for mobile upload (optional)
- * Note: True audio compression requires WebAssembly libraries
- * This provides basic validation and size estimation
+ * Validate audio file for mobile upload
  */
 export function validateAudioForMobile(file: File): { valid: boolean; message: string } {
   const MAX_SIZE = 50 * 1024 * 1024; // 50MB
