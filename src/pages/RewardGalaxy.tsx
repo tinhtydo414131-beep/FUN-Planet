@@ -7,7 +7,7 @@ import { useReferral } from '@/hooks/useReferral';
 import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import { useUserRewards } from '@/hooks/useUserRewards';
 import { useDailyLoginReward } from '@/hooks/useDailyLoginReward';
-import { useAppKit } from '@reown/appkit/react';
+import { useAppKitSafe } from '@/hooks/useAppKitSafe';
 import { useAccount } from 'wagmi';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -62,7 +62,7 @@ interface ClaimHistory {
 export default function RewardGalaxy() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { open } = useAppKit();
+  const { open } = useAppKitSafe();
   const { address: appKitWalletAddress, isConnected: appKitIsConnected } = useAccount();
   const { camlyBalance, walletAddress: dbWalletAddress, isConnected: dbIsConnected, loadRewards: loadWeb3Rewards } = useWeb3Rewards();
   
