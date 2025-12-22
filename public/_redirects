@@ -1,1 +1,9 @@
+# Serve static assets directly (don't rewrite to SPA)
+/games/* /games/:splat 200
+/audio/* /audio/:splat 200
+/images/* /images/:splat 200
+/videos/* /videos/:splat 200
+/game-thumbnails/* /game-thumbnails/:splat 200
+
+# SPA fallback for all other routes
 /* /index.html 200
