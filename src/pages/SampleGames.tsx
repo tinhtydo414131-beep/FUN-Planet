@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Play, X, Maximize2, Gamepad2, Palette, Globe, Heart, Star } from "lucide-react";
+import { ArrowLeft, Play, X, Maximize2, Gamepad2, Palette, Globe, Heart, Star, Loader2, ExternalLink, RefreshCw, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { haptics } from "@/utils/haptics";
 import confetti from "canvas-confetti";
@@ -82,6 +82,53 @@ export default function SampleGames() {
   const navigate = useNavigate();
   const [activeGame, setActiveGame] = useState<SampleGame | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const [iframeError, setIframeError] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const loadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Reset states when game changes
+  useEffect(() => {
+    if (activeGame) {
+      setIframeLoading(true);
+      setIframeError(false);
+      
+      // Timeout detection - if iframe doesn't load in 8 seconds, show error
+      loadTimeoutRef.current = setTimeout(() => {
+        if (iframeLoading) {
+          setIframeError(true);
+          setIframeLoading(false);
+        }
+      }, 8000);
+    }
+    
+    return () => {
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
+    };
+  }, [activeGame]);
+
+  const handleIframeLoad = () => {
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
+    setIframeLoading(false);
+  };
+
+  const handleRetry = () => {
+    setIframeLoading(true);
+    setIframeError(false);
+    if (iframeRef.current && activeGame) {
+      iframeRef.current.src = activeGame.path + '?t=' + Date.now();
+    }
+  };
+
+  const handleOpenInNewTab = () => {
+    if (activeGame) {
+      window.open(activeGame.path, '_blank');
+    }
+  };
 
   const handlePlayGame = (game: SampleGame) => {
     haptics.success();
@@ -174,12 +221,72 @@ export default function SampleGames() {
               </div>
             </div>
             
+            {/* Loading Overlay */}
+            {iframeLoading && !iframeError && (
+              <div className={`absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black ${isFullscreen ? '' : 'mt-[80px]'}`}>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="w-12 h-12 text-primary" />
+                </motion.div>
+                <p className="mt-4 text-white/80 text-lg">Loading {activeGame.title}...</p>
+                <p className="mt-2 text-white/50 text-sm">Please wait a moment</p>
+              </div>
+            )}
+
+            {/* Error Fallback UI */}
+            {iframeError && (
+              <div className={`absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black ${isFullscreen ? '' : 'mt-[80px]'}`}>
+                <div className="text-center space-y-6 p-8 max-w-md">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-yellow-500/20"
+                  >
+                    <AlertTriangle className="w-10 h-10 text-yellow-500" />
+                  </motion.div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold text-white">Game Loading Issue</h3>
+                    <p className="text-white/60 text-sm">
+                      The game is taking longer than expected to load. This might be due to your connection or browser settings.
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button
+                      onClick={handleRetry}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Try Again
+                    </Button>
+                    <Button
+                      onClick={handleOpenInNewTab}
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/10"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Open in New Tab
+                    </Button>
+                  </div>
+                  
+                  <p className="text-white/40 text-xs">
+                    Tip: Opening in a new tab often resolves loading issues
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Game iframe - optimized for mobile touch */}
             <iframe
+              ref={iframeRef}
               src={activeGame.path}
-              className={`w-full border-0 ${isFullscreen ? 'h-full' : 'h-[calc(100%-80px)] mt-[80px]'}`}
+              className={`w-full border-0 ${isFullscreen ? 'h-full' : 'h-[calc(100%-80px)] mt-[80px]'} ${iframeError ? 'hidden' : ''}`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               title={activeGame.title}
+              onLoad={handleIframeLoad}
               style={{ 
                 touchAction: 'manipulation',
                 WebkitOverflowScrolling: 'touch',
