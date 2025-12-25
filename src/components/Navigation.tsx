@@ -1,9 +1,10 @@
-import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles } from "lucide-react";
+import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown } from "lucide-react";
 
 const funPlanetLogo = "/logo-header.png";
 import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +30,7 @@ import { MessengerButton } from "./MessengerButton";
 
 export const Navigation = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
   const location = useLocation();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -230,6 +232,18 @@ export const Navigation = () => {
                       <Settings className="mr-3 h-5 w-5" />
                       <span className="font-medium">Settings</span>
                     </DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={() => navigate("/admin/master")} 
+                          className="py-3 text-orange-600 hover:text-orange-500 bg-gradient-to-r from-orange-500/5 to-red-500/5 hover:from-orange-500/10 hover:to-red-500/10"
+                        >
+                          <Crown className="mr-3 h-5 w-5" />
+                          <span className="font-medium">Admin Dashboard</span>
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="py-3">
                       <LogOut className="mr-3 h-5 w-5" />
