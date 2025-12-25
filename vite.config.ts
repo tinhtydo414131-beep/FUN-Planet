@@ -3,12 +3,24 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
+import { fileURLToPath } from "url";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      // Pin wagmi ESM files directly to bypass commonjs resolver issues
+      "wagmi": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/index.js"),
+      "wagmi/chains": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/chains.js"),
+      "wagmi/actions": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/actions.js"),
+      "wagmi/connectors": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/connectors.js"),
+    },
+    dedupe: ['wagmi', 'viem', '@tanstack/react-query'],
   },
   build: {
     rollupOptions: {
@@ -22,6 +34,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
+    exclude: ['wagmi', 'viem'],
     esbuildOptions: {
       target: 'esnext',
     },
@@ -125,9 +138,4 @@ export default defineConfig(({ mode }) => ({
       }
     })
   ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
 }));
