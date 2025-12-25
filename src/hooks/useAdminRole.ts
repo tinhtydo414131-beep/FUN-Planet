@@ -8,7 +8,7 @@ const ADMIN_WALLETS = [
 ];
 
 export const useAdminRole = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const { data: isAdmin, isLoading } = useQuery({
     queryKey: ['adminRole', user?.id],
@@ -46,12 +46,12 @@ export const useAdminRole = () => {
       
       return false;
     },
-    enabled: !!user?.id,
+    enabled: !authLoading && !!user?.id,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   return {
     isAdmin: isAdmin ?? false,
-    isLoading,
+    isLoading: authLoading || isLoading, // Wait for both auth and admin check
   };
 };
