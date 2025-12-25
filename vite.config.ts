@@ -121,6 +121,13 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+
+      // Workaround for vite-plugin-pwa/rollup package entry resolution with wagmi v3
+      "wagmi": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/index.js"),
+      "wagmi/chains": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/chains.js"),
+      "wagmi/actions": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/actions.js"),
+      "wagmi/connectors": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/connectors.js"),
+      "wagmi/query": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/query.js"),
     },
   },
 }));
