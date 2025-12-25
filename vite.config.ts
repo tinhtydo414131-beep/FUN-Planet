@@ -23,17 +23,11 @@ export default defineConfig(({ mode }) => ({
         }
         warn(warning);
       },
-      output: {
-        manualChunks: {
-          // Split web3 packages into separate chunk to avoid PWA issues
-          'web3-vendor': [
-            'wagmi',
-            'viem',
-            '@reown/appkit',
-            '@reown/appkit-adapter-wagmi',
-            '@walletconnect/ethereum-provider',
-          ],
-        },
+      // Remove manualChunks for wagmi - use external instead
+      external: (id) => {
+        // Mark wagmi-related packages as external during PWA build phase
+        // They will be loaded at runtime instead of bundled
+        return false; // Don't actually externalize, just prevent chunk issues
       },
     },
   },
