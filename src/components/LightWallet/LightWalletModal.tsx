@@ -116,15 +116,13 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
   };
 
   const handleConnectWalletConnect = () => {
-    if (!isWalletConnectConfigured()) {
-      toast.error('WalletConnect is not configured');
-      return;
-    }
     const wcConnector = connectors.find(c => c.id === 'walletConnect');
     if (wcConnector) {
       connect({ connector: wcConnector });
     } else {
-      toast.error('WalletConnect connector not found');
+      // Fallback to injected if WalletConnect not available
+      toast.info('Đang sử dụng ví trong trình duyệt...');
+      handleConnectMetaMask();
     }
   };
 
