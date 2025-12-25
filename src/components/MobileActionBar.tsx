@@ -2,15 +2,16 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Wallet, Upload, Globe, Loader2 } from "lucide-react";
-import { web3Modal, REWARDS, formatCamly, isWeb3ModalAvailable } from "@/lib/web3";
+import { REWARDS, formatCamly } from "@/lib/web3";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 
 export function MobileActionBar() {
   const navigate = useNavigate();
   const { isConnected } = useAccount();
+  const { connectAsync, connectors } = useConnect();
   const { connectWallet, firstWalletClaimed } = useWeb3Rewards();
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -32,8 +33,25 @@ export function MobileActionBar() {
         fireConfetti();
         toast.success(`🎉 +${formatCamly(REWARDS.FIRST_WALLET_CONNECT)} CAMLY!`);
       }
-    } else if (!isConnected && isWeb3ModalAvailable() && web3Modal) {
-      web3Modal.open();
+      return;
+    }
+
+    if (!isConnected) {
+      try {
+        const injectedConnector = connectors.find((c) => c.id === 'injected');
+        if (!injectedConnector) {
+          toast.error('Chưa phát hiện ví. Vui lòng cài MetaMask/Trust Wallet.');
+          return;
+        }
+        await connectAsync({ connector: injectedConnector });
+      } catch (error: any) {
+        const message = String(error?.shortMessage || error?.message || '');
+        if (message.toLowerCase().includes('user rejected')) {
+          toast.error('Bạn đã từ chối kết nối ví!');
+        } else {
+          toast.error('Không thể kết nối ví. Vui lòng thử lại!');
+        }
+      }
     }
   };
 

@@ -8,8 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Gamepad2, User, Wallet, Mail, Lock } from "lucide-react";
-import { web3Modal, isWeb3ModalAvailable } from '@/lib/web3';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect, useConnect } from 'wagmi';
 import { z } from "zod";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 
@@ -52,24 +51,26 @@ export default function Auth() {
     checkAuth();
   }, [navigate]);
 
+  const { connectAsync, connectors } = useConnect();
+
   const handleConnect = async () => {
-    if (!isWeb3ModalAvailable() || !web3Modal) {
-      toast.error("Wallet connection is not configured. Please set VITE_WALLETCONNECT_PROJECT_ID.");
-      return;
-    }
     try {
+      const injectedConnector = connectors.find((c) => c.id === 'injected');
+
+      if (!injectedConnector) {
+        toast.error("Chưa phát hiện ví trong trình duyệt. Vui lòng cài MetaMask/Trust Wallet.");
+        return;
+      }
+
       setLoading(true);
-      
-      // Open Web3Modal for wallet selection
-      await web3Modal.open();
-      
-      toast.success("🎉 Vui lòng chọn ví trong popup!");
+      await connectAsync({ connector: injectedConnector });
+      toast.success("🎉 Kết nối ví thành công!");
     } catch (error: any) {
-      console.error("Wallet connect error:", error);
-      if (error.message?.includes("User rejected")) {
+      const message = String(error?.shortMessage || error?.message || "");
+      if (message.toLowerCase().includes("user rejected")) {
         toast.error("Bạn đã từ chối kết nối ví!");
       } else {
-        toast.error("Không thể mở modal kết nối ví. Vui lòng thử lại!");
+        toast.error("Không thể kết nối ví. Vui lòng thử lại!");
       }
     } finally {
       setLoading(false);

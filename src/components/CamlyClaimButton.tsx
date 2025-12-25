@@ -5,6 +5,7 @@ import { Coins, Loader2, Sparkles, Check, X } from 'lucide-react';
 import { useCamlyClaim, ClaimType } from '@/hooks/useCamlyClaim';
 import { useAppKitSafe } from '@/hooks/useAppKitSafe';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface CamlyClaimButtonProps {
   claimType: ClaimType;
@@ -44,7 +45,11 @@ export function CamlyClaimButton({
 
   const handleClaim = async () => {
     if (!isWalletConnected) {
-      open();
+      try {
+        await open();
+      } catch {
+        toast.error('Chưa phát hiện ví. Vui lòng cài MetaMask/Trust Wallet.');
+      }
       return;
     }
 
