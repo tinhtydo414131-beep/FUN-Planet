@@ -52,41 +52,85 @@ export default function Auth() {
   }, [navigate]);
 
   const { connectAsync, connectors } = useConnect();
+  
+  // Ref to prevent double-click on wallet connect
+  const isConnectingRef = useRef(false);
 
   const handleConnect = async () => {
+    // Prevent double-click causing -32002 error
+    if (isConnectingRef.current || loading) {
+      toast.info("Đang kết nối ví... Vui lòng kiểm tra MetaMask!");
+      return;
+    }
+
     try {
       // Check if any wallet is available in the browser
       if (typeof window.ethereum === 'undefined') {
-        toast.error("Chưa phát hiện ví trong trình duyệt. Vui lòng cài MetaMask hoặc Trust Wallet.", {
-          description: "Mở trang web này trong ứng dụng Trust Wallet hoặc cài đặt MetaMask trên máy tính.",
-          duration: 5000,
-        });
+        // Check if on mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          toast.error("Vui lòng mở trang này trong ứng dụng Trust Wallet hoặc MetaMask!", {
+            description: "Hoặc cài đặt ví trên trình duyệt của bạn.",
+            duration: 6000,
+          });
+        } else {
+          toast.error("Chưa phát hiện ví trong trình duyệt.", {
+            description: "Vui lòng cài MetaMask hoặc Trust Wallet extension.",
+            duration: 5000,
+          });
+        }
         return;
       }
 
-      // Find any available injected connector
-      const injectedConnector = connectors.find((c) => 
-        c.id === 'injected' || c.id === 'metaMask' || c.id.includes('injected')
-      );
+      // Find the injected connector
+      const injectedConnector = connectors.find((c) => c.id === 'injected');
 
       if (!injectedConnector) {
         toast.error("Không thể kết nối ví. Vui lòng thử lại!");
         return;
       }
 
+      isConnectingRef.current = true;
       setLoading(true);
+      
+      // Set a timeout to reset loading state if connection takes too long
+      const timeoutId = setTimeout(() => {
+        if (isConnectingRef.current) {
+          setLoading(false);
+          isConnectingRef.current = false;
+          toast.error("Kết nối ví quá lâu. Vui lòng kiểm tra MetaMask và thử lại!", {
+            description: "Có thể có request đang chờ trong ví của bạn.",
+          });
+        }
+      }, 30000);
+
       await connectAsync({ connector: injectedConnector });
+      clearTimeout(timeoutId);
       toast.success("🎉 Kết nối ví thành công!");
     } catch (error: any) {
+      console.error("Wallet connect error:", error);
+      const errorCode = error?.code || error?.cause?.code;
       const message = String(error?.shortMessage || error?.message || "");
-      if (message.toLowerCase().includes("user rejected")) {
+      
+      // Handle specific error codes
+      if (errorCode === -32002 || message.includes("pending") || message.includes("already pending")) {
+        toast.error("Có request đang chờ trong ví!", {
+          description: "Vui lòng mở MetaMask/Trust Wallet và xác nhận hoặc từ chối request.",
+          duration: 6000,
+        });
+      } else if (message.toLowerCase().includes("user rejected") || message.toLowerCase().includes("user denied")) {
         toast.error("Bạn đã từ chối kết nối ví!");
+      } else if (message.includes("already connected") || message.includes("Connector already connected")) {
+        // Already connected - just proceed
+        toast.success("Ví đã được kết nối!");
       } else {
-        console.error("Wallet connect error:", error);
-        toast.error("Không thể kết nối ví. Vui lòng thử lại!");
+        toast.error("Không thể kết nối ví. Vui lòng thử lại!", {
+          description: message.slice(0, 100),
+        });
       }
     } finally {
       setLoading(false);
+      isConnectingRef.current = false;
     }
   };
 
