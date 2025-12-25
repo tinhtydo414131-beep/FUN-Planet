@@ -8,8 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Gamepad2, User, Wallet, Mail, Lock } from "lucide-react";
-import { web3Modal, isWeb3ModalAvailable } from '@/lib/web3';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect, useConnect } from 'wagmi';
 import { z } from "zod";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 
@@ -33,6 +32,7 @@ export default function Auth() {
   
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const { connect, connectors, isPending: isConnecting } = useConnect();
 
   // Auto-proceed to register step when wallet connects
   useEffect(() => {
@@ -53,26 +53,30 @@ export default function Auth() {
   }, [navigate]);
 
   const handleConnect = async () => {
-    if (!isWeb3ModalAvailable() || !web3Modal) {
-      toast.error("Wallet connection is not configured. Please set VITE_WALLETCONNECT_PROJECT_ID.");
-      return;
-    }
     try {
-      setLoading(true);
+      // Find the injected connector (MetaMask, Trust Wallet, etc.)
+      const injectedConnector = connectors.find(c => c.id === 'injected');
       
-      // Open Web3Modal for wallet selection
-      await web3Modal.open();
-      
-      toast.success("🎉 Vui lòng chọn ví trong popup!");
+      if (!injectedConnector) {
+        toast.error("Không tìm thấy ví! Vui lòng cài đặt MetaMask hoặc Trust Wallet.");
+        return;
+      }
+
+      // Check if wallet extension is available
+      if (typeof window.ethereum === 'undefined') {
+        toast.error("Vui lòng cài đặt MetaMask hoặc Trust Wallet để kết nối ví!");
+        return;
+      }
+
+      connect({ connector: injectedConnector });
+      toast.success("🎉 Đang kết nối ví...");
     } catch (error: any) {
       console.error("Wallet connect error:", error);
-      if (error.message?.includes("User rejected")) {
+      if (error.message?.includes("User rejected") || error.message?.includes("rejected")) {
         toast.error("Bạn đã từ chối kết nối ví!");
       } else {
-        toast.error("Không thể mở modal kết nối ví. Vui lòng thử lại!");
+        toast.error("Không thể kết nối ví. Vui lòng thử lại!");
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -469,10 +473,10 @@ export default function Auth() {
               <TabsContent value="wallet" className="space-y-4">
                 <Button
                   onClick={handleConnect}
-                  disabled={loading}
+                  disabled={loading || isConnecting}
                   className="w-full h-16 text-lg font-fredoka font-bold bg-gradient-to-r from-accent to-secondary hover:shadow-xl transition-all"
                 >
-                  {loading ? "Đang kết nối... ⏳" : "🦊 Kết nối ví"}
+                  {loading || isConnecting ? "Đang kết nối... ⏳" : "🦊 Kết nối ví"}
                 </Button>
 
                 <div className="p-4 bg-muted/50 rounded-xl space-y-2 text-sm font-comic text-muted-foreground">
