@@ -2,7 +2,7 @@
 // Add wallet addresses that have admin access to the dashboard
 export const ADMIN_WALLETS = [
   '0x0910320181889fefde0bb1ca63962b0a8882e413', // Default admin wallet
-  // Add your wallet address here
+  '0x2C05a7663dBaAe48A4d195EA2f957eBa1F00D71B', // Ly's admin wallet
 ] as const;
 
 // Funny redirect message when non-admin tries to access
