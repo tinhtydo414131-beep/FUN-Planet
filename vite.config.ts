@@ -23,18 +23,16 @@ export default defineConfig(({ mode }) => ({
         }
         warn(warning);
       },
-      // Remove manualChunks for wagmi - use external instead
-      external: (id) => {
-        // Mark wagmi-related packages as external during PWA build phase
-        // They will be loaded at runtime instead of bundled
-        return false; // Don't actually externalize, just prevent chunk issues
-      },
     },
   },
   optimizeDeps: {
     include: [
-      'wagmi',
       'viem',
+      '@tanstack/react-query',
+    ],
+    exclude: [
+      // Exclude wagmi from optimizeDeps to let it resolve naturally
+      'wagmi',
       '@reown/appkit',
       '@reown/appkit-adapter-wagmi',
       '@walletconnect/ethereum-provider',
@@ -42,14 +40,13 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       target: 'esnext',
     },
-    // Force pre-bundling to avoid resolution issues
-    force: true,
   },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: 'auto',
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
         name: "FUN Planet - Build Your Planet",
@@ -77,11 +74,27 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}"],
-        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MiB limit
-        // Exclude web3-vendor chunk from precaching to avoid resolution issues
-        globIgnores: ['**/web3-vendor*.js'],
+        globPatterns: ["**/*.{css,html,ico,png,svg,jpg,jpeg,webp}"],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+        // Exclude ALL JS files from precaching to avoid wagmi resolution issues
+        // JS will be fetched at runtime via NetworkFirst strategy
+        globIgnores: ['**/*.js'],
         runtimeCaching: [
+          {
+            // Cache JS files at runtime instead of precaching
+            urlPattern: /\.js$/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "js-runtime-cache",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
@@ -89,7 +102,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -103,7 +116,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: "supabase-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                maxAgeSeconds: 60 * 60 * 24
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -117,14 +130,14 @@ export default defineConfig(({ mode }) => ({
               cacheName: "images-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                maxAgeSeconds: 60 * 60 * 24 * 30
               }
             }
           }
         ]
       },
       devOptions: {
-        enabled: true
+        enabled: false // Disable PWA in development to avoid issues
       }
     })
   ].filter(Boolean),

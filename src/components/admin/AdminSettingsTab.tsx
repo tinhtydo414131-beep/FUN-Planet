@@ -1,37 +1,59 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAdminSettings } from "@/hooks/useAdminSettings";
 import { 
-  Settings, 
   Save,
   AlertTriangle,
   Shield,
-  Coins
+  Coins,
+  Loader2,
+  Play,
+  Pause
 } from "lucide-react";
 
 export function AdminSettingsTab() {
-  const [settings, setSettings] = useState({
-    dailyClaimLimit: 5000000,
-    approvalThreshold: 100000,
-    maxDailyDistribution: 50000000,
-    enableAutoFraudScan: true,
-    requireApprovalForLargeClaims: true,
-    blockNewUsersFromClaiming: false,
-    minAccountAgeForClaim: 1
-  });
+  const { 
+    settings, 
+    setSettings, 
+    loading, 
+    saving, 
+    saveSettings,
+    pauseClaims,
+    resumeClaims 
+  } = useAdminSettings();
 
   const handleSave = async () => {
-    try {
-      // In a real app, you would save these to a settings table
-      toast.success("Settings saved successfully");
-    } catch (error) {
-      toast.error("Failed to save settings");
-    }
+    await saveSettings(settings);
   };
+
+  const updateRewardSetting = (key: keyof typeof settings.rewardSettings, value: number) => {
+    setSettings({
+      ...settings,
+      rewardSettings: { ...settings.rewardSettings, [key]: value }
+    });
+  };
+
+  const updateSecuritySetting = (key: keyof typeof settings.securitySettings, value: boolean) => {
+    setSettings({
+      ...settings,
+      securitySettings: { ...settings.securitySettings, [key]: value }
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-[300px] w-full" />
+        <Skeleton className="h-[200px] w-full" />
+        <Skeleton className="h-[150px] w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -53,8 +75,8 @@ export function AdminSettingsTab() {
               <Input
                 id="dailyLimit"
                 type="number"
-                value={settings.dailyClaimLimit}
-                onChange={(e) => setSettings(s => ({ ...s, dailyClaimLimit: Number(e.target.value) }))}
+                value={settings.rewardSettings.dailyClaimLimit}
+                onChange={(e) => updateRewardSetting('dailyClaimLimit', Number(e.target.value))}
               />
               <p className="text-xs text-muted-foreground">
                 Maximum CAMLY a user can claim per day
@@ -66,8 +88,8 @@ export function AdminSettingsTab() {
               <Input
                 id="approvalThreshold"
                 type="number"
-                value={settings.approvalThreshold}
-                onChange={(e) => setSettings(s => ({ ...s, approvalThreshold: Number(e.target.value) }))}
+                value={settings.rewardSettings.approvalThreshold}
+                onChange={(e) => updateRewardSetting('approvalThreshold', Number(e.target.value))}
               />
               <p className="text-xs text-muted-foreground">
                 Claims above this amount require manual approval
@@ -79,8 +101,8 @@ export function AdminSettingsTab() {
               <Input
                 id="maxDaily"
                 type="number"
-                value={settings.maxDailyDistribution}
-                onChange={(e) => setSettings(s => ({ ...s, maxDailyDistribution: Number(e.target.value) }))}
+                value={settings.rewardSettings.maxDailyDistribution}
+                onChange={(e) => updateRewardSetting('maxDailyDistribution', Number(e.target.value))}
               />
               <p className="text-xs text-muted-foreground">
                 Total CAMLY that can be distributed in one day
@@ -92,8 +114,8 @@ export function AdminSettingsTab() {
               <Input
                 id="minAge"
                 type="number"
-                value={settings.minAccountAgeForClaim}
-                onChange={(e) => setSettings(s => ({ ...s, minAccountAgeForClaim: Number(e.target.value) }))}
+                value={settings.rewardSettings.minAccountAgeForClaim}
+                onChange={(e) => updateRewardSetting('minAccountAgeForClaim', Number(e.target.value))}
               />
               <p className="text-xs text-muted-foreground">
                 Minimum account age before user can claim rewards
@@ -123,8 +145,8 @@ export function AdminSettingsTab() {
               </p>
             </div>
             <Switch
-              checked={settings.enableAutoFraudScan}
-              onCheckedChange={(checked) => setSettings(s => ({ ...s, enableAutoFraudScan: checked }))}
+              checked={settings.securitySettings.enableAutoFraudScan}
+              onCheckedChange={(checked) => updateSecuritySetting('enableAutoFraudScan', checked)}
             />
           </div>
 
@@ -136,8 +158,8 @@ export function AdminSettingsTab() {
               </p>
             </div>
             <Switch
-              checked={settings.requireApprovalForLargeClaims}
-              onCheckedChange={(checked) => setSettings(s => ({ ...s, requireApprovalForLargeClaims: checked }))}
+              checked={settings.securitySettings.requireApprovalForLargeClaims}
+              onCheckedChange={(checked) => updateSecuritySetting('requireApprovalForLargeClaims', checked)}
             />
           </div>
 
@@ -149,8 +171,8 @@ export function AdminSettingsTab() {
               </p>
             </div>
             <Switch
-              checked={settings.blockNewUsersFromClaiming}
-              onCheckedChange={(checked) => setSettings(s => ({ ...s, blockNewUsersFromClaiming: checked }))}
+              checked={settings.securitySettings.blockNewUsersFromClaiming}
+              onCheckedChange={(checked) => updateSecuritySetting('blockNewUsersFromClaiming', checked)}
             />
           </div>
         </CardContent>
@@ -170,34 +192,48 @@ export function AdminSettingsTab() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-red-500/10 rounded-lg">
             <div>
-              <p className="font-medium">Pause All Claims</p>
+              <p className="font-medium">
+                {settings.systemSettings.claimsPaused ? 'Claims Paused' : 'Pause All Claims'}
+              </p>
               <p className="text-sm text-muted-foreground">
-                Temporarily disable all CAMLY claims globally
+                {settings.systemSettings.claimsPaused 
+                  ? 'Claims are currently paused. Click to resume.'
+                  : 'Temporarily disable all CAMLY claims globally'}
               </p>
             </div>
-            <Button variant="destructive" size="sm">
-              Pause Claims
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-red-500/10 rounded-lg">
-            <div>
-              <p className="font-medium">Reset All Pending Rewards</p>
-              <p className="text-sm text-muted-foreground">
-                Clear all pending rewards (cannot be undone)
-              </p>
-            </div>
-            <Button variant="destructive" size="sm">
-              Reset Pending
-            </Button>
+            {settings.systemSettings.claimsPaused ? (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={resumeClaims}
+                disabled={saving}
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                Resume Claims
+              </Button>
+            ) : (
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={pauseClaims}
+                disabled={saving}
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Pause className="h-4 w-4 mr-2" />}
+                Pause Claims
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button onClick={handleSave} size="lg">
-          <Save className="h-4 w-4 mr-2" />
+        <Button onClick={handleSave} size="lg" disabled={saving}>
+          {saving ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4 mr-2" />
+          )}
           Save Settings
         </Button>
       </div>
