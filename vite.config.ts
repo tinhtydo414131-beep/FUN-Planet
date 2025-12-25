@@ -5,6 +5,8 @@ import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "url";
 
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -13,14 +15,14 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(rootDir, "./src"),
       // Pin wagmi ESM files directly to bypass commonjs resolver issues
-      "wagmi": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/index.js"),
-      "wagmi/chains": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/chains.js"),
-      "wagmi/actions": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/actions.js"),
-      "wagmi/connectors": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/connectors.js"),
+      wagmi: path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/index.js"),
+      "wagmi/chains": path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/chains.js"),
+      "wagmi/actions": path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/actions.js"),
+      "wagmi/connectors": path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/connectors.js"),
     },
-    dedupe: ['wagmi', 'viem', '@tanstack/react-query'],
+    dedupe: ["wagmi", "viem", "@tanstack/react-query"],
   },
   build: {
     rollupOptions: {
