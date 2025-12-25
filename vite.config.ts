@@ -17,14 +17,10 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(rootDir, "./src"),
     },
-    dedupe: ["wagmi", "viem", "@tanstack/react-query"],
+    dedupe: ["wagmi", "viem", "@wagmi/core", "@tanstack/react-query"],
   },
   build: {
     target: "esnext",
-    commonjsOptions: {
-      // Prevent Vite/Rollup CommonJS resolver from trying to parse ESM-only deps
-      exclude: [/node_modules\/wagmi\//, /node_modules\/viem\//, /node_modules\/@reown\//],
-    },
     rollupOptions: {
       onwarn(warning, warn) {
         // Suppress "use client" warnings from wagmi/viem
@@ -36,12 +32,13 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
+    include: ["wagmi", "viem", "@wagmi/core"],
     esbuildOptions: {
       target: "esnext",
     },
   },
   ssr: {
-    noExternal: ["wagmi", "viem", "@reown/appkit", "@reown/appkit-adapter-wagmi"],
+    noExternal: ["wagmi", "viem"],
   },
   plugins: [
     react(),

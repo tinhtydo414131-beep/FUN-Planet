@@ -112,7 +112,7 @@ export default function TetrisGame({ level = 1, onLevelComplete, onBack }: Tetri
   const [gameLevel, setGameLevel] = useState(level);
   const targetLines = 10 + level * 5;
 
-  const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
+  const gameLoopRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Check collision
   const checkCollision = useCallback(
