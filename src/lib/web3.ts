@@ -2,13 +2,6 @@ import { createConfig, http } from 'wagmi';
 import { bsc } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 
-// WalletConnect Project ID (optional - if not set, WalletConnect won't be available)
-const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-
-// Check if WalletConnect is configured
-export const isWalletConnectConfigured = (): boolean => {
-  return !!WALLETCONNECT_PROJECT_ID && WALLETCONNECT_PROJECT_ID.length > 0;
-};
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
 
@@ -163,15 +156,21 @@ export const REWARDS_CLAIM_ABI = [
   },
 ] as const;
 
-// Create wagmi config with BSC mainnet
+// Create wagmi config with BSC mainnet and injected connector (MetaMask, Trust Wallet, etc.)
 export const wagmiConfig = createConfig({
   chains: [bsc],
   connectors: [
-    // MetaMask connector
     injected({
       target: 'metaMask',
     }),
-    // Generic injected connector for Trust Wallet and other wallets
+    injected({
+      target: {
+        id: 'trustWallet',
+        name: 'Trust Wallet',
+        provider: (window as any).trustwallet?.ethereum,
+      },
+    }),
+    // Generic injected connector for other wallets
     injected(),
   ],
   transports: {
