@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { 
   Wallet, Gem, Sparkles, Gift, Gamepad2, Upload, Users, Heart,
-  CheckCircle2, Loader2, Shield, Key, Copy, ExternalLink, X
+  CheckCircle2, Loader2, Shield, Key, Copy, ExternalLink, X, AlertCircle
 } from 'lucide-react';
 import { useAccount, useConnect, useDisconnect, useBalance, useChainId, useSwitchChain } from 'wagmi';
 import { bsc } from 'wagmi/chains';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { formatCamly } from '@/lib/web3';
+import { formatCamly, isWalletConnectConfigured, isWalletAvailable } from '@/lib/web3';
 import { toast } from 'sonner';
 
 
@@ -46,7 +46,7 @@ const playBlingSound = () => {
 
 export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdate }: LightWalletModalProps) => {
   const { address, isConnected } = useAccount();
-  const { connect, connectors, isPending } = useConnect();
+  const { connect, connectors, isPending, error: connectError } = useConnect();
   const { disconnect } = useDisconnect();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
@@ -55,6 +55,28 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
   const [showFunWalletCreate, setShowFunWalletCreate] = useState(false);
   const [creatingFunWallet, setCreatingFunWallet] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [connectingType, setConnectingType] = useState<string | null>(null);
+
+  // Check if wallets are available
+  const hasInjectedWallet = isWalletAvailable();
+  const hasWalletConnect = isWalletConnectConfigured();
+
+  // Handle connection errors
+  useEffect(() => {
+    if (connectError) {
+      setConnectingType(null);
+      const errorMsg = connectError.message.toLowerCase();
+      
+      if (errorMsg.includes('user rejected') || errorMsg.includes('rejected')) {
+        toast.error('Connection cancelled');
+      } else if (errorMsg.includes('no provider') || errorMsg.includes('not found')) {
+        toast.error('Please install a wallet like MetaMask or Trust Wallet');
+      } else {
+        toast.error('Connection failed. Please try again.');
+      }
+      console.error('Wallet connection error:', connectError);
+    }
+  }, [connectError]);
 
   // BNB balance
   const { data: bnbBalance } = useBalance({ address });
@@ -108,19 +130,63 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
     }
   };
 
-  const handleConnectMetaMask = () => {
-    const metamaskConnector = connectors.find(c => c.id === 'injected' || c.name === 'MetaMask');
-    if (metamaskConnector) {
-      connect({ connector: metamaskConnector });
+  const handleConnectInjected = useCallback((walletType: 'metamask' | 'trust' | 'any') => {
+    if (!hasInjectedWallet) {
+      toast.error('No wallet detected. Please install MetaMask or Trust Wallet.');
+      return;
     }
-  };
 
-  const handleConnectWalletConnect = () => {
-    const wcConnector = connectors.find(c => c.id === 'walletConnect');
-    if (wcConnector) {
-      connect({ connector: wcConnector });
+    setConnectingType(walletType);
+    
+    // Find the appropriate connector
+    let connector = connectors.find(c => c.id === 'injected');
+    
+    if (connector) {
+      connect(
+        { connector },
+        {
+          onSuccess: () => {
+            setConnectingType(null);
+            toast.success('Wallet connected successfully!');
+          },
+          onError: () => {
+            setConnectingType(null);
+          },
+        }
+      );
+    } else {
+      setConnectingType(null);
+      toast.error('No wallet connector available');
     }
-  };
+  }, [connectors, connect, hasInjectedWallet]);
+
+  const handleConnectWalletConnect = useCallback(() => {
+    if (!hasWalletConnect) {
+      toast.error('WalletConnect is not configured');
+      return;
+    }
+
+    setConnectingType('walletconnect');
+    const wcConnector = connectors.find(c => c.id === 'walletConnect');
+    
+    if (wcConnector) {
+      connect(
+        { connector: wcConnector },
+        {
+          onSuccess: () => {
+            setConnectingType(null);
+            toast.success('Wallet connected successfully!');
+          },
+          onError: () => {
+            setConnectingType(null);
+          },
+        }
+      );
+    } else {
+      setConnectingType(null);
+      toast.error('WalletConnect connector not found');
+    }
+  }, [connectors, connect, hasWalletConnect]);
 
   const handleCreateFunWallet = async () => {
     setCreatingFunWallet(true);
@@ -288,41 +354,53 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
                 <p className="text-sm text-muted-foreground">First connection bonus on BSC Mainnet</p>
               </div>
 
-              {/* MetaMask */}
+              {/* No Wallet Warning */}
+              {!hasInjectedWallet && (
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm">
+                  <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                  <p className="text-muted-foreground">
+                    No wallet detected. Please install MetaMask or Trust Wallet.
+                  </p>
+                </div>
+              )}
+
+              {/* MetaMask / Trust Wallet Button */}
               <motion.button
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleConnectMetaMask}
-                disabled={isPending}
-                className="w-full p-4 rounded-xl border-2 border-orange-500/30 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 hover:from-orange-500/20 hover:to-yellow-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
+                onClick={() => handleConnectInjected('any')}
+                disabled={isPending || !hasInjectedWallet}
+                className="w-full p-4 rounded-xl border-2 border-orange-500/30 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 hover:from-orange-500/20 hover:to-yellow-500/20 transition-all flex items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center">
                   <span className="text-2xl">🦊</span>
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="font-semibold text-lg">MetaMask</p>
-                  <p className="text-sm text-muted-foreground">Most popular wallet</p>
+                  <p className="font-semibold text-lg">MetaMask / Trust Wallet</p>
+                  <p className="text-sm text-muted-foreground">Browser extension wallet</p>
                 </div>
-                {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
+                {connectingType === 'any' && <Loader2 className="w-5 h-5 animate-spin" />}
               </motion.button>
 
-              {/* WalletConnect */}
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleConnectWalletConnect}
-                disabled={isPending}
-                className="w-full p-4 rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
-              >
-                <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
-                  <span className="text-2xl">🔗</span>
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-semibold text-lg">WalletConnect</p>
-                  <p className="text-sm text-muted-foreground">Scan QR with mobile wallet</p>
-                </div>
-                {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-              </motion.button>
+              {/* WalletConnect - Only show if configured */}
+              {hasWalletConnect && (
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleConnectWalletConnect}
+                  disabled={isPending}
+                  className="w-full p-4 rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
+                    <span className="text-2xl">🔗</span>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="font-semibold text-lg">WalletConnect</p>
+                    <p className="text-sm text-muted-foreground">Scan QR with mobile wallet</p>
+                  </div>
+                  {connectingType === 'walletconnect' && <Loader2 className="w-5 h-5 animate-spin" />}
+                </motion.button>
+              )}
 
               {/* FUN Wallet */}
               <motion.button
