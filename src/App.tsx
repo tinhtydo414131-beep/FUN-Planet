@@ -59,6 +59,7 @@ import ParentDashboard from "./pages/ParentDashboard";
 import PlanetExplorer from "./pages/PlanetExplorer";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRewardsDashboard from "./pages/AdminRewardsDashboard";
+import AdminMasterDashboard from "./pages/AdminMasterDashboard";
 import About from "./pages/About";
 import LovableGamePlay from "./pages/LovableGamePlay";
 import SampleGames from "./pages/SampleGames";
@@ -134,6 +135,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/game-review" element={<AdminGameReview />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin/rewards" element={<AdminRewardsDashboard />} />
+        <Route path="/admin/master" element={<AdminMasterDashboard />} />
         
         {/* Other */}
         <Route path="/about" element={<About />} />

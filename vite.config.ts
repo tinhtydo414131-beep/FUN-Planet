@@ -15,8 +15,24 @@ export default defineConfig(({ mode }) => ({
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress "use client" warnings from wagmi/viem
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return;
+        }
+        warn(warning);
+      },
+    },
   },
   optimizeDeps: {
+    include: [
+      'wagmi',
+      'viem',
+      '@reown/appkit',
+      '@reown/appkit-adapter-wagmi',
+      '@walletconnect/ethereum-provider',
+    ],
     esbuildOptions: {
       target: 'esnext',
     },

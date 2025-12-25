@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,8 @@ import {
   ArrowLeft,
   RefreshCw,
   BarChart3,
-  Settings
+  Settings,
+  Loader2
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
@@ -36,7 +38,7 @@ interface Stats {
 
 export default function AdminMasterDashboard() {
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin, isLoading: adminLoading } = useAdminRole();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
@@ -50,44 +52,24 @@ export default function AdminMasterDashboard() {
   });
   const [refreshing, setRefreshing] = useState(false);
 
+  // Redirect non-admin users
   useEffect(() => {
-    checkAdminAndLoadData();
-  }, []);
-
-  const checkAdminAndLoadData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-
-      // Check admin role from user_roles table
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .single();
-
-      if (!roleData) {
-        toast.error("Access denied. Admin only.");
-        navigate("/");
-        return;
-      }
-
-      setIsAdmin(true);
-      await loadStats();
-    } catch (error) {
-      console.error("Admin check error:", error);
+    if (!adminLoading && !isAdmin) {
+      toast.error("Bạn không có quyền truy cập trang này");
       navigate("/");
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [isAdmin, adminLoading, navigate]);
+
+  // Load data when admin access is confirmed
+  useEffect(() => {
+    if (isAdmin && !adminLoading) {
+      loadStats();
+    }
+  }, [isAdmin, adminLoading]);
 
   const loadStats = async () => {
     setRefreshing(true);
+    setLoading(true);
     try {
       // Get total users
       const { count: usersCount } = await supabase
@@ -143,17 +125,20 @@ export default function AdminMasterDashboard() {
       toast.error("Failed to load statistics");
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   };
 
-  if (loading) {
+  // Show loading state
+  if (adminLoading || (loading && isAdmin)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
 
+  // Don't render anything if not admin (redirect will happen via useEffect)
   if (!isAdmin) {
     return null;
   }
