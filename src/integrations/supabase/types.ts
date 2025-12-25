@@ -60,6 +60,82 @@ export type Database = {
           },
         ]
       }
+      admin_blocked_users: {
+        Row: {
+          blocked_by: string
+          created_at: string | null
+          evidence: Json | null
+          id: string
+          reason: string
+          status: string | null
+          unblocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          blocked_by: string
+          created_at?: string | null
+          evidence?: Json | null
+          id?: string
+          reason: string
+          status?: string | null
+          unblocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          blocked_by?: string
+          created_at?: string | null
+          evidence?: Json | null
+          id?: string
+          reason?: string
+          status?: string | null
+          unblocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_blocked_users_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_blocked_users_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_blocked_users_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_blocked_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_blocked_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_blocked_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocked_games: {
         Row: {
           child_id: string
@@ -2219,6 +2295,33 @@ export type Database = {
         }
         Relationships: []
       }
+      project_wallet_stats: {
+        Row: {
+          id: string
+          last_updated: string | null
+          total_claimed: number | null
+          total_distributed: number | null
+          total_pending: number | null
+          total_supply: number | null
+        }
+        Insert: {
+          id?: string
+          last_updated?: string | null
+          total_claimed?: number | null
+          total_distributed?: number | null
+          total_pending?: number | null
+          total_supply?: number | null
+        }
+        Update: {
+          id?: string
+          last_updated?: string | null
+          total_claimed?: number | null
+          total_distributed?: number | null
+          total_pending?: number | null
+          total_supply?: number | null
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           completed_at: string | null
@@ -2289,6 +2392,85 @@ export type Database = {
           {
             foreignKeyName: "referrals_referrer_id_fkey"
             columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reward_approval_queue: {
+        Row: {
+          amount: number
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          processed_at: string | null
+          rejection_reason: string | null
+          reward_type: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          processed_at?: string | null
+          rejection_reason?: string | null
+          reward_type: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          processed_at?: string | null
+          rejection_reason?: string | null
+          reward_type?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_approval_queue_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "reward_approval_queue_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_approval_queue_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_approval_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "reward_approval_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_approval_queue_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "public_leaderboard"
             referencedColumns: ["id"]
@@ -2391,6 +2573,85 @@ export type Database = {
           {
             foreignKeyName: "story_views_viewer_id_fkey"
             columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suspicious_activity_logs: {
+        Row: {
+          action_taken: string | null
+          activity_type: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          reviewed: boolean | null
+          reviewed_by: string | null
+          risk_score: number | null
+          user_id: string
+        }
+        Insert: {
+          action_taken?: string | null
+          activity_type: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          reviewed?: boolean | null
+          reviewed_by?: string | null
+          risk_score?: number | null
+          user_id: string
+        }
+        Update: {
+          action_taken?: string | null
+          activity_type?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          reviewed?: boolean | null
+          reviewed_by?: string | null
+          risk_score?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suspicious_activity_logs_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suspicious_activity_logs_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suspicious_activity_logs_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suspicious_activity_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suspicious_activity_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suspicious_activity_logs_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "public_leaderboard"
             referencedColumns: ["id"]
