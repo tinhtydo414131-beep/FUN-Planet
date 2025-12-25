@@ -8,14 +8,12 @@ const ADMIN_WALLETS = [
 ];
 
 export const useAdminRole = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
-  const { data: isAdmin, isLoading: queryLoading } = useQuery({
+  const { data: isAdmin, isLoading } = useQuery({
     queryKey: ['adminRole', user?.id],
     queryFn: async () => {
       if (!user?.id) return false;
-      
-      console.debug('[useAdminRole] Checking admin role for user:', user.id);
       
       // Check 1: Check if user has admin role in database
       const { data: hasAdminRole, error: roleError } = await supabase.rpc('has_role', {
@@ -24,13 +22,10 @@ export const useAdminRole = () => {
       });
       
       if (roleError) {
-        console.error('[useAdminRole] Error checking admin role:', roleError);
+        console.error('Error checking admin role:', roleError);
       }
       
-      if (hasAdminRole === true) {
-        console.debug('[useAdminRole] User has admin role in database');
-        return true;
-      }
+      if (hasAdminRole === true) return true;
       
       // Check 2: Check if user's wallet address is in admin list
       const { data: profile, error: profileError } = await supabase
@@ -40,29 +35,20 @@ export const useAdminRole = () => {
         .single();
       
       if (profileError) {
-        console.error('[useAdminRole] Error fetching profile:', profileError);
+        console.error('Error fetching profile:', profileError);
         return false;
       }
       
       if (profile?.wallet_address) {
         const isAdminWallet = ADMIN_WALLETS.includes(profile.wallet_address.toLowerCase());
-        console.debug('[useAdminRole] Wallet check:', { 
-          wallet: profile.wallet_address, 
-          isAdminWallet 
-        });
         return isAdminWallet;
       }
       
-      console.debug('[useAdminRole] No admin access found');
       return false;
     },
-    // Only run query when auth is loaded and user exists
-    enabled: !authLoading && !!user?.id,
+    enabled: !!user?.id,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
-
-  // Include auth loading in the overall loading state
-  const isLoading = authLoading || queryLoading;
 
   return {
     isAdmin: isAdmin ?? false,
