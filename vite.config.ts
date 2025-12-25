@@ -11,18 +11,6 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   build: {
-    commonjsOptions: {
-      // Only transform actual CommonJS deps; avoid forcing CJS transform on ESM-only packages like wagmi
-      include: [/node_modules/],
-      exclude: [
-        'wagmi',
-        'viem',
-        '@reown/appkit',
-        '@reown/appkit-adapter-wagmi',
-        '@walletconnect/ethereum-provider',
-      ],
-      transformMixedEsModules: false,
-    },
     rollupOptions: {
       onwarn(warning, warn) {
         // Suppress "use client" warnings from wagmi/viem
@@ -34,16 +22,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: [
-      // Include all web3 packages and their dependencies for proper ESM handling
-      'wagmi',
-      'viem',
-      '@tanstack/react-query',
-      '@reown/appkit',
-      '@reown/appkit-adapter-wagmi',
-      '@walletconnect/ethereum-provider',
-      'eventemitter3',
-    ],
     esbuildOptions: {
       target: 'esnext',
     },
