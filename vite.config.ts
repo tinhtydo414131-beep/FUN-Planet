@@ -16,15 +16,11 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(rootDir, "./src"),
-      // Pin wagmi ESM files directly to bypass commonjs resolver issues
-      wagmi: path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/index.js"),
-      "wagmi/chains": path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/chains.js"),
-      "wagmi/actions": path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/actions.js"),
-      "wagmi/connectors": path.resolve(rootDir, "node_modules/wagmi/dist/esm/exports/connectors.js"),
     },
     dedupe: ["wagmi", "viem", "@tanstack/react-query"],
   },
   build: {
+    target: "esnext",
     rollupOptions: {
       onwarn(warning, warn) {
         // Suppress "use client" warnings from wagmi/viem
@@ -36,10 +32,12 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    exclude: ['wagmi', 'viem'],
     esbuildOptions: {
-      target: 'esnext',
+      target: "esnext",
     },
+  },
+  ssr: {
+    noExternal: ["wagmi", "viem", "@reown/appkit", "@reown/appkit-adapter-wagmi"],
   },
   plugins: [
     react(),
