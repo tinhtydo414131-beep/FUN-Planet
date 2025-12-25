@@ -5,14 +5,15 @@ export {
   REWARDS,
   CAMLY_ABI,
   wagmiConfig,
-  appKit,
   formatCamly,
   shortenAddress,
-  web3Modal,
-  isWeb3ModalAvailable,
+  isWalletAvailable,
 } from './web3';
 
-// Backwards compatible exports
+// Backwards compatible exports (deprecated)
 export const wagmiAdapter = null; // Deprecated, use wagmiConfig directly
 export const wagmiConfigBSC = undefined; // Deprecated, use wagmiConfig
-export const web3ModalBSC = undefined; // Deprecated, use appKit
+export const web3ModalBSC = undefined; // Deprecated
+export const appKit = null; // Deprecated
+export const web3Modal = null; // Deprecated
+export const isWeb3ModalAvailable = (): boolean => false; // Deprecated

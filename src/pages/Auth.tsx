@@ -55,10 +55,22 @@ export default function Auth() {
 
   const handleConnect = async () => {
     try {
-      const injectedConnector = connectors.find((c) => c.id === 'injected');
+      // Check if any wallet is available in the browser
+      if (typeof window.ethereum === 'undefined') {
+        toast.error("Chưa phát hiện ví trong trình duyệt. Vui lòng cài MetaMask hoặc Trust Wallet.", {
+          description: "Mở trang web này trong ứng dụng Trust Wallet hoặc cài đặt MetaMask trên máy tính.",
+          duration: 5000,
+        });
+        return;
+      }
+
+      // Find any available injected connector
+      const injectedConnector = connectors.find((c) => 
+        c.id === 'injected' || c.id === 'metaMask' || c.id.includes('injected')
+      );
 
       if (!injectedConnector) {
-        toast.error("Chưa phát hiện ví trong trình duyệt. Vui lòng cài MetaMask/Trust Wallet.");
+        toast.error("Không thể kết nối ví. Vui lòng thử lại!");
         return;
       }
 
@@ -70,6 +82,7 @@ export default function Auth() {
       if (message.toLowerCase().includes("user rejected")) {
         toast.error("Bạn đã từ chối kết nối ví!");
       } else {
+        console.error("Wallet connect error:", error);
         toast.error("Không thể kết nối ví. Vui lòng thử lại!");
       }
     } finally {

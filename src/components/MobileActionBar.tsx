@@ -38,9 +38,15 @@ export function MobileActionBar() {
 
     if (!isConnected) {
       try {
-        const injectedConnector = connectors.find((c) => c.id === 'injected');
+        if (typeof window.ethereum === 'undefined') {
+          toast.error('Chưa phát hiện ví. Vui lòng cài MetaMask hoặc Trust Wallet.');
+          return;
+        }
+        const injectedConnector = connectors.find((c) => 
+          c.id === 'injected' || c.id === 'metaMask' || c.id.includes('injected')
+        );
         if (!injectedConnector) {
-          toast.error('Chưa phát hiện ví. Vui lòng cài MetaMask/Trust Wallet.');
+          toast.error('Không thể kết nối ví. Vui lòng thử lại!');
           return;
         }
         await connectAsync({ connector: injectedConnector });

@@ -2,25 +2,35 @@ import { useCallback, useMemo } from 'react';
 import { useConnect } from 'wagmi';
 
 /**
- * Safe wrapper kept for backwards compatibility with the old modal-based flow.
- * Now it simply triggers an injected-wallet connection (MetaMask/Trust Wallet...).
+ * Safe wrapper for wallet connection using wagmi's injected connector.
+ * Supports MetaMask, Trust Wallet, and other injected wallets.
  */
 export function useAppKitSafe() {
   const { connectAsync, connectors } = useConnect();
 
   const injectedConnector = useMemo(
-    () => connectors.find((c) => c.id === 'injected'),
+    () => connectors.find((c) => 
+      c.id === 'injected' || c.id === 'metaMask' || c.id.includes('injected')
+    ),
     [connectors]
   );
 
+  const isWalletAvailable = useMemo(
+    () => typeof window !== 'undefined' && typeof (window as any).ethereum !== 'undefined',
+    []
+  );
+
   const open = useCallback(async () => {
+    if (!isWalletAvailable) {
+      throw new Error('NO_WALLET_DETECTED');
+    }
+
     if (!injectedConnector) {
-      // Caller components already show a toast; keep hook side-effect free.
       throw new Error('NO_INJECTED_WALLET');
     }
 
     await connectAsync({ connector: injectedConnector });
-  }, [connectAsync, injectedConnector]);
+  }, [connectAsync, injectedConnector, isWalletAvailable]);
 
   const close = useCallback(async () => {
     // No-op: wallet disconnect is handled via useDisconnect in UI.
@@ -29,6 +39,6 @@ export function useAppKitSafe() {
   return {
     open,
     close,
-    isAvailable: Boolean(injectedConnector),
+    isAvailable: isWalletAvailable && Boolean(injectedConnector),
   };
 }

@@ -161,17 +161,22 @@ export const wagmiConfig = createConfig({
   chains: [bsc],
   connectors: [
     injected({
-      shimDisconnect: true,
+      target: 'metaMask',
     }),
+    injected({
+      target: {
+        id: 'trustWallet',
+        name: 'Trust Wallet',
+        provider: (window as any).trustwallet?.ethereum,
+      },
+    }),
+    // Generic injected connector for other wallets
+    injected(),
   ],
   transports: {
     [bsc.id]: http('https://bsc-dataseed.binance.org'),
   },
 });
-
-// Backwards compatibility exports
-export const appKit = null;
-export const web3Modal = null;
 
 // Helper to format CAMLY amount
 export const formatCamly = (amount: number): string => {
@@ -190,7 +195,7 @@ export const shortenAddress = (address: string): string => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-// Helper to check if Web3Modal is available
-export const isWeb3ModalAvailable = (): boolean => {
-  return false; // Web3Modal is disabled to fix build issues
+// Helper to check if an injected wallet is available
+export const isWalletAvailable = (): boolean => {
+  return typeof window !== 'undefined' && typeof (window as any).ethereum !== 'undefined';
 };
