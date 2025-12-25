@@ -2,8 +2,9 @@ import { createConfig, http } from 'wagmi';
 import { bsc } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
 
-// WalletConnect Project ID
-const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+// WalletConnect Project ID - This is a public/publishable key, safe to include in code
+// Get your own at https://cloud.walletconnect.com/
+const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '4c8fb50c5f84c67b97f9b5e61de9c7f5';
 
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
