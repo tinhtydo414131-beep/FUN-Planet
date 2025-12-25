@@ -161,21 +161,32 @@ export const REWARDS_CLAIM_ABI = [
 ] as const;
 
 // Create wagmi config with BSC mainnet
-// Simplified: only one generic injected connector (works with MetaMask, Trust Wallet, etc.)
+// Includes both injected (MetaMask, Trust Wallet) and WalletConnect (QR code for mobile)
 export const wagmiConfig = createConfig({
   chains: [bsc],
   connectors: [
     // Generic injected connector - works with MetaMask, Trust Wallet, Coinbase, etc.
     injected(),
+    // WalletConnect for mobile QR code scanning
+    walletConnect({
+      projectId: walletConnectProjectId,
+      showQrModal: true,
+      metadata: {
+        name: 'FUN Planet',
+        description: 'Play games, earn CAMLY tokens',
+        url: 'https://funplanet.lovable.app',
+        icons: ['https://funplanet.lovable.app/favicon.ico'],
+      },
+    }),
   ],
   transports: {
     [bsc.id]: http('https://bsc-dataseed.binance.org'),
   },
 });
 
-// Check if WalletConnect is configured
+// WalletConnect is always configured (fallback project ID is included)
 export const isWalletConnectConfigured = (): boolean => {
-  return !!walletConnectProjectId;
+  return true;
 };
 
 // Helper to format CAMLY amount
