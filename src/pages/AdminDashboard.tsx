@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Shield, Users, Gamepad2, Flag, CheckCircle, XCircle,
   Eye, Ban, Star, TrendingUp, AlertTriangle, Search,
-  Filter, MoreVertical, ChevronRight, Clock, Award, Download,
-  Loader2, Sparkles, BarChart3, Coins, RefreshCw
+  Filter, MoreVertical, ChevronRight, Clock, Award, Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -21,13 +19,10 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AdminCSVExport } from "@/components/AdminCSVExport";
-import { AdminUsersTable, AdminContentModeration, AdminRewardsTable, AdminAnalytics, AdminSecurityLog } from "@/components/admin";
-import { ADMIN_ACCESS_DENIED_MESSAGE } from "@/config/adminConfig";
 
 interface UploadedGame {
   id: string;
