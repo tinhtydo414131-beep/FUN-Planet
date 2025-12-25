@@ -21,6 +21,10 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     target: "esnext",
+    commonjsOptions: {
+      // Prevent Vite/Rollup CommonJS resolver from trying to parse ESM-only deps
+      exclude: [/node_modules\/wagmi\//, /node_modules\/viem\//, /node_modules\/@reown\//],
+    },
     rollupOptions: {
       onwarn(warning, warn) {
         // Suppress "use client" warnings from wagmi/viem
