@@ -12,8 +12,16 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     commonjsOptions: {
+      // Only transform actual CommonJS deps; avoid forcing CJS transform on ESM-only packages like wagmi
       include: [/node_modules/],
-      transformMixedEsModules: true,
+      exclude: [
+        'wagmi',
+        'viem',
+        '@reown/appkit',
+        '@reown/appkit-adapter-wagmi',
+        '@walletconnect/ethereum-provider',
+      ],
+      transformMixedEsModules: false,
     },
     rollupOptions: {
       onwarn(warning, warn) {
