@@ -1,6 +1,9 @@
 import { createConfig, http } from 'wagmi';
 import { bsc } from 'wagmi/chains';
-import { injected } from 'wagmi/connectors';
+import { injected, walletConnect } from 'wagmi/connectors';
+
+// WalletConnect Project ID
+const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
@@ -156,7 +159,7 @@ export const REWARDS_CLAIM_ABI = [
   },
 ] as const;
 
-// Create wagmi config with BSC mainnet and injected connector (MetaMask, Trust Wallet, etc.)
+// Create wagmi config with BSC mainnet
 export const wagmiConfig = createConfig({
   chains: [bsc],
   connectors: [
@@ -172,11 +175,31 @@ export const wagmiConfig = createConfig({
     }),
     // Generic injected connector for other wallets
     injected(),
+    // WalletConnect connector
+    ...(walletConnectProjectId
+      ? [
+          walletConnect({
+            projectId: walletConnectProjectId,
+            metadata: {
+              name: 'FUN Planet',
+              description: 'Play games, earn CAMLY tokens',
+              url: typeof window !== 'undefined' ? window.location.origin : 'https://funplanet.io',
+              icons: ['https://funplanet.io/logo.png'],
+            },
+            showQrModal: true,
+          }),
+        ]
+      : []),
   ],
   transports: {
     [bsc.id]: http('https://bsc-dataseed.binance.org'),
   },
 });
+
+// Check if WalletConnect is configured
+export const isWalletConnectConfigured = (): boolean => {
+  return !!walletConnectProjectId;
+};
 
 // Helper to format CAMLY amount
 export const formatCamly = (amount: number): string => {
