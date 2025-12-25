@@ -10,7 +10,7 @@ import { useAccount, useConnect, useDisconnect, useBalance, useChainId, useSwitc
 import { bsc } from 'wagmi/chains';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { formatCamly } from '@/lib/web3';
+import { formatCamly, isWalletConnectConfigured } from '@/lib/web3';
 import { toast } from 'sonner';
 
 
@@ -116,9 +116,15 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
   };
 
   const handleConnectWalletConnect = () => {
+    if (!isWalletConnectConfigured()) {
+      toast.error('WalletConnect is not configured');
+      return;
+    }
     const wcConnector = connectors.find(c => c.id === 'walletConnect');
     if (wcConnector) {
       connect({ connector: wcConnector });
+    } else {
+      toast.error('WalletConnect connector not found');
     }
   };
 
@@ -306,23 +312,25 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
                 {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
               </motion.button>
 
-              {/* WalletConnect */}
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleConnectWalletConnect}
-                disabled={isPending}
-                className="w-full p-4 rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
-              >
-                <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
-                  <span className="text-2xl">🔗</span>
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-semibold text-lg">WalletConnect</p>
-                  <p className="text-sm text-muted-foreground">Scan QR with mobile wallet</p>
-                </div>
-                {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-              </motion.button>
+              {/* WalletConnect - Only show if configured */}
+              {isWalletConnectConfigured() && (
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleConnectWalletConnect}
+                  disabled={isPending}
+                  className="w-full p-4 rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
+                    <span className="text-2xl">🔗</span>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="font-semibold text-lg">WalletConnect</p>
+                    <p className="text-sm text-muted-foreground">Scan QR with mobile wallet</p>
+                  </div>
+                  {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
+                </motion.button>
+              )}
 
               {/* FUN Wallet */}
               <motion.button
