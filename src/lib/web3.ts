@@ -1,12 +1,6 @@
-import { createAppKit } from '@reown/appkit/react';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { defineChain } from '@reown/appkit/networks';
-import { http, createConfig } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { bsc } from 'wagmi/chains';
-
-// Reown Cloud Project ID - use env var or empty string to disable
-// The old hardcoded ID 'a01e309e8e50a5c1e4cc4f9f05e0d5a1' causes 403 errors
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '';
+import { injected } from 'wagmi/connectors';
 
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
@@ -162,93 +156,22 @@ export const REWARDS_CLAIM_ABI = [
   },
 ] as const;
 
-// App metadata
-const metadata = {
-  name: 'FUN Planet',
-  description: 'Build Your Planet – Play & Earn Joy! 🌍',
-  url: typeof window !== 'undefined' ? window.location.origin : 'https://funplanet.app',
-  icons: ['https://funplanet.app/pwa-512x512.png'],
-};
-
-// BSC Mainnet configuration (Chain ID 56)
-const bscNetwork = defineChain({
-  id: 56,
-  caipNetworkId: 'eip155:56',
-  chainNamespace: 'eip155',
-  name: 'BNB Smart Chain',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'BNB',
-    symbol: 'BNB',
-  },
-  rpcUrls: {
-    default: {
-      http: [
-        'https://bsc-dataseed.binance.org',
-        'https://bsc-dataseed1.binance.org',
-        'https://bsc-dataseed2.binance.org',
-        'https://bsc-dataseed3.binance.org',
-        'https://bsc-dataseed4.binance.org',
-      ],
-    },
-  },
-  blockExplorers: {
-    default: { name: 'BscScan', url: 'https://bscscan.com' },
-  },
-  testnet: false,
-});
-
-// Create Wagmi Adapter - only if projectId is configured
-export const wagmiAdapter = projectId ? new WagmiAdapter({
-  networks: [bscNetwork],
-  projectId,
-  ssr: false,
-}) : null;
-
-// Fallback wagmi config for when no project ID is set
-// This ensures wagmi hooks still work without WalletConnect
-const fallbackWagmiConfig = createConfig({
+// Create wagmi config with BSC mainnet and injected connector (MetaMask, Trust Wallet, etc.)
+export const wagmiConfig = createConfig({
   chains: [bsc],
+  connectors: [
+    injected({
+      shimDisconnect: true,
+    }),
+  ],
   transports: {
     [bsc.id]: http('https://bsc-dataseed.binance.org'),
   },
 });
 
-// Export wagmi config for provider - always provide a valid config
-export const wagmiConfig = wagmiAdapter?.wagmiConfig ?? fallbackWagmiConfig;
-
-// Create AppKit modal - only if projectId is configured and valid
-// COMPLETELY disable all external API calls to avoid 403 errors on pulse.walletconnect.org and api.web3modal.org
-// Setting projectId to empty string or falsy value will disable all WalletConnect cloud features
-const hasValidProjectId = Boolean(projectId && projectId.length > 10 && projectId !== 'undefined');
-
-export const appKit = hasValidProjectId ? createAppKit({
-  adapters: wagmiAdapter ? [wagmiAdapter] : [],
-  networks: [bscNetwork],
-  defaultNetwork: bscNetwork,
-  projectId,
-  metadata,
-  themeMode: 'light',
-  themeVariables: {
-    '--w3m-accent': '#FF6B00',
-    '--w3m-border-radius-master': '16px',
-  },
-  features: {
-    analytics: false, // Disable pulse.walletconnect.org calls
-    email: false,
-    socials: false, // Use false instead of empty array
-    onramp: false,
-    swaps: false,
-    history: false, // Disable transaction history API calls
-    allWallets: false, // Disable fetching wallet list from API
-  },
-  enableWalletGuide: false,
-  allowUnsupportedChain: true,
-  featuredWalletIds: [
-    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
-    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
-  ],
-}) : null;
+// Backwards compatibility exports
+export const appKit = null;
+export const web3Modal = null;
 
 // Helper to format CAMLY amount
 export const formatCamly = (amount: number): string => {
@@ -267,10 +190,7 @@ export const shortenAddress = (address: string): string => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-// Export web3Modal for backwards compatibility
-export const web3Modal = appKit;
-
 // Helper to check if Web3Modal is available
 export const isWeb3ModalAvailable = (): boolean => {
-  return Boolean(hasValidProjectId && appKit);
+  return false; // Web3Modal is disabled to fix build issues
 };

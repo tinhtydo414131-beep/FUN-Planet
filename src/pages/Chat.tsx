@@ -39,7 +39,7 @@ export default function Chat() {
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
   const [roomId, setRoomId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {

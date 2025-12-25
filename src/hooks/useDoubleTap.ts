@@ -8,7 +8,7 @@ interface UseDoubleTapOptions {
 
 export function useDoubleTap({ onDoubleTap, onSingleTap, delay = 300 }: UseDoubleTapOptions) {
   const lastTapRef = useRef<number>(0);
-  const singleTapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const singleTapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleTap = useCallback((event: React.TouchEvent | React.MouseEvent) => {
     const now = Date.now();

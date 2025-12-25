@@ -36,7 +36,7 @@ const LilBlockBuddy = ({ level, onLevelComplete, onBack }: LilBlockBuddyProps) =
   const [levelRecord, setLevelRecord] = useState<LevelRecord | null>(null);
   
   const audioContextRef = useRef<AudioContext | null>(null);
-  const autoSolveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSolveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Giới hạn thử thách dựa trên level
   const maxMoves = gridSize * 10;
@@ -139,7 +139,7 @@ const LilBlockBuddy = ({ level, onLevelComplete, onBack }: LilBlockBuddyProps) =
 
   // Timer
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isPlaying && !isComplete && !isFailed) {
       interval = setInterval(() => {
         setTime(t => {
