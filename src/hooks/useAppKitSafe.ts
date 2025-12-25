@@ -1,38 +1,34 @@
-import { useCallback } from 'react';
-import { isWeb3ModalAvailable, appKit } from '@/lib/web3';
+import { useCallback, useMemo } from 'react';
+import { useConnect } from 'wagmi';
 
 /**
- * Safe wrapper for useAppKit that doesn't throw when AppKit is not initialized.
- * Use this instead of useAppKit from @reown/appkit/react
+ * Safe wrapper kept for backwards compatibility with the old modal-based flow.
+ * Now it simply triggers an injected-wallet connection (MetaMask/Trust Wallet...).
  */
 export function useAppKitSafe() {
-  const isAvailable = isWeb3ModalAvailable();
+  const { connectAsync, connectors } = useConnect();
+
+  const injectedConnector = useMemo(
+    () => connectors.find((c) => c.id === 'injected'),
+    [connectors]
+  );
 
   const open = useCallback(async () => {
-    if (isAvailable && appKit) {
-      try {
-        await appKit.open();
-      } catch (error) {
-        console.warn('Failed to open AppKit modal:', error);
-      }
-    } else {
-      console.warn('AppKit is not available. Set VITE_WALLETCONNECT_PROJECT_ID to enable wallet connection.');
+    if (!injectedConnector) {
+      // Caller components already show a toast; keep hook side-effect free.
+      throw new Error('NO_INJECTED_WALLET');
     }
-  }, [isAvailable]);
+
+    await connectAsync({ connector: injectedConnector });
+  }, [connectAsync, injectedConnector]);
 
   const close = useCallback(async () => {
-    if (isAvailable && appKit) {
-      try {
-        await appKit.close();
-      } catch (error) {
-        console.warn('Failed to close AppKit modal:', error);
-      }
-    }
-  }, [isAvailable]);
+    // No-op: wallet disconnect is handled via useDisconnect in UI.
+  }, []);
 
   return {
     open,
     close,
-    isAvailable,
+    isAvailable: Boolean(injectedConnector),
   };
 }

@@ -9,8 +9,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
-import { useAccount, useDisconnect } from 'wagmi';
-import { web3Modal, shortenAddress, formatCamly, REWARDS, isWeb3ModalAvailable } from '@/lib/web3';
+import { useAccount, useDisconnect, useConnect } from 'wagmi';
+import { shortenAddress, formatCamly, REWARDS } from '@/lib/web3';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import camlyCoin from '@/assets/camly-coin.png';
@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 export function Web3Header() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const { connectAsync, connectors } = useConnect();
   const { camlyBalance, isLoading, firstWalletClaimed, loadRewards } = useWeb3Rewards();
   const { claimReward, checkCanClaim, isClaiming } = useCamlyClaim();
   const [copied, setCopied] = useState(false);
@@ -39,9 +40,21 @@ export function Web3Header() {
     checkClaim();
   }, [isConnected, address, firstWalletClaimed, checkCanClaim]);
 
-  const handleConnect = () => {
-    if (isWeb3ModalAvailable() && web3Modal) {
-      web3Modal.open();
+  const handleConnect = async () => {
+    try {
+      const injectedConnector = connectors.find((c) => c.id === 'injected');
+      if (!injectedConnector) {
+        toast.error('Chưa phát hiện ví. Vui lòng cài MetaMask/Trust Wallet.');
+        return;
+      }
+      await connectAsync({ connector: injectedConnector });
+    } catch (error: any) {
+      const message = String(error?.shortMessage || error?.message || '');
+      if (message.toLowerCase().includes('user rejected')) {
+        toast.error('Bạn đã từ chối kết nối ví!');
+      } else {
+        toast.error('Không thể kết nối ví. Vui lòng thử lại!');
+      }
     }
   };
 
