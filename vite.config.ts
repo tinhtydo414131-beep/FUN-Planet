@@ -23,6 +23,18 @@ export default defineConfig(({ mode }) => ({
         }
         warn(warning);
       },
+      output: {
+        manualChunks: {
+          // Split web3 packages into separate chunk to avoid PWA issues
+          'web3-vendor': [
+            'wagmi',
+            'viem',
+            '@reown/appkit',
+            '@reown/appkit-adapter-wagmi',
+            '@walletconnect/ethereum-provider',
+          ],
+        },
+      },
     },
   },
   optimizeDeps: {
@@ -36,6 +48,8 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       target: 'esnext',
     },
+    // Force pre-bundling to avoid resolution issues
+    force: true,
   },
   plugins: [
     react(),
@@ -71,6 +85,8 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MiB limit
+        // Exclude web3-vendor chunk from precaching to avoid resolution issues
+        globIgnores: ['**/web3-vendor*.js'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -121,13 +137,6 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-
-      // Workaround for vite-plugin-pwa/rollup package entry resolution with wagmi v3
-      "wagmi": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/index.js"),
-      "wagmi/chains": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/chains.js"),
-      "wagmi/actions": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/actions.js"),
-      "wagmi/connectors": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/connectors.js"),
-      "wagmi/query": path.resolve(__dirname, "node_modules/wagmi/dist/esm/exports/query.js"),
     },
   },
 }));
