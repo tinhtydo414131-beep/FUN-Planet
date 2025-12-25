@@ -161,36 +161,12 @@ export const REWARDS_CLAIM_ABI = [
 ] as const;
 
 // Create wagmi config with BSC mainnet
+// Simplified: only one generic injected connector (works with MetaMask, Trust Wallet, etc.)
 export const wagmiConfig = createConfig({
   chains: [bsc],
   connectors: [
-    injected({
-      target: 'metaMask',
-    }),
-    injected({
-      target: {
-        id: 'trustWallet',
-        name: 'Trust Wallet',
-        provider: (window as any).trustwallet?.ethereum,
-      },
-    }),
-    // Generic injected connector for other wallets
+    // Generic injected connector - works with MetaMask, Trust Wallet, Coinbase, etc.
     injected(),
-    // WalletConnect connector
-    ...(walletConnectProjectId
-      ? [
-          walletConnect({
-            projectId: walletConnectProjectId,
-            metadata: {
-              name: 'FUN Planet',
-              description: 'Play games, earn CAMLY tokens',
-              url: typeof window !== 'undefined' ? window.location.origin : 'https://funplanet.io',
-              icons: ['https://funplanet.io/logo.png'],
-            },
-            showQrModal: true,
-          }),
-        ]
-      : []),
   ],
   transports: {
     [bsc.id]: http('https://bsc-dataseed.binance.org'),
