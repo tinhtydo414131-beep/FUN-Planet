@@ -27,15 +27,14 @@ export default defineConfig(({ mode }) => ({
   },
   optimizeDeps: {
     include: [
+      // Include all web3 packages and their dependencies for proper ESM handling
+      'wagmi',
       'viem',
       '@tanstack/react-query',
-    ],
-    exclude: [
-      // Exclude wagmi from optimizeDeps to let it resolve naturally
-      'wagmi',
       '@reown/appkit',
       '@reown/appkit-adapter-wagmi',
       '@walletconnect/ethereum-provider',
+      'eventemitter3',
     ],
     esbuildOptions: {
       target: 'esnext',
@@ -44,7 +43,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    VitePWA({
+    // Only enable PWA in production to avoid build conflicts with wagmi
+    mode === "production" && VitePWA({
       registerType: "autoUpdate",
       injectRegister: 'auto',
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
@@ -76,19 +76,17 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{css,html,ico,png,svg,jpg,jpeg,webp}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-        // Exclude ALL JS files from precaching to avoid wagmi resolution issues
-        // JS will be fetched at runtime via NetworkFirst strategy
+        // Exclude JS files from precaching - fetch at runtime
         globIgnores: ['**/*.js'],
         runtimeCaching: [
           {
-            // Cache JS files at runtime instead of precaching
             urlPattern: /\.js$/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "js-runtime-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+                maxAgeSeconds: 60 * 60 * 24 * 7
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -137,7 +135,7 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       devOptions: {
-        enabled: false // Disable PWA in development to avoid issues
+        enabled: false
       }
     })
   ].filter(Boolean),
