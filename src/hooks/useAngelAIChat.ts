@@ -1,18 +1,151 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  created_at?: string;
+}
+
+export interface ChatHistoryGroup {
+  date: string;
+  label: string;
+  messages: ChatMessage[];
 }
 
 interface UseAngelAIChatOptions {
   onError?: (error: string) => void;
+  userId?: string;
 }
 
 export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+
+  // Load chat history from database
+  const loadChatHistory = useCallback(async (userId: string, limit = 20) => {
+    try {
+      const { data, error } = await supabase
+        .from('angel_ai_chat_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: true })
+        .limit(limit);
+
+      if (error) {
+        console.error('Error loading chat history:', error);
+        return [];
+      }
+
+      const loadedMessages: ChatMessage[] = (data || []).map(msg => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content,
+        created_at: msg.created_at
+      }));
+
+      setMessages(loadedMessages);
+      setHistoryLoaded(true);
+      return loadedMessages;
+    } catch (err) {
+      console.error('Error loading chat history:', err);
+      return [];
+    }
+  }, []);
+
+  // Save message to database
+  const saveToHistory = useCallback(async (userId: string, message: ChatMessage) => {
+    try {
+      const { error } = await supabase
+        .from('angel_ai_chat_history')
+        .insert({
+          user_id: userId,
+          role: message.role,
+          content: message.content
+        });
+
+      if (error) {
+        console.error('Error saving message to history:', error);
+      }
+    } catch (err) {
+      console.error('Error saving message:', err);
+    }
+  }, []);
+
+  // Get grouped history for display
+  const getGroupedHistory = useCallback(async (userId: string): Promise<ChatHistoryGroup[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('angel_ai_chat_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error || !data) return [];
+
+      // Group by date
+      const grouped: Record<string, ChatMessage[]> = {};
+      const today = new Date().toDateString();
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+      data.forEach(msg => {
+        const msgDate = new Date(msg.created_at).toDateString();
+        if (!grouped[msgDate]) {
+          grouped[msgDate] = [];
+        }
+        grouped[msgDate].push({
+          role: msg.role as "user" | "assistant",
+          content: msg.content,
+          created_at: msg.created_at
+        });
+      });
+
+      // Convert to array with labels
+      return Object.entries(grouped).map(([date, msgs]) => {
+        let label = date;
+        if (date === today) label = "Hôm nay";
+        else if (date === yesterday) label = "Hôm qua";
+        else {
+          const d = new Date(date);
+          label = d.toLocaleDateString('vi-VN', { 
+            weekday: 'long', 
+            day: 'numeric', 
+            month: 'numeric' 
+          });
+        }
+        return {
+          date,
+          label,
+          messages: msgs.reverse() // Reverse to show oldest first within group
+        };
+      });
+    } catch (err) {
+      console.error('Error getting grouped history:', err);
+      return [];
+    }
+  }, []);
+
+  // Clear all chat history
+  const clearHistory = useCallback(async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('angel_ai_chat_history')
+        .delete()
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error('Error clearing history:', error);
+        return false;
+      }
+
+      setMessages([]);
+      return true;
+    } catch (err) {
+      console.error('Error clearing history:', err);
+      return false;
+    }
+  }, []);
 
   const sendMessage = useCallback(async (userMessage: string, userId?: string) => {
     if (!userMessage.trim() || isLoading) return;
@@ -24,6 +157,11 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setIsLoading(true);
+
+    // Save user message to database
+    if (userId) {
+      saveToHistory(userId, userMsg);
+    }
 
     let assistantContent = "";
 
@@ -137,6 +275,11 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
         }
       }
 
+      // Save assistant message to database after completion
+      if (userId && assistantContent) {
+        saveToHistory(userId, { role: "assistant", content: assistantContent });
+      }
+
     } catch (err) {
       console.error("Angel AI Chat error:", err);
       const errorMessage = "Angel đang bận, thử lại sau nhé! 💫";
@@ -147,7 +290,7 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
     } finally {
       setIsLoading(false);
     }
-  }, [messages, isLoading, options]);
+  }, [messages, isLoading, options, saveToHistory]);
 
   const clearMessages = useCallback(() => {
     setMessages([]);
@@ -158,7 +301,11 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
     messages,
     isLoading,
     error,
+    historyLoaded,
     sendMessage,
-    clearMessages
+    clearMessages,
+    loadChatHistory,
+    clearHistory,
+    getGroupedHistory
   };
 }
