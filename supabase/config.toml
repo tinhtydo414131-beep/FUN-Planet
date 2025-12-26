@@ -35,3 +35,6 @@ verify_jwt = true
 
 [functions.claim-arbitrary]
 verify_jwt = true
+
+[functions.angel-ai-chat]
+verify_jwt = false
