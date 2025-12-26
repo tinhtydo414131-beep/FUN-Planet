@@ -8,25 +8,25 @@ const rewardTypes = [
   {
     icon: <Calendar className="w-6 h-6" />,
     title: 'Check-in Hàng Ngày',
-    reward: '1,000 $C',
+    reward: '1,000 CAMLY',
     color: 'from-blue-400 to-blue-600',
   },
   {
     icon: <Wallet className="w-6 h-6" />,
     title: 'Kết Nối Ví',
-    reward: '50,000 $C',
+    reward: '50,000 CAMLY',
     color: 'from-orange-400 to-orange-600',
   },
   {
     icon: <Gamepad2 className="w-6 h-6" />,
     title: 'Chơi Game Đầu Tiên',
-    reward: '10,000 $C',
+    reward: '10,000 CAMLY',
     color: 'from-purple-400 to-purple-600',
   },
   {
     icon: <Users className="w-6 h-6" />,
     title: 'Mời Bạn Bè',
-    reward: '25,000 $C',
+    reward: '25,000 CAMLY',
     color: 'from-pink-400 to-pink-600',
   },
   {
