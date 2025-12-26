@@ -376,25 +376,32 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
 
               <div className="flex gap-2">
                 {/* Voice Input Button */}
-                {sttSupported && (
-                  <Button
-                    onClick={handleVoiceToggle}
-                    size="icon"
-                    variant={isListening ? "destructive" : "outline"}
-                    className={`rounded-xl shrink-0 ${
-                      isListening 
-                        ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
-                        : 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-500 dark:text-purple-400'
-                    }`}
-                    title={isListening ? "Dừng ghi âm" : "Nói với Angel"}
-                  >
-                    {isListening ? (
-                      <MicOff className="w-4 h-4" />
-                    ) : (
-                      <Mic className="w-4 h-4" />
-                    )}
-                  </Button>
-                )}
+                <Button
+                  onClick={handleVoiceToggle}
+                  size="icon"
+                  variant={isListening ? "destructive" : "outline"}
+                  className={`rounded-xl shrink-0 ${
+                    isListening 
+                      ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
+                      : sttSupported 
+                        ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-500 dark:text-purple-400'
+                        : 'border-muted text-muted-foreground cursor-not-allowed opacity-50'
+                  }`}
+                  title={
+                    !sttSupported 
+                      ? "Trình duyệt không hỗ trợ. Hãy dùng Chrome/Edge" 
+                      : isListening 
+                        ? "Dừng ghi âm" 
+                        : "Nói với Angel"
+                  }
+                  disabled={!sttSupported}
+                >
+                  {isListening ? (
+                    <MicOff className="w-4 h-4" />
+                  ) : (
+                    <Mic className="w-4 h-4" />
+                  )}
+                </Button>
 
                 <Input
                   ref={inputRef}
