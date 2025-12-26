@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { 
   Users, 
@@ -17,13 +18,26 @@ import {
   RefreshCw,
   BarChart3,
   Settings,
-  Loader2
+  Loader2,
+  Gamepad2,
+  Bell,
+  FileText,
+  History,
+  Bot,
+  Flag
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
 import { AdminRewardsTab } from "@/components/admin/AdminRewardsTab";
 import { AdminFraudTab } from "@/components/admin/AdminFraudTab";
 import { AdminSettingsTab } from "@/components/admin/AdminSettingsTab";
+import { AdminGamesTab } from "@/components/admin/AdminGamesTab";
+import { AdminAnalyticsTab } from "@/components/admin/AdminAnalyticsTab";
+import { AdminNotificationsTab } from "@/components/admin/AdminNotificationsTab";
+import { AdminAuditLogsTab } from "@/components/admin/AdminAuditLogsTab";
+import { AdminReportsTab } from "@/components/admin/AdminReportsTab";
+import { AdminAngelAITab } from "@/components/admin/AdminAngelAITab";
+import { AdminQuickActionsPanel } from "@/components/admin/AdminQuickActionsPanel";
 
 interface Stats {
   totalUsers: number;
@@ -34,6 +48,8 @@ interface Stats {
   suspiciousCount: number;
   todayClaims: number;
   newUsersToday: number;
+  pendingGames: number;
+  pendingReports: number;
 }
 
 export default function AdminMasterDashboard() {
@@ -48,7 +64,9 @@ export default function AdminMasterDashboard() {
     blockedUsers: 0,
     suspiciousCount: 0,
     todayClaims: 0,
-    newUsersToday: 0
+    newUsersToday: 0,
+    pendingGames: 0,
+    pendingReports: 0
   });
   const [refreshing, setRefreshing] = useState(false);
 
@@ -110,6 +128,18 @@ export default function AdminMasterDashboard() {
         .select("*", { count: "exact", head: true })
         .gte("created_at", today);
 
+      // Get pending games count
+      const { count: pendingGames } = await supabase
+        .from("uploaded_games")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+
+      // Get pending reports count
+      const { count: pendingReports } = await supabase
+        .from("comment_reports")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+
       setStats({
         totalUsers: usersCount || 0,
         totalPending,
@@ -118,7 +148,9 @@ export default function AdminMasterDashboard() {
         blockedUsers: blockedCount || 0,
         suspiciousCount: suspiciousCount || 0,
         todayClaims: todayClaims || 0,
-        newUsersToday: newUsersToday || 0
+        newUsersToday: newUsersToday || 0,
+        pendingGames: pendingGames || 0,
+        pendingReports: pendingReports || 0
       });
     } catch (error) {
       console.error("Load stats error:", error);
@@ -143,6 +175,21 @@ export default function AdminMasterDashboard() {
     return null;
   }
 
+  // Tab configuration with icons and badges
+  const tabConfig = [
+    { value: "overview", label: "Overview", icon: BarChart3 },
+    { value: "users", label: "Users", icon: Users },
+    { value: "games", label: "Games", icon: Gamepad2, badge: stats.pendingGames },
+    { value: "rewards", label: "Rewards", icon: Coins },
+    { value: "analytics", label: "Analytics", icon: TrendingUp },
+    { value: "fraud", label: "Fraud", icon: AlertTriangle, badge: stats.suspiciousCount },
+    { value: "reports", label: "Reports", icon: Flag, badge: stats.pendingReports },
+    { value: "notifications", label: "Notifications", icon: Bell },
+    { value: "audit", label: "Audit Logs", icon: History },
+    { value: "angel-ai", label: "Angel AI", icon: Bot },
+    { value: "settings", label: "Settings", icon: Settings }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -158,11 +205,11 @@ export default function AdminMasterDashboard() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                  <Shield className="h-6 w-6 text-primary" />
-                  Admin Master Dashboard
+                <h1 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Shield className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                  Admin Dashboard
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   Quản lý toàn diện FUN Planet
                 </p>
               </div>
@@ -174,7 +221,7 @@ export default function AdminMasterDashboard() {
               disabled={refreshing}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
           </div>
         </div>
@@ -182,93 +229,97 @@ export default function AdminMasterDashboard() {
 
       {/* Quick Stats Cards */}
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
           <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 pb-3 px-3 md:px-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Users</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.totalUsers.toLocaleString()}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Total Users</p>
+                  <p className="text-xl md:text-2xl font-bold text-foreground">{stats.totalUsers.toLocaleString()}</p>
                   <p className="text-xs text-green-500">+{stats.newUsersToday} today</p>
                 </div>
-                <Users className="h-8 w-8 text-blue-500" />
+                <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/20">
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 pb-3 px-3 md:px-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Pending CAMLY</p>
-                  <p className="text-2xl font-bold text-foreground">{(stats.totalPending / 1000000).toFixed(2)}M</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Pending CAMLY</p>
+                  <p className="text-xl md:text-2xl font-bold text-foreground">{(stats.totalPending / 1000000).toFixed(2)}M</p>
                   <p className="text-xs text-muted-foreground">Chờ claim</p>
                 </div>
-                <Coins className="h-8 w-8 text-amber-500" />
+                <Coins className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20">
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 pb-3 px-3 md:px-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Claimed CAMLY</p>
-                  <p className="text-2xl font-bold text-foreground">{(stats.totalClaimed / 1000000).toFixed(2)}M</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Claimed CAMLY</p>
+                  <p className="text-xl md:text-2xl font-bold text-foreground">{(stats.totalClaimed / 1000000).toFixed(2)}M</p>
                   <p className="text-xs text-muted-foreground">{stats.todayClaims} claims today</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-500" />
+                <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-green-500" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/20">
-            <CardContent className="pt-4">
+            <CardContent className="pt-4 pb-3 px-3 md:px-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Blocked Users</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.blockedUsers}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Blocked Users</p>
+                  <p className="text-xl md:text-2xl font-bold text-foreground">{stats.blockedUsers}</p>
                   {stats.suspiciousCount > 0 && (
                     <Badge variant="destructive" className="text-xs">
                       {stats.suspiciousCount} suspicious
                     </Badge>
                   )}
                 </div>
-                <AlertTriangle className="h-8 w-8 text-red-500" />
+                <AlertTriangle className="h-6 w-6 md:h-8 md:w-8 text-red-500" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Tabs */}
+        {/* Quick Actions Panel */}
+        <AdminQuickActionsPanel 
+          pendingGamesCount={stats.pendingGames}
+          pendingReportsCount={stats.pendingReports}
+          onRefresh={loadStats}
+        />
+
+        {/* Main Tabs - All 11 Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid grid-cols-5 w-full max-w-2xl mb-6">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="rewards" className="flex items-center gap-2">
-              <Coins className="h-4 w-4" />
-              <span className="hidden sm:inline">Rewards</span>
-            </TabsTrigger>
-            <TabsTrigger value="fraud" className="flex items-center gap-2 relative">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="hidden sm:inline">Fraud</span>
-              {stats.suspiciousCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                  {stats.suspiciousCount}
-                </span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </TabsTrigger>
-          </TabsList>
+          {/* Scrollable TabsList for mobile */}
+          <ScrollArea className="w-full whitespace-nowrap mb-6">
+            <TabsList className="inline-flex h-auto p-1 bg-muted/50">
+              {tabConfig.map((tab) => (
+                <TabsTrigger 
+                  key={tab.value}
+                  value={tab.value} 
+                  className="flex items-center gap-1.5 px-3 py-2 relative data-[state=active]:bg-background"
+                >
+                  <tab.icon className="h-4 w-4" />
+                  <span className="text-xs md:text-sm">{tab.label}</span>
+                  {tab.badge !== undefined && tab.badge > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-1.5 -right-1.5 h-4 min-w-4 flex items-center justify-center text-[10px] px-1"
+                    >
+                      {tab.badge > 99 ? "99+" : tab.badge}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
 
           <TabsContent value="overview">
             <AdminOverviewTab stats={stats} onRefresh={loadStats} />
@@ -278,12 +329,36 @@ export default function AdminMasterDashboard() {
             <AdminUsersTab onStatsUpdate={loadStats} />
           </TabsContent>
 
+          <TabsContent value="games">
+            <AdminGamesTab onStatsUpdate={loadStats} />
+          </TabsContent>
+
           <TabsContent value="rewards">
             <AdminRewardsTab onStatsUpdate={loadStats} />
           </TabsContent>
 
+          <TabsContent value="analytics">
+            <AdminAnalyticsTab />
+          </TabsContent>
+
           <TabsContent value="fraud">
             <AdminFraudTab onStatsUpdate={loadStats} />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <AdminReportsTab onStatsUpdate={loadStats} />
+          </TabsContent>
+
+          <TabsContent value="notifications">
+            <AdminNotificationsTab />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <AdminAuditLogsTab />
+          </TabsContent>
+
+          <TabsContent value="angel-ai">
+            <AdminAngelAITab />
           </TabsContent>
 
           <TabsContent value="settings">
