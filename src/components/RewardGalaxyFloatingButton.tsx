@@ -13,7 +13,14 @@ export const RewardGalaxyFloatingButton = () => {
   const [pendingBalance, setPendingBalance] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const { isDragging, handleMouseDown, style } = useDraggable({
+  const { 
+    isDragging, 
+    handleMouseDown,
+    handleLongPressStart,
+    handleLongPressEnd,
+    handleLongPressMove,
+    style 
+  } = useDraggable({
     storageKey: "reward_galaxy_position",
     defaultPosition: { x: 0, y: 0 },
   });
@@ -69,29 +76,41 @@ export const RewardGalaxyFloatingButton = () => {
     return balance.toString();
   };
 
+  const handleClick = () => {
+    if (!isDragging) {
+      navigate('/reward-galaxy');
+    }
+  };
+
   return (
     <div 
       className="fixed bottom-24 md:bottom-8 right-4 z-40 select-none"
       style={style}
     >
       <div className="relative group">
-        {/* Drag handle */}
+        {/* Drag handle - always visible */}
         <div
           onMouseDown={handleMouseDown}
           onTouchStart={handleMouseDown}
           className={cn(
-            "absolute -top-2 -left-2 w-6 h-6 rounded-full bg-yellow-600/80 flex items-center justify-center transition-opacity z-10 cursor-grab active:cursor-grabbing",
-            isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            "absolute -top-3 -left-3 w-8 h-8 rounded-full bg-yellow-600/90 flex items-center justify-center z-10 cursor-grab active:cursor-grabbing shadow-lg",
+            "transition-all duration-200",
+            isDragging ? "scale-110 bg-yellow-500" : "opacity-70 hover:opacity-100 hover:scale-110"
           )}
           title="Kéo để di chuyển"
         >
-          <GripVertical className="w-3 h-3 text-white" />
+          <GripVertical className="w-4 h-4 text-white" />
         </div>
 
         <motion.button
-          onClick={() => !isDragging && navigate('/reward-galaxy')}
+          onClick={handleClick}
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseLeave={() => { setIsHovered(false); handleLongPressEnd(); }}
+          onMouseDown={handleLongPressStart}
+          onMouseUp={handleLongPressEnd}
+          onTouchStart={handleLongPressStart}
+          onTouchEnd={handleLongPressEnd}
+          onTouchMove={handleLongPressMove}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: isDragging ? 1 : 1.1 }}
@@ -101,16 +120,21 @@ export const RewardGalaxyFloatingButton = () => {
           <motion.div
             className="absolute inset-0 rounded-full"
             animate={{
-              boxShadow: isHovered
-                ? '0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,215,0,0.4)'
-                : '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)',
+              boxShadow: isDragging
+                ? '0 0 50px rgba(255,215,0,1), 0 0 100px rgba(255,215,0,0.6)'
+                : isHovered
+                  ? '0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,215,0,0.4)'
+                  : '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)',
             }}
             transition={{ duration: 0.3 }}
           />
 
           {/* Main button */}
           <div
-            className="relative w-16 h-16 rounded-full flex items-center justify-center"
+            className={cn(
+              "relative w-16 h-16 rounded-full flex items-center justify-center",
+              isDragging && "ring-4 ring-yellow-400/50"
+            )}
             style={{
               background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)',
               border: '3px solid rgba(255,255,255,0.5)',
@@ -188,6 +212,20 @@ export const RewardGalaxyFloatingButton = () => {
             )}
           </AnimatePresence>
         </motion.button>
+
+        {/* Drag instruction tooltip */}
+        <AnimatePresence>
+          {isDragging && (
+            <motion.div
+              className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-yellow-500 text-white rounded-lg px-3 py-1.5 shadow-xl text-xs font-medium"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+            >
+              Đang kéo...
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
