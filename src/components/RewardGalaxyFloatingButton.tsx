@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, Sparkles } from 'lucide-react';
+import { Gift, Sparkles, GripVertical } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useDraggable } from '@/hooks/useDraggable';
+import { cn } from '@/lib/utils';
 
 export const RewardGalaxyFloatingButton = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [pendingBalance, setPendingBalance] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  const { isDragging, handleMouseDown, style } = useDraggable({
+    storageKey: "reward_galaxy_position",
+    defaultPosition: { x: 0, y: 0 },
+  });
 
   useEffect(() => {
     if (user) {
@@ -63,106 +70,125 @@ export const RewardGalaxyFloatingButton = () => {
   };
 
   return (
-    <motion.button
-      onClick={() => navigate('/reward-galaxy')}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="fixed bottom-24 md:bottom-8 right-4 z-40"
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+    <div 
+      className="fixed bottom-24 md:bottom-8 right-4 z-40 select-none"
+      style={style}
     >
-      {/* Glow effect */}
-      <motion.div
-        className="absolute inset-0 rounded-full"
-        animate={{
-          boxShadow: isHovered
-            ? '0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,215,0,0.4)'
-            : '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)',
-        }}
-        transition={{ duration: 0.3 }}
-      />
-
-      {/* Main button */}
-      <div
-        className="relative w-16 h-16 rounded-full flex items-center justify-center"
-        style={{
-          background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)',
-          border: '3px solid rgba(255,255,255,0.5)',
-        }}
-      >
-        {/* Sparkle particles */}
-        <AnimatePresence>
-          {isHovered && (
-            <>
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{
-                    opacity: [0, 1, 0],
-                    scale: [0.5, 1, 0.5],
-                    x: [0, (Math.random() - 0.5) * 60],
-                    y: [0, (Math.random() - 0.5) * 60],
-                  }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8, delay: i * 0.1 }}
-                >
-                  <Sparkles className="w-3 h-3 text-white" />
-                </motion.div>
-              ))}
-            </>
+      <div className="relative group">
+        {/* Drag handle */}
+        <div
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleMouseDown}
+          className={cn(
+            "absolute -top-2 -left-2 w-6 h-6 rounded-full bg-yellow-600/80 flex items-center justify-center transition-opacity z-10 cursor-grab active:cursor-grabbing",
+            isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
-        </AnimatePresence>
-
-        {/* Gift icon */}
-        <motion.div
-          animate={{ 
-            rotate: isHovered ? [0, -10, 10, 0] : 0,
-            scale: isHovered ? [1, 1.2, 1] : 1,
-          }}
-          transition={{ duration: 0.5 }}
+          title="Kéo để di chuyển"
         >
-          <Gift className="w-8 h-8 text-white drop-shadow-lg" />
-        </motion.div>
+          <GripVertical className="w-3 h-3 text-white" />
+        </div>
 
-        {/* Pending badge */}
-        {pendingBalance > 0 && (
+        <motion.button
+          onClick={() => !isDragging && navigate('/reward-galaxy')}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: isDragging ? 1 : 1.1 }}
+          whileTap={{ scale: isDragging ? 1 : 0.9 }}
+        >
+          {/* Glow effect */}
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 px-2 py-0.5 rounded-full text-xs font-black text-white min-w-[24px] text-center"
+            className="absolute inset-0 rounded-full"
+            animate={{
+              boxShadow: isHovered
+                ? '0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,215,0,0.4)'
+                : '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)',
+            }}
+            transition={{ duration: 0.3 }}
+          />
+
+          {/* Main button */}
+          <div
+            className="relative w-16 h-16 rounded-full flex items-center justify-center"
             style={{
-              background: 'linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%)',
-              boxShadow: '0 2px 8px rgba(255,71,87,0.5)',
+              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)',
+              border: '3px solid rgba(255,255,255,0.5)',
             }}
           >
-            {formatBalance(pendingBalance)}
-          </motion.div>
-        )}
+            {/* Sparkle particles */}
+            <AnimatePresence>
+              {isHovered && !isDragging && (
+                <>
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0.5, 1, 0.5],
+                        x: [0, (Math.random() - 0.5) * 60],
+                        y: [0, (Math.random() - 0.5) * 60],
+                      }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.8, delay: i * 0.1 }}
+                    >
+                      <Sparkles className="w-3 h-3 text-white" />
+                    </motion.div>
+                  ))}
+                </>
+              )}
+            </AnimatePresence>
+
+            {/* Gift icon */}
+            <motion.div
+              animate={{ 
+                rotate: isHovered && !isDragging ? [0, -10, 10, 0] : 0,
+                scale: isHovered && !isDragging ? [1, 1.2, 1] : 1,
+              }}
+              transition={{ duration: 0.5 }}
+            >
+              <Gift className="w-8 h-8 text-white drop-shadow-lg" />
+            </motion.div>
+
+            {/* Pending badge */}
+            {pendingBalance > 0 && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-1 -right-1 px-2 py-0.5 rounded-full text-xs font-black text-white min-w-[24px] text-center"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%)',
+                  boxShadow: '0 2px 8px rgba(255,71,87,0.5)',
+                }}
+              >
+                {formatBalance(pendingBalance)}
+              </motion.div>
+            )}
+          </div>
+
+          {/* Tooltip on hover */}
+          <AnimatePresence>
+            {isHovered && !isDragging && (
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-2 rounded-xl text-sm font-bold"
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                  color: 'white',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                  boxShadow: '0 4px 15px rgba(255,215,0,0.4)',
+                }}
+              >
+                🎁 Quà Từ Cha Vũ Trụ
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
       </div>
-
-      {/* Tooltip on hover */}
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-2 rounded-xl text-sm font-bold"
-            style={{
-              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-              color: 'white',
-              textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-              boxShadow: '0 4px 15px rgba(255,215,0,0.4)',
-            }}
-          >
-            🎁 Quà Từ Cha Vũ Trụ
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.button>
+    </div>
   );
 };
