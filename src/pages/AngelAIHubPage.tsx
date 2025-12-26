@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageCircle, BookOpen, Target, Trophy, ArrowLeft, Sparkles } from "lucide-react";
+import { MessageCircle, BookOpen, Target, Trophy, ArrowLeft, Sparkles, Home, X } from "lucide-react";
 import { ChatInterface } from "@/components/angel-ai/ChatInterface";
 import { StoryMode } from "@/components/angel-ai/StoryMode";
 import { DailyQuiz } from "@/components/angel-ai/DailyQuiz";
@@ -56,12 +56,22 @@ const AngelAIHubPage = () => {
         <div className="container mx-auto px-4 py-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-colors"
+                title="Quay lại"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => navigate("/")}
+                className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-800/50 transition-colors"
+                title="Về trang chủ"
+              >
+                <Home className="w-5 h-5" />
+              </button>
+            </div>
             
             <div className="flex items-center gap-2">
               <motion.div
@@ -79,7 +89,13 @@ const AngelAIHubPage = () => {
               </div>
             </div>
             
-            <div className="w-10" /> {/* Spacer */}
+            <button
+              onClick={() => navigate("/")}
+              className="p-2 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 transition-colors text-red-600 dark:text-red-400"
+              title="Rời trang"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Tabs */}
