@@ -115,7 +115,7 @@ export function DailyLoginRewardCard({
             >
               5,000
             </motion.span>
-            <span className="text-[#FFD700] ml-1 font-bold drop-shadow-sm">$C</span>
+            <span className="text-[#FFD700] ml-1 font-bold drop-shadow-sm text-sm">CAMLY</span>
           </div>
 
           {/* Description */}

@@ -336,7 +336,7 @@ export default function AdminRewardsDashboard() {
                   <Coins className="w-8 h-8 text-yellow-500" />
                   <div>
                     <p className="text-sm text-muted-foreground">Tổng đã claim</p>
-                    <p className="text-2xl font-bold">{stats.totalClaimed.toLocaleString()} $C</p>
+                    <p className="text-2xl font-bold">{stats.totalClaimed.toLocaleString()} CAMLY</p>
                   </div>
                 </div>
               </CardContent>
@@ -348,7 +348,7 @@ export default function AdminRewardsDashboard() {
                   <TrendingUp className="w-8 h-8 text-green-500" />
                   <div>
                     <p className="text-sm text-muted-foreground">Tổng pending</p>
-                    <p className="text-2xl font-bold">{stats.totalPending.toLocaleString()} $C</p>
+                    <p className="text-2xl font-bold">{stats.totalPending.toLocaleString()} CAMLY</p>
                   </div>
                 </div>
               </CardContent>

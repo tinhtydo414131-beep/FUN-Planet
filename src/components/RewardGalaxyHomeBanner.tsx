@@ -164,7 +164,7 @@ export const RewardGalaxyHomeBanner = () => {
                     textShadow: '0 0 15px rgba(255,215,0,0.8)',
                   }}
                 >
-                  {isLoading ? '...' : `$C ${formatBalance(pendingBalance)}`}
+                  {isLoading ? '...' : `${formatBalance(pendingBalance)} CAMLY`}
                 </p>
               </motion.div>
 

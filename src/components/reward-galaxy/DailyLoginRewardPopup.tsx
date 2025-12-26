@@ -305,7 +305,7 @@ export function DailyLoginRewardPopup({ isOpen, amount, onClose }: DailyLoginRew
                     backgroundClip: 'text',
                   }}
                 >
-                  $C
+                  CAMLY
                 </span>
               </div>
               

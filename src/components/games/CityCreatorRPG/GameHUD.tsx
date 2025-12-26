@@ -115,7 +115,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({ totalCoins, onSettingsClick })
             <span className="text-3xl">🪙</span>
             <div>
               <p className="text-xs font-bold text-amber-800">Camly Coins</p>
-              <p className="font-bold text-lg text-black">{totalCoins.toLocaleString()} $C</p>
+              <p className="font-bold text-lg text-black">{totalCoins.toLocaleString()} CAMLY</p>
             </div>
           </div>
         </motion.div>
