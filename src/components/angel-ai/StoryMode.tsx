@@ -4,6 +4,7 @@ import { BookOpen, Wand2, Loader2, RefreshCw, Save, ChevronRight, Sparkles } fro
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -251,7 +252,7 @@ export function StoryMode() {
         user_id: user.id,
         title: currentStory.title,
         theme: currentStory.theme,
-        content: currentStory.segments as unknown as Record<string, unknown>,
+        content: currentStory.segments as unknown as Json,
         completed: currentStory.completed
       }]);
 
