@@ -80,7 +80,7 @@ export function PendingBalanceCard({
       toast.success(
         <div className="flex items-center gap-2">
           <Star className="w-5 h-5 text-yellow-400" />
-          <span>Chúc mừng bé đã nhận {claimAmount.toLocaleString()} $C từ Cha Vũ Trụ! 🌟</span>
+          <span>Chúc mừng bé đã nhận {claimAmount.toLocaleString()} Camly coin từ Cha Vũ Trụ! 🌟</span>
         </div>
       );
 
@@ -262,13 +262,13 @@ export function PendingBalanceCard({
                     {pendingAmount.toLocaleString()}
                   </span>
                   <span 
-                    className="text-2xl md:text-3xl font-bold"
+                    className="text-xl md:text-2xl font-bold"
                     style={{
                       color: '#FFD700',
                       textShadow: '0 0 15px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
                     }}
                   >
-                    $C
+                    CAMLY
                   </span>
                 </motion.div>
               </div>
@@ -292,7 +292,7 @@ export function PendingBalanceCard({
                     boxShadow: '0 0 15px rgba(76, 175, 80, 0.2)',
                   }}
                 >
-                  {dailyRemaining.toLocaleString()} / {dailyLimit.toLocaleString()} $C
+                  {dailyRemaining.toLocaleString()} / {dailyLimit.toLocaleString()} CAMLY
                 </Badge>
               </div>
             </div>
@@ -313,7 +313,7 @@ export function PendingBalanceCard({
                     disabled={isClaiming || maxClaimable === 0}
                     placeholder="0"
                   />
-                  <span className="text-[#FFD700] font-bold text-lg">$C</span>
+                  <span className="text-[#FFD700] font-bold text-sm">CAMLY</span>
                 </div>
               </div>
 
@@ -385,7 +385,7 @@ export function PendingBalanceCard({
                   ) : (
                     <>
                       <Sparkles className="w-7 h-7 mr-3" />
-                      Nhận {claimAmount.toLocaleString()} $C 🚀
+                      Nhận {claimAmount.toLocaleString()} CAMLY 🚀
                     </>
                   )}
                 </Button>

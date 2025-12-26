@@ -82,7 +82,7 @@ export function useCamlyClaim() {
           });
         } else if (result.status === 'pending_balance') {
           fireDiamondConfetti('celebration');
-          toast.success(`🎉 +${result.amount?.toLocaleString()} $C đã thêm vào số dư chờ nhận!`, {
+          toast.success(`🎉 +${result.amount?.toLocaleString()} Camly coin đã thêm vào số dư chờ nhận!`, {
             description: 'Nhấn "Nhận" để rút về ví của bạn.',
           });
         } else if (result.status === 'pending_approval') {
@@ -115,7 +115,8 @@ export function useCamlyClaim() {
 
     try {
       if (claimType === 'first_wallet') {
-        const { data } = await supabase
+        // Check if user already claimed
+        const { data: userClaimed } = await supabase
           .from('camly_claims')
           .select('id')
           .eq('user_id', user.id)
@@ -123,11 +124,52 @@ export function useCamlyClaim() {
           .in('status', ['completed', 'pending_balance'])
           .maybeSingle();
 
-        if (data) {
-          return { canClaim: false, reason: 'Already claimed first wallet reward' };
+        if (userClaimed) {
+          return { canClaim: false, reason: 'Bạn đã nhận thưởng kết nối ví lần đầu rồi' };
+        }
+
+        // Also check if wallet address already claimed (if connected)
+        if (address) {
+          const { data: walletClaimed } = await supabase
+            .from('camly_claims')
+            .select('id')
+            .eq('wallet_address', address.toLowerCase())
+            .eq('claim_type', 'first_wallet')
+            .in('status', ['completed', 'pending_balance'])
+            .maybeSingle();
+
+          if (walletClaimed) {
+            return { canClaim: false, reason: 'Địa chỉ ví này đã nhận thưởng rồi' };
+          }
+        }
+      } else if (claimType === 'game_completion') {
+        // Check if user has completed at least 1 game
+        const { data: gameProgress } = await supabase
+          .from('game_progress')
+          .select('id, highest_level_completed')
+          .eq('user_id', user.id)
+          .gte('highest_level_completed', 1)
+          .limit(1);
+
+        if (!gameProgress || gameProgress.length === 0) {
+          return { canClaim: false, reason: 'Bạn cần hoàn thành ít nhất 1 game để nhận thưởng' };
+        }
+
+        // Check today's claims
+        const today = new Date().toISOString().split('T')[0];
+        const { data } = await supabase
+          .from('camly_claims')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('claim_type', claimType)
+          .gte('created_at', today)
+          .in('status', ['pending', 'completed', 'pending_balance']);
+
+        if (data && data.length > 0) {
+          return { canClaim: false, reason: 'Bạn đã nhận thưởng game hôm nay rồi' };
         }
       } else {
-        // Check today's claims
+        // Other claim types - check today's claims
         const today = new Date().toISOString().split('T')[0];
         const { data } = await supabase
           .from('camly_claims')

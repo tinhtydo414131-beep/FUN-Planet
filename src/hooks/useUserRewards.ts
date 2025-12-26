@@ -136,7 +136,7 @@ export function useUserRewards() {
     }
 
     if (amount > dailyRemaining) {
-      return { success: false, error: `Daily limit exceeded. Remaining: ${dailyRemaining.toLocaleString()} $C` };
+      return { success: false, error: `Đã vượt giới hạn hôm nay. Còn lại: ${dailyRemaining.toLocaleString()} Camly coin` };
     }
 
     setIsClaiming(true);

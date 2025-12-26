@@ -38,7 +38,7 @@ export const ReferralShareCard = ({
   };
 
   const shareToTelegram = () => {
-    const text = `🎮 Chơi game cùng mình tại FUN Planet và nhận 50,000 CAMLY miễn phí!\n\n🎁 Dùng link mời của mình: ${referralLink}\n\n🚀 Nhanh lên nào!`;
+    const text = `🎮 Chơi game cùng mình tại FUN Planet và nhận 50,000 Camly coin miễn phí!\n\n🎁 Dùng link mời của mình: ${referralLink}\n\n🚀 Nhanh lên nào!`;
     window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -73,7 +73,7 @@ export const ReferralShareCard = ({
             <Users className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-fredoka font-bold text-white">Mời Bạn Bè - Nhận $25,000 C Mỗi Người!</h3>
+            <h3 className="text-xl font-fredoka font-bold text-white">Mời Bạn Bè - Nhận 25,000 Camly coin Mỗi Người!</h3>
             <p className="text-white/60 text-sm">Chia sẻ link mời và lan tỏa niềm vui cùng FUN Planet</p>
           </div>
         </div>

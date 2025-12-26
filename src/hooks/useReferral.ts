@@ -305,10 +305,10 @@ export const useReferral = () => {
     }
   }, [user]);
 
-  // Generate referral link
+  // Generate referral link - using planet.fun.rich domain
   const getReferralLink = useCallback(() => {
     if (!stats.referralCode) return '';
-    return `${window.location.origin}/?ref=${stats.referralCode}`;
+    return `https://planet.fun.rich/?ref=${stats.referralCode}`;
   }, [stats.referralCode]);
 
   // Copy referral link
