@@ -240,6 +240,27 @@ export type Database = {
           },
         ]
       }
+      angel_ai_achievements: {
+        Row: {
+          achievement_type: string
+          id: string
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          id?: string
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          id?: string
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       angel_ai_chat_history: {
         Row: {
           content: string
@@ -260,6 +281,39 @@ export type Database = {
           created_at?: string
           id?: string
           role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      angel_ai_stories: {
+        Row: {
+          completed: boolean | null
+          content: Json
+          created_at: string | null
+          id: string
+          theme: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          content?: Json
+          created_at?: string | null
+          id?: string
+          theme?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          content?: Json
+          created_at?: string | null
+          id?: string
+          theme?: string
+          title?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -1098,6 +1152,39 @@ export type Database = {
           id?: string
           user_id?: string
           wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      daily_quiz_completions: {
+        Row: {
+          camly_earned: number | null
+          completed_at: string | null
+          id: string
+          quiz_date: string | null
+          score: number | null
+          streak_count: number | null
+          total_questions: number | null
+          user_id: string
+        }
+        Insert: {
+          camly_earned?: number | null
+          completed_at?: string | null
+          id?: string
+          quiz_date?: string | null
+          score?: number | null
+          streak_count?: number | null
+          total_questions?: number | null
+          user_id: string
+        }
+        Update: {
+          camly_earned?: number | null
+          completed_at?: string | null
+          id?: string
+          quiz_date?: string | null
+          score?: number | null
+          streak_count?: number | null
+          total_questions?: number | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -3838,6 +3925,14 @@ export type Database = {
       }
       cleanup_expired_nonces: { Args: never; Returns: undefined }
       cleanup_old_deleted_games: { Args: never; Returns: undefined }
+      complete_daily_quiz: {
+        Args: { p_score: number; p_total_questions?: number; p_user_id: string }
+        Returns: {
+          already_completed: boolean
+          camly_earned: number
+          new_streak: number
+        }[]
+      }
       find_user_for_transfer: {
         Args: { p_search_input: string }
         Returns: {
@@ -3893,6 +3988,7 @@ export type Database = {
         Args: { p_wallet_address: string }
         Returns: number
       }
+      get_quiz_streak: { Args: { p_user_id: string }; Returns: number }
       has_claimed_first_wallet: {
         Args: { p_user_id: string }
         Returns: boolean
