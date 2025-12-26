@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Gamepad2, Users, Coins } from "lucide-react";
+import { games } from "@/data/games";
+
+// Built-in games count: games.ts (9) + sample games (5) = 14
+const BUILT_IN_GAMES_COUNT = games.length + 5;
 
 export function HeroStats() {
   const [stats, setStats] = useState({
@@ -51,7 +55,7 @@ export function HeroStats() {
       const totalCamly = camlyData?.reduce((sum, p) => sum + (p.wallet_balance || 0), 0) || 0;
 
       setStats({
-        totalGames: (gamesCount || 0) + 50, // Add built-in games
+        totalGames: (gamesCount || 0) + BUILT_IN_GAMES_COUNT, // 14 built-in games
         totalPlayers: playersCount || 0,
         totalCamly,
       });
