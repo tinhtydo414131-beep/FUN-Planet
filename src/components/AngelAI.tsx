@@ -128,7 +128,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
         initial={{ opacity: 0, scale: 0.8, y: 50 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.8, y: 50 }}
-        className="fixed bottom-4 right-4 z-50 w-[360px] max-w-[calc(100vw-2rem)]"
+        className="fixed bottom-4 right-4 z-50 w-[720px] max-w-[calc(100vw-2rem)]"
       >
         <motion.div className="relative">
           {/* Glow Effect */}
@@ -173,7 +173,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
             </div>
 
             {/* Chat Messages */}
-            <ScrollArea className="h-[280px] p-4" ref={scrollRef}>
+            <ScrollArea className="h-[400px] p-4" ref={scrollRef}>
               {/* Welcome Message */}
               {messages.length === 0 && (
                 <motion.div
