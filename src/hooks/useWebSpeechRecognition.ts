@@ -399,16 +399,24 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
 
   const stopListening = useCallback(() => {
     console.log('[WebSpeech] Stopping recognition...');
+    // Mark we should not auto-restart
     shouldContinueListeningRef.current = false;
-    
-    if (recognitionRef.current) {
+
+    const rec = recognitionRef.current;
+    if (rec) {
       try {
-        recognitionRef.current.abort(); // Use abort for faster stop
+        // IMPORTANT: use stop() (not abort) so the browser can flush final results
+        rec.stop();
       } catch (e) {
         console.log('[WebSpeech] Error stopping:', e);
+        try {
+          rec.abort();
+        } catch (abortErr) {
+          console.log('[WebSpeech] Error aborting:', abortErr);
+        }
       }
     }
-    
+
     isListeningRef.current = false;
     setIsListening(false);
   }, []);
