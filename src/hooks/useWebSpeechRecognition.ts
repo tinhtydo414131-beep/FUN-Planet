@@ -187,24 +187,31 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      console.log('[WebSpeech] onresult called, resultIndex:', event.resultIndex, 'results length:', event.results.length);
+      
       let finalTranscript = '';
       let interimTranscript = '';
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
+        const text = result[0].transcript;
+        const confidence = result[0].confidence;
+        console.log('[WebSpeech] Result', i, '- isFinal:', result.isFinal, 'text:', text, 'confidence:', confidence);
+        
         if (result.isFinal) {
-          finalTranscript += result[0].transcript;
+          finalTranscript += text;
         } else {
-          interimTranscript += result[0].transcript;
+          interimTranscript += text;
         }
       }
 
       const currentTranscript = finalTranscript || interimTranscript;
-      console.log('[WebSpeech] Transcript:', currentTranscript);
+      console.log('[WebSpeech] Setting transcript:', currentTranscript);
       setTranscript(currentTranscript);
       
-      if (finalTranscript && onResultRef.current) {
-        onResultRef.current(finalTranscript);
+      // Call onResult for both interim and final results so UI updates in real-time
+      if (currentTranscript && onResultRef.current) {
+        onResultRef.current(currentTranscript);
       }
     };
 
@@ -222,7 +229,7 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
             } catch (e) {
               console.log('[WebSpeech] Could not restart:', e);
             }
-          }, 100);
+          }, 300); // Increased timeout for better stability
         }
         return;
       }
@@ -260,7 +267,7 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
             shouldContinueListeningRef.current = false;
             setIsListening(false);
           }
-        }, 100);
+        }, 300); // Increased timeout for better stability
         return;
       }
       
@@ -277,36 +284,38 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
     };
   }, [language, continuous]);
 
-  // Preflight check microphone before starting recognition
+  // Simplified preflight - only check permission, no audio level test
+  // This prevents conflicts between getUserMedia and SpeechRecognition
   const preflightMic = useCallback(async (): Promise<boolean> => {
     setIsCheckingMic(true);
     setError(null);
-    setMicLevel(0);
     
     try {
-      console.log('[WebSpeech] Preflight: Requesting mic access...');
+      console.log('[WebSpeech] Preflight: Checking mic permission...');
       
-      // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log('[WebSpeech] Preflight: Mic access granted');
+      // Check permission status first (non-blocking)
+      const permStatus = await checkMicPermission();
+      console.log('[WebSpeech] Preflight: Permission status:', permStatus);
       
-      setMicPermission('granted');
-      
-      // Test audio level for 800ms
-      console.log('[WebSpeech] Preflight: Testing audio level...');
-      const level = await testMicAudioLevel(stream, 800);
-      console.log('[WebSpeech] Preflight: Audio level:', level);
-      setMicLevel(level);
-      
-      // Stop the stream tracks
-      stream.getTracks().forEach(track => track.stop());
-      
-      // If audio level is too low, warn but continue
-      if (level < 0.01) {
-        console.log('[WebSpeech] Preflight: Low audio level detected');
-        // Don't block - just warn, the mic might work anyway
+      if (permStatus === 'denied') {
+        setMicPermission('denied');
+        const errorMessage = getErrorMessage('mic-permission-denied');
+        setError(errorMessage);
+        if (onErrorRef.current) onErrorRef.current(errorMessage);
+        setIsCheckingMic(false);
+        return false;
       }
       
+      // If permission is prompt or unknown, we need to request it
+      if (permStatus === 'prompt' || permStatus === 'unknown') {
+        console.log('[WebSpeech] Preflight: Requesting mic access...');
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Immediately stop - we just needed to trigger the permission prompt
+        stream.getTracks().forEach(track => track.stop());
+        console.log('[WebSpeech] Preflight: Permission granted');
+      }
+      
+      setMicPermission('granted');
       setIsCheckingMic(false);
       return true;
       
