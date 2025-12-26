@@ -13,8 +13,8 @@ interface UseWebSpeechSynthesisOptions {
 export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}) => {
   const {
     language = 'vi-VN',
-    rate = 0.85, // Slower for clearer, sweeter speech
-    pitch = 1.25, // Higher pitch for cute, young female voice
+    rate = 0.8,  // Slower, sweeter, more gentle speech
+    pitch = 1.3, // Higher pitch for cute young female voice
     volume = 1,
     onStart,
     onEnd,
@@ -37,53 +37,59 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
         setVoices(availableVoices);
         
         // Priority order for sweet female Vietnamese voice:
-        // 1. HoaiMy (Microsoft Edge - very natural and sweet)
-        // 2. Any Vietnamese female voice
+        // 1. HoaiMy, An (Microsoft Edge Vietnamese - very natural)
+        // 2. Vietnamese female voices
         // 3. Google Vietnamese voice
-        // 4. Any female voice
-        // 5. First available voice
+        // 4. Microsoft female voices (Zira, Hazel, Susan, Catherine)
+        // 5. Apple female voices (Samantha, Victoria, Karen)
+        // 6. Any female voice
+        // 7. First available voice
         
-        const hoaiMyVoice = availableVoices.find(
-          voice => voice.name.toLowerCase().includes('hoaimy') || 
-                   voice.name.includes('HoaiMy')
-        );
+        const femaleVoiceNames = [
+          'hoaimy', 'hoai my', 'an', 'linh', 'nữ',  // Vietnamese female names
+          'zira', 'hazel', 'susan', 'catherine', 'linda', 'jenny', // Microsoft
+          'samantha', 'victoria', 'karen', 'moira', 'fiona', // Apple
+          'female', 'woman', 'girl'
+        ];
         
-        const vietnameseFemaleVoice = availableVoices.find(
+        // Find best Vietnamese voice
+        const vietnameseVoice = availableVoices.find(
           voice => (voice.lang.includes('vi') || voice.lang.includes('VI')) &&
-                   (voice.name.toLowerCase().includes('female') || 
-                    voice.name.toLowerCase().includes('woman') ||
-                    voice.name.toLowerCase().includes('nữ') ||
-                    voice.name.toLowerCase().includes('hoai') ||
-                    voice.name.toLowerCase().includes('linh') ||
-                    voice.name.toLowerCase().includes('an'))
+                   femaleVoiceNames.some(name => voice.name.toLowerCase().includes(name))
         );
         
+        // Google Vietnamese (usually good quality)
         const googleVietnameseVoice = availableVoices.find(
           voice => (voice.lang.includes('vi') || voice.lang.includes('VI')) &&
                    voice.name.includes('Google')
         );
         
+        // Any Vietnamese voice
         const anyVietnameseVoice = availableVoices.find(
           voice => voice.lang.includes('vi') || voice.lang.includes('VI')
         );
         
-        const anyFemaleVoice = availableVoices.find(
-          voice => voice.name.toLowerCase().includes('female') || 
-                   voice.name.toLowerCase().includes('woman') ||
-                   voice.name.toLowerCase().includes('zira') ||
-                   voice.name.toLowerCase().includes('samantha')
+        // Microsoft/Apple female voices (good quality)
+        const qualityFemaleVoice = availableVoices.find(
+          voice => ['zira', 'samantha', 'hazel', 'susan', 'victoria', 'karen', 'jenny']
+                   .some(name => voice.name.toLowerCase().includes(name))
         );
         
-        const selectedVoiceResult = hoaiMyVoice || 
-                                    vietnameseFemaleVoice || 
+        // Any female voice
+        const anyFemaleVoice = availableVoices.find(
+          voice => femaleVoiceNames.some(name => voice.name.toLowerCase().includes(name))
+        );
+        
+        const selectedVoiceResult = vietnameseVoice || 
                                     googleVietnameseVoice || 
                                     anyVietnameseVoice ||
+                                    qualityFemaleVoice ||
                                     anyFemaleVoice || 
                                     availableVoices[0] || 
                                     null;
         
-        console.log('[WebSpeech TTS] Available voices:', availableVoices.map(v => `${v.name} (${v.lang})`));
-        console.log('[WebSpeech TTS] Selected voice:', selectedVoiceResult?.name);
+        console.log('[Angel AI Voice] 🎤 Available voices:', availableVoices.map(v => `${v.name} (${v.lang})`));
+        console.log('[Angel AI Voice] ✨ Selected voice:', selectedVoiceResult?.name, `(${selectedVoiceResult?.lang})`);
         
         setSelectedVoice(selectedVoiceResult);
       };

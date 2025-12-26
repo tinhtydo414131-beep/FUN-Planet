@@ -97,8 +97,8 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     isSupported: ttsSupported
   } = useWebSpeechSynthesis({
     language: 'vi-VN',
-    rate: 0.85,   // Slower, sweeter speech
-    pitch: 1.25   // Higher pitch for cute female voice
+    rate: 0.8,   // Slower, gentler, sweeter speech
+    pitch: 1.3   // Higher pitch for cute young female voice
   });
 
   useEffect(() => {
