@@ -127,7 +127,11 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     rate: voiceRate,
     setRate: setVoiceRate,
     pitch: voicePitch,
-    setPitch: setVoicePitch
+    setPitch: setVoicePitch,
+    volume: voiceVolume,
+    setVolume: setVoiceVolume,
+    autoRead,
+    setAutoRead
   } = useWebSpeechSynthesis({
     language: 'vi-VN',
     rate: 0.8,
@@ -154,9 +158,9 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     }
   }, [funId, isNewUser]);
 
-  // Auto-speak new assistant messages
+  // Auto-speak new assistant messages (respects autoRead setting)
   useEffect(() => {
-    if (voiceEnabled && ttsSupported && messages.length > 0) {
+    if (voiceEnabled && autoRead && ttsSupported && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.role === 'assistant' && lastMessage.content && 
           lastMessage.content !== lastAssistantMessageRef.current) {
@@ -164,7 +168,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
         speak(lastMessage.content);
       }
     }
-  }, [messages, voiceEnabled, ttsSupported, speak]);
+  }, [messages, voiceEnabled, autoRead, ttsSupported, speak]);
 
   // Update input when transcript changes during listening
   useEffect(() => {
@@ -389,9 +393,13 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                 selectedVoice={selectedVoice}
                 currentRate={voiceRate}
                 currentPitch={voicePitch}
+                currentVolume={voiceVolume}
+                autoRead={autoRead}
                 onSelectVoice={setSelectedVoice}
                 onRateChange={setVoiceRate}
                 onPitchChange={setVoicePitch}
+                onVolumeChange={setVoiceVolume}
+                onAutoReadChange={setAutoRead}
                 onTestVoice={speak}
                 onSave={() => {
                   setShowVoiceSettings(false);

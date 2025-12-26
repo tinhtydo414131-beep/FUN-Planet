@@ -10,12 +10,14 @@ interface UseWebSpeechSynthesisOptions {
   onError?: (error: string) => void;
 }
 
+const STORAGE_KEY = 'angel_ai_voice_settings';
+
 export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}) => {
   const {
     language = 'vi-VN',
     rate: initialRate = 0.8,
     pitch: initialPitch = 1.3,
-    volume = 1,
+    volume: initialVolume = 1,
     onStart,
     onEnd,
     onError
@@ -27,6 +29,8 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const [rate, setRate] = useState(initialRate);
   const [pitch, setPitch] = useState(initialPitch);
+  const [volume, setVolume] = useState(initialVolume);
+  const [autoRead, setAutoRead] = useState(true);
   
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
@@ -39,18 +43,20 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
         setVoices(availableVoices);
         
         // Check for saved settings
-        const savedSettings = localStorage.getItem('angel_ai_voice_settings');
+        const savedSettings = localStorage.getItem(STORAGE_KEY);
         if (savedSettings) {
           try {
             const settings = JSON.parse(savedSettings);
             const savedVoice = availableVoices.find(v => v.name === settings.voiceName);
             if (savedVoice) {
               setSelectedVoice(savedVoice);
-              setRate(settings.rate ?? initialRate);
-              setPitch(settings.pitch ?? initialPitch);
-              console.log('[Angel AI Voice] 📂 Loaded saved settings:', settings);
-              return;
             }
+            setRate(settings.rate ?? initialRate);
+            setPitch(settings.pitch ?? initialPitch);
+            setVolume(settings.volume ?? initialVolume);
+            setAutoRead(settings.autoRead ?? true);
+            console.log('[Angel AI Voice] 📂 Loaded saved settings:', settings);
+            if (savedVoice) return;
           } catch (e) {
             console.log('[Angel AI Voice] ⚠️ Failed to load saved settings');
           }
@@ -113,7 +119,7 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
         window.speechSynthesis.cancel();
       }
     };
-  }, [initialRate, initialPitch]);
+  }, [initialRate, initialPitch, initialVolume]);
 
   const speak = useCallback((text: string) => {
     if (!isSupported || !text.trim()) return;
@@ -181,6 +187,10 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
     rate,
     setRate,
     pitch,
-    setPitch
+    setPitch,
+    volume,
+    setVolume,
+    autoRead,
+    setAutoRead
   };
 };
