@@ -66,9 +66,12 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
   // Web Speech Recognition (Speech-to-Text)
   const {
     isListening,
+    isCheckingMic,
     transcript,
     isSupported: sttSupported,
     error: sttError,
+    micPermission,
+    micLevel,
     startListening,
     stopListening,
     toggleListening
@@ -79,7 +82,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     },
     onError: (err) => {
       toast({
-        title: "Giọng nói",
+        title: "Microphone",
         description: err,
         variant: "destructive"
       });
@@ -358,7 +361,18 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
 
             {/* Input Area */}
             <div className="p-4 border-t border-yellow-200/30 dark:border-yellow-500/20">
-              {/* Voice Status with Waveform */}
+              {/* Mic Status Indicators */}
+              {isCheckingMic && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-3 flex items-center gap-3 text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl"
+                >
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Đang kiểm tra microphone...</span>
+                </motion.div>
+              )}
+
               {isListening && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -394,6 +408,17 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                 </motion.div>
               )}
 
+              {/* Low mic level warning */}
+              {!isListening && !isCheckingMic && micLevel > 0 && micLevel < 0.02 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-3 flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg"
+                >
+                  <span>💡 Micro có thể yếu. Thử nói gần hơn hoặc kiểm tra cài đặt micro.</span>
+                </motion.div>
+              )}
+
               <div className="flex gap-2">
                 {/* Voice Input Button */}
                 <Button
@@ -401,22 +426,28 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                   size="icon"
                   variant={isListening ? "destructive" : "outline"}
                   className={`rounded-xl shrink-0 ${
-                    isListening 
-                      ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
-                      : sttSupported 
-                        ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-500 dark:text-purple-400'
-                        : 'border-muted text-muted-foreground cursor-not-allowed opacity-50'
+                    isCheckingMic
+                      ? 'border-blue-300 text-blue-600 dark:border-blue-500 dark:text-blue-400'
+                      : isListening 
+                        ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
+                        : sttSupported 
+                          ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-500 dark:text-purple-400'
+                          : 'border-muted text-muted-foreground cursor-not-allowed opacity-50'
                   }`}
                   title={
                     !sttSupported 
                       ? "Trình duyệt không hỗ trợ. Hãy dùng Chrome/Edge" 
-                      : isListening 
-                        ? "Dừng ghi âm" 
-                        : "Nói với Angel"
+                      : isCheckingMic
+                        ? "Đang kiểm tra micro..."
+                        : isListening 
+                          ? "Dừng ghi âm" 
+                          : "Nói với Angel"
                   }
-                  disabled={!sttSupported}
+                  disabled={!sttSupported || isCheckingMic}
                 >
-                  {isListening ? (
+                  {isCheckingMic ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : isListening ? (
                     <MicOff className="w-4 h-4" />
                   ) : (
                     <Mic className="w-4 h-4" />
