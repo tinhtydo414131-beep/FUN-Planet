@@ -97,6 +97,7 @@ export const Navigation = () => {
     { path: "/games", label: "Play Games" },
     { path: "/public-music", label: "Music" },
     { path: "/leaderboard", label: "Leaderboard" },
+    { path: "/angel-ai", label: "🌟 Angel AI", angelAI: true },
     { path: "/reward-galaxy", label: "🎁 Quà Từ Cha Vũ Trụ", special: true },
     ...(isAdmin ? [{ path: "/admin/master", label: "👑 Admin", admin: true }] : []),
   ];
@@ -142,11 +143,13 @@ export const Navigation = () => {
                   className={`px-5 py-2.5 rounded-xl font-jakarta font-semibold text-base transition-all ${
                     (link as any).admin
                       ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/40 text-orange-600 hover:border-orange-500/60 hover:shadow-[0_0_15px_rgba(255,100,0,0.3)]'
-                      : link.special 
-                        ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 text-yellow-600 hover:border-yellow-500/60 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)]'
-                        : isActive(link.path) 
-                          ? 'bg-primary/10 text-primary border-b-2 border-primary' 
-                          : 'text-foreground hover:text-primary hover:bg-primary/5'
+                      : (link as any).angelAI
+                        ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 text-purple-600 hover:border-purple-500/60 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] animate-pulse'
+                        : link.special 
+                          ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 text-yellow-600 hover:border-yellow-500/60 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)]'
+                          : isActive(link.path) 
+                            ? 'bg-primary/10 text-primary border-b-2 border-primary' 
+                            : 'text-foreground hover:text-primary hover:bg-primary/5'
                   }`}
                 >
                   {link.label}
