@@ -63,6 +63,7 @@ import About from "./pages/About";
 import LovableGamePlay from "./pages/LovableGamePlay";
 import SampleGames from "./pages/SampleGames";
 import RewardGalaxy from "./pages/RewardGalaxy";
+import AngelAIPage from "./pages/AngelAIPage";
 
 
 const queryClient = new QueryClient();
@@ -139,6 +140,7 @@ const AnimatedRoutes = () => {
         {/* Other */}
         <Route path="/about" element={<About />} />
         <Route path="/planet-explorer" element={<PlanetExplorer />} />
+        <Route path="/angel-ai" element={<AngelAIPage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/install" element={<Install />} />
         
