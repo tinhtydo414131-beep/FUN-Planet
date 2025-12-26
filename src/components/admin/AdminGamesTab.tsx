@@ -1,0 +1,404 @@
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  Gamepad2,
+  CheckCircle,
+  XCircle,
+  Eye,
+  Trash2,
+  Search,
+  RefreshCw,
+  Loader2,
+  Clock,
+  Users,
+  ThumbsUp,
+} from "lucide-react";
+import { format } from "date-fns";
+
+interface Game {
+  id: string;
+  title: string;
+  description: string | null;
+  thumbnail_url: string | null;
+  status: string;
+  play_count: number;
+  likes_count: number;
+  created_at: string;
+  user_id: string;
+  username: string;
+}
+
+interface AdminGamesTabProps {
+  onStatsUpdate: () => void;
+}
+
+export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadGames();
+  }, [statusFilter]);
+
+  const loadGames = async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from("uploaded_games")
+        .select("*")
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false });
+
+      if (statusFilter !== "all") {
+        query = query.eq("status", statusFilter);
+      }
+
+      const { data: gamesData } = await query;
+
+      if (gamesData) {
+        const userIds = [...new Set(gamesData.map((g) => g.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, username")
+          .in("id", userIds);
+
+        const gamesWithUsers = gamesData.map((game) => ({
+          ...game,
+          username:
+            profiles?.find((p) => p.id === game.user_id)?.username || "Unknown",
+        }));
+
+        setGames(gamesWithUsers);
+      }
+    } catch (error) {
+      console.error("Load games error:", error);
+      toast.error("Failed to load games");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateGameStatus = async (gameId: string, newStatus: string) => {
+    setProcessingId(gameId);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase
+        .from("uploaded_games")
+        .update({ status: newStatus })
+        .eq("id", gameId);
+
+      // Log the review action
+      await supabase.from("game_reviews").insert({
+        game_id: gameId,
+        reviewer_id: user?.id,
+        status: newStatus,
+        notes: `Status changed to ${newStatus}`,
+      });
+
+      // Log admin action
+      await supabase.from("admin_audit_logs").insert({
+        admin_id: user?.id,
+        action: `game_${newStatus}`,
+        target_type: "game",
+        target_id: gameId,
+        details: { new_status: newStatus },
+      });
+
+      toast.success(`Game ${newStatus} successfully`);
+      loadGames();
+      onStatsUpdate();
+    } catch (error) {
+      console.error("Update game status error:", error);
+      toast.error("Failed to update game status");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const deleteGame = async (gameId: string) => {
+    if (!confirm("Bạn có chắc muốn xóa game này?")) return;
+
+    setProcessingId(gameId);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      await supabase
+        .from("uploaded_games")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", gameId);
+
+      await supabase.from("admin_audit_logs").insert({
+        admin_id: user?.id,
+        action: "game_deleted",
+        target_type: "game",
+        target_id: gameId,
+      });
+
+      toast.success("Game deleted successfully");
+      loadGames();
+      onStatsUpdate();
+    } catch (error) {
+      console.error("Delete game error:", error);
+      toast.error("Failed to delete game");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "approved":
+        return (
+          <Badge className="bg-green-500/20 text-green-500">Approved</Badge>
+        );
+      case "pending":
+        return (
+          <Badge className="bg-amber-500/20 text-amber-500">Pending</Badge>
+        );
+      case "rejected":
+        return <Badge variant="destructive">Rejected</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const filteredGames = games.filter(
+    (game) =>
+      game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      game.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const stats = {
+    total: games.length,
+    pending: games.filter((g) => g.status === "pending").length,
+    approved: games.filter((g) => g.status === "approved").length,
+    rejected: games.filter((g) => g.status === "rejected").length,
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
+              <Gamepad2 className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm text-muted-foreground">Total Games</p>
+                <p className="text-xl font-bold">{stats.total}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-amber-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-xl font-bold">{stats.pending}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Approved</p>
+                <p className="text-xl font-bold">{stats.approved}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-red-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Rejected</p>
+                <p className="text-xl font-bold">{stats.rejected}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="pt-4">
+          <div className="flex gap-4 items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search games or users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="icon" onClick={loadGames}>
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Games Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Gamepad2 className="h-5 w-5" />
+            Games Management
+            {stats.pending > 0 && (
+              <Badge variant="destructive">{stats.pending} pending</Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : filteredGames.length === 0 ? (
+            <div className="text-center py-8">
+              <Gamepad2 className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+              <p className="text-muted-foreground">No games found</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Game</TableHead>
+                    <TableHead>Creator</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>
+                      <Users className="h-4 w-4 inline mr-1" />
+                      Plays
+                    </TableHead>
+                    <TableHead>
+                      <ThumbsUp className="h-4 w-4 inline mr-1" />
+                      Likes
+                    </TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredGames.map((game) => (
+                    <TableRow key={game.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {game.thumbnail_url && (
+                            <img
+                              src={game.thumbnail_url}
+                              alt={game.title}
+                              className="w-12 h-12 rounded object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium">{game.title}</p>
+                            <p className="text-xs text-muted-foreground truncate max-w-[200px]">
+                              {game.description}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{game.username}</TableCell>
+                      <TableCell>{getStatusBadge(game.status)}</TableCell>
+                      <TableCell>{game.play_count || 0}</TableCell>
+                      <TableCell>{game.likes_count || 0}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {format(new Date(game.created_at), "dd/MM/yyyy")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          {game.status === "pending" && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  updateGameStatus(game.id, "approved")
+                                }
+                                disabled={processingId === game.id}
+                                className="text-green-500 hover:text-green-600"
+                              >
+                                {processingId === game.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <CheckCircle className="h-4 w-4" />
+                                )}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  updateGameStatus(game.id, "rejected")
+                                }
+                                disabled={processingId === game.id}
+                                className="text-red-500 hover:text-red-600"
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteGame(game.id)}
+                            disabled={processingId === game.id}
+                            className="text-red-500 hover:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
