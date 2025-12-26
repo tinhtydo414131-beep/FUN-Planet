@@ -293,13 +293,9 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
   };
 
   return (
-    <motion.div
+    <div
       className="fixed bottom-4 right-4 z-40 touch-none select-none"
       style={style}
-      animate={isDragging ? {} : { 
-        y: [0, -5, 0],
-      }}
-      transition={isDragging ? {} : { duration: 2, repeat: Infinity }}
     >
       {/* Drag Handle - larger and more visible */}
       <div
@@ -329,14 +325,15 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 shadow-lg flex items-center justify-center"
         whileHover={isDragging ? {} : { scale: 1.1 }}
         whileTap={isDragging ? {} : { scale: 0.95 }}
-        animate={{ 
-          boxShadow: isDragging 
-            ? "0 0 40px rgba(255, 215, 0, 0.8)"
-            : [
-                "0 0 20px rgba(255, 215, 0, 0.4)",
-                "0 0 30px rgba(255, 215, 0, 0.6)",
-                "0 0 20px rgba(255, 215, 0, 0.4)"
-              ]
+        animate={isDragging ? {
+          boxShadow: "0 0 40px rgba(255, 215, 0, 0.8)"
+        } : { 
+          y: [0, -5, 0],
+          boxShadow: [
+            "0 0 20px rgba(255, 215, 0, 0.4)",
+            "0 0 30px rgba(255, 215, 0, 0.6)",
+            "0 0 20px rgba(255, 215, 0, 0.4)"
+          ]
         }}
         transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
       >
@@ -358,7 +355,7 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
           {isDragging ? "Đang kéo..." : "Giữ để kéo"}
         </motion.div>
       )}
-    </motion.div>
+    </div>
   );
 }
 
