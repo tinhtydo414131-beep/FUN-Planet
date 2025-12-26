@@ -204,7 +204,7 @@ export const WalletStatusCard = ({
                       textShadow: '0 0 20px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
                     }}
                   >
-                    {camlyBalance.toLocaleString()} <span className="text-2xl">$C</span>
+                    {camlyBalance.toLocaleString()} <span className="text-lg">CAMLY</span>
                   </p>
                 </div>
               </motion.div>

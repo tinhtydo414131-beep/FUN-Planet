@@ -63,9 +63,30 @@ serve(async (req) => {
       });
     }
 
-    // Check if already claimed (for first_wallet, check ever; for others, check today)
+    const normalizedWalletAddress = walletAddress.toLowerCase();
+
+    // Check if already claimed based on claim type
     if (claimType === 'first_wallet') {
-      const { data: existingClaim } = await supabase
+      // Check if this WALLET ADDRESS has ever claimed first_wallet reward (regardless of user)
+      const { data: walletClaimed } = await supabase
+        .from('camly_claims')
+        .select('id')
+        .eq('wallet_address', normalizedWalletAddress)
+        .eq('claim_type', 'first_wallet')
+        .in('status', ['completed', 'pending_balance'])
+        .maybeSingle();
+
+      if (walletClaimed) {
+        return new Response(JSON.stringify({ 
+          error: 'Địa chỉ ví này đã nhận thưởng kết nối lần đầu rồi!' 
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Also check if user has already claimed with any wallet
+      const { data: userClaimed } = await supabase
         .from('camly_claims')
         .select('id')
         .eq('user_id', user.id)
@@ -73,13 +94,32 @@ serve(async (req) => {
         .in('status', ['completed', 'pending_balance'])
         .maybeSingle();
 
-      if (existingClaim) {
-        return new Response(JSON.stringify({ error: 'First wallet reward already claimed' }), {
+      if (userClaimed) {
+        return new Response(JSON.stringify({ 
+          error: 'Bạn đã nhận thưởng kết nối ví lần đầu rồi!' 
+        }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
     } else if (claimType === 'game_completion') {
+      // Check if user has completed at least 1 game (highest_level_completed >= 1)
+      const { data: gameProgress } = await supabase
+        .from('game_progress')
+        .select('id, highest_level_completed')
+        .eq('user_id', user.id)
+        .gte('highest_level_completed', 1)
+        .limit(1);
+
+      if (!gameProgress || gameProgress.length === 0) {
+        return new Response(JSON.stringify({ 
+          error: 'Bạn cần hoàn thành ít nhất 1 game để nhận thưởng này!' 
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
       // Check if claimed today
       const today = new Date().toISOString().split('T')[0];
       const { data: todayClaim } = await supabase
@@ -92,7 +132,7 @@ serve(async (req) => {
         .maybeSingle();
 
       if (todayClaim) {
-        return new Response(JSON.stringify({ error: 'Already claimed today' }), {
+        return new Response(JSON.stringify({ error: 'Bạn đã nhận thưởng game hôm nay rồi!' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -159,7 +199,7 @@ serve(async (req) => {
     // Update wallet address in user_rewards
     await supabase
       .from('user_rewards')
-      .update({ wallet_address: walletAddress })
+      .update({ wallet_address: normalizedWalletAddress })
       .eq('user_id', user.id);
 
     // Create claim record with status 'pending_balance'
@@ -167,7 +207,7 @@ serve(async (req) => {
       .from('camly_claims')
       .insert({
         user_id: user.id,
-        wallet_address: walletAddress,
+        wallet_address: normalizedWalletAddress,
         claim_type: claimType,
         amount: rewardAmount,
         status: 'pending_balance', // New status - reward added to pending
@@ -185,7 +225,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ 
       success: true, 
       status: 'pending_balance',
-      message: `${rewardAmount.toLocaleString()} $C đã được thêm vào số dư chờ nhận!`,
+      message: `${rewardAmount.toLocaleString()} Camly coin đã được thêm vào số dư chờ nhận!`,
       amount: rewardAmount,
       newPendingBalance: newPending,
       claimId: claim?.id

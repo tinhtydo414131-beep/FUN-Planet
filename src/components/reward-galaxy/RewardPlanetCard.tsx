@@ -156,7 +156,7 @@ export const RewardPlanetCard = ({
             >
               {amount.toLocaleString()}
             </motion.span>
-            <span className="text-lg font-bold text-[#FFD700] drop-shadow-sm">$C</span>
+            <span className="text-sm font-bold text-[#FFD700] drop-shadow-sm">CAMLY</span>
           </div>
           
           <p className="text-xs text-[#8B8B8B] mb-4">{description}</p>
@@ -196,7 +196,7 @@ export const RewardPlanetCard = ({
               ) : (
                 <>
                   <Sparkles className="w-5 h-5" />
-                  {buttonText || `Nhận ${amount.toLocaleString()} $C`}
+                  {buttonText || `Nhận ${amount.toLocaleString()} CAMLY`}
                 </>
               )}
             </span>
