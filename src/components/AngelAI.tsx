@@ -358,19 +358,39 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
 
             {/* Input Area */}
             <div className="p-4 border-t border-yellow-200/30 dark:border-yellow-500/20">
-              {/* Voice Status */}
+              {/* Voice Status with Waveform */}
               {isListening && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-3 flex items-center gap-2 text-sm text-pink-600 dark:text-pink-400"
+                  className="mb-3 flex items-center gap-3 text-sm text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/20 p-3 rounded-xl"
                 >
                   <motion.div
                     animate={{ scale: [1, 1.3, 1] }}
                     transition={{ duration: 0.8, repeat: Infinity }}
                     className="w-3 h-3 rounded-full bg-red-500"
                   />
-                  <span>Đang nghe... Hãy nói với Angel!</span>
+                  
+                  {/* Waveform Animation */}
+                  <div className="flex items-center gap-0.5 h-4">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1 bg-pink-500 rounded-full"
+                        animate={{
+                          height: ["8px", "16px", "8px"],
+                        }}
+                        transition={{
+                          duration: 0.5,
+                          repeat: Infinity,
+                          delay: i * 0.1,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  
+                  <span className="flex-1">Đang lắng nghe... Hãy nói với Angel!</span>
+                  <span className="text-xs text-muted-foreground">(Nhấn mic để dừng)</span>
                 </motion.div>
               )}
 
