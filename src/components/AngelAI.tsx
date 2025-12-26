@@ -301,12 +301,12 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
       }}
       transition={isDragging ? {} : { duration: 2, repeat: Infinity }}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - larger and more visible */}
       <div
-        className={`absolute -top-3 left-1/2 -translate-x-1/2 p-1 rounded-full transition-all ${
+        className={`absolute -top-4 left-1/2 -translate-x-1/2 p-1.5 rounded-full transition-all cursor-grab active:cursor-grabbing ${
           isLongPressing || isDragging 
-            ? 'bg-yellow-500/90 scale-110' 
-            : 'bg-black/30 hover:bg-black/50'
+            ? 'bg-yellow-500/90 scale-125' 
+            : 'bg-black/50 hover:bg-black/70'
         }`}
         onMouseDown={handleMouseDown}
         onTouchStart={handleLongPressStart}
@@ -315,11 +315,17 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         onMouseUp={handleLongPressEnd}
         onMouseLeave={handleLongPressEnd}
       >
-        <GripVertical className="w-3 h-3 text-white" />
+        <GripVertical className="w-4 h-4 text-white" />
       </div>
 
       <motion.button
         onClick={handleClick}
+        onMouseDown={handleLongPressStart}
+        onMouseUp={handleLongPressEnd}
+        onMouseLeave={handleLongPressEnd}
+        onTouchStart={handleLongPressStart}
+        onTouchEnd={handleLongPressEnd}
+        onTouchMove={handleLongPressMove}
         className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 shadow-lg flex items-center justify-center"
         whileHover={isDragging ? {} : { scale: 1.1 }}
         whileTap={isDragging ? {} : { scale: 0.95 }}
