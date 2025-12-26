@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Star, Heart, Rocket, X, MessageCircle, GripVertical, Send, Loader2 } from "lucide-react";
+import { Sparkles, Star, Heart, Rocket, X, MessageCircle, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,6 +10,8 @@ import { fireConfetti } from "@/components/ConfettiEffect";
 import { useDraggable } from "@/hooks/useDraggable";
 import { useAngelAIChat, ChatMessage } from "@/hooks/useAngelAIChat";
 import { useToast } from "@/hooks/use-toast";
+import { useWebSpeechRecognition } from "@/hooks/useWebSpeechRecognition";
+import { useWebSpeechSynthesis } from "@/hooks/useWebSpeechSynthesis";
 
 interface FunID {
   id: string;
@@ -46,8 +48,10 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [showSoulNFT, setShowSoulNFT] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastAssistantMessageRef = useRef<string>("");
 
   const { messages, isLoading, error, sendMessage, clearMessages } = useAngelAIChat({
     onError: (err) => {
@@ -57,6 +61,41 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
         variant: "destructive"
       });
     }
+  });
+
+  // Web Speech Recognition (Speech-to-Text)
+  const {
+    isListening,
+    transcript,
+    isSupported: sttSupported,
+    error: sttError,
+    startListening,
+    stopListening,
+    toggleListening
+  } = useWebSpeechRecognition({
+    language: 'vi-VN',
+    onResult: (text) => {
+      setInputValue(text);
+    },
+    onError: (err) => {
+      toast({
+        title: "Giọng nói",
+        description: err,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Web Speech Synthesis (Text-to-Speech)
+  const {
+    speak,
+    stop: stopSpeaking,
+    isSpeaking,
+    isSupported: ttsSupported
+  } = useWebSpeechSynthesis({
+    language: 'vi-VN',
+    rate: 0.9,
+    pitch: 1.1
   });
 
   useEffect(() => {
@@ -72,12 +111,24 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     }
   }, [funId, isNewUser]);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-speak new assistant messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (voiceEnabled && ttsSupported && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'assistant' && lastMessage.content && 
+          lastMessage.content !== lastAssistantMessageRef.current) {
+        lastAssistantMessageRef.current = lastMessage.content;
+        speak(lastMessage.content);
+      }
     }
-  }, [messages]);
+  }, [messages, voiceEnabled, ttsSupported, speak]);
+
+  // Update input when transcript changes during listening
+  useEffect(() => {
+    if (isListening && transcript) {
+      setInputValue(transcript);
+    }
+  }, [transcript, isListening]);
 
   const fetchFunId = async () => {
     if (!user) return;
@@ -94,12 +145,15 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
   };
 
   const handleClose = () => {
+    stopSpeaking();
+    stopListening();
     setIsVisible(false);
     onClose?.();
   };
 
   const handleSendMessage = () => {
     if (!inputValue.trim() || isLoading) return;
+    if (isListening) stopListening();
     sendMessage(inputValue, user?.id);
     setInputValue("");
   };
@@ -109,6 +163,25 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  const handleVoiceToggle = () => {
+    if (isListening) {
+      stopListening();
+      // Send message if we have transcript
+      if (inputValue.trim()) {
+        handleSendMessage();
+      }
+    } else {
+      startListening();
+    }
+  };
+
+  const toggleVoiceOutput = () => {
+    if (isSpeaking) {
+      stopSpeaking();
+    }
+    setVoiceEnabled(!voiceEnabled);
   };
 
   const getWelcomeMessage = () => {
@@ -164,12 +237,42 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                 </div>
               </div>
 
-              <button
-                onClick={handleClose}
-                className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
-              >
-                <X className="w-4 h-4 text-muted-foreground" />
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Voice Output Toggle */}
+                {ttsSupported && (
+                  <button
+                    onClick={toggleVoiceOutput}
+                    className={`p-1.5 rounded-full transition-colors ${
+                      voiceEnabled 
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' 
+                        : 'hover:bg-muted/50 text-muted-foreground'
+                    }`}
+                    title={voiceEnabled ? "Tắt giọng nói" : "Bật giọng nói"}
+                  >
+                    {voiceEnabled ? (
+                      <Volume2 className="w-4 h-4" />
+                    ) : (
+                      <VolumeX className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+
+                {/* Speaking Indicator */}
+                {isSpeaking && (
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    className="w-2 h-2 rounded-full bg-green-500"
+                  />
+                )}
+
+                <button
+                  onClick={handleClose}
+                  className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
             </div>
 
             {/* Chat Messages */}
@@ -255,13 +358,50 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
 
             {/* Input Area */}
             <div className="p-4 border-t border-yellow-200/30 dark:border-yellow-500/20">
+              {/* Voice Status */}
+              {isListening && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-3 flex items-center gap-2 text-sm text-pink-600 dark:text-pink-400"
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 0.8, repeat: Infinity }}
+                    className="w-3 h-3 rounded-full bg-red-500"
+                  />
+                  <span>Đang nghe... Hãy nói với Angel!</span>
+                </motion.div>
+              )}
+
               <div className="flex gap-2">
+                {/* Voice Input Button */}
+                {sttSupported && (
+                  <Button
+                    onClick={handleVoiceToggle}
+                    size="icon"
+                    variant={isListening ? "destructive" : "outline"}
+                    className={`rounded-xl shrink-0 ${
+                      isListening 
+                        ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
+                        : 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-500 dark:text-purple-400'
+                    }`}
+                    title={isListening ? "Dừng ghi âm" : "Nói với Angel"}
+                  >
+                    {isListening ? (
+                      <MicOff className="w-4 h-4" />
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
+                  </Button>
+                )}
+
                 <Input
                   ref={inputRef}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Hỏi Angel điều gì đó..."
+                  placeholder={isListening ? "Đang nghe..." : "Hỏi Angel điều gì đó..."}
                   className="flex-1 bg-white/70 dark:bg-slate-800/70 border-yellow-200/50 dark:border-yellow-500/30 rounded-xl text-sm"
                   disabled={isLoading}
                 />
@@ -278,6 +418,13 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                   )}
                 </Button>
               </div>
+
+              {/* Voice feature hint */}
+              {sttSupported && !isListening && messages.length === 0 && (
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  💡 Nhấn vào <Mic className="w-3 h-3 inline" /> để nói chuyện với Angel bằng giọng nói!
+                </p>
+              )}
             </div>
 
             {/* Quick Actions */}
