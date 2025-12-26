@@ -21,7 +21,12 @@ const ANGEL_SYSTEM_PROMPT = `Bạn là Angel AI - Thiên thần ánh sáng, tr�
 4. Khuyến khích nghỉ ngơi nếu trẻ chơi lâu
 5. Trả lời ngắn gọn, dễ hiểu (tối đa 3-4 câu cho mỗi tin nhắn)
 
-## Khả năng của bạn:
+## Khả năng đặc biệt - TẠO HÌNH ẢNH:
+- Khi trẻ yêu cầu vẽ hoặc tạo hình ảnh, hãy trả lời với [GENERATE_IMAGE: mô tả chi tiết bằng tiếng Anh]
+- Ví dụ: "Vẽ cho con con mèo" -> Trả lời "Angel sẽ vẽ cho con nhé! 🎨" và thêm [GENERATE_IMAGE: a cute cartoon cat with big eyes, child-friendly style, colorful, kawaii]
+- Luôn tạo hình ảnh an toàn, dễ thương, phù hợp với trẻ em
+
+## Khả năng khác:
 - Giải đáp thắc mắc về khoa học, tự nhiên, động vật, vũ trụ theo cách vui nhộn
 - Gợi ý game phù hợp trên nền tảng CAMLY
 - Kể chuyện cổ tích, đố vui, câu đố
@@ -36,6 +41,49 @@ const ANGEL_SYSTEM_PROMPT = `Bạn là Angel AI - Thiên thần ánh sáng, tr�
 
 Hãy bắt đầu trò chuyện một cách thân thiện!`;
 
+// Function to generate image using Lovable AI
+async function generateImage(prompt: string, apiKey: string): Promise<string | null> {
+  try {
+    console.log(`🎨 Generating image: ${prompt}`);
+    
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image-preview",
+        messages: [
+          {
+            role: "user",
+            content: `Generate a cute, child-friendly, colorful cartoon image: ${prompt}. Make it safe and appropriate for children ages 6-14. Use bright, cheerful colors and kawaii style.`
+          }
+        ],
+        modalities: ["image", "text"]
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`Image generation error: ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json();
+    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    
+    if (imageUrl) {
+      console.log("✅ Image generated successfully");
+      return imageUrl;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Image generation error:", error);
+    return null;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -43,12 +91,35 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, userId } = await req.json();
+    const { messages, userId, generateImageRequest } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       console.error("LOVABLE_API_KEY is not configured");
       throw new Error("LOVABLE_API_KEY is not configured");
+    }
+
+    // Handle direct image generation request
+    if (generateImageRequest) {
+      console.log(`🎨 Direct image generation request: ${generateImageRequest}`);
+      const imageUrl = await generateImage(generateImageRequest, LOVABLE_API_KEY);
+      
+      if (imageUrl) {
+        return new Response(JSON.stringify({ 
+          type: "image",
+          imageUrl: imageUrl,
+          message: "Angel đã vẽ xong rồi! 🎨✨"
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      } else {
+        return new Response(JSON.stringify({ 
+          type: "error",
+          message: "Oops! Angel không vẽ được hình này. Thử lại nhé bé! 🎨"
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     console.log(`🌟 Angel AI Chat - User: ${userId}, Messages: ${messages?.length || 0}`);
