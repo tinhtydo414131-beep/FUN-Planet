@@ -15,6 +15,7 @@ import { FloatingChatWindows, useChatWindows } from "@/components/private-chat/F
 import { CallProvider } from "@/components/private-chat/CallProvider";
 import { UploadGameFAB } from "@/components/UploadGameFAB";
 import { FloatingRewardButton } from "@/components/FloatingRewardButton";
+import { FloatingChatButton } from "@/components/FloatingChatButton";
 import { WelcomeCreatorPopup } from "@/components/WelcomeCreatorPopup";
 import { GameCompleteClaimPopup } from "@/components/GameCompleteClaimPopup";
 import { DailyLoginRewardPopup } from "@/components/reward-galaxy/DailyLoginRewardPopup";
@@ -223,6 +224,9 @@ const AppContent = () => {
         
         {/* Floating Reward Button - Gift from Father Universe */}
         <FloatingRewardButton />
+        
+        {/* Floating Chat Button - Mobile only, draggable */}
+        <FloatingChatButton />
         
         {/* Welcome Creator Popup - Shows for new users */}
         <WelcomeCreatorPopup />
