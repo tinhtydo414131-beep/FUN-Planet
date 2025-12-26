@@ -13,8 +13,6 @@ import { RoleSelectionModal } from "@/components/RoleSelectionModal";
 
 import { FloatingChatWindows, useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { CallProvider } from "@/components/private-chat/CallProvider";
-import { UploadGameFAB } from "@/components/UploadGameFAB";
-import { FloatingRewardButton } from "@/components/FloatingRewardButton";
 import { FloatingChatButton } from "@/components/FloatingChatButton";
 import { WelcomeCreatorPopup } from "@/components/WelcomeCreatorPopup";
 import { GameCompleteClaimPopup } from "@/components/GameCompleteClaimPopup";
@@ -219,11 +217,6 @@ const AppContent = () => {
         {/* Floating Chat Windows for Desktop */}
         <FloatingChats />
         
-        {/* Upload Game FAB - Always visible */}
-        <UploadGameFAB />
-        
-        {/* Floating Reward Button - Gift from Father Universe */}
-        <FloatingRewardButton />
         
         {/* Floating Chat Button - Mobile only, draggable */}
         <FloatingChatButton />

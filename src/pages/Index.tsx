@@ -32,7 +32,7 @@ import { AngelAI, AngelAIButton } from "@/components/AngelAI";
 import { FunIDOnboarding } from "@/components/FunIDOnboarding";
 import { useFunId } from "@/hooks/useFunId";
 import { RewardGalaxyHomeBanner } from "@/components/RewardGalaxyHomeBanner";
-import { RewardGalaxyFloatingButton } from "@/components/RewardGalaxyFloatingButton";
+
 import { TodayRewardsCard } from "@/components/TodayRewardsCard";
 
 const Index = () => {
@@ -229,8 +229,6 @@ const Index = () => {
       {/* Today's Rewards Card */}
       <TodayRewardsCard />
       
-      {/* Floating Reward Galaxy Button */}
-      <RewardGalaxyFloatingButton />
 
       {/* Full Games Gallery */}
       <section id="games-gallery" className="py-16 px-4 bg-gradient-to-b from-primary/5 to-background">
