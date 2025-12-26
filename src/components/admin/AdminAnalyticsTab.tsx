@@ -143,7 +143,7 @@ export function AdminAnalyticsTab() {
       // Load top games analytics
       const { data: games } = await supabase
         .from("uploaded_games")
-        .select("id, title, play_count, likes_count")
+        .select("id, title, play_count, rating_count")
         .eq("status", "approved")
         .order("play_count", { ascending: false })
         .limit(10);
@@ -153,7 +153,7 @@ export function AdminAnalyticsTab() {
           games.map((g) => ({
             name: g.title.length > 15 ? g.title.slice(0, 15) + "..." : g.title,
             plays: g.play_count || 0,
-            likes: g.likes_count || 0,
+            likes: g.rating_count || 0,
           }))
         );
       }
