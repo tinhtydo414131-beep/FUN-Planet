@@ -13,8 +13,8 @@ interface UseWebSpeechSynthesisOptions {
 export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}) => {
   const {
     language = 'vi-VN',
-    rate = 0.8,  // Slower, sweeter, more gentle speech
-    pitch = 1.3, // Higher pitch for cute young female voice
+    rate: initialRate = 0.8,
+    pitch: initialPitch = 1.3,
     volume = 1,
     onStart,
     onEnd,
@@ -25,6 +25,8 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
   const [isSupported, setIsSupported] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [rate, setRate] = useState(initialRate);
+  const [pitch, setPitch] = useState(initialPitch);
   
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
@@ -36,46 +38,51 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
         const availableVoices = window.speechSynthesis.getVoices();
         setVoices(availableVoices);
         
-        // Priority order for sweet female Vietnamese voice:
-        // 1. HoaiMy, An (Microsoft Edge Vietnamese - very natural)
-        // 2. Vietnamese female voices
-        // 3. Google Vietnamese voice
-        // 4. Microsoft female voices (Zira, Hazel, Susan, Catherine)
-        // 5. Apple female voices (Samantha, Victoria, Karen)
-        // 6. Any female voice
-        // 7. First available voice
+        // Check for saved settings
+        const savedSettings = localStorage.getItem('angel_ai_voice_settings');
+        if (savedSettings) {
+          try {
+            const settings = JSON.parse(savedSettings);
+            const savedVoice = availableVoices.find(v => v.name === settings.voiceName);
+            if (savedVoice) {
+              setSelectedVoice(savedVoice);
+              setRate(settings.rate ?? initialRate);
+              setPitch(settings.pitch ?? initialPitch);
+              console.log('[Angel AI Voice] 📂 Loaded saved settings:', settings);
+              return;
+            }
+          } catch (e) {
+            console.log('[Angel AI Voice] ⚠️ Failed to load saved settings');
+          }
+        }
         
+        // Priority order for sweet female Vietnamese voice:
         const femaleVoiceNames = [
-          'hoaimy', 'hoai my', 'an', 'linh', 'nữ',  // Vietnamese female names
-          'zira', 'hazel', 'susan', 'catherine', 'linda', 'jenny', // Microsoft
-          'samantha', 'victoria', 'karen', 'moira', 'fiona', // Apple
+          'hoaimy', 'hoai my', 'an', 'linh', 'nữ',
+          'zira', 'hazel', 'susan', 'catherine', 'linda', 'jenny',
+          'samantha', 'victoria', 'karen', 'moira', 'fiona',
           'female', 'woman', 'girl'
         ];
         
-        // Find best Vietnamese voice
         const vietnameseVoice = availableVoices.find(
           voice => (voice.lang.includes('vi') || voice.lang.includes('VI')) &&
                    femaleVoiceNames.some(name => voice.name.toLowerCase().includes(name))
         );
         
-        // Google Vietnamese (usually good quality)
         const googleVietnameseVoice = availableVoices.find(
           voice => (voice.lang.includes('vi') || voice.lang.includes('VI')) &&
                    voice.name.includes('Google')
         );
         
-        // Any Vietnamese voice
         const anyVietnameseVoice = availableVoices.find(
           voice => voice.lang.includes('vi') || voice.lang.includes('VI')
         );
         
-        // Microsoft/Apple female voices (good quality)
         const qualityFemaleVoice = availableVoices.find(
           voice => ['zira', 'samantha', 'hazel', 'susan', 'victoria', 'karen', 'jenny']
                    .some(name => voice.name.toLowerCase().includes(name))
         );
         
-        // Any female voice
         const anyFemaleVoice = availableVoices.find(
           voice => femaleVoiceNames.some(name => voice.name.toLowerCase().includes(name))
         );
@@ -96,7 +103,6 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
 
       loadVoices();
       
-      // Chrome loads voices asynchronously
       if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = loadVoices;
       }
@@ -107,12 +113,11 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
         window.speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [initialRate, initialPitch]);
 
   const speak = useCallback((text: string) => {
     if (!isSupported || !text.trim()) return;
 
-    // Cancel any ongoing speech
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -172,6 +177,10 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
     isSupported,
     voices,
     selectedVoice,
-    setSelectedVoice
+    setSelectedVoice,
+    rate,
+    setRate,
+    pitch,
+    setPitch
   };
 };

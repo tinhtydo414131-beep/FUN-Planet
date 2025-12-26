@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Star, Heart, Rocket, X, MessageCircle, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft } from "lucide-react";
+import { Sparkles, Star, Heart, Rocket, X, MessageCircle, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { VoiceSettingsPanel } from "@/components/angel-ai/VoiceSettingsPanel";
 
 interface FunID {
   id: string;
@@ -63,6 +64,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
   const [historyGroups, setHistoryGroups] = useState<ChatHistoryGroup[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const lastAssistantMessageRef = useRef<string>("");
@@ -118,7 +120,14 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     speak,
     stop: stopSpeaking,
     isSpeaking,
-    isSupported: ttsSupported
+    isSupported: ttsSupported,
+    voices,
+    selectedVoice,
+    setSelectedVoice,
+    rate: voiceRate,
+    setRate: setVoiceRate,
+    pitch: voicePitch,
+    setPitch: setVoicePitch
   } = useWebSpeechSynthesis({
     language: 'vi-VN',
     rate: 0.8,
@@ -314,8 +323,19 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
               </div>
 
               <div className="flex items-center gap-2">
+                {/* Voice Settings Button */}
+                {!showHistory && !showVoiceSettings && ttsSupported && (
+                  <button
+                    onClick={() => setShowVoiceSettings(true)}
+                    className="p-1.5 rounded-full hover:bg-muted/50 transition-colors text-muted-foreground hover:text-purple-600"
+                    title="Cài đặt giọng nói"
+                  >
+                    <Settings className="w-4 h-4" />
+                  </button>
+                )}
+
                 {/* History Button */}
-                {!showHistory && user && (
+                {!showHistory && !showVoiceSettings && user && (
                   <button
                     onClick={handleOpenHistory}
                     className="p-1.5 rounded-full hover:bg-muted/50 transition-colors text-muted-foreground hover:text-yellow-600"
@@ -326,7 +346,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                 )}
 
                 {/* Voice Output Toggle */}
-                {!showHistory && ttsSupported && (
+                {!showHistory && !showVoiceSettings && ttsSupported && (
                   <button
                     onClick={toggleVoiceOutput}
                     className={`p-1.5 rounded-full transition-colors ${
@@ -345,7 +365,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                 )}
 
                 {/* Speaking Indicator */}
-                {!showHistory && isSpeaking && (
+                {!showHistory && !showVoiceSettings && isSpeaking && (
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 0.5, repeat: Infinity }}
@@ -362,8 +382,27 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
               </div>
             </div>
 
-            {/* History View */}
-            {showHistory ? (
+            {/* Voice Settings Panel */}
+            {showVoiceSettings ? (
+              <VoiceSettingsPanel
+                voices={voices}
+                selectedVoice={selectedVoice}
+                currentRate={voiceRate}
+                currentPitch={voicePitch}
+                onSelectVoice={setSelectedVoice}
+                onRateChange={setVoiceRate}
+                onPitchChange={setVoicePitch}
+                onTestVoice={speak}
+                onSave={() => {
+                  setShowVoiceSettings(false);
+                  toast({
+                    title: "Đã lưu",
+                    description: "Cài đặt giọng nói đã được lưu!",
+                  });
+                }}
+                onClose={() => setShowVoiceSettings(false)}
+              />
+            ) : showHistory ? (
               <div className="h-[400px] flex flex-col">
                 <ScrollArea className="flex-1 p-4">
                   {loadingHistory ? (
