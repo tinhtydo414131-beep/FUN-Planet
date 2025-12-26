@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Star, Heart, Rocket, Music, X, MessageCircle } from "lucide-react";
+import { Sparkles, Star, Heart, Rocket, Music, X, MessageCircle, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { fireConfetti } from "@/components/ConfettiEffect";
-
+import { useDraggable } from "@/hooks/useDraggable";
 interface FunID {
   id: string;
   user_id: string;
@@ -271,29 +271,88 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
 
 // Floating Angel Button for triggering Angel AI
 export function AngelAIButton({ onClick }: { onClick: () => void }) {
+  const {
+    position,
+    isDragging,
+    isLongPressing,
+    handleMouseDown,
+    handleLongPressStart,
+    handleLongPressEnd,
+    handleLongPressMove,
+    style
+  } = useDraggable({
+    storageKey: "angel_ai_position",
+    defaultPosition: { x: 0, y: -80 },
+    longPressDelay: 300
+  });
+
+  const handleClick = () => {
+    if (!isDragging) {
+      onClick();
+    }
+  };
+
   return (
-    <motion.button
-      onClick={onClick}
-      className="fixed bottom-4 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 shadow-lg flex items-center justify-center"
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
-      animate={{ 
+    <motion.div
+      className="fixed bottom-4 right-4 z-40 touch-none select-none"
+      style={style}
+      animate={isDragging ? {} : { 
         y: [0, -5, 0],
-        boxShadow: [
-          "0 0 20px rgba(255, 215, 0, 0.4)",
-          "0 0 30px rgba(255, 215, 0, 0.6)",
-          "0 0 20px rgba(255, 215, 0, 0.4)"
-        ]
       }}
-      transition={{ duration: 2, repeat: Infinity }}
+      transition={isDragging ? {} : { duration: 2, repeat: Infinity }}
     >
-      <MessageCircle className="w-6 h-6 text-white" />
-      
-      {/* Notification dot */}
-      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-xs flex items-center justify-center text-white font-bold">
-        !
-      </span>
-    </motion.button>
+      {/* Drag Handle */}
+      <div
+        className={`absolute -top-3 left-1/2 -translate-x-1/2 p-1 rounded-full transition-all ${
+          isLongPressing || isDragging 
+            ? 'bg-yellow-500/90 scale-110' 
+            : 'bg-black/30 hover:bg-black/50'
+        }`}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleLongPressStart}
+        onTouchMove={handleLongPressMove}
+        onTouchEnd={handleLongPressEnd}
+        onMouseUp={handleLongPressEnd}
+        onMouseLeave={handleLongPressEnd}
+      >
+        <GripVertical className="w-3 h-3 text-white" />
+      </div>
+
+      <motion.button
+        onClick={handleClick}
+        className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 shadow-lg flex items-center justify-center"
+        whileHover={isDragging ? {} : { scale: 1.1 }}
+        whileTap={isDragging ? {} : { scale: 0.95 }}
+        animate={{ 
+          boxShadow: isDragging 
+            ? "0 0 40px rgba(255, 215, 0, 0.8)"
+            : [
+                "0 0 20px rgba(255, 215, 0, 0.4)",
+                "0 0 30px rgba(255, 215, 0, 0.6)",
+                "0 0 20px rgba(255, 215, 0, 0.4)"
+              ]
+        }}
+        transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
+      >
+        <MessageCircle className="w-6 h-6 text-white" />
+        
+        {/* Notification dot */}
+        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-xs flex items-center justify-center text-white font-bold">
+          !
+        </span>
+      </motion.button>
+
+      {/* Dragging indicator */}
+      {(isLongPressing || isDragging) && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs bg-black/70 text-white px-2 py-0.5 rounded-full"
+        >
+          {isDragging ? "Đang kéo..." : "Giữ để kéo"}
+        </motion.div>
+      )}
+    </motion.div>
   );
 }
 
