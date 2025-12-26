@@ -8,9 +8,14 @@ interface Position {
 interface UseDraggableOptions {
   storageKey: string;
   defaultPosition?: Position;
+  longPressDelay?: number;
 }
 
-export const useDraggable = ({ storageKey, defaultPosition = { x: 0, y: 0 } }: UseDraggableOptions) => {
+export const useDraggable = ({ 
+  storageKey, 
+  defaultPosition = { x: 0, y: 0 },
+  longPressDelay = 300
+}: UseDraggableOptions) => {
   const [position, setPosition] = useState<Position>(() => {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
@@ -24,11 +29,16 @@ export const useDraggable = ({ storageKey, defaultPosition = { x: 0, y: 0 } }: U
   });
 
   const [isDragging, setIsDragging] = useState(false);
+  const [isLongPressing, setIsLongPressing] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const elementRef = useRef<HTMLDivElement>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
+  // Direct drag from handle
   const handleMouseDown = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     
@@ -40,6 +50,57 @@ export const useDraggable = ({ storageKey, defaultPosition = { x: 0, y: 0 } }: U
     };
     setIsDragging(true);
   }, [position]);
+
+  // Long press to drag entire button
+  const handleLongPressStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    
+    touchStartPosRef.current = { x: clientX, y: clientY };
+    
+    longPressTimerRef.current = setTimeout(() => {
+      setIsLongPressing(true);
+      setIsDragging(true);
+      dragStartRef.current = {
+        x: clientX,
+        y: clientY,
+        posX: position.x,
+        posY: position.y,
+      };
+      
+      // Vibrate on mobile if supported
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }, longPressDelay);
+  }, [position, longPressDelay]);
+
+  const handleLongPressEnd = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    setIsLongPressing(false);
+  }, []);
+
+  const handleLongPressMove = useCallback((e: React.TouchEvent) => {
+    // Cancel long press if moved too much before timer
+    if (touchStartPosRef.current && !isLongPressing) {
+      const clientX = e.touches[0].clientX;
+      const clientY = e.touches[0].clientY;
+      const moveThreshold = 10;
+      
+      if (
+        Math.abs(clientX - touchStartPosRef.current.x) > moveThreshold ||
+        Math.abs(clientY - touchStartPosRef.current.y) > moveThreshold
+      ) {
+        if (longPressTimerRef.current) {
+          clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = null;
+        }
+      }
+    }
+  }, [isLongPressing]);
 
   const handleMouseMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (!isDragging || !dragStartRef.current) return;
@@ -68,10 +129,12 @@ export const useDraggable = ({ storageKey, defaultPosition = { x: 0, y: 0 } }: U
   const handleMouseUp = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
+      setIsLongPressing(false);
       dragStartRef.current = null;
       localStorage.setItem(storageKey, JSON.stringify(position));
     }
-  }, [isDragging, position, storageKey]);
+    handleLongPressEnd();
+  }, [isDragging, position, storageKey, handleLongPressEnd]);
 
   useEffect(() => {
     if (isDragging) {
@@ -89,14 +152,28 @@ export const useDraggable = ({ storageKey, defaultPosition = { x: 0, y: 0 } }: U
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
+    };
+  }, []);
+
   return {
     position,
     isDragging,
+    isLongPressing,
     handleMouseDown,
+    handleLongPressStart,
+    handleLongPressEnd,
+    handleLongPressMove,
     elementRef,
     style: {
       transform: `translate(${position.x}px, ${position.y}px)`,
-      cursor: isDragging ? "grabbing" : "grab",
+      cursor: isDragging ? "grabbing" : "default",
+      transition: isDragging ? "none" : "transform 0.1s ease-out",
     },
   };
 };

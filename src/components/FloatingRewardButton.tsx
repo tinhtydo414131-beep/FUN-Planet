@@ -11,10 +11,23 @@ export const FloatingRewardButton = () => {
   const { camlyBalance, isLoading } = useWeb3Rewards();
   const [isHovered, setIsHovered] = useState(false);
 
-  const { isDragging, handleMouseDown, style } = useDraggable({
+  const { 
+    isDragging, 
+    handleMouseDown,
+    handleLongPressStart,
+    handleLongPressEnd,
+    handleLongPressMove,
+    style 
+  } = useDraggable({
     storageKey: "floating_reward_position",
     defaultPosition: { x: 0, y: 0 },
   });
+
+  const handleClick = () => {
+    if (!isDragging) {
+      navigate("/reward-galaxy");
+    }
+  };
 
   return (
     <div 
@@ -22,17 +35,18 @@ export const FloatingRewardButton = () => {
       style={style}
     >
       <div className="relative group">
-        {/* Drag handle */}
+        {/* Drag handle - always visible */}
         <div
           onMouseDown={handleMouseDown}
           onTouchStart={handleMouseDown}
           className={cn(
-            "absolute -top-2 -left-2 w-6 h-6 rounded-full bg-orange-600/80 flex items-center justify-center transition-opacity z-10 cursor-grab active:cursor-grabbing",
-            isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            "absolute -top-3 -left-3 w-8 h-8 rounded-full bg-orange-600/90 flex items-center justify-center z-10 cursor-grab active:cursor-grabbing shadow-lg",
+            "transition-all duration-200",
+            isDragging ? "scale-110 bg-orange-500" : "opacity-70 hover:opacity-100 hover:scale-110"
           )}
           title="Kéo để di chuyển"
         >
-          <GripVertical className="w-3 h-3 text-white" />
+          <GripVertical className="w-4 h-4 text-white" />
         </div>
 
         <motion.button
@@ -42,17 +56,25 @@ export const FloatingRewardButton = () => {
             "shadow-lg shadow-orange-500/40",
             "flex items-center justify-center",
             "border-2 border-yellow-300/50",
-            "group overflow-visible"
+            "group overflow-visible",
+            isDragging && "ring-4 ring-orange-400/50"
           )}
-          onClick={() => !isDragging && navigate("/reward-galaxy")}
+          onClick={handleClick}
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseLeave={() => { setIsHovered(false); handleLongPressEnd(); }}
+          onMouseDown={handleLongPressStart}
+          onMouseUp={handleLongPressEnd}
+          onTouchStart={handleLongPressStart}
+          onTouchEnd={handleLongPressEnd}
+          onTouchMove={handleLongPressMove}
           whileHover={{ scale: isDragging ? 1 : 1.1 }}
           whileTap={{ scale: isDragging ? 1 : 0.95 }}
           animate={{
-            boxShadow: isHovered 
-              ? "0 0 30px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 146, 60, 0.4)"
-              : "0 8px 20px rgba(251, 146, 60, 0.4)",
+            boxShadow: isDragging
+              ? "0 0 40px rgba(251, 146, 60, 0.8)"
+              : isHovered 
+                ? "0 0 30px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 146, 60, 0.4)"
+                : "0 8px 20px rgba(251, 146, 60, 0.4)",
           }}
           transition={{ duration: 0.3 }}
         >
@@ -145,6 +167,20 @@ export const FloatingRewardButton = () => {
               <span className="text-sm font-medium bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
                 🎁 Quà từ Cha Vũ Trụ
               </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Drag instruction tooltip */}
+        <AnimatePresence>
+          {isDragging && (
+            <motion.div
+              className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-orange-500 text-white rounded-lg px-3 py-1.5 shadow-xl text-xs font-medium"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+            >
+              Đang kéo...
             </motion.div>
           )}
         </AnimatePresence>
