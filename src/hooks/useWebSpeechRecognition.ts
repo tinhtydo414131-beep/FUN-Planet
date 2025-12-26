@@ -65,7 +65,7 @@ const getErrorMessage = (error: string): string => {
 export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions = {}) => {
   const {
     language = 'vi-VN',
-    continuous = false,
+    continuous = true,
     onResult,
     onError
   } = options;
@@ -79,6 +79,7 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
   const onResultRef = useRef(onResult);
   const onErrorRef = useRef(onError);
   const isListeningRef = useRef(false);
+  const shouldContinueListeningRef = useRef(false); // Flag để kiểm soát auto-restart
 
   // Keep callback refs updated
   useEffect(() => {
@@ -137,9 +138,34 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error('[WebSpeech] Error:', event.error, event.message);
+      
+      // Xử lý đặc biệt cho lỗi "no-speech" - tự động restart
+      if (event.error === 'no-speech') {
+        console.log('[WebSpeech] No speech detected, auto-restarting...');
+        // Không báo lỗi, chỉ restart nếu vẫn đang trong trạng thái listening
+        if (shouldContinueListeningRef.current) {
+          setTimeout(() => {
+            try {
+              recognition.start();
+              console.log('[WebSpeech] Restarted after no-speech');
+            } catch (e) {
+              console.log('[WebSpeech] Could not restart:', e);
+            }
+          }, 100);
+        }
+        return; // Không hiển thị lỗi cho user
+      }
+      
+      // Xử lý lỗi aborted - không hiển thị vì user tự dừng
+      if (event.error === 'aborted') {
+        console.log('[WebSpeech] Recognition aborted by user');
+        return;
+      }
+      
       const errorMessage = getErrorMessage(event.error);
       setError(errorMessage);
       isListeningRef.current = false;
+      shouldContinueListeningRef.current = false;
       setIsListening(false);
       
       if (onErrorRef.current) {
@@ -148,7 +174,25 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
     };
 
     recognition.onend = () => {
-      console.log('[WebSpeech] Recognition ended');
+      console.log('[WebSpeech] Recognition ended, shouldContinue:', shouldContinueListeningRef.current);
+      
+      // Nếu vẫn đang trong trạng thái listening, tự động restart
+      if (shouldContinueListeningRef.current) {
+        console.log('[WebSpeech] Auto-restarting recognition...');
+        setTimeout(() => {
+          try {
+            recognition.start();
+            console.log('[WebSpeech] Recognition restarted');
+          } catch (e) {
+            console.log('[WebSpeech] Could not restart recognition:', e);
+            isListeningRef.current = false;
+            shouldContinueListeningRef.current = false;
+            setIsListening(false);
+          }
+        }, 100);
+        return;
+      }
+      
       isListeningRef.current = false;
       setIsListening(false);
     };
@@ -182,6 +226,7 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
 
     setError(null);
     setTranscript('');
+    shouldContinueListeningRef.current = true; // Bật flag để auto-restart
     
     try {
       console.log('[WebSpeech] Starting recognition...');
@@ -199,19 +244,29 @@ export const useWebSpeechRecognition = (options: UseWebSpeechRecognitionOptions 
             recognitionRef.current?.start();
           } catch (retryError) {
             console.error('[WebSpeech] Retry failed:', retryError);
+            shouldContinueListeningRef.current = false;
           }
         }, 100);
+      } else {
+        shouldContinueListeningRef.current = false;
       }
     }
   }, [isSupported]);
 
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListeningRef.current) {
-      console.log('[WebSpeech] Stopping recognition...');
-      recognitionRef.current.stop();
-      isListeningRef.current = false;
-      setIsListening(false);
+    console.log('[WebSpeech] Stopping recognition...');
+    shouldContinueListeningRef.current = false; // Tắt flag để không auto-restart
+    
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.log('[WebSpeech] Error stopping:', e);
+      }
     }
+    
+    isListeningRef.current = false;
+    setIsListening(false);
   }, []);
 
   const toggleListening = useCallback(() => {
