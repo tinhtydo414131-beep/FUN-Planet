@@ -39,10 +39,10 @@ interface Game {
   id: string;
   title: string;
   description: string | null;
-  thumbnail_url: string | null;
-  status: string;
+  thumbnail_path: string | null;
+  status: "approved" | "pending" | "rejected";
   play_count: number;
-  likes_count: number;
+  rating_count: number;
   created_at: string;
   user_id: string;
   username: string;
@@ -68,12 +68,12 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     try {
       let query = supabase
         .from("uploaded_games")
-        .select("*")
+        .select("id, title, description, thumbnail_path, status, play_count, rating_count, created_at, user_id")
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
 
       if (statusFilter !== "all") {
-        query = query.eq("status", statusFilter);
+        query = query.eq("status", statusFilter as "approved" | "pending" | "rejected");
       }
 
       const { data: gamesData } = await query;
@@ -85,10 +85,17 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
           .select("id, username")
           .in("id", userIds);
 
-        const gamesWithUsers = gamesData.map((game) => ({
-          ...game,
-          username:
-            profiles?.find((p) => p.id === game.user_id)?.username || "Unknown",
+        const gamesWithUsers: Game[] = gamesData.map((game) => ({
+          id: game.id,
+          title: game.title,
+          description: game.description,
+          thumbnail_path: game.thumbnail_path,
+          status: game.status,
+          play_count: game.play_count || 0,
+          rating_count: game.rating_count || 0,
+          created_at: game.created_at,
+          user_id: game.user_id,
+          username: profiles?.find((p) => p.id === game.user_id)?.username || "Unknown",
         }));
 
         setGames(gamesWithUsers);
@@ -101,7 +108,7 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     }
   };
 
-  const updateGameStatus = async (gameId: string, newStatus: string) => {
+  const updateGameStatus = async (gameId: string, newStatus: "approved" | "pending" | "rejected") => {
     setProcessingId(gameId);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -112,12 +119,14 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
         .eq("id", gameId);
 
       // Log the review action
-      await supabase.from("game_reviews").insert({
-        game_id: gameId,
-        reviewer_id: user?.id,
-        status: newStatus,
-        notes: `Status changed to ${newStatus}`,
-      });
+      if (user?.id) {
+        await supabase.from("game_reviews").insert({
+          game_id: gameId,
+          reviewer_id: user.id,
+          status: newStatus,
+          notes: `Status changed to ${newStatus}`,
+        });
+      }
 
       // Log admin action
       await supabase.from("admin_audit_logs").insert({
@@ -326,9 +335,9 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
                     <TableRow key={game.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          {game.thumbnail_url && (
+                          {game.thumbnail_path && (
                             <img
-                              src={game.thumbnail_url}
+                              src={game.thumbnail_path}
                               alt={game.title}
                               className="w-12 h-12 rounded object-cover"
                             />
@@ -344,7 +353,7 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
                       <TableCell>{game.username}</TableCell>
                       <TableCell>{getStatusBadge(game.status)}</TableCell>
                       <TableCell>{game.play_count || 0}</TableCell>
-                      <TableCell>{game.likes_count || 0}</TableCell>
+                      <TableCell>{game.rating_count || 0}</TableCell>
                       <TableCell className="text-muted-foreground">
                         {format(new Date(game.created_at), "dd/MM/yyyy")}
                       </TableCell>

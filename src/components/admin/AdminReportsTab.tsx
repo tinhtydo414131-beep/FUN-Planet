@@ -82,11 +82,11 @@ export function AdminReportsTab({ onStatsUpdate }: AdminReportsTabProps) {
           .select("id, username")
           .in("id", reporterIds);
 
-        // Get comment details
+        // Get comment details - note: column is 'comment' not 'content'
         const commentIds = [...new Set(reportsData.map((r) => r.comment_id))];
         const { data: comments } = await supabase
           .from("uploaded_game_comments")
-          .select("id, content, user_id")
+          .select("id, comment, user_id")
           .in("id", commentIds);
 
         // Get comment author usernames
@@ -103,7 +103,7 @@ export function AdminReportsTab({ onStatsUpdate }: AdminReportsTabProps) {
             reporter_username:
               profiles?.find((p) => p.id === report.reporter_id)?.username ||
               "Unknown",
-            comment_content: comment?.content || "[Deleted]",
+            comment_content: comment?.comment || "[Deleted]",
             comment_author:
               commentAuthors?.find((p) => p.id === comment?.user_id)?.username ||
               "Unknown",
