@@ -34,9 +34,7 @@ export const MusicLibrary = lazy(() => import("@/pages/MusicLibrary"));
 export const PublicMusic = lazy(() => import("@/pages/PublicMusic"));
 export const ParentDashboard = lazy(() => import("@/pages/ParentDashboard"));
 export const Education = lazy(() => import("@/pages/Education"));
-export const AdminGameReview = lazy(() => import("@/pages/AdminGameReview"));
-export const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
-export const AdminRewardsDashboard = lazy(() => import("@/pages/AdminRewardsDashboard"));
+export const AdminMasterDashboard = lazy(() => import("@/pages/AdminMasterDashboard"));
 export const About = lazy(() => import("@/pages/About"));
 export const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 export const Install = lazy(() => import("@/pages/Install"));
@@ -102,10 +100,8 @@ export const routeConfig = {
   parentDashboard: "/parent-dashboard",
   education: "/education",
   
-  // Admin
-  adminGameReview: "/admin/game-review",
-  adminDashboard: "/admin-dashboard",
-  adminRewards: "/admin/rewards",
+  // Admin - All routes point to Master Dashboard
+  adminMaster: "/admin/master",
   
   // Other
   about: "/about",

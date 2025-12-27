@@ -43,7 +43,6 @@ import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 import ComboLeaderboard from "./pages/ComboLeaderboard";
 import UploadGame from "./pages/UploadGame";
-import AdminGameReview from "./pages/AdminGameReview";
 import MyGames from "./pages/MyGames";
 import EditGame from "./pages/EditGame";
 import GameDetails from "./pages/GameDetails";
@@ -56,8 +55,6 @@ import NFTGallery from "./pages/NFTGallery";
 import Education from "./pages/Education";
 import ParentDashboard from "./pages/ParentDashboard";
 import PlanetExplorer from "./pages/PlanetExplorer";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminRewardsDashboard from "./pages/AdminRewardsDashboard";
 import AdminMasterDashboard from "./pages/AdminMasterDashboard";
 import About from "./pages/About";
 import LovableGamePlay from "./pages/LovableGamePlay";
@@ -131,11 +128,11 @@ const AnimatedRoutes = () => {
         <Route path="/parent-dashboard" element={<ParentDashboard />} />
         <Route path="/education" element={<Education />} />
         
-        {/* Admin */}
-        <Route path="/admin/game-review" element={<AdminGameReview />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/rewards" element={<AdminRewardsDashboard />} />
+        {/* Admin - All routes redirect to Master Dashboard */}
         <Route path="/admin/master" element={<AdminMasterDashboard />} />
+        <Route path="/admin/game-review" element={<AdminMasterDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminMasterDashboard />} />
+        <Route path="/admin/rewards" element={<AdminMasterDashboard />} />
         
         {/* Other */}
         <Route path="/about" element={<About />} />
