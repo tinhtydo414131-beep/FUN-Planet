@@ -77,7 +77,8 @@ export default function AngelAIPage() {
     loadChatHistory,
     clearHistory,
     getGroupedHistory,
-    historyLoaded 
+    historyLoaded,
+    isReconnecting
   } = useAngelAIChat({
     onError: (err) => {
       toast({
@@ -87,6 +88,32 @@ export default function AngelAIPage() {
       });
     }
   });
+
+  // Subscribe to realtime updates for chat history
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('angel-ai-chat-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'angel_ai_chat_history',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Realtime chat update:', payload);
+          // Background sync - the store will handle deduplication
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   // Web Speech Recognition
   const {
