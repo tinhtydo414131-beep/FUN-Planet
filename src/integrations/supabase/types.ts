@@ -191,6 +191,67 @@ export type Database = {
           },
         ]
       }
+      admin_realtime_notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          priority: string
+          read_at: string | null
+          read_by: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type: string
+          priority?: string
+          read_at?: string | null
+          read_by?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          priority?: string
+          read_at?: string | null
+          read_by?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_realtime_notifications_read_by_fkey"
+            columns: ["read_by"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_realtime_notifications_read_by_fkey"
+            columns: ["read_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_realtime_notifications_read_by_fkey"
+            columns: ["read_by"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_settings: {
         Row: {
           created_at: string | null

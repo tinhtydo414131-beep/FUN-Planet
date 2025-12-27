@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminRole } from "@/hooks/useAdminRole";
@@ -35,6 +35,7 @@ import { AdminAnalyticsTab } from "@/components/admin/AdminAnalyticsTab";
 import { AdminAuditLogsTab } from "@/components/admin/AdminAuditLogsTab";
 import { AdminAngelAITab } from "@/components/admin/AdminAngelAITab";
 import { AdminNotificationsTab } from "@/components/admin/AdminNotificationsTab";
+import { AdminRealtimeBell } from "@/components/admin/AdminRealtimeBell";
 
 interface Stats {
   totalUsers: number;
@@ -62,6 +63,15 @@ export default function AdminMasterDashboard() {
     newUsersToday: 0
   });
   const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  // Navigate to specific tab (called from realtime bell)
+  const handleNavigateToTab = (tab: string) => {
+    setActiveTab(tab);
+    // Scroll tabs into view
+    tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // Redirect non-admin users
   useEffect(() => {
@@ -178,15 +188,21 @@ export default function AdminMasterDashboard() {
                 </p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={loadStats}
-              disabled={refreshing}
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              <AdminRealtimeBell 
+                onNavigateToTab={handleNavigateToTab}
+                onRefreshStats={loadStats}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadStats}
+                disabled={refreshing}
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -252,7 +268,7 @@ export default function AdminMasterDashboard() {
         </div>
 
         {/* Main Tabs - Responsive Grid */}
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" ref={tabsRef}>
           <TabsList className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 w-full mb-6 h-auto gap-1">
             <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <BarChart3 className="h-4 w-4" />
