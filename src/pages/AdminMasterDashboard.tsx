@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -17,13 +17,24 @@ import {
   RefreshCw,
   BarChart3,
   Settings,
-  Loader2
+  Loader2,
+  Gamepad2,
+  FileText,
+  ScrollText,
+  Sparkles,
+  Bell
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
 import { AdminRewardsTab } from "@/components/admin/AdminRewardsTab";
 import { AdminFraudTab } from "@/components/admin/AdminFraudTab";
 import { AdminSettingsTab } from "@/components/admin/AdminSettingsTab";
+import { AdminGamesTab } from "@/components/admin/AdminGamesTab";
+import { AdminReportsTab } from "@/components/admin/AdminReportsTab";
+import { AdminAnalyticsTab } from "@/components/admin/AdminAnalyticsTab";
+import { AdminAuditLogsTab } from "@/components/admin/AdminAuditLogsTab";
+import { AdminAngelAITab } from "@/components/admin/AdminAngelAITab";
+import { AdminNotificationsTab } from "@/components/admin/AdminNotificationsTab";
 
 interface Stats {
   totalUsers: number;
@@ -240,33 +251,57 @@ export default function AdminMasterDashboard() {
           </Card>
         </div>
 
-        {/* Main Tabs */}
+        {/* Main Tabs - Responsive Grid */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid grid-cols-5 w-full max-w-2xl mb-6">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
+          <TabsList className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 w-full mb-6 h-auto gap-1">
+            <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Overview</span>
+              <span>Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
+            <TabsTrigger value="users" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Users</span>
+              <span>Users</span>
             </TabsTrigger>
-            <TabsTrigger value="rewards" className="flex items-center gap-2">
+            <TabsTrigger value="games" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <Gamepad2 className="h-4 w-4" />
+              <span>Games</span>
+            </TabsTrigger>
+            <TabsTrigger value="rewards" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Coins className="h-4 w-4" />
-              <span className="hidden sm:inline">Rewards</span>
+              <span>Rewards</span>
             </TabsTrigger>
-            <TabsTrigger value="fraud" className="flex items-center gap-2 relative">
+            <TabsTrigger value="fraud" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs relative">
               <AlertTriangle className="h-4 w-4" />
-              <span className="hidden sm:inline">Fraud</span>
+              <span>Fraud</span>
               {stats.suspiciousCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
                   {stats.suspiciousCount}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
+            <TabsTrigger value="reports" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <FileText className="h-4 w-4" />
+              <span>Reports</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <TrendingUp className="h-4 w-4" />
+              <span>Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="audit" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <ScrollText className="h-4 w-4" />
+              <span>Audit</span>
+            </TabsTrigger>
+            <TabsTrigger value="angelai" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <Sparkles className="h-4 w-4" />
+              <span>Angel AI</span>
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <Bell className="h-4 w-4" />
+              <span>Notify</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
+              <span>Settings</span>
             </TabsTrigger>
           </TabsList>
 
@@ -278,12 +313,36 @@ export default function AdminMasterDashboard() {
             <AdminUsersTab onStatsUpdate={loadStats} />
           </TabsContent>
 
+          <TabsContent value="games">
+            <AdminGamesTab onStatsUpdate={loadStats} />
+          </TabsContent>
+
           <TabsContent value="rewards">
             <AdminRewardsTab onStatsUpdate={loadStats} />
           </TabsContent>
 
           <TabsContent value="fraud">
             <AdminFraudTab onStatsUpdate={loadStats} />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <AdminReportsTab onStatsUpdate={loadStats} />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AdminAnalyticsTab />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <AdminAuditLogsTab />
+          </TabsContent>
+
+          <TabsContent value="angelai">
+            <AdminAngelAITab />
+          </TabsContent>
+
+          <TabsContent value="notifications">
+            <AdminNotificationsTab />
           </TabsContent>
 
           <TabsContent value="settings">
