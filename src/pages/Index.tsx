@@ -28,7 +28,7 @@ import LegendParticleEffect from "@/components/LegendParticleEffect";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { OnboardingRoleSelector } from "@/components/OnboardingRoleSelector";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { AngelAI } from "@/components/AngelAI";
+import { AngelAI, AngelAIButton } from "@/components/AngelAI";
 import { FunIDOnboarding } from "@/components/FunIDOnboarding";
 import { useFunId } from "@/hooks/useFunId";
 import { RewardGalaxyHomeBanner } from "@/components/RewardGalaxyHomeBanner";
@@ -197,6 +197,10 @@ const Index = () => {
         )}
       </AnimatePresence>
 
+      {/* Angel AI Button */}
+      {user && funId && !showAngelChat && (
+        <AngelAIButton onClick={() => setShowAngelChat(true)} />
+      )}
 
       {/* Legend Particle Effect */}
       <LegendParticleEffect isLegend={isLegend} />
