@@ -97,7 +97,6 @@ export const Navigation = () => {
     { path: "/games", label: "Play Games" },
     { path: "/public-music", label: "Music" },
     { path: "/leaderboard", label: "Leaderboard" },
-    { path: "/angel-ai", label: "🌟 Angel AI", angelAI: true },
     { path: "/reward-galaxy", label: "🎁 Quà Từ Cha Vũ Trụ", special: true },
     ...(isAdmin ? [{ path: "/admin/master", label: "👑 Admin", admin: true }] : []),
   ];
