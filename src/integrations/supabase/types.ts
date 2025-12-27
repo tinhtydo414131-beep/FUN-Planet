@@ -1121,6 +1121,72 @@ export type Database = {
           },
         ]
       }
+      creator_earnings: {
+        Row: {
+          created_at: string
+          creator_id: string
+          daily_earnings_today: number
+          first_play_earnings: number
+          first_plays_count: number
+          game_id: string
+          game_type: string
+          id: string
+          last_daily_reset: string | null
+          milestone_100_claimed: boolean
+          milestone_1000_claimed: boolean
+          milestone_500_claimed: boolean
+          royalty_earnings: number
+          total_earnings: number
+          total_milestone_earnings: number
+          total_play_minutes: number
+          updated_at: string
+          upload_bonus_amount: number
+          upload_bonus_claimed: boolean
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          daily_earnings_today?: number
+          first_play_earnings?: number
+          first_plays_count?: number
+          game_id: string
+          game_type?: string
+          id?: string
+          last_daily_reset?: string | null
+          milestone_100_claimed?: boolean
+          milestone_1000_claimed?: boolean
+          milestone_500_claimed?: boolean
+          royalty_earnings?: number
+          total_earnings?: number
+          total_milestone_earnings?: number
+          total_play_minutes?: number
+          updated_at?: string
+          upload_bonus_amount?: number
+          upload_bonus_claimed?: boolean
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          daily_earnings_today?: number
+          first_play_earnings?: number
+          first_plays_count?: number
+          game_id?: string
+          game_type?: string
+          id?: string
+          last_daily_reset?: string | null
+          milestone_100_claimed?: boolean
+          milestone_1000_claimed?: boolean
+          milestone_500_claimed?: boolean
+          royalty_earnings?: number
+          total_earnings?: number
+          total_milestone_earnings?: number
+          total_play_minutes?: number
+          updated_at?: string
+          upload_bonus_amount?: number
+          upload_bonus_claimed?: boolean
+        }
+        Relationships: []
+      }
       daily_claim_logs: {
         Row: {
           amount_claimed: number
@@ -1213,6 +1279,48 @@ export type Database = {
           id?: string
           user_id?: string
           wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      daily_play_rewards: {
+        Row: {
+          age_group: string | null
+          created_at: string
+          daily_cap: number
+          id: string
+          new_game_count: number
+          new_game_rewards_earned: number
+          reward_date: string
+          time_rewards_earned: number
+          total_play_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age_group?: string | null
+          created_at?: string
+          daily_cap?: number
+          id?: string
+          new_game_count?: number
+          new_game_rewards_earned?: number
+          reward_date?: string
+          time_rewards_earned?: number
+          total_play_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age_group?: string | null
+          created_at?: string
+          daily_cap?: number
+          id?: string
+          new_game_count?: number
+          new_game_rewards_earned?: number
+          reward_date?: string
+          time_rewards_earned?: number
+          total_play_minutes?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2206,6 +2314,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      play_sessions: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          ended_at: string | null
+          game_id: string
+          game_type: string
+          id: string
+          is_valid: boolean
+          last_activity_at: string
+          rewards_earned: number
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          game_id: string
+          game_type?: string
+          id?: string
+          is_valid?: boolean
+          last_activity_at?: string
+          rewards_earned?: number
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          game_id?: string
+          game_type?: string
+          id?: string
+          is_valid?: boolean
+          last_activity_at?: string
+          rewards_earned?: number
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       playlist_items: {
         Row: {
@@ -3404,6 +3554,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_game_plays: {
+        Row: {
+          created_at: string
+          first_play_at: string
+          game_id: string
+          game_type: string
+          id: string
+          last_play_at: string
+          new_game_reward_amount: number
+          new_game_reward_claimed: boolean
+          session_count: number
+          total_play_seconds: number
+          total_time_rewards: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          first_play_at?: string
+          game_id: string
+          game_type?: string
+          id?: string
+          last_play_at?: string
+          new_game_reward_amount?: number
+          new_game_reward_claimed?: boolean
+          session_count?: number
+          total_play_seconds?: number
+          total_time_rewards?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          first_play_at?: string
+          game_id?: string
+          game_type?: string
+          id?: string
+          last_play_at?: string
+          new_game_reward_amount?: number
+          new_game_reward_claimed?: boolean
+          session_count?: number
+          total_play_seconds?: number
+          total_time_rewards?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_music: {
         Row: {
