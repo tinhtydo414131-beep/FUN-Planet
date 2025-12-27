@@ -1,11 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAngelChatStore, ChatMessage } from "@/stores/angelChatStore";
 
-export interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-  created_at?: string;
-}
+export type { ChatMessage } from "@/stores/angelChatStore";
 
 export interface ChatHistoryGroup {
   date: string;
@@ -18,15 +15,69 @@ interface UseAngelAIChatOptions {
   userId?: string;
 }
 
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY = 1000;
+
 export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const retryCountRef = useRef(0);
+  
+  // Use Zustand store for persistent messages
+  const { 
+    messages, 
+    setMessages, 
+    addMessage, 
+    updateLastMessage, 
+    clearMessages: clearStoreMessages,
+    setLastUserId,
+    lastUserId,
+    lastSyncTime,
+    setLastSyncTime,
+    isReconnecting,
+    setIsReconnecting
+  } = useAngelChatStore();
 
-  // Load chat history from database
-  const loadChatHistory = useCallback(async (userId: string, limit = 20) => {
+  // Session recovery helper
+  const ensureSession = useCallback(async (): Promise<boolean> => {
     try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        // Try to refresh the session
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError || !refreshData.session) {
+          console.warn('Session refresh failed:', refreshError);
+          return false;
+        }
+      }
+      return true;
+    } catch (err) {
+      console.error('Session check error:', err);
+      return false;
+    }
+  }, []);
+
+  // Load chat history from database with retry logic
+  const loadChatHistory = useCallback(async (userId: string, limit = 50) => {
+    // First, check if we have cached messages for this user
+    const cachedMessages = useAngelChatStore.getState().getMessagesForUser(userId);
+    if (cachedMessages.length > 0 && !historyLoaded) {
+      setHistoryLoaded(true);
+      // Background sync will update if needed
+    }
+
+    try {
+      setIsReconnecting(true);
+      
+      // Ensure we have a valid session
+      const hasSession = await ensureSession();
+      if (!hasSession && retryCountRef.current < MAX_RETRY_ATTEMPTS) {
+        retryCountRef.current++;
+        setTimeout(() => loadChatHistory(userId, limit), RETRY_DELAY * retryCountRef.current);
+        return cachedMessages;
+      }
+      
       const { data, error } = await supabase
         .from('angel_ai_chat_history')
         .select('*')
@@ -36,27 +87,42 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
 
       if (error) {
         console.error('Error loading chat history:', error);
-        return [];
+        // Return cached messages on error
+        return cachedMessages;
       }
 
       const loadedMessages: ChatMessage[] = (data || []).map(msg => ({
         role: msg.role as "user" | "assistant",
         content: msg.content,
-        created_at: msg.created_at
+        created_at: msg.created_at,
+        id: msg.id
       }));
 
+      // Update store with fresh data
       setMessages(loadedMessages);
+      setLastUserId(userId);
+      setLastSyncTime(Date.now());
       setHistoryLoaded(true);
+      retryCountRef.current = 0;
+      
       return loadedMessages;
     } catch (err) {
       console.error('Error loading chat history:', err);
-      return [];
+      return cachedMessages;
+    } finally {
+      setIsReconnecting(false);
     }
-  }, []);
+  }, [ensureSession, historyLoaded, setIsReconnecting, setLastSyncTime, setLastUserId, setMessages]);
 
-  // Save message to database
+  // Save message to database with retry
   const saveToHistory = useCallback(async (userId: string, message: ChatMessage) => {
     try {
+      const hasSession = await ensureSession();
+      if (!hasSession) {
+        console.warn('No session, message will be saved on next sync');
+        return;
+      }
+
       const { error } = await supabase
         .from('angel_ai_chat_history')
         .insert({
@@ -71,7 +137,7 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
     } catch (err) {
       console.error('Error saving message:', err);
     }
-  }, []);
+  }, [ensureSession]);
 
   // Get grouped history for display
   const getGroupedHistory = useCallback(async (userId: string): Promise<ChatHistoryGroup[]> => {
@@ -97,7 +163,8 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
         grouped[msgDate].push({
           role: msg.role as "user" | "assistant",
           content: msg.content,
-          created_at: msg.created_at
+          created_at: msg.created_at,
+          id: msg.id
         });
       });
 
@@ -117,7 +184,7 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
         return {
           date,
           label,
-          messages: msgs.reverse() // Reverse to show oldest first within group
+          messages: msgs.reverse()
         };
       });
     } catch (err) {
@@ -139,23 +206,26 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
         return false;
       }
 
-      setMessages([]);
+      clearStoreMessages();
       return true;
     } catch (err) {
       console.error('Error clearing history:', err);
       return false;
     }
-  }, []);
+  }, [clearStoreMessages]);
 
   const sendMessage = useCallback(async (userMessage: string, userId?: string) => {
     if (!userMessage.trim() || isLoading) return;
 
     setError(null);
     
-    // Add user message
-    const userMsg: ChatMessage = { role: "user", content: userMessage.trim() };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
+    // Add user message optimistically
+    const userMsg: ChatMessage = { 
+      role: "user", 
+      content: userMessage.trim(),
+      id: crypto.randomUUID()
+    };
+    addMessage(userMsg);
     setIsLoading(true);
 
     // Save user message to database
@@ -175,7 +245,7 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ 
-          messages: newMessages,
+          messages: [...messages, userMsg],
           userId 
         }),
       });
@@ -197,8 +267,8 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
       const decoder = new TextDecoder();
       let textBuffer = "";
 
-      // Add empty assistant message that we'll update
-      setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+      // Add empty assistant message
+      addMessage({ role: "assistant", content: "", id: crypto.randomUUID() });
 
       while (true) {
         const { done, value } = await reader.read();
@@ -206,7 +276,6 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
 
         textBuffer += decoder.decode(value, { stream: true });
 
-        // Process line-by-line
         let newlineIndex: number;
         while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
           let line = textBuffer.slice(0, newlineIndex);
@@ -224,20 +293,9 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantContent += content;
-              // Update the last assistant message
-              setMessages(prev => {
-                const updated = [...prev];
-                if (updated[updated.length - 1]?.role === "assistant") {
-                  updated[updated.length - 1] = {
-                    role: "assistant",
-                    content: assistantContent
-                  };
-                }
-                return updated;
-              });
+              updateLastMessage(assistantContent);
             }
           } catch {
-            // Incomplete JSON, put back and wait
             textBuffer = line + "\n" + textBuffer;
             break;
           }
@@ -258,16 +316,7 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantContent += content;
-              setMessages(prev => {
-                const updated = [...prev];
-                if (updated[updated.length - 1]?.role === "assistant") {
-                  updated[updated.length - 1] = {
-                    role: "assistant",
-                    content: assistantContent
-                  };
-                }
-                return updated;
-              });
+              updateLastMessage(assistantContent);
             }
           } catch {
             // Ignore partial leftovers
@@ -275,7 +324,7 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
         }
       }
 
-      // Save assistant message to database after completion
+      // Save assistant message to database
       if (userId && assistantContent) {
         saveToHistory(userId, { role: "assistant", content: assistantContent });
       }
@@ -285,23 +334,22 @@ export function useAngelAIChat(options: UseAngelAIChatOptions = {}) {
       const errorMessage = "Angel đang bận, thử lại sau nhé! 💫";
       setError(errorMessage);
       options.onError?.(errorMessage);
-      // Remove the empty assistant message if error
-      setMessages(prev => prev.filter((_, i) => i !== prev.length - 1 || prev[prev.length - 1].content !== ""));
     } finally {
       setIsLoading(false);
     }
-  }, [messages, isLoading, options, saveToHistory]);
+  }, [messages, isLoading, options, saveToHistory, addMessage, updateLastMessage]);
 
   const clearMessages = useCallback(() => {
-    setMessages([]);
+    clearStoreMessages();
     setError(null);
-  }, []);
+  }, [clearStoreMessages]);
 
   return {
     messages,
     isLoading,
     error,
     historyLoaded,
+    isReconnecting,
     sendMessage,
     clearMessages,
     loadChatHistory,

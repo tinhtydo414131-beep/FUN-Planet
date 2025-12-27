@@ -205,7 +205,7 @@ export function FeaturedGamesSection() {
       </section>
 
       {/* Game Play Modal */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {selectedGame && (
           <Dialog open={!!selectedGame} onOpenChange={() => closeGame()}>
             <DialogContent 
