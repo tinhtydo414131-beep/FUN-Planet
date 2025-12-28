@@ -157,21 +157,7 @@ export const Navigation = () => {
 
 
               {user && (
-                <>
-                  {/* Search Button */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setSearchOpen(true)}
-                    className="hover:bg-primary/10"
-                    title="Tìm kiếm (nhấn /)"
-                  >
-                    <Search className="w-5 h-5" />
-                  </Button>
-
-                  {/* Messenger Button */}
-                  <MessengerButton />
-                </>
+                <MessengerButton />
               )}
 
               {user ? (
@@ -288,19 +274,7 @@ export const Navigation = () => {
           
           <div className="flex items-center gap-2">
             {user && (
-              <>
-                {/* Mobile Search Button */}
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="p-2 rounded-xl hover:bg-muted/50 transition-colors"
-                >
-                  <Search className="w-5 h-5 text-foreground" />
-                </button>
-
-                {/* Mobile Messenger Button */}
-                <MessengerButton />
-
-              </>
+              <MessengerButton />
             )}
             
             {/* Mobile Menu Button */}
