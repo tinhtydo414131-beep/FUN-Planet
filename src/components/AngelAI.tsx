@@ -65,6 +65,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
+  const [isVoiceChatMode, setIsVoiceChatMode] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const lastAssistantMessageRef = useRef<string>("");
@@ -158,17 +159,19 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     }
   }, [funId, isNewUser]);
 
-  // Auto-speak new assistant messages (respects autoRead setting)
+  // Auto-speak new assistant messages ONLY when in voice chat mode (user used mic)
   useEffect(() => {
-    if (voiceEnabled && autoRead && ttsSupported && messages.length > 0) {
+    if (voiceEnabled && ttsSupported && messages.length > 0 && isVoiceChatMode) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.role === 'assistant' && lastMessage.content && 
           lastMessage.content !== lastAssistantMessageRef.current) {
         lastAssistantMessageRef.current = lastMessage.content;
         speak(lastMessage.content);
+        // Reset voice chat mode after speaking (optional: keep true for continuous conversation)
+        setIsVoiceChatMode(false);
       }
     }
-  }, [messages, voiceEnabled, autoRead, ttsSupported, speak]);
+  }, [messages, voiceEnabled, ttsSupported, speak, isVoiceChatMode]);
 
   // Update input when transcript changes during listening
   useEffect(() => {
@@ -226,6 +229,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
     if (isListening) {
       stopListening();
       if (inputValue.trim()) {
+        setIsVoiceChatMode(true); // Enable voice chat mode when sending via mic
         handleSendMessage();
       }
     } else {

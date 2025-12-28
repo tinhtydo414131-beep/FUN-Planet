@@ -51,6 +51,7 @@ export function ChatInterface() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [personality, setPersonality] = useState<PersonalityMode>("cheerful");
+  const [isVoiceChatMode, setIsVoiceChatMode] = useState(false);
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -113,17 +114,18 @@ export function ChatInterface() {
     }
   }, [user, historyLoaded]);
 
-  // Auto-speak new assistant messages
+  // Auto-speak new assistant messages ONLY when in voice chat mode (user used mic)
   useEffect(() => {
-    if (voiceEnabled && autoRead && ttsSupported && messages.length > 0) {
+    if (voiceEnabled && ttsSupported && messages.length > 0 && isVoiceChatMode) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.role === 'assistant' && lastMessage.content && 
           lastMessage.content !== lastAssistantMessageRef.current) {
         lastAssistantMessageRef.current = lastMessage.content;
         speak(lastMessage.content);
+        setIsVoiceChatMode(false);
       }
     }
-  }, [messages, voiceEnabled, autoRead, ttsSupported, speak]);
+  }, [messages, voiceEnabled, ttsSupported, speak, isVoiceChatMode]);
 
   // Update input from transcript
   useEffect(() => {
@@ -162,7 +164,10 @@ export function ChatInterface() {
   const handleVoiceToggle = () => {
     if (isListening) {
       stopListening();
-      if (inputValue.trim()) handleSendMessage();
+      if (inputValue.trim()) {
+        setIsVoiceChatMode(true); // Enable voice chat mode when sending via mic
+        handleSendMessage();
+      }
     } else {
       startListening();
     }

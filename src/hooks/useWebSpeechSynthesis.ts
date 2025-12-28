@@ -30,7 +30,7 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
   const [rate, setRate] = useState(initialRate);
   const [pitch, setPitch] = useState(initialPitch);
   const [volume, setVolume] = useState(initialVolume);
-  const [autoRead, setAutoRead] = useState(true);
+  const [autoRead, setAutoRead] = useState(false);
   
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
@@ -54,7 +54,7 @@ export const useWebSpeechSynthesis = (options: UseWebSpeechSynthesisOptions = {}
             setRate(settings.rate ?? initialRate);
             setPitch(settings.pitch ?? initialPitch);
             setVolume(settings.volume ?? initialVolume);
-            setAutoRead(settings.autoRead ?? true);
+            setAutoRead(settings.autoRead ?? false);
             console.log('[Angel AI Voice] 📂 Loaded saved settings:', settings);
             if (savedVoice) return;
           } catch (e) {
