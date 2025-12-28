@@ -379,9 +379,24 @@ export const FunPlanetTopRanking = () => {
         />
       </div>
 
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0"
+        style={{ opacity: 0.7 }}
+      >
+        <source src="/videos/ranking-bg.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 rounded-3xl bg-black/50 z-0" />
+
       {/* Subtle dot pattern overlay */}
       <div
-        className="absolute inset-0 rounded-3xl pointer-events-none opacity-20"
+        className="absolute inset-0 rounded-3xl pointer-events-none opacity-10 z-[1]"
         style={{
           backgroundImage:
             "radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)",
@@ -390,21 +405,21 @@ export const FunPlanetTopRanking = () => {
       />
 
       {/* Light overlay gradient for brightness */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-transparent via-white/5 to-white/15 pointer-events-none" />
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-transparent via-white/5 to-white/8 pointer-events-none z-[1]" />
 
       {/* Golden Glow effect */}
-      <div className="absolute inset-0 rounded-3xl shadow-[0_0_50px_rgba(255,215,0,0.4)] pointer-events-none" />
+      <div className="absolute inset-0 rounded-3xl shadow-[0_0_50px_rgba(255,215,0,0.4)] pointer-events-none z-[1]" />
 
       {/* Inner glow effects */}
-      <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-purple-500/40 blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-blue-500/40 blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full bg-yellow-500/25 blur-3xl" />
+      <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-purple-500/30 blur-3xl z-[1]" />
+      <div className="absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-blue-500/30 blur-3xl z-[1]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full bg-yellow-500/20 blur-3xl z-[1]" />
 
       {/* Floating Particles */}
-      {floatingParticles.map((particle, index) => (
+      {floatingParticles.slice(0, 6).map((particle, index) => (
         <motion.div
           key={index}
-          className={`absolute pointer-events-none ${particle.size}`}
+          className={`absolute pointer-events-none ${particle.size} z-[2]`}
           style={{ left: particle.x, top: particle.y }}
           animate={{
             y: [0, -20, 0],
@@ -424,7 +439,7 @@ export const FunPlanetTopRanking = () => {
       ))}
 
       {/* Header */}
-      <div className="relative mb-4 flex items-center justify-center gap-3">
+      <div className="relative mb-4 flex items-center justify-center gap-3 z-10">
         <motion.span
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -446,7 +461,7 @@ export const FunPlanetTopRanking = () => {
 
       {loading ? (
         // Loading skeleton
-        <div className="space-y-3">
+        <div className="space-y-3 relative z-10">
           {Array.from({ length: 5 }).map((_, index) => (
             <div
               key={index}
@@ -463,7 +478,7 @@ export const FunPlanetTopRanking = () => {
       ) : (
         <>
           {/* PODIUM FOR TOP 3 */}
-          <div className="flex items-end justify-center gap-2 sm:gap-4 mb-4">
+          <div className="flex items-end justify-center gap-2 sm:gap-4 mb-4 relative z-10">
             {/* #2 Silver - Left */}
             {top3Users[1] && (
               <div className="w-1/3 order-1">
