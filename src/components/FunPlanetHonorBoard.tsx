@@ -34,7 +34,7 @@ const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?:
     return () => cancelAnimationFrame(animationFrame);
   }, [value, duration]);
   
-  return <span>{count.toLocaleString()}</span>;
+  return <span className="text-white">{count.toLocaleString()}</span>;
 };
 
 // Floating particles configuration
@@ -302,7 +302,7 @@ export const FunPlanetHonorBoard = () => {
                   <span className="text-xs font-semibold text-yellow-200">{item.label}</span>
                   <div className="flex items-center gap-1">
                     {isCamly && <Gem className="h-3.5 w-3.5 text-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
-                    <span className="text-lg font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
+                    <span className="relative z-20 text-lg font-black text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 8px #fff, 1px 1px 2px #000' }}>
                       {loading ? (
                         <span className="animate-pulse">...</span>
                       ) : (
