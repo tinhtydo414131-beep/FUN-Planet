@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import confetti from "canvas-confetti";
+import { FriendActionButton } from "@/components/FriendActionButton";
 
 interface RankedUser {
   id: string;
@@ -100,10 +101,12 @@ const PodiumCard = ({
   user,
   rank,
   isCurrentUser,
+  currentUserId,
 }: {
   user: RankedUser;
   rank: number;
   isCurrentUser: boolean;
+  currentUserId?: string;
 }) => {
   const heights = { 1: "h-24", 2: "h-16", 3: "h-14" };
   const avatarSizes = { 1: "h-20 w-20", 2: "h-16 w-16", 3: "h-14 w-14" };
@@ -187,6 +190,19 @@ const PodiumCard = ({
         </span>
       </div>
 
+      {/* Friend Action Button */}
+      {!isCurrentUser && currentUserId && (
+        <div className="mt-2">
+          <FriendActionButton
+            targetUserId={user.id}
+            targetUsername={user.username || "User"}
+            showMessage={false}
+            size="sm"
+            className="scale-90"
+          />
+        </div>
+      )}
+
       {/* Podium Base */}
       <motion.div
         initial={{ height: 0 }}
@@ -224,11 +240,13 @@ const UserRow = ({
   rank,
   isCurrentUser,
   index,
+  currentUserId,
 }: {
   user: RankedUser;
   rank: number;
   isCurrentUser: boolean;
   index: number;
+  currentUserId?: string;
 }) => {
   const navigate = useNavigate();
   
@@ -279,6 +297,19 @@ const UserRow = ({
           {isCurrentUser && <span className="text-yellow-400 ml-1.5">(Bạn)</span>}
         </p>
       </div>
+
+      {/* Friend Action Button */}
+      {!isCurrentUser && currentUserId && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <FriendActionButton
+            targetUserId={user.id}
+            targetUsername={user.username || "User"}
+            showMessage={false}
+            size="sm"
+            className="shrink-0"
+          />
+        </div>
+      )}
 
       {/* Balance */}
       <div className="flex items-center gap-1.5 shrink-0">
@@ -557,18 +588,21 @@ export default function FullRanking() {
                 user={top3Users[1]}
                 rank={2}
                 isCurrentUser={user?.id === top3Users[1]?.id}
+                currentUserId={user?.id}
               />
               {/* 1st Place */}
               <PodiumCard
                 user={top3Users[0]}
                 rank={1}
                 isCurrentUser={user?.id === top3Users[0]?.id}
+                currentUserId={user?.id}
               />
               {/* 3rd Place */}
               <PodiumCard
                 user={top3Users[2]}
                 rank={3}
                 isCurrentUser={user?.id === top3Users[2]?.id}
+                currentUserId={user?.id}
               />
             </div>
           </motion.div>
@@ -611,6 +645,7 @@ export default function FullRanking() {
                   rank={actualRank}
                   isCurrentUser={user?.id === u.id}
                   index={index}
+                  currentUserId={user?.id}
                 />
               );
             })
