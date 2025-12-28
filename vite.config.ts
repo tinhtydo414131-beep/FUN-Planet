@@ -78,6 +78,10 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         // Exclude JS files from precaching - fetch at runtime
         globIgnores: ['**/*.js'],
+        // Force new SW to take over immediately
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /\.js$/i,
