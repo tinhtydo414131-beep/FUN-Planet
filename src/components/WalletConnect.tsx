@@ -47,6 +47,48 @@ export const WalletConnect = () => {
     }
   };
 
+  const checkWalletEligibility = async (walletAddress: string): Promise<{ canConnect: boolean; reason: string }> => {
+    if (!user) return { canConnect: false, reason: "User not authenticated" };
+
+    try {
+      const { data, error } = await supabase.rpc('check_wallet_eligibility', {
+        p_user_id: user.id,
+        p_wallet_address: walletAddress.toLowerCase()
+      });
+
+      if (error) {
+        console.error("Error checking wallet eligibility:", error);
+        return { canConnect: true, reason: "" }; // Allow if check fails
+      }
+
+      if (data && data.length > 0) {
+        return {
+          canConnect: data[0].can_connect,
+          reason: data[0].reason
+        };
+      }
+
+      return { canConnect: true, reason: "" };
+    } catch (error) {
+      console.error("Error in eligibility check:", error);
+      return { canConnect: true, reason: "" };
+    }
+  };
+
+  const logWalletConnection = async (walletAddress: string, previousWallet: string | null) => {
+    if (!user) return;
+
+    try {
+      await supabase.rpc('log_wallet_connection', {
+        p_user_id: user.id,
+        p_wallet_address: walletAddress.toLowerCase(),
+        p_previous_wallet: previousWallet
+      });
+    } catch (error) {
+      console.error("Error logging wallet connection:", error);
+    }
+  };
+
   const connectWallet = async () => {
     // Prevent double tap on mobile
     const now = Date.now();
@@ -69,9 +111,21 @@ export const WalletConnect = () => {
       });
 
       if (accounts && accounts.length > 0) {
-        setAccount(accounts[0]);
-        await getBalance(accounts[0]);
-        await updateProfileWallet(accounts[0]);
+        const walletAddress = accounts[0];
+        
+        // Check wallet eligibility before connecting
+        const { canConnect, reason } = await checkWalletEligibility(walletAddress);
+        
+        if (!canConnect) {
+          toast.error(reason || "This wallet cannot be connected to your account.");
+          setConnecting(false);
+          isSubmittingRef.current = false;
+          return;
+        }
+
+        setAccount(walletAddress);
+        await getBalance(walletAddress);
+        await updateProfileWallet(walletAddress);
         toast.success("Wallet connected! 🎉");
       }
     } catch (error: any) {
@@ -125,6 +179,7 @@ export const WalletConnect = () => {
 
       // Prepare update data
       let walletBalance = profile?.wallet_balance || 0;
+      const previousWallet = profile?.wallet_address || null;
       
       if (isFirstConnection) {
         walletBalance = walletBalance + 50000;
@@ -165,7 +220,11 @@ export const WalletConnect = () => {
       if (error) {
         console.error("Error updating wallet:", error);
         toast.error(formatErrorMessage(error));
+        return;
       }
+
+      // Log wallet connection for fraud prevention
+      await logWalletConnection(normalizedAddress, previousWallet);
 
       // Also update fun_id table
       await supabase

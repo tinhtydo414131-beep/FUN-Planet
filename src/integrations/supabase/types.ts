@@ -4242,6 +4242,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_wallet_eligibility: {
+        Args: { p_user_id: string; p_wallet_address: string }
+        Returns: {
+          can_connect: boolean
+          existing_user_id: string
+          reason: string
+          wallet_changes_count: number
+        }[]
+      }
       claim_daily_login_reward: {
         Args: { p_user_id: string; p_wallet_address?: string }
         Returns: {
@@ -4339,6 +4348,15 @@ export type Database = {
         Returns: number
       }
       get_quiz_streak: { Args: { p_user_id: string }; Returns: number }
+      get_wallet_fraud_stats: {
+        Args: never
+        Returns: {
+          blacklisted_wallets: number
+          suspicious_patterns: number
+          total_wallets: number
+          users_with_multiple_changes: number
+        }[]
+      }
       has_claimed_first_wallet: {
         Args: { p_user_id: string }
         Returns: boolean
@@ -4363,6 +4381,14 @@ export type Database = {
       }
       is_room_member: {
         Args: { p_room_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      log_wallet_connection: {
+        Args: {
+          p_previous_wallet?: string
+          p_user_id: string
+          p_wallet_address: string
+        }
         Returns: boolean
       }
       update_wallet_balance: {
