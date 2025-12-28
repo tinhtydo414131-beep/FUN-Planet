@@ -218,11 +218,11 @@ const Index = () => {
       
       <Navigation />
       
+      {/* FUN Planet Stats - Honor Board & Top Ranking (TRÊN Hero) */}
+      <FunPlanetStatsSection />
+      
       {/* Hero Section */}
       <Hero />
-      
-      {/* FUN Planet Stats - Honor Board & Top Ranking */}
-      <FunPlanetStatsSection />
       
       {/* Reward Galaxy Home Banner */}
       <RewardGalaxyHomeBanner />
