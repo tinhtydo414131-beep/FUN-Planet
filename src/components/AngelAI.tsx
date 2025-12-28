@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Star, Heart, Rocket, X, MessageCircle, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft, Settings } from "lucide-react";
+import { Sparkles, Star, Heart, Rocket, X, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft, Settings } from "lucide-react";
+import { Angel3DButton } from "@/components/angel-ai/Angel3DCharacter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -831,36 +832,34 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         <GripVertical className="w-4 h-4 text-white" />
       </div>
 
-      <motion.button
-        onClick={handleClick}
+      <motion.div
         onMouseDown={handleLongPressStart}
         onMouseUp={handleLongPressEnd}
         onMouseLeave={handleLongPressEnd}
         onTouchStart={handleLongPressStart}
         onTouchEnd={handleLongPressEnd}
         onTouchMove={handleLongPressMove}
-        className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 shadow-lg flex items-center justify-center"
-        whileHover={isDragging ? {} : { scale: 1.1 }}
+        whileHover={isDragging ? {} : { scale: 1.05 }}
         whileTap={isDragging ? {} : { scale: 0.95 }}
         animate={isDragging ? {
-          boxShadow: "0 0 40px rgba(255, 215, 0, 0.8)"
+          filter: "drop-shadow(0 0 20px rgba(255, 215, 0, 0.8))"
         } : { 
-          y: [0, -5, 0],
-          boxShadow: [
-            "0 0 20px rgba(255, 215, 0, 0.4)",
-            "0 0 30px rgba(255, 215, 0, 0.6)",
-            "0 0 20px rgba(255, 215, 0, 0.4)"
+          filter: [
+            "drop-shadow(0 0 10px rgba(255, 215, 0, 0.4))",
+            "drop-shadow(0 0 20px rgba(255, 215, 0, 0.7))",
+            "drop-shadow(0 0 10px rgba(255, 215, 0, 0.4))"
           ]
         }}
         transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
+        className="relative"
       >
-        <MessageCircle className="w-6 h-6 text-white" />
+        <Angel3DButton onClick={handleClick} />
         
         {/* Notification dot */}
-        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-xs flex items-center justify-center text-white font-bold">
+        <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-xs flex items-center justify-center text-white font-bold z-10">
           !
         </span>
-      </motion.button>
+      </motion.div>
 
       {/* Dragging indicator */}
       {(isLongPressing || isDragging) && (
