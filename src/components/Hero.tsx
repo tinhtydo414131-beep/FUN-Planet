@@ -1,11 +1,10 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Search, Sparkles, Trophy } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
-import { HeroStats } from "./HeroStats";
 import { FunPlanetTopRanking } from "./FunPlanetTopRanking";
 import { FunPlanetHonorBoard } from "./FunPlanetHonorBoard";
 import { FunPlanetLegendsBoard } from "./FunPlanetLegendsBoard";
@@ -46,11 +45,6 @@ export const Hero = () => {
     });
   };
 
-  const scrollToStats = () => {
-    document.getElementById('fun-planet-stats')?.scrollIntoView({
-      behavior: 'smooth'
-    });
-  };
   return <section className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-center">
       {/* Background video */}
       <video 
@@ -130,21 +124,6 @@ export const Hero = () => {
             🚀 Build Your Planet – Play & Earn Joy! 💎✨
           </motion.p>
 
-          {/* Scroll to Stats Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-          >
-            <Button
-              onClick={scrollToStats}
-              onMouseEnter={() => playPop()}
-              className="group px-6 py-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 hover:from-yellow-400 hover:via-pink-400 hover:to-purple-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all animate-pulse hover:animate-none"
-            >
-              <Trophy className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
-              Xem Bảng Xếp Hạng 🏆
-            </Button>
-          </motion.div>
 
           {/* Search bar */}
           <motion.form initial={{
@@ -165,16 +144,6 @@ export const Hero = () => {
             </div>
           </motion.form>
 
-          {/* Real-time Stats */}
-          <motion.div initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          delay: 0.5
-        }}>
-            <HeroStats />
-          </motion.div>
 
           {/* Top Ranking & Honor Board */}
           <motion.div initial={{
