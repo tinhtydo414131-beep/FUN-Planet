@@ -358,26 +358,58 @@ export const FunPlanetTopRanking = () => {
         `}
       </style>
 
-      {/* Rainbow Border for the whole component (rotating gradient) */}
-      <div
-        className="absolute inset-0 rounded-3xl -z-10"
+      {/* Outer Gold Glow - Hào quang bên ngoài */}
+      <div 
+        className="absolute rounded-3xl pointer-events-none"
         style={{
-          padding: "3px",
-          background:
-            "linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff, #ff0000)",
-          backgroundSize: "400% 400%",
-          animation: "rainbow-border 6s ease infinite",
+          inset: "-12px",
+          background: "transparent",
+          boxShadow: `
+            0 0 40px rgba(255, 215, 0, 0.5),
+            0 0 60px rgba(255, 165, 0, 0.3),
+            0 0 80px rgba(255, 215, 0, 0.2)
+          `,
+          zIndex: -15,
         }}
-      >
-        {/* Inner gradient background */}
-        <div
-          className="h-full w-full rounded-3xl"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)",
-          }}
-        />
-      </div>
+      />
+
+      {/* Luxurious Gold Metallic Border - Viền vàng kim loại 6px */}
+      <div
+        className="absolute rounded-3xl"
+        style={{
+          inset: "-6px",
+          background: `
+            linear-gradient(135deg, 
+              #FFD700 0%, 
+              #FFF8DC 15%, 
+              #FFD700 30%, 
+              #B8860B 50%, 
+              #FFD700 70%, 
+              #FFF8DC 85%, 
+              #FFD700 100%
+            )
+          `,
+          backgroundSize: "200% 200%",
+          animation: "metallic-shine 4s ease infinite",
+          boxShadow: `
+            0 0 15px rgba(255, 215, 0, 0.6),
+            0 0 30px rgba(255, 215, 0, 0.4),
+            inset 0 2px 4px rgba(255, 255, 255, 0.5),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.3)
+          `,
+          zIndex: -10,
+        }}
+      />
+
+      {/* Inner background behind video */}
+      <div
+        className="absolute inset-0 rounded-3xl"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)",
+          zIndex: -5,
+        }}
+      />
 
       {/* Video Background */}
       <video
@@ -407,8 +439,18 @@ export const FunPlanetTopRanking = () => {
       {/* Light overlay gradient for brightness */}
       <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-transparent via-white/5 to-white/8 pointer-events-none z-[1]" />
 
-      {/* Golden Glow effect */}
-      <div className="absolute inset-0 rounded-3xl shadow-[0_0_50px_rgba(255,215,0,0.4)] pointer-events-none z-[1]" />
+      {/* Enhanced Golden Glow effect */}
+      <div className="absolute inset-0 rounded-3xl shadow-[0_0_60px_rgba(255,215,0,0.6),0_0_100px_rgba(255,165,0,0.3)] pointer-events-none z-[1]" />
+
+      {/* Inner Border Highlight - Viền sáng bên trong tạo chiều sâu 3D */}
+      <div 
+        className="absolute inset-0 rounded-3xl pointer-events-none"
+        style={{
+          border: "2px solid rgba(255, 215, 0, 0.5)",
+          boxShadow: "inset 0 0 20px rgba(255, 215, 0, 0.2)",
+          zIndex: 5,
+        }}
+      />
 
       {/* Inner glow effects */}
       <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-purple-500/30 blur-3xl z-[1]" />
