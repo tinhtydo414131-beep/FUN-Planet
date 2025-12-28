@@ -42,6 +42,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 import ComboLeaderboard from "./pages/ComboLeaderboard";
+import FullRanking from "./pages/FullRanking";
 import UploadGame from "./pages/UploadGame";
 import MyGames from "./pages/MyGames";
 import EditGame from "./pages/EditGame";
@@ -119,6 +120,7 @@ const AnimatedRoutes = () => {
         <Route path="/nexus-leaderboard" element={<NexusLeaderboard />} />
         <Route path="/combo-leaderboard" element={<ComboLeaderboard />} />
         <Route path="/camly-leaderboard" element={<CamlyLeaderboard />} />
+        <Route path="/full-ranking" element={<FullRanking />} />
         
         {/* Music */}
         <Route path="/music" element={<MusicLibrary />} />

@@ -788,7 +788,7 @@ export const FunPlanetTopRanking = () => {
         className="relative mt-4"
       >
         <Button
-          onClick={() => navigate("/camly-leaderboard")}
+          onClick={() => navigate("/full-ranking")}
           variant="outline"
           className="w-full rounded-xl border-2 border-yellow-400/60 bg-gradient-to-r from-yellow-500/30 to-amber-500/30 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/40 hover:to-amber-500/40 hover:text-white transition-all shadow-[0_0_15px_rgba(255,215,0,0.3)]"
         >
