@@ -128,15 +128,21 @@ export const useWeb3Rewards = () => {
       const accounts = await provider.send('eth_requestAccounts', []);
       const address = accounts[0];
 
-      // Check if this is first wallet connection - check if already claimed the bonus
+      // ANTI-FRAUD: Check if user can claim wallet_connection reward using database function
+      const { data: canClaimData } = await supabase
+        .rpc('can_claim_reward', { p_user_id: user.id, p_transaction_type: 'wallet_connection' });
+      
+      const canClaimBonus = canClaimData === true;
+
+      // Also check web3_rewards table for backward compatibility
       const { data: existing } = await supabase
         .from('web3_rewards')
         .select('first_wallet_claimed, wallet_address, camly_balance')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // First connect bonus: only if never claimed before (first_wallet_claimed is false or no record)
-      const isFirstConnect = !existing?.first_wallet_claimed;
+      // First connect bonus: only if can_claim_reward returns true AND not already claimed
+      const isFirstConnect = canClaimBonus && !existing?.first_wallet_claimed;
       const currentBalance = Number(existing?.camly_balance) || 0;
 
       // Upsert rewards record
@@ -155,6 +161,20 @@ export const useWeb3Rewards = () => {
 
       // Award first connection bonus only if not already claimed
       if (isFirstConnect) {
+        // ANTI-FRAUD: Use add_reward_safely function to prevent duplicate claims
+        const { data: rewardResult, error: rewardError } = await supabase
+          .rpc('add_reward_safely', {
+            p_user_id: user.id,
+            p_amount: REWARDS.FIRST_WALLET_CONNECT,
+            p_transaction_type: 'wallet_connection',
+            p_description: 'First wallet connection bonus'
+          });
+
+        if (rewardError) {
+          console.error('Error adding reward:', rewardError);
+          // Fallback: still log to web3_reward_transactions for backward compatibility
+        }
+
         await supabase.from('web3_reward_transactions').insert({
           user_id: user.id,
           amount: REWARDS.FIRST_WALLET_CONNECT,
@@ -256,7 +276,7 @@ export const useWeb3Rewards = () => {
         ...prev,
         walletAddress: address,
         isConnected: true,
-        camlyBalance: isFirstConnect ? REWARDS.FIRST_WALLET_CONNECT : prev.camlyBalance,
+        camlyBalance: isFirstConnect ? currentBalance + REWARDS.FIRST_WALLET_CONNECT : prev.camlyBalance,
         firstWalletClaimed: true,
       }));
 
@@ -273,6 +293,15 @@ export const useWeb3Rewards = () => {
     if (!user || state.firstGameClaimed) return false;
 
     try {
+      // ANTI-FRAUD: Check if user can claim first_game_play reward using database function
+      const { data: canClaimData } = await supabase
+        .rpc('can_claim_reward', { p_user_id: user.id, p_transaction_type: 'first_game_play' });
+      
+      if (canClaimData !== true) {
+        console.log('First game reward already claimed');
+        return false;
+      }
+
       // Check current state
       const { data: current } = await supabase
         .from('web3_rewards')
@@ -281,6 +310,19 @@ export const useWeb3Rewards = () => {
         .maybeSingle();
 
       if (current?.first_game_claimed) return false;
+
+      // ANTI-FRAUD: Use add_reward_safely function
+      const { data: rewardResult, error: rewardError } = await supabase
+        .rpc('add_reward_safely', {
+          p_user_id: user.id,
+          p_amount: REWARDS.FIRST_GAME_PLAY,
+          p_transaction_type: 'first_game_play',
+          p_description: 'First game play bonus'
+        });
+
+      if (rewardError) {
+        console.error('Error adding reward safely:', rewardError);
+      }
 
       const newBalance = (Number(current?.camly_balance) || 0) + REWARDS.FIRST_GAME_PLAY;
 
@@ -326,6 +368,15 @@ export const useWeb3Rewards = () => {
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
     try {
+      // ANTI-FRAUD: Check if user can claim daily_checkin reward using database function
+      const { data: canClaimData } = await supabase
+        .rpc('can_claim_reward', { p_user_id: user.id, p_transaction_type: 'daily_checkin' });
+      
+      if (canClaimData !== true) {
+        toast.info('Already claimed daily check-in today');
+        return false;
+      }
+
       const { data: current } = await supabase
         .from('web3_rewards')
         .select('last_daily_checkin, camly_balance, daily_streak')
@@ -349,6 +400,21 @@ export const useWeb3Rewards = () => {
       const multiplier = getStreakMultiplier(newStreak);
       const baseReward = REWARDS.DAILY_CHECKIN;
       const bonusReward = Math.floor(baseReward * multiplier);
+
+      // ANTI-FRAUD: Use add_reward_safely function
+      const { data: rewardResult, error: rewardError } = await supabase
+        .rpc('add_reward_safely', {
+          p_user_id: user.id,
+          p_amount: bonusReward,
+          p_transaction_type: 'daily_checkin',
+          p_description: multiplier > 1 
+            ? `Daily Check-in (${newStreak}-day streak, ${multiplier}x bonus!)` 
+            : 'Daily check-in reward'
+        });
+
+      if (rewardError) {
+        console.error('Error adding reward safely:', rewardError);
+      }
 
       const newBalance = (Number(current?.camly_balance) || 0) + bonusReward;
 
