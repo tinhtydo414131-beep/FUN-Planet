@@ -182,3 +182,40 @@ export function usePostsRealtime(
     isConnected: postsConnected || likesConnected || commentsConnected 
   };
 }
+
+/**
+ * Hook for ranking real-time updates
+ * Auto-refresh when wallet_balance changes
+ */
+export function useRankingRealtime(
+  onRankingChange: () => void,
+  enabled: boolean = true
+) {
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const handleChange = useCallback((payload: any) => {
+    // Check if wallet_balance changed
+    const oldBalance = payload.old?.wallet_balance;
+    const newBalance = payload.new?.wallet_balance;
+    
+    if (oldBalance !== newBalance) {
+      console.log('[Ranking Realtime] wallet_balance changed:', { oldBalance, newBalance });
+      
+      // Debounce to avoid too many refreshes
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+      debounceRef.current = setTimeout(() => {
+        onRankingChange();
+      }, 500);
+    }
+  }, [onRankingChange]);
+  
+  return useRealtimeConnection({
+    channelName: 'ranking-updates',
+    table: 'profiles',
+    event: 'UPDATE',
+    onMessage: handleChange,
+    enabled
+  });
+}

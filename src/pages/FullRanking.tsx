@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useRankingRealtime } from "@/hooks/useRealtimeConnection";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -302,12 +303,13 @@ export default function FullRanking() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [confettiFired, setConfettiFired] = useState(false);
+  const [realtimeUpdated, setRealtimeUpdated] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const fetchAllUsers = useCallback(async (isRefresh = false) => {
+  const fetchAllUsers = useCallback(async (isRefresh = false, isRealtime = false) => {
     try {
-      if (isRefresh) setRefreshing(true);
+      if (isRefresh && !isRealtime) setRefreshing(true);
 
       const { data, error, count } = await supabase
         .from("profiles")
@@ -319,6 +321,12 @@ export default function FullRanking() {
       setAllUsers(data || []);
       setFilteredUsers(data || []);
       setTotalUsers(count || 0);
+      
+      // Show update indicator for realtime updates
+      if (isRealtime) {
+        setRealtimeUpdated(true);
+        setTimeout(() => setRealtimeUpdated(false), 2000);
+      }
     } catch (err) {
       console.error("Error fetching users:", err);
     } finally {
@@ -326,6 +334,15 @@ export default function FullRanking() {
       setRefreshing(false);
     }
   }, []);
+
+  // Realtime ranking updates
+  const { isConnected: isRealtimeConnected } = useRankingRealtime(
+    useCallback(() => {
+      console.log('[FullRanking] Realtime update triggered');
+      fetchAllUsers(true, true);
+    }, [fetchAllUsers]),
+    true
+  );
 
   useEffect(() => {
     fetchAllUsers();
@@ -452,16 +469,50 @@ export default function FullRanking() {
                 Bảng Xếp Hạng Toàn Cầu
               </span>
             </h1>
-            <p className="text-sm text-white/70 flex items-center gap-1.5 mt-1">
-              <Users className="w-4 h-4" />
-              <span className="font-semibold text-yellow-300">{totalUsers.toLocaleString()}</span> người chơi
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-sm text-white/70 flex items-center gap-1.5">
+                <Users className="w-4 h-4" />
+                <span className="font-semibold text-yellow-300">{totalUsers.toLocaleString()}</span> người chơi
+              </p>
+              {/* Realtime indicator */}
+              <div className="flex items-center gap-1">
+                {isRealtimeConnected ? (
+                  <motion.div 
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="flex items-center gap-1"
+                  >
+                    <Wifi className="w-3 h-3 text-green-400" />
+                    <span className="text-xs text-green-400">Live</span>
+                  </motion.div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <WifiOff className="w-3 h-3 text-red-400" />
+                    <span className="text-xs text-red-400">Offline</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+
+          {/* Realtime update notification */}
+          <AnimatePresence>
+            {realtimeUpdated && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                className="absolute top-16 left-1/2 -translate-x-1/2 px-4 py-2 bg-green-500/90 rounded-full text-white text-sm font-medium shadow-lg z-50"
+              >
+                ✨ Đã cập nhật thứ hạng!
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <Button
             variant="outline"
             size="icon"
-            onClick={() => fetchAllUsers(true)}
+            onClick={() => fetchAllUsers(true, false)}
             disabled={refreshing}
             className="shrink-0 bg-white/10 border-white/30 hover:bg-white/20"
           >
