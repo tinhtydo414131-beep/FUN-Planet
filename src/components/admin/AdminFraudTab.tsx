@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Table, 
   TableBody, 
@@ -15,15 +16,18 @@ import { toast } from "sonner";
 import { 
   AlertTriangle, 
   Shield,
-  Eye,
   Ban,
   CheckCircle,
   Loader2,
   Search,
-  RefreshCw
+  RefreshCw,
+  Wallet
 } from "lucide-react";
 import { format } from "date-fns";
 import { UserBlockModal } from "./UserBlockModal";
+import { WalletSecurityStats } from "./WalletSecurityStats";
+import { WalletBlacklistTable } from "./WalletBlacklistTable";
+import { WalletHistoryTable } from "./WalletHistoryTable";
 
 interface SuspiciousActivity {
   id: string;
@@ -322,136 +326,171 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
         </CardContent>
       </Card>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Unreviewed</p>
-                <p className="text-xl font-bold">{unreviewedCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Reviewed</p>
-                <p className="text-xl font-bold">
-                  {activities.filter(a => a.reviewed).length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <Ban className="h-5 w-5 text-red-500" />
-              <div>
-                <p className="text-sm text-muted-foreground">Blocked</p>
-                <p className="text-xl font-bold">
-                  {activities.filter(a => a.action_taken === "blocked").length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Tabs for different sections */}
+      <Tabs defaultValue="activities" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="activities" className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Activities
+            {unreviewedCount > 0 && (
+              <Badge variant="destructive" className="ml-1">{unreviewedCount}</Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="wallets" className="flex items-center gap-2">
+            <Wallet className="h-4 w-4" />
+            Wallet Security
+          </TabsTrigger>
+          <TabsTrigger value="blacklist" className="flex items-center gap-2">
+            <Ban className="h-4 w-4" />
+            Blacklist
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Suspicious Activities Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              Suspicious Activities
-              {unreviewedCount > 0 && (
-                <Badge variant="destructive">{unreviewedCount} new</Badge>
-              )}
-            </CardTitle>
-            <Button variant="outline" size="sm" onClick={loadSuspiciousActivities}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
+        {/* Activities Tab */}
+        <TabsContent value="activities" className="space-y-4">
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4">
+            <Card>
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Unreviewed</p>
+                    <p className="text-xl font-bold">{unreviewedCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Reviewed</p>
+                    <p className="text-xl font-bold">
+                      {activities.filter(a => a.reviewed).length}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-2">
+                  <Ban className="h-5 w-5 text-red-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Blocked</p>
+                    <p className="text-xl font-bold">
+                      {activities.filter(a => a.action_taken === "blocked").length}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : activities.length === 0 ? (
-            <div className="text-center py-8">
-              <Shield className="h-12 w-12 text-green-500 mx-auto mb-2" />
-              <p className="text-muted-foreground">No suspicious activities detected</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Risk</TableHead>
-                    <TableHead>Details</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {activities.map((activity) => (
-                    <TableRow key={activity.id} className={activity.reviewed ? "opacity-50" : ""}>
-                      <TableCell className="font-medium">{activity.username}</TableCell>
-                      <TableCell>{getActivityTypeBadge(activity.activity_type)}</TableCell>
-                      <TableCell>{getRiskBadge(activity.risk_score)}</TableCell>
-                      <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
-                        {JSON.stringify(activity.details).slice(0, 50)}...
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {format(new Date(activity.created_at), "dd/MM/yyyy")}
-                      </TableCell>
-                      <TableCell>
-                        {activity.reviewed ? (
-                          <Badge variant="secondary">{activity.action_taken || "Reviewed"}</Badge>
-                        ) : (
-                          <Badge className="bg-amber-500/20 text-amber-500">Pending</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {!activity.reviewed && (
-                          <div className="flex justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleBlockFromFraud(activity)}
-                              className="text-red-500 hover:text-red-600"
-                            >
-                              <Ban className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => markAsReviewed(activity, "false_positive")}
-                              className="text-green-500 hover:text-green-600"
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
+          {/* Suspicious Activities Table */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  Suspicious Activities
+                  {unreviewedCount > 0 && (
+                    <Badge variant="destructive">{unreviewedCount} new</Badge>
+                  )}
+                </CardTitle>
+                <Button variant="outline" size="sm" onClick={loadSuspiciousActivities}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : activities.length === 0 ? (
+                <div className="text-center py-8">
+                  <Shield className="h-12 w-12 text-green-500 mx-auto mb-2" />
+                  <p className="text-muted-foreground">No suspicious activities detected</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Risk</TableHead>
+                        <TableHead>Details</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {activities.map((activity) => (
+                        <TableRow key={activity.id} className={activity.reviewed ? "opacity-50" : ""}>
+                          <TableCell className="font-medium">{activity.username}</TableCell>
+                          <TableCell>{getActivityTypeBadge(activity.activity_type)}</TableCell>
+                          <TableCell>{getRiskBadge(activity.risk_score)}</TableCell>
+                          <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
+                            {JSON.stringify(activity.details).slice(0, 50)}...
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {format(new Date(activity.created_at), "dd/MM/yyyy")}
+                          </TableCell>
+                          <TableCell>
+                            {activity.reviewed ? (
+                              <Badge variant="secondary">{activity.action_taken || "Reviewed"}</Badge>
+                            ) : (
+                              <Badge className="bg-amber-500/20 text-amber-500">Pending</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {!activity.reviewed && (
+                              <div className="flex justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleBlockFromFraud(activity)}
+                                  className="text-red-500 hover:text-red-600"
+                                >
+                                  <Ban className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => markAsReviewed(activity, "false_positive")}
+                                  className="text-green-500 hover:text-green-600"
+                                >
+                                  <CheckCircle className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Wallet Security Tab */}
+        <TabsContent value="wallets" className="space-y-4">
+          <WalletSecurityStats />
+          <WalletHistoryTable />
+        </TabsContent>
+
+        {/* Blacklist Tab */}
+        <TabsContent value="blacklist" className="space-y-4">
+          <WalletBlacklistTable />
+        </TabsContent>
+      </Tabs>
 
       {/* Block Modal */}
       {selectedUser && (
