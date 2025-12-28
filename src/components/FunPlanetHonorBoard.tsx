@@ -299,23 +299,17 @@ export const FunPlanetHonorBoard = () => {
 
                 {/* Content */}
                 <div className="relative z-10 flex-1 flex items-center justify-between min-w-0">
-                  <span className="text-xs font-bold text-yellow-300 drop-shadow-[0_0_8px_rgba(255,255,0,0.9)]">{item.label}</span>
+                  <span className="text-xs font-semibold text-yellow-200">{item.label}</span>
                   <div className="flex items-center gap-1">
-                    {isCamly && <Gem className="h-3.5 w-3.5 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,215,0,1)]" />}
-                    <span 
-                      className="text-lg font-black bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent"
-                      style={{ 
-                        textShadow: '0 0 20px rgba(255,255,255,1), 0 0 40px rgba(255,215,0,0.8)',
-                        filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.9))'
-                      }}
-                    >
+                    {isCamly && <Gem className="h-3.5 w-3.5 text-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
+                    <span className="text-lg font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
                       {loading ? (
                         <span className="animate-pulse">...</span>
                       ) : (
                         <AnimatedCounter value={item.value} />
                       )}
                     </span>
-                    <span className="text-[10px] text-yellow-100 font-bold drop-shadow-[0_0_6px_rgba(255,255,0,0.8)]">{item.suffix}</span>
+                    <span className="text-[10px] text-yellow-200/70 font-medium">{item.suffix}</span>
                   </div>
                 </div>
               </motion.div>
