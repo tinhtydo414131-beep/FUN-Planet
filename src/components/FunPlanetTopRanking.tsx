@@ -192,17 +192,24 @@ const PodiumCard = ({
 
       {/* Username */}
       <p
-        className={`text-sm font-bold truncate max-w-[120px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
+        className={`text-sm font-bold truncate max-w-[120px] text-center ${
           isCurrentUser ? "text-yellow-300" : "text-white"
         }`}
+        style={{ textShadow: '0 0 12px rgba(255,255,255,0.9), 0 2px 4px rgba(0,0,0,0.8)' }}
       >
         {user.username}
       </p>
 
       {/* Balance */}
       <div className="flex items-center gap-1 mt-1">
-        <Gem className="h-3.5 w-3.5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
-        <span className="text-sm font-extrabold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 10px rgba(255,255,255,0.8)' }}>
+        <Gem className="h-3.5 w-3.5 text-yellow-400 drop-shadow-[0_0_12px_rgba(255,215,0,1)]" />
+        <span 
+          className="text-sm font-extrabold bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent"
+          style={{ 
+            textShadow: '0 0 20px rgba(255,255,255,1), 0 0 35px rgba(255,215,0,0.9)',
+            filter: 'drop-shadow(0 0 10px rgba(255,255,255,1))'
+          }}
+        >
           <AnimatedCounter value={user.wallet_balance || 0} duration={2000} />
         </span>
       </div>
@@ -696,8 +703,11 @@ export const FunPlanetTopRanking = () => {
                           }`}
                         >
                           {/* Rank */}
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
-                            <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/40 to-amber-500/30 border border-yellow-400/50">
+                            <span 
+                              className="text-base font-extrabold bg-gradient-to-r from-yellow-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent"
+                              style={{ filter: 'drop-shadow(0 0 10px rgba(255,215,0,1))' }}
+                            >
                               #{rank}
                             </span>
                           </div>
@@ -713,13 +723,14 @@ export const FunPlanetTopRanking = () => {
                           {/* Username & Progress */}
                           <div className="flex-1 min-w-0">
                             <p
-                              className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
+                              className={`truncate max-w-[140px] text-base font-bold ${
                                 isCurrentUser ? "text-yellow-300" : "text-white"
                               }`}
+                              style={{ textShadow: '0 0 10px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.7)' }}
                             >
                               {rankedUser.username}
                               {isCurrentUser && (
-                                <span className="ml-1 text-xs text-yellow-300/80">
+                                <span className="ml-1 text-xs text-yellow-200 drop-shadow-[0_0_6px_rgba(255,255,0,0.8)]">
                                   (Bạn)
                                 </span>
                               )}
@@ -731,9 +742,15 @@ export const FunPlanetTopRanking = () => {
                           </div>
 
                           {/* Balance */}
-                          <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
-                            <Gem className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
-                            <span className="text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" style={{ textShadow: '0 0 8px rgba(255,255,255,0.7)' }}>
+                          <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/60 to-amber-500/50 px-3 py-1.5 border-2 border-yellow-300/80 shadow-[0_0_20px_rgba(255,215,0,0.8)]">
+                            <Gem className="h-4 w-4 text-yellow-300 drop-shadow-[0_0_10px_rgba(255,215,0,1)]" />
+                            <span 
+                              className="text-sm font-extrabold bg-gradient-to-r from-yellow-100 via-white to-yellow-100 bg-clip-text text-transparent"
+                              style={{ 
+                                textShadow: '0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,215,0,0.9)',
+                                filter: 'drop-shadow(0 0 8px rgba(255,255,255,1))'
+                              }}
+                            >
                               <AnimatedCounter value={rankedUser.wallet_balance || 0} />
                             </span>
                           </div>
@@ -752,9 +769,12 @@ export const FunPlanetTopRanking = () => {
                           </Avatar>
                           <div className="flex-1">
                             <p className="font-bold text-white">{rankedUser.username}</p>
-                            <div className="flex items-center gap-1 mt-1">
-                              <Gem className="h-4 w-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.7)]" />
-                              <span className="text-sm font-bold text-white" style={{ textShadow: '0 0 6px rgba(255,255,255,0.7)' }}>
+                          <div className="flex items-center gap-1 mt-1">
+                              <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,1)]" />
+                              <span 
+                                className="text-sm font-bold bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent"
+                                style={{ filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.9))' }}
+                              >
                                 {(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY
                               </span>
                             </div>
