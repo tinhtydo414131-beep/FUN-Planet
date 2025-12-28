@@ -309,7 +309,7 @@ export const FunPlanetHonorBoard = () => {
                         <AnimatedCounter value={item.value} />
                       )}
                     </span>
-                    <span className="text-[10px] text-yellow-200/70 font-medium">{item.suffix}</span>
+                    <span className="text-[10px] text-white font-medium drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]">{item.suffix}</span>
                   </div>
                 </div>
               </motion.div>
