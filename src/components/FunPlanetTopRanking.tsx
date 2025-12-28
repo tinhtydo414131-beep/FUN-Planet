@@ -192,7 +192,7 @@ const PodiumCard = ({
 
       {/* Username */}
       <p
-        className={`text-xs font-semibold truncate max-w-[80px] text-center ${
+        className={`text-sm font-bold truncate max-w-[90px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
           isCurrentUser ? "text-yellow-300" : "text-white"
         }`}
       >
@@ -201,8 +201,8 @@ const PodiumCard = ({
 
       {/* Balance */}
       <div className="flex items-center gap-1 mt-1">
-        <Gem className="h-3 w-3 text-yellow-300" />
-        <span className="text-xs font-bold text-yellow-100">
+        <Gem className="h-3.5 w-3.5 text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" />
+        <span className="text-sm font-extrabold text-yellow-300 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
           <AnimatedCounter value={user.wallet_balance || 0} duration={2000} />
         </span>
       </div>
@@ -270,7 +270,7 @@ export const FunPlanetTopRanking = () => {
         .from("profiles")
         .select("id, username, avatar_url, wallet_balance, created_at")
         .order("wallet_balance", { ascending: false, nullsFirst: false })
-        .limit(5);
+        .limit(10);
 
       if (error) throw error;
       setTopUsers(data || []);
@@ -503,7 +503,7 @@ export const FunPlanetTopRanking = () => {
 
           {/* Remaining Rankings with HoverCard */}
           {remainingUsers.length > 0 && (
-            <ScrollArea className="h-[120px] pr-2 ranking-scrollbar">
+            <ScrollArea className="h-[220px] pr-2 ranking-scrollbar">
               <div className="space-y-2">
                 {remainingUsers.map((rankedUser, index) => {
                   const rank = index + 4;
@@ -525,8 +525,8 @@ export const FunPlanetTopRanking = () => {
                           }`}
                         >
                           {/* Rank */}
-                          <div className="flex h-7 w-7 items-center justify-center">
-                            <span className="text-sm font-bold text-muted-foreground">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
+                            <span className="text-sm font-bold text-white drop-shadow-[0_0_4px_rgba(255,255,255,0.6)]">
                               #{rank}
                             </span>
                           </div>
@@ -542,7 +542,7 @@ export const FunPlanetTopRanking = () => {
                           {/* Username & Progress */}
                           <div className="flex-1 min-w-0">
                             <p
-                              className={`truncate text-sm font-semibold ${
+                              className={`truncate text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
                                 isCurrentUser ? "text-yellow-300" : "text-white"
                               }`}
                             >
@@ -560,9 +560,9 @@ export const FunPlanetTopRanking = () => {
                           </div>
 
                           {/* Balance */}
-                          <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-500/40 to-amber-500/30 px-2.5 py-1 border border-yellow-400/40">
-                            <Gem className="h-3.5 w-3.5 text-yellow-300" />
-                            <span className="text-xs font-bold text-yellow-100">
+                          <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/60 shadow-[0_0_12px_rgba(255,215,0,0.5)]">
+                            <Gem className="h-4 w-4 text-yellow-300 drop-shadow-[0_0_5px_rgba(255,215,0,0.8)]" />
+                            <span className="text-sm font-extrabold text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.7)]">
                               <AnimatedCounter value={rankedUser.wallet_balance || 0} />
                             </span>
                           </div>
