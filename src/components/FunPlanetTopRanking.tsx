@@ -192,18 +192,17 @@ const PodiumCard = ({
 
       {/* Username */}
       <p
-        className={`text-sm font-bold truncate max-w-[120px] text-center ${
-          isCurrentUser ? "text-amber-800" : "text-gray-800"
+        className={`text-sm font-bold truncate max-w-[120px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
+          isCurrentUser ? "text-yellow-300" : "text-white"
         }`}
-        style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.5)' }}
       >
         {user.username}
       </p>
 
       {/* Balance */}
       <div className="flex items-center gap-1 mt-1">
-        <Gem className="h-3.5 w-3.5 text-amber-700 drop-shadow-[0_0_4px_rgba(255,165,0,0.6)]" />
-        <span className="text-sm font-extrabold text-amber-800" style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.5)' }}>
+        <Gem className="h-3.5 w-3.5 text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" />
+        <span className="text-sm font-extrabold text-yellow-300 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
           <AnimatedCounter value={user.wallet_balance || 0} duration={2000} />
         </span>
       </div>
@@ -319,7 +318,7 @@ export const FunPlanetTopRanking = () => {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
           }
-          @keyframes shimmer {
+          @keyframes rainbow-border {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
@@ -359,46 +358,47 @@ export const FunPlanetTopRanking = () => {
         `}
       </style>
 
-      {/* Gold Gradient Border */}
+      {/* Rainbow Border for the whole component (rotating gradient) */}
       <div
-        className="absolute inset-0 rounded-3xl"
+        className="absolute inset-0 rounded-3xl -z-10"
         style={{
-          padding: "4px",
-          background: "linear-gradient(135deg, #FFD700, #FFA500, #FFEC8B, #FF8C00, #FFD700)",
-          backgroundSize: "300% 300%",
-          animation: "shimmer 4s ease infinite",
-          boxShadow: "0 0 30px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.3)",
+          padding: "3px",
+          background:
+            "linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff, #ff0000)",
+          backgroundSize: "400% 400%",
+          animation: "rainbow-border 6s ease infinite",
         }}
       >
-        {/* Inner gradient background - Bright Pink/Orange/Yellow */}
+        {/* Inner gradient background */}
         <div
           className="h-full w-full rounded-3xl"
           style={{
-            background: "linear-gradient(135deg, #FFB6C1 0%, #FFA07A 35%, #FFD700 70%, #FF8C00 100%)",
+            background:
+              "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)",
           }}
         />
       </div>
 
-      {/* Subtle dot pattern overlay - Increased opacity */}
+      {/* Subtle dot pattern overlay */}
       <div
-        className="absolute inset-0 rounded-3xl pointer-events-none opacity-35"
+        className="absolute inset-0 rounded-3xl pointer-events-none opacity-20"
         style={{
           backgroundImage:
-            "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)",
+            "radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)",
           backgroundSize: "15px 15px",
         }}
       />
 
-      {/* Light overlay gradient for brightness - Enhanced */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-transparent via-white/10 to-white/25 pointer-events-none" />
+      {/* Light overlay gradient for brightness */}
+      <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-transparent via-white/5 to-white/15 pointer-events-none" />
 
-      {/* Golden Glow effect - Enhanced */}
-      <div className="absolute inset-0 rounded-3xl shadow-[0_0_60px_rgba(255,215,0,0.6),0_0_100px_rgba(255,165,0,0.3)] pointer-events-none" />
+      {/* Golden Glow effect */}
+      <div className="absolute inset-0 rounded-3xl shadow-[0_0_50px_rgba(255,215,0,0.4)] pointer-events-none" />
 
-      {/* Inner glow effects - Warmer colors, higher opacity */}
-      <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-pink-400/50 blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-orange-400/50 blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-48 rounded-full bg-yellow-400/40 blur-3xl" />
+      {/* Inner glow effects */}
+      <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-purple-500/40 blur-3xl" />
+      <div className="absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-blue-500/40 blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full bg-yellow-500/25 blur-3xl" />
 
       {/* Floating Particles */}
       {floatingParticles.map((particle, index) => (
@@ -432,7 +432,7 @@ export const FunPlanetTopRanking = () => {
         >
           🏆
         </motion.span>
-        <h3 className="bg-gradient-to-r from-amber-700 via-orange-600 to-amber-700 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+        <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]">
           TOP RANKING
         </h3>
         <motion.span
@@ -535,21 +535,21 @@ export const FunPlanetTopRanking = () => {
                             scale: 1.02,
                             boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)",
                           }}
-                          className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-amber-600/50 bg-gradient-to-r from-white/25 to-white/15 ${
-                            isCurrentUser ? "ring-2 ring-amber-600" : ""
+                          className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${
+                            isCurrentUser ? "ring-2 ring-yellow-400" : ""
                           }`}
                         >
                           {/* Rank */}
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-amber-500/40 to-orange-500/30">
-                            <span className="text-sm font-bold text-amber-800">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
+                            <span className="text-sm font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_4px_rgba(255,215,0,0.6)]">
                               #{rank}
                             </span>
                           </div>
 
                           {/* Avatar */}
-                          <Avatar className="h-9 w-9 border-2 border-amber-500/60">
+                          <Avatar className="h-9 w-9 border-2 border-white/40">
                             <AvatarImage src={rankedUser.avatar_url || undefined} />
-                            <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-400 text-white font-bold">
+                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
                               {rankedUser.username?.charAt(0).toUpperCase() || "?"}
                             </AvatarFallback>
                           </Avatar>
@@ -557,14 +557,13 @@ export const FunPlanetTopRanking = () => {
                           {/* Username & Progress */}
                           <div className="flex-1 min-w-0">
                             <p
-                              className={`truncate max-w-[140px] text-base font-bold ${
-                                isCurrentUser ? "text-amber-800" : "text-gray-800"
+                              className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
+                                isCurrentUser ? "text-yellow-300" : "text-white"
                               }`}
-                              style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.5)' }}
                             >
                               {rankedUser.username}
                               {isCurrentUser && (
-                                <span className="ml-1 text-xs text-amber-700">
+                                <span className="ml-1 text-xs text-yellow-300/80">
                                   (Bạn)
                                 </span>
                               )}
@@ -576,9 +575,9 @@ export const FunPlanetTopRanking = () => {
                           </div>
 
                           {/* Balance */}
-                          <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500/50 to-orange-500/40 px-3 py-1.5 border-2 border-amber-600/60 shadow-[0_0_10px_rgba(255,165,0,0.4)]">
-                            <Gem className="h-4 w-4 text-amber-700" />
-                            <span className="text-sm font-extrabold text-amber-800">
+                          <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/60 shadow-[0_0_12px_rgba(255,215,0,0.5)]">
+                            <Gem className="h-4 w-4 text-yellow-300 drop-shadow-[0_0_5px_rgba(255,215,0,0.8)]" />
+                            <span className="text-sm font-extrabold text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.7)]">
                               <AnimatedCounter value={rankedUser.wallet_balance || 0} />
                             </span>
                           </div>
