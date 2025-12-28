@@ -242,31 +242,53 @@ export const FunPlanetTopRanking = () => {
   const [topUsers, setTopUsers] = useState<RankedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [confettiFired, setConfettiFired] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const fetchTopUsers = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
+      setError(null);
       
-      // Add cache-busting timestamp to ensure fresh data
-      const { data, error } = await supabase
+      console.log("[Ranking] Fetching top users...", { isRefresh, timestamp: new Date().toISOString() });
+      
+      // Force fresh data with cache-busting headers
+      const { data, error: fetchError } = await supabase
         .from("profiles")
         .select("id, username, avatar_url, wallet_balance, created_at")
         .order("wallet_balance", { ascending: false, nullsFirst: false })
         .limit(10);
 
-      if (error) throw error;
-      console.log("Fetched ranking data:", data?.map(u => ({ username: u.username, balance: u.wallet_balance })));
+      if (fetchError) {
+        console.error("[Ranking] Supabase error:", fetchError);
+        throw fetchError;
+      }
+      
+      console.log("[Ranking] Success! Fetched", data?.length || 0, "users:", data?.map(u => ({ 
+        username: u.username, 
+        balance: u.wallet_balance 
+      })));
+      
       setTopUsers(data || []);
-    } catch (error) {
-      console.error("Error fetching top users:", error);
+      setRetryCount(0);
+    } catch (err: any) {
+      console.error("[Ranking] Error fetching top users:", err);
+      setError(err?.message || "Failed to load ranking");
+      
+      // Auto-retry up to 3 times
+      if (retryCount < 3) {
+        console.log(`[Ranking] Retrying... (${retryCount + 1}/3)`);
+        setRetryCount(prev => prev + 1);
+        setTimeout(() => fetchTopUsers(isRefresh), 2000);
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [retryCount]);
 
   // Initial fetch
   useEffect(() => {
@@ -574,47 +596,69 @@ export const FunPlanetTopRanking = () => {
         </div>
       ) : (
         <>
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-8 relative z-10">
+              <motion.span
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="text-4xl block mb-3"
+              >
+                ⚠️
+              </motion.span>
+              <p className="text-red-300 text-sm font-semibold mb-2">{error}</p>
+              <button
+                onClick={() => fetchTopUsers(true)}
+                className="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-400/50 rounded-full text-yellow-300 text-sm font-medium transition-colors"
+              >
+                Thử lại
+              </button>
+            </div>
+          )}
+
           {/* PODIUM FOR TOP 3 */}
-          <div className="flex items-end justify-center gap-2 sm:gap-4 mb-4 relative z-10">
-            {/* #2 Silver - Left */}
-            {top3Users[1] && (
-              <div className="w-1/3 order-1">
-                <PodiumCard
-                  user={top3Users[1]}
-                  rank={2}
-                  maxBalance={maxBalance}
-                  isCurrentUser={user?.id === top3Users[1].id}
-                />
-              </div>
-            )}
+          {!error && (
+            <div className="flex items-end justify-center gap-2 sm:gap-4 mb-4 relative z-10">
+              {/* #2 Silver - Left */}
+              {top3Users[1] && (
+                <div className="w-1/3 order-1">
+                  <PodiumCard
+                    user={top3Users[1]}
+                    rank={2}
+                    maxBalance={maxBalance}
+                    isCurrentUser={user?.id === top3Users[1].id}
+                  />
+                </div>
+              )}
 
-            {/* #1 Gold - Center (highest) */}
-            {top3Users[0] && (
-              <div className="w-1/3 order-2">
-                <PodiumCard
-                  user={top3Users[0]}
-                  rank={1}
-                  maxBalance={maxBalance}
-                  isCurrentUser={user?.id === top3Users[0].id}
-                />
-              </div>
-            )}
+              {/* #1 Gold - Center (highest) */}
+              {top3Users[0] && (
+                <div className="w-1/3 order-2">
+                  <PodiumCard
+                    user={top3Users[0]}
+                    rank={1}
+                    maxBalance={maxBalance}
+                    isCurrentUser={user?.id === top3Users[0].id}
+                  />
+                </div>
+              )}
 
-            {/* #3 Bronze - Right */}
-            {top3Users[2] && (
-              <div className="w-1/3 order-3">
-                <PodiumCard
-                  user={top3Users[2]}
-                  rank={3}
-                  maxBalance={maxBalance}
-                  isCurrentUser={user?.id === top3Users[2].id}
-                />
-              </div>
-            )}
-          </div>
+              {/* #3 Bronze - Right */}
+              {top3Users[2] && (
+                <div className="w-1/3 order-3">
+                  <PodiumCard
+                    user={top3Users[2]}
+                    rank={3}
+                    maxBalance={maxBalance}
+                    isCurrentUser={user?.id === top3Users[2].id}
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Empty State */}
-          {topUsers.length === 0 && (
+          {!error && topUsers.length === 0 && (
             <div className="text-center py-8">
               <motion.span
                 animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
