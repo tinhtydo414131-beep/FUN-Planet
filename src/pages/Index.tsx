@@ -34,6 +34,7 @@ import { useFunId } from "@/hooks/useFunId";
 import { RewardGalaxyHomeBanner } from "@/components/RewardGalaxyHomeBanner";
 
 import { TodayRewardsCard } from "@/components/TodayRewardsCard";
+import { FunPlanetStatsSection } from "@/components/FunPlanetStatsSection";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -219,6 +220,9 @@ const Index = () => {
       
       {/* Hero Section */}
       <Hero />
+      
+      {/* FUN Planet Stats - Honor Board & Top Ranking */}
+      <FunPlanetStatsSection />
       
       {/* Reward Galaxy Home Banner */}
       <RewardGalaxyHomeBanner />
