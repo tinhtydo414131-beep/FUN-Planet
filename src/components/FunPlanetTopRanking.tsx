@@ -13,6 +13,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import confetti from "canvas-confetti";
+import { FriendActionButton } from "@/components/FriendActionButton";
 
 interface RankedUser {
   id: string;
@@ -123,11 +124,13 @@ const PodiumCard = ({
   rank,
   maxBalance,
   isCurrentUser,
+  currentUserId,
 }: {
   user: RankedUser;
   rank: number;
   maxBalance: number;
   isCurrentUser: boolean;
+  currentUserId?: string;
 }) => {
   const heights = { 1: "h-20", 2: "h-14", 3: "h-12" };
   const avatarSizes = { 1: "h-18 w-18", 2: "h-14 w-14", 3: "h-12 w-12" };
@@ -206,6 +209,19 @@ const PodiumCard = ({
           <AnimatedCounter value={user.wallet_balance || 0} duration={2000} />
         </span>
       </div>
+
+      {/* Friend Action Button */}
+      {!isCurrentUser && currentUserId && (
+        <div className="mt-2">
+          <FriendActionButton
+            targetUserId={user.id}
+            targetUsername={user.username || "User"}
+            showMessage={false}
+            size="sm"
+            className="scale-90"
+          />
+        </div>
+      )}
 
       {/* Podium Base */}
       <motion.div
@@ -627,6 +643,7 @@ export const FunPlanetTopRanking = () => {
                     rank={2}
                     maxBalance={maxBalance}
                     isCurrentUser={user?.id === top3Users[1].id}
+                    currentUserId={user?.id}
                   />
                 </div>
               )}
@@ -639,6 +656,7 @@ export const FunPlanetTopRanking = () => {
                     rank={1}
                     maxBalance={maxBalance}
                     isCurrentUser={user?.id === top3Users[0].id}
+                    currentUserId={user?.id}
                   />
                 </div>
               )}
@@ -651,6 +669,7 @@ export const FunPlanetTopRanking = () => {
                     rank={3}
                     maxBalance={maxBalance}
                     isCurrentUser={user?.id === top3Users[2].id}
+                    currentUserId={user?.id}
                   />
                 </div>
               )}
@@ -730,6 +749,17 @@ export const FunPlanetTopRanking = () => {
                             />
                           </div>
 
+                          {/* Friend Action Button */}
+                          {!isCurrentUser && user && (
+                            <FriendActionButton
+                              targetUserId={rankedUser.id}
+                              targetUsername={rankedUser.username || "User"}
+                              showMessage={false}
+                              size="sm"
+                              className="shrink-0"
+                            />
+                          )}
+
                           {/* Balance */}
                           <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
                             <Gem className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
@@ -768,6 +798,17 @@ export const FunPlanetTopRanking = () => {
                               )}
                               % so với #1
                             </p>
+                            {/* Friend Action Button in HoverCard */}
+                            {!isCurrentUser && user && (
+                              <div className="mt-3 pt-2 border-t border-yellow-500/30">
+                                <FriendActionButton
+                                  targetUserId={rankedUser.id}
+                                  targetUsername={rankedUser.username || "User"}
+                                  showMessage={true}
+                                  size="sm"
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </HoverCardContent>
