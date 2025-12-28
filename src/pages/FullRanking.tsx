@@ -436,7 +436,7 @@ export default function FullRanking() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="shrink-0 bg-white/10 border-white/30 hover:bg-white/20"
           >
             <ChevronLeft className="h-5 w-5 text-white" />
