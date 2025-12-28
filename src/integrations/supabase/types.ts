@@ -1506,6 +1506,42 @@ export type Database = {
         }
         Relationships: []
       }
+      fraud_logs: {
+        Row: {
+          action_taken: string | null
+          amount_affected: number | null
+          description: string | null
+          detected_at: string | null
+          fraud_type: string
+          id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          user_id: string
+        }
+        Insert: {
+          action_taken?: string | null
+          amount_affected?: number | null
+          description?: string | null
+          detected_at?: string | null
+          fraud_type: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_id: string
+        }
+        Update: {
+          action_taken?: string | null
+          amount_affected?: number | null
+          description?: string | null
+          detected_at?: string | null
+          fraud_type?: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       friend_requests: {
         Row: {
           created_at: string | null
@@ -4164,11 +4200,28 @@ export type Database = {
         }
         Returns: string
       }
+      add_reward_safely: {
+        Args: {
+          p_amount: number
+          p_description?: string
+          p_transaction_type: string
+          p_user_id: string
+        }
+        Returns: {
+          message: string
+          new_balance: number
+          success: boolean
+        }[]
+      }
       add_user_pending_reward: {
         Args: { p_amount: number; p_source: string; p_user_id: string }
         Returns: number
       }
       can_claim_daily_login: { Args: { p_user_id: string }; Returns: boolean }
+      can_claim_reward: {
+        Args: { p_transaction_type: string; p_user_id: string }
+        Returns: boolean
+      }
       check_file_hash_exists: {
         Args: { p_file_hash: string; p_user_id: string }
         Returns: {
@@ -4208,6 +4261,14 @@ export type Database = {
       claim_pending_rewards: {
         Args: { p_tx_hash: string; p_wallet_address: string }
         Returns: number
+      }
+      cleanup_duplicate_rewards: {
+        Args: { p_transaction_type: string }
+        Returns: {
+          amount_removed: number
+          duplicates_removed: number
+          user_id: string
+        }[]
       }
       cleanup_expired_nonces: { Args: never; Returns: undefined }
       cleanup_old_deleted_games: { Args: never; Returns: undefined }
