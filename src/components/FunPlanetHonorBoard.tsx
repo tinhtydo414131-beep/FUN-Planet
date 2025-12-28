@@ -99,48 +99,117 @@ export const FunPlanetHonorBoard = () => {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-4 shadow-xl h-full"
-    >
-      {/* Glow effects */}
-      <div className="absolute -top-10 -right-10 h-20 w-20 rounded-full bg-primary/30 blur-2xl" />
-      <div className="absolute -bottom-10 -left-10 h-20 w-20 rounded-full bg-secondary/30 blur-2xl" />
-      
-      {/* Header */}
-      <div className="relative mb-4 flex items-center justify-center gap-2">
-        <span className="text-xl">🌍</span>
-        <h3 className="bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-lg font-bold text-transparent">
-          HONOR BOARD
-        </h3>
-        <span className="text-xl">🏆</span>
-      </div>
+    <div className="relative h-full">
+      {/* Outer Gold Glow - Hào quang bên ngoài */}
+      <div 
+        className="absolute rounded-3xl pointer-events-none"
+        style={{
+          inset: "-24px",
+          boxShadow: `
+            0 0 50px rgba(255, 215, 0, 0.6),
+            0 0 80px rgba(255, 165, 0, 0.4),
+            0 0 120px rgba(255, 215, 0, 0.25)
+          `,
+          zIndex: -15,
+        }}
+      />
 
-      {/* Horizontal Stats */}
-      <div className="relative flex flex-wrap justify-center gap-2">
-        {statItems.map((item, index) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className="flex flex-col items-center rounded-xl bg-white/10 backdrop-blur-sm p-2 min-w-[60px] border border-white/10 hover:border-white/30 hover:bg-white/20 transition-all"
-          >
-            <div className={`mb-1 rounded-lg ${item.bgColor} p-1.5`}>
-              <item.icon className="h-4 w-4 text-white" />
-            </div>
-            <p className="text-base font-bold text-white">
-              {loading ? (
-                <span className="animate-pulse">...</span>
-              ) : (
-                <AnimatedCounter value={item.value} />
-              )}
-            </p>
-            <p className="text-[10px] font-medium text-white/70">{item.label}</p>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+      {/* Luxurious Gold Metallic Border - Viền vàng kim loại 18px */}
+      <div
+        className="absolute rounded-3xl animate-metallic-shine"
+        style={{
+          inset: "-18px",
+          background: `
+            linear-gradient(135deg, 
+              #FFD700 0%, #FFFACD 10%, #FFF8DC 20%, 
+              #FFD700 35%, #B8860B 50%, #FFD700 65%, 
+              #FFF8DC 80%, #FFFACD 90%, #FFD700 100%
+            )
+          `,
+          backgroundSize: "200% 200%",
+          boxShadow: `
+            0 0 15px rgba(255, 215, 0, 0.6),
+            0 0 30px rgba(255, 215, 0, 0.4),
+            inset 0 2px 4px rgba(255, 255, 255, 0.5),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.3)
+          `,
+          zIndex: -10,
+        }}
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-3xl p-4 shadow-xl h-full"
+        style={{
+          background: "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)",
+        }}
+      >
+        {/* Inner Border Highlight - Viền sáng bên trong */}
+        <div 
+          className="absolute inset-0 rounded-3xl pointer-events-none"
+          style={{
+            border: "4px solid rgba(255, 215, 0, 0.8)",
+            boxShadow: "inset 0 0 35px rgba(255, 215, 0, 0.4)",
+            zIndex: 5,
+          }}
+        />
+
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/30 rounded-3xl" />
+
+        {/* Dot pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-10 rounded-3xl"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)",
+            backgroundSize: "8px 8px",
+          }}
+        />
+
+        {/* Glow effects */}
+        <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-purple-500/40 blur-3xl" />
+        <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-blue-500/40 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-20 w-40 rounded-full bg-yellow-400/20 blur-2xl" />
+        
+        {/* Header */}
+        <div className="relative mb-4 flex items-center justify-center gap-2 z-10">
+          <span className="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">🌍</span>
+          <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]">
+            HONOR BOARD
+          </h3>
+          <span className="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">🏆</span>
+        </div>
+
+        {/* Horizontal Stats */}
+        <div className="relative flex flex-wrap justify-center gap-2 z-10">
+          {statItems.map((item, index) => (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1 }}
+              className="flex flex-col items-center rounded-xl p-3 min-w-[65px] border-2 border-yellow-400/40 hover:border-yellow-400/70 transition-all"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,215,0,0.1) 100%)",
+                boxShadow: "0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255,255,255,0.1)"
+              }}
+            >
+              <div className={`mb-1.5 rounded-lg ${item.bgColor} p-2`} style={{ boxShadow: "0 0 10px currentColor" }}>
+                <item.icon className="h-4 w-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" />
+              </div>
+              <p className="text-base font-bold text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                {loading ? (
+                  <span className="animate-pulse">...</span>
+                ) : (
+                  <AnimatedCounter value={item.value} />
+                )}
+              </p>
+              <p className="text-[10px] font-medium text-yellow-200/90">{item.label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
   );
 };
