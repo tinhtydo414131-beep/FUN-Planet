@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Crown, Medal, ChevronRight, Gem } from "lucide-react";
+import { Crown, Medal, ChevronRight, Gem, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -241,19 +241,73 @@ const PodiumCard = ({
 export const FunPlanetTopRanking = () => {
   const [topUsers, setTopUsers] = useState<RankedUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [confettiFired, setConfettiFired] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const fetchTopUsers = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) setRefreshing(true);
+      
+      // Add cache-busting timestamp to ensure fresh data
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url, wallet_balance, created_at")
+        .order("wallet_balance", { ascending: false, nullsFirst: false })
+        .limit(10);
+
+      if (error) throw error;
+      console.log("Fetched ranking data:", data?.map(u => ({ username: u.username, balance: u.wallet_balance })));
+      setTopUsers(data || []);
+    } catch (error) {
+      console.error("Error fetching top users:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  // Initial fetch
   useEffect(() => {
     fetchTopUsers();
-  }, []);
+  }, [fetchTopUsers]);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchTopUsers(true);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [fetchTopUsers]);
+
+  // Subscribe to realtime changes on profiles table
+  useEffect(() => {
+    const channel = supabase
+      .channel('ranking-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles'
+        },
+        () => {
+          console.log("Profiles table changed, refreshing ranking...");
+          fetchTopUsers(true);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchTopUsers]);
 
   // Fire confetti when data loads
   useEffect(() => {
     if (!loading && topUsers.length > 0 && !confettiFired) {
       setConfettiFired(true);
-      // Fire confetti with gold colors
       confetti({
         particleCount: 60,
         spread: 80,
@@ -266,21 +320,8 @@ export const FunPlanetTopRanking = () => {
     }
   }, [loading, topUsers, confettiFired]);
 
-  const fetchTopUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username, avatar_url, wallet_balance, created_at")
-        .order("wallet_balance", { ascending: false, nullsFirst: false })
-        .limit(10);
-
-      if (error) throw error;
-      setTopUsers(data || []);
-    } catch (error) {
-      console.error("Error fetching top users:", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleManualRefresh = () => {
+    fetchTopUsers(true);
   };
 
   // Enhanced floating particles
@@ -503,6 +544,16 @@ export const FunPlanetTopRanking = () => {
         >
           ⭐
         </motion.span>
+        
+        {/* Refresh Button */}
+        <button
+          onClick={handleManualRefresh}
+          disabled={refreshing}
+          className="absolute right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-50"
+          title="Refresh ranking"
+        >
+          <RefreshCw className={`h-4 w-4 text-yellow-400 ${refreshing ? 'animate-spin' : ''}`} />
+        </button>
       </div>
 
       {loading ? (
