@@ -52,7 +52,7 @@ const ProgressBar = ({ value, maxValue }: { value: number; maxValue: number }) =
   const percentage = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
 
   return (
-    <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden mt-1">
+    <div className="w-full h-2.5 bg-white/20 rounded-full overflow-hidden mt-1">
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${percentage}%` }}
@@ -129,8 +129,8 @@ const PodiumCard = ({
   maxBalance: number;
   isCurrentUser: boolean;
 }) => {
-  const heights = { 1: "h-32", 2: "h-24", 3: "h-20" };
-  const avatarSizes = { 1: "h-16 w-16", 2: "h-12 w-12", 3: "h-11 w-11" };
+  const heights = { 1: "h-20", 2: "h-14", 3: "h-12" };
+  const avatarSizes = { 1: "h-18 w-18", 2: "h-14 w-14", 3: "h-12 w-12" };
   const ringColors = {
     1: "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)]",
     2: "border-slate-300 shadow-[0_0_15px_rgba(192,192,192,0.6)]",
@@ -192,7 +192,7 @@ const PodiumCard = ({
 
       {/* Username */}
       <p
-        className={`text-sm font-bold truncate max-w-[90px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
+        className={`text-sm font-bold truncate max-w-[120px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
           isCurrentUser ? "text-yellow-300" : "text-white"
         }`}
       >
@@ -501,6 +501,21 @@ export const FunPlanetTopRanking = () => {
             )}
           </div>
 
+          {/* Empty State */}
+          {topUsers.length === 0 && (
+            <div className="text-center py-8">
+              <motion.span
+                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-5xl block mb-3"
+              >
+                🏆
+              </motion.span>
+              <p className="text-white/80 text-lg font-semibold">Chưa có ai trong bảng xếp hạng</p>
+              <p className="text-yellow-300/70 text-sm mt-1">Hãy là người đầu tiên!</p>
+            </div>
+          )}
+
           {/* Remaining Rankings with HoverCard */}
           {remainingUsers.length > 0 && (
             <ScrollArea className="h-[220px] pr-2 ranking-scrollbar">
@@ -525,8 +540,8 @@ export const FunPlanetTopRanking = () => {
                           }`}
                         >
                           {/* Rank */}
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-                            <span className="text-sm font-bold text-white drop-shadow-[0_0_4px_rgba(255,255,255,0.6)]">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
+                            <span className="text-sm font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_4px_rgba(255,215,0,0.6)]">
                               #{rank}
                             </span>
                           </div>
@@ -542,7 +557,7 @@ export const FunPlanetTopRanking = () => {
                           {/* Username & Progress */}
                           <div className="flex-1 min-w-0">
                             <p
-                              className={`truncate text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
+                              className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
                                 isCurrentUser ? "text-yellow-300" : "text-white"
                               }`}
                             >
