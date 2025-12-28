@@ -223,8 +223,20 @@ export const FunPlanetLegendsBoard = () => {
             }}
           />
 
+          {/* Video Background */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0"
+            style={{ opacity: 0.4 }}
+          >
+            <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
+          </video>
+
           {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/30 rounded-3xl" />
+          <div className="absolute inset-0 bg-black/50 rounded-3xl z-[1]" />
 
           {/* Dot pattern */}
           <div 
