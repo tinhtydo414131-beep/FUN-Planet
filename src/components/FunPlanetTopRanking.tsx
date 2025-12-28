@@ -229,7 +229,9 @@ const PodiumCard = ({
         }}
       >
         <div className="flex items-center justify-center h-full">
-          <span className="text-2xl font-black text-white/90">#{rank}</span>
+          <span className="text-2xl font-black bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(255,215,0,0.9)]">
+            #{rank}
+          </span>
         </div>
       </motion.div>
     </motion.div>
@@ -362,22 +364,22 @@ export const FunPlanetTopRanking = () => {
       <div 
         className="absolute rounded-3xl pointer-events-none"
         style={{
-          inset: "-12px",
+          inset: "-20px",
           background: "transparent",
           boxShadow: `
-            0 0 40px rgba(255, 215, 0, 0.5),
-            0 0 60px rgba(255, 165, 0, 0.3),
-            0 0 80px rgba(255, 215, 0, 0.2)
+            0 0 50px rgba(255, 215, 0, 0.6),
+            0 0 80px rgba(255, 165, 0, 0.4),
+            0 0 120px rgba(255, 215, 0, 0.25)
           `,
           zIndex: -15,
         }}
       />
 
-      {/* Luxurious Gold Metallic Border - Viền vàng kim loại 6px */}
+      {/* Luxurious Gold Metallic Border - Viền vàng kim loại 12px */}
       <div
         className="absolute rounded-3xl"
         style={{
-          inset: "-6px",
+          inset: "-12px",
           background: `
             linear-gradient(135deg, 
               #FFD700 0%, 
@@ -446,8 +448,8 @@ export const FunPlanetTopRanking = () => {
       <div 
         className="absolute inset-0 rounded-3xl pointer-events-none"
         style={{
-          border: "2px solid rgba(255, 215, 0, 0.5)",
-          boxShadow: "inset 0 0 20px rgba(255, 215, 0, 0.2)",
+          border: "3px solid rgba(255, 215, 0, 0.7)",
+          boxShadow: "inset 0 0 30px rgba(255, 215, 0, 0.3)",
           zIndex: 5,
         }}
       />
@@ -598,7 +600,7 @@ export const FunPlanetTopRanking = () => {
                         >
                           {/* Rank */}
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
-                            <span className="text-sm font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_4px_rgba(255,215,0,0.6)]">
+                            <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
                               #{rank}
                             </span>
                           </div>
