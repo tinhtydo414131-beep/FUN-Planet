@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Gamepad2, Play, Upload, Gem, Heart, User } from "lucide-react";
+import { Users, Gamepad2, Play, Upload, Gem, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
-import { DonateCAMLYModal } from "./DonateCAMLYModal";
 
 // ============= Interfaces =============
 interface Stats {
@@ -24,13 +22,6 @@ interface Creator {
   total_plays: number;
 }
 
-interface Donor {
-  id: string;
-  username: string;
-  avatar_url: string | null;
-  total_donated: number;
-  is_anonymous: boolean;
-}
 
 // ============= Helper Components =============
 const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?: number }) => {
@@ -64,20 +55,8 @@ const creatorBadges = [
   { min: 0, label: "🌱 Newcomer", color: "text-green-400" },
 ];
 
-const donorBadges = [
-  { min: 10000000, label: "👑 Platinum", color: "text-purple-300" },
-  { min: 1000000, label: "💎 Diamond", color: "text-cyan-300" },
-  { min: 500000, label: "🥇 Gold", color: "text-yellow-300" },
-  { min: 100000, label: "🥈 Silver", color: "text-gray-300" },
-  { min: 0, label: "🥉 Bronze", color: "text-amber-600" },
-];
-
 const getCreatorBadge = (gamesCount: number) => {
   return creatorBadges.find(b => gamesCount >= b.min) || creatorBadges[creatorBadges.length - 1];
-};
-
-const getDonorBadge = (totalDonated: number) => {
-  return donorBadges.find(b => totalDonated >= b.min) || donorBadges[donorBadges.length - 1];
 };
 
 const getRankIcon = (rank: number) => {
@@ -106,9 +85,7 @@ export const FunPlanetHallOfFame = () => {
     totalCamly: 0,
   });
   const [creators, setCreators] = useState<Creator[]>([]);
-  const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showDonateModal, setShowDonateModal] = useState(false);
 
   useEffect(() => {
     fetchAllData();
@@ -180,36 +157,6 @@ export const FunPlanetHallOfFame = () => {
         );
       }
 
-      // Fetch donors
-      const { data: donationsData } = await supabase
-        .from("platform_donations")
-        .select("user_id, amount, is_anonymous, profiles!inner(id, username, avatar_url)")
-        .order("created_at", { ascending: false });
-
-      if (donationsData) {
-        const donorMap = new Map<string, Donor>();
-        for (const donation of donationsData) {
-          const profile = donation.profiles as any;
-          if (!profile) continue;
-          const existing = donorMap.get(profile.id);
-          if (existing) {
-            existing.total_donated += donation.amount;
-          } else {
-            donorMap.set(profile.id, {
-              id: profile.id,
-              username: donation.is_anonymous ? "Anonymous" : profile.username,
-              avatar_url: donation.is_anonymous ? null : profile.avatar_url,
-              total_donated: donation.amount,
-              is_anonymous: donation.is_anonymous,
-            });
-          }
-        }
-        setDonors(
-          Array.from(donorMap.values())
-            .sort((a, b) => b.total_donated - a.total_donated)
-            .slice(0, 5)
-        );
-      }
     } catch (error) {
       console.error("Error fetching hall of fame data:", error);
     } finally {
@@ -366,7 +313,7 @@ export const FunPlanetHallOfFame = () => {
 
           {/* Tabs */}
           <Tabs defaultValue="stats" className="relative z-10 flex-1 flex flex-col">
-            <TabsList className="grid grid-cols-3 bg-white/10 backdrop-blur-md rounded-xl p-1 mb-3 h-auto">
+            <TabsList className="grid grid-cols-2 bg-white/10 backdrop-blur-md rounded-xl p-1 mb-3 h-auto">
               <TabsTrigger 
                 value="stats"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white rounded-lg font-semibold transition-all py-2 text-xs sm:text-sm text-white/70 data-[state=active]:shadow-lg"
@@ -380,13 +327,6 @@ export const FunPlanetHallOfFame = () => {
               >
                 <Gamepad2 className="h-3.5 w-3.5 mr-1.5" />
                 Creators
-              </TabsTrigger>
-              <TabsTrigger 
-                value="donors"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg font-semibold transition-all py-2 text-xs sm:text-sm text-white/70 data-[state=active]:shadow-lg"
-              >
-                <Gem className="h-3.5 w-3.5 mr-1.5" />
-                Donors
               </TabsTrigger>
             </TabsList>
 
@@ -505,80 +445,6 @@ export const FunPlanetHallOfFame = () => {
               </AnimatePresence>
             </TabsContent>
 
-            {/* Donors Tab */}
-            <TabsContent value="donors" className="mt-0">
-              <AnimatePresence mode="wait">
-                {loading ? (
-                  <div className="flex items-center justify-center h-[200px]">
-                    <div className="animate-pulse text-white/70">Loading...</div>
-                  </div>
-                ) : donors.length === 0 ? (
-                  <div className="text-center text-white/60 py-8">
-                    <Heart className="h-8 w-8 mx-auto mb-2 text-rose-400" />
-                    <p>Chưa có ai ủng hộ. Hãy là người đầu tiên!</p>
-                  </div>
-                ) : (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
-                    {donors.map((donor, index) => {
-                      const badge = getDonorBadge(donor.total_donated);
-                      const rank = index + 1;
-                      return (
-                        <motion.div
-                          key={donor.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                          whileHover={{ scale: 1.02, y: -2 }}
-                          className="flex items-center gap-3 p-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all cursor-pointer"
-                          style={{
-                            boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined,
-                          }}
-                        >
-                          <span className="text-lg w-8 text-center font-bold">{getRankIcon(rank)}</span>
-                          <Avatar className="h-10 w-10 border-2 border-white/30">
-                            {donor.is_anonymous ? (
-                              <AvatarFallback className="bg-gradient-to-br from-gray-500 to-gray-700">
-                                <span className="text-lg">🎭</span>
-                              </AvatarFallback>
-                            ) : (
-                              <>
-                                <AvatarImage src={donor.avatar_url || undefined} />
-                                <AvatarFallback className="bg-gradient-to-br from-rose-500 to-pink-500">
-                                  <User className="h-5 w-5 text-white" />
-                                </AvatarFallback>
-                              </>
-                            )}
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-white truncate">
-                              {donor.is_anonymous ? "Ẩn danh" : donor.username}
-                            </div>
-                            <div className={`text-xs ${badge.color}`}>{badge.label}</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="flex items-center gap-1 text-sm text-rose-300 font-semibold">
-                              <Gem className="h-3 w-3" />
-                              <span>{donor.total_donated.toLocaleString()}</span>
-                            </div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Donate Button */}
-              <div className="mt-4">
-                <Button
-                  onClick={() => setShowDonateModal(true)}
-                  className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 text-white font-bold py-3 shadow-lg shadow-rose-500/30 transition-all hover:scale-[1.02]"
-                >
-                  <Heart className="mr-2 h-5 w-5 animate-pulse" />
-                  💎 Ủng hộ FUN Planet
-                </Button>
-              </div>
-            </TabsContent>
           </Tabs>
         </motion.div>
 
@@ -589,12 +455,6 @@ export const FunPlanetHallOfFame = () => {
           }
         `}</style>
       </div>
-
-      <DonateCAMLYModal 
-        open={showDonateModal} 
-        onOpenChange={setShowDonateModal}
-        onSuccess={fetchAllData}
-      />
     </>
   );
 };
