@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Gamepad2, Gem, Play, Heart, User } from "lucide-react";
+import { Users, Gamepad2, Play, Upload, Gem, Heart, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { DonateCAMLYModal } from "./DonateCAMLYModal";
+
+// ============= Interfaces =============
+interface Stats {
+  totalUsers: number;
+  totalGames: number;
+  totalPlays: number;
+  totalUploads: number;
+  totalCamly: number;
+}
 
 interface Creator {
   id: string;
@@ -22,9 +32,31 @@ interface Donor {
   is_anonymous: boolean;
 }
 
-type TabType = "creators" | "donors";
+// ============= Helper Components =============
+const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?: number }) => {
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    let startTime: number;
+    let animationFrame: number;
+    
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      setCount(Math.floor(progress * value));
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+    
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [value, duration]);
+  
+  return <span>{count.toLocaleString()}</span>;
+};
 
-// Badge configurations
+// ============= Badge Configs =============
 const creatorBadges = [
   { min: 10, label: "👑 Legend", color: "text-yellow-300" },
   { min: 5, label: "🔥 Hot Creator", color: "text-orange-400" },
@@ -55,41 +87,65 @@ const getRankIcon = (rank: number) => {
   return `${rank}`;
 };
 
+// ============= Floating Particles =============
 const floatingParticles = [
-  { emoji: "👑", delay: 0, x: "8%", y: "20%", duration: 4 },
-  { emoji: "💎", delay: 0.5, x: "88%", y: "15%", duration: 5 },
-  { emoji: "✨", delay: 1, x: "15%", y: "75%", duration: 4.5 },
+  { emoji: "👑", delay: 0, x: "8%", y: "15%", duration: 4 },
+  { emoji: "💎", delay: 0.5, x: "88%", y: "20%", duration: 5 },
+  { emoji: "✨", delay: 1, x: "12%", y: "75%", duration: 4.5 },
   { emoji: "🎮", delay: 1.5, x: "85%", y: "80%", duration: 3.5 },
-  { emoji: "💜", delay: 2, x: "50%", y: "5%", duration: 4 },
+  { emoji: "🏆", delay: 2, x: "50%", y: "5%", duration: 4 },
 ];
 
-export const FunPlanetLegendsBoard = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("creators");
+// ============= Main Component =============
+export const FunPlanetHallOfFame = () => {
+  const [stats, setStats] = useState<Stats>({
+    totalUsers: 0,
+    totalGames: 0,
+    totalPlays: 0,
+    totalUploads: 0,
+    totalCamly: 0,
+  });
   const [creators, setCreators] = useState<Creator[]>([]);
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDonateModal, setShowDonateModal] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    fetchAllData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchAllData = async () => {
     try {
-      // Fetch top creators - users with most approved games
+      // Fetch stats
+      const [usersRes, gamesRes, playsRes, uploadsRes, camlyRes] = await Promise.all([
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("uploaded_games").select("*", { count: "exact", head: true }).eq("status", "approved"),
+        supabase.from("game_plays").select("*", { count: "exact", head: true }),
+        supabase.from("uploaded_games").select("*", { count: "exact", head: true }),
+        supabase.from("profiles").select("wallet_balance"),
+      ]);
+
+      const totalCamly = camlyRes.data?.reduce((sum, profile) => sum + (profile.wallet_balance || 0), 0) || 0;
+
+      setStats({
+        totalUsers: usersRes.count || 0,
+        totalGames: gamesRes.count || 0,
+        totalPlays: playsRes.count || 0,
+        totalUploads: uploadsRes.count || 0,
+        totalCamly,
+      });
+
+      // Fetch creators
       const { data: gamesData } = await supabase
         .from("uploaded_games")
         .select("user_id, profiles!inner(id, username, avatar_url)")
         .eq("status", "approved");
 
       if (gamesData) {
-        // Count games and plays per user
         const creatorMap = new Map<string, Creator>();
-        
         for (const game of gamesData) {
           const profile = game.profiles as any;
           if (!profile) continue;
-          
           const existing = creatorMap.get(profile.id);
           if (existing) {
             existing.games_count++;
@@ -104,7 +160,6 @@ export const FunPlanetLegendsBoard = () => {
           }
         }
 
-        // Get play counts
         const { data: playsData } = await supabase
           .from("game_plays")
           .select("game_id, uploaded_games!inner(user_id)");
@@ -125,7 +180,7 @@ export const FunPlanetLegendsBoard = () => {
         );
       }
 
-      // Fetch top donors
+      // Fetch donors
       const { data: donationsData } = await supabase
         .from("platform_donations")
         .select("user_id, amount, is_anonymous, profiles!inner(id, username, avatar_url)")
@@ -133,11 +188,9 @@ export const FunPlanetLegendsBoard = () => {
 
       if (donationsData) {
         const donorMap = new Map<string, Donor>();
-        
         for (const donation of donationsData) {
           const profile = donation.profiles as any;
           if (!profile) continue;
-          
           const existing = donorMap.get(profile.id);
           if (existing) {
             existing.total_donated += donation.amount;
@@ -151,7 +204,6 @@ export const FunPlanetLegendsBoard = () => {
             });
           }
         }
-
         setDonors(
           Array.from(donorMap.values())
             .sort((a, b) => b.total_donated - a.total_donated)
@@ -159,11 +211,21 @@ export const FunPlanetLegendsBoard = () => {
         );
       }
     } catch (error) {
-      console.error("Error fetching legends data:", error);
+      console.error("Error fetching hall of fame data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const maxValue = Math.max(stats.totalUsers, stats.totalGames, stats.totalPlays, stats.totalUploads, stats.totalCamly, 1);
+
+  const statItems = [
+    { icon: Users, label: "Users", value: stats.totalUsers, bgColor: "bg-purple-500", accentColor: "#a855f7", suffix: "players" },
+    { icon: Gamepad2, label: "Games", value: stats.totalGames, bgColor: "bg-teal-500", accentColor: "#14b8a6", suffix: "titles" },
+    { icon: Play, label: "Plays", value: stats.totalPlays, bgColor: "bg-pink-500", accentColor: "#ec4899", suffix: "sessions" },
+    { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500", accentColor: "#22c55e", suffix: "games" },
+    { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500", accentColor: "#f43f5e", suffix: "💎" },
+  ];
 
   return (
     <>
@@ -223,7 +285,7 @@ export const FunPlanetLegendsBoard = () => {
             }}
           />
 
-          {/* Video Background */}
+          {/* Video Background - SHARED */}
           <video
             autoPlay
             loop
@@ -273,6 +335,7 @@ export const FunPlanetLegendsBoard = () => {
           {/* Glow effects */}
           <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-purple-500/40 blur-3xl" />
           <div className="absolute -bottom-10 -left-10 h-24 w-24 rounded-full bg-blue-500/40 blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-32 rounded-full bg-yellow-400/15 blur-2xl" />
 
           {/* Header */}
           <div className="relative mb-3 flex items-center justify-center gap-2 z-10">
@@ -290,73 +353,117 @@ export const FunPlanetLegendsBoard = () => {
                 animation: "shimmer 3s linear infinite",
               }}
             >
-              FUN PLANET LEGENDS
+              HALL OF FAME
             </h3>
             <motion.span 
               className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
               animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             >
-              👑
+              🏆
             </motion.span>
           </div>
 
           {/* Tabs */}
-          <div className="relative z-10 flex gap-2 mb-3">
-            <button
-              onClick={() => setActiveTab("creators")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${
-                activeTab === "creators"
-                  ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50"
-                  : "bg-white/10 text-white/70 hover:bg-white/20"
-              }`}
-            >
-              <Gamepad2 className="h-4 w-4" />
-              <span className="text-sm">Top Creators</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("donors")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${
-                activeTab === "donors"
-                  ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50"
-                  : "bg-white/10 text-white/70 hover:bg-white/20"
-              }`}
-            >
-              <Gem className="h-4 w-4" />
-              <span className="text-sm">Top Donors</span>
-            </button>
-          </div>
+          <Tabs defaultValue="stats" className="relative z-10">
+            <TabsList className="grid grid-cols-3 bg-white/10 backdrop-blur-md rounded-xl p-1 mb-3 h-auto">
+              <TabsTrigger 
+                value="stats"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white rounded-lg font-semibold transition-all py-2 text-xs sm:text-sm text-white/70 data-[state=active]:shadow-lg"
+              >
+                <Users className="h-3.5 w-3.5 mr-1.5" />
+                Stats
+              </TabsTrigger>
+              <TabsTrigger 
+                value="creators"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-lg font-semibold transition-all py-2 text-xs sm:text-sm text-white/70 data-[state=active]:shadow-lg"
+              >
+                <Gamepad2 className="h-3.5 w-3.5 mr-1.5" />
+                Creators
+              </TabsTrigger>
+              <TabsTrigger 
+                value="donors"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg font-semibold transition-all py-2 text-xs sm:text-sm text-white/70 data-[state=active]:shadow-lg"
+              >
+                <Gem className="h-3.5 w-3.5 mr-1.5" />
+                Donors
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Content */}
-          <div className="relative z-10 space-y-1.5 min-h-[200px]">
-            <AnimatePresence mode="wait">
-              {loading ? (
-                <motion.div 
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center justify-center h-[280px]"
-                >
-                  <div className="animate-pulse text-white/70">Loading...</div>
-                </motion.div>
-              ) : activeTab === "creators" ? (
-                <motion.div
-                  key="creators"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="space-y-2"
-                >
-                  {creators.length === 0 ? (
-                    <div className="text-center text-white/60 py-8">
-                      Chưa có creator nào. Hãy là người đầu tiên!
-                    </div>
-                  ) : (
-                    creators.map((creator, index) => {
+            {/* Stats Tab */}
+            <TabsContent value="stats" className="mt-0">
+              <div className="flex flex-col gap-1.5">
+                {statItems.map((item, index) => {
+                  const progressPercent = Math.min((item.value / maxValue) * 100, 100);
+                  const isCamly = item.label === "CAMLY";
+                  
+                  return (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02, y: -2, boxShadow: `0 0 25px ${item.accentColor}50` }}
+                      className="relative flex items-center gap-2 rounded-xl p-1.5 px-2.5 overflow-hidden cursor-pointer transition-all duration-300"
+                      style={{
+                        background: "linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,215,0,0.05) 100%)",
+                        borderLeft: `4px solid ${item.accentColor}`,
+                        ...(isCamly && {
+                          border: "2px solid rgba(244, 63, 94, 0.6)",
+                          borderLeft: `4px solid ${item.accentColor}`,
+                          boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)",
+                        }),
+                      }}
+                    >
+                      <div className="absolute inset-0 rounded-xl overflow-hidden">
+                        <motion.div 
+                          className="h-full"
+                          style={{ background: `linear-gradient(90deg, ${item.accentColor}50 0%, ${item.accentColor}20 50%, transparent 100%)` }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progressPercent}%` }}
+                          transition={{ duration: 1.5, delay: index * 0.15, ease: "easeOut" }}
+                        />
+                      </div>
+                      <motion.div 
+                        className={`relative z-10 rounded-lg ${item.bgColor} p-2 flex-shrink-0`}
+                        style={{ boxShadow: `0 0 20px ${item.accentColor}80` }}
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: index * 0.2, ease: "easeInOut" }}
+                      >
+                        <item.icon className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
+                      </motion.div>
+                      <div className="relative z-10 flex-1 flex items-center justify-between min-w-0">
+                        <span className="text-xs font-semibold text-yellow-200">{item.label}</span>
+                        <div className="flex items-center gap-1">
+                          {isCamly && <Gem className="h-3.5 w-3.5 text-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
+                          <span className="text-lg font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
+                            {loading ? <span className="animate-pulse">...</span> : <AnimatedCounter value={item.value} />}
+                          </span>
+                          <span className="text-[10px] text-yellow-200/70 font-medium">{item.suffix}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </TabsContent>
+
+            {/* Creators Tab */}
+            <TabsContent value="creators" className="mt-0">
+              <AnimatePresence mode="wait">
+                {loading ? (
+                  <div className="flex items-center justify-center h-[200px]">
+                    <div className="animate-pulse text-white/70">Loading...</div>
+                  </div>
+                ) : creators.length === 0 ? (
+                  <div className="text-center text-white/60 py-8">
+                    Chưa có creator nào. Hãy là người đầu tiên!
+                  </div>
+                ) : (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
+                    {creators.map((creator, index) => {
                       const badge = getCreatorBadge(creator.games_count);
                       const rank = index + 1;
-                      
                       return (
                         <motion.div
                           key={creator.id}
@@ -369,9 +476,7 @@ export const FunPlanetLegendsBoard = () => {
                             boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined,
                           }}
                         >
-                          <span className="text-lg w-8 text-center font-bold">
-                            {getRankIcon(rank)}
-                          </span>
+                          <span className="text-lg w-8 text-center font-bold">{getRankIcon(rank)}</span>
                           <Avatar className="h-10 w-10 border-2 border-white/30">
                             <AvatarImage src={creator.avatar_url || undefined} />
                             <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500">
@@ -394,27 +499,29 @@ export const FunPlanetLegendsBoard = () => {
                           </div>
                         </motion.div>
                       );
-                    })
-                  )}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="donors"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-2"
-                >
-                  {donors.length === 0 ? (
-                    <div className="text-center text-white/60 py-8">
-                      <Heart className="h-8 w-8 mx-auto mb-2 text-rose-400" />
-                      <p>Chưa có ai ủng hộ. Hãy là người đầu tiên!</p>
-                    </div>
-                  ) : (
-                    donors.map((donor, index) => {
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </TabsContent>
+
+            {/* Donors Tab */}
+            <TabsContent value="donors" className="mt-0">
+              <AnimatePresence mode="wait">
+                {loading ? (
+                  <div className="flex items-center justify-center h-[200px]">
+                    <div className="animate-pulse text-white/70">Loading...</div>
+                  </div>
+                ) : donors.length === 0 ? (
+                  <div className="text-center text-white/60 py-8">
+                    <Heart className="h-8 w-8 mx-auto mb-2 text-rose-400" />
+                    <p>Chưa có ai ủng hộ. Hãy là người đầu tiên!</p>
+                  </div>
+                ) : (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
+                    {donors.map((donor, index) => {
                       const badge = getDonorBadge(donor.total_donated);
                       const rank = index + 1;
-                      
                       return (
                         <motion.div
                           key={donor.id}
@@ -427,9 +534,7 @@ export const FunPlanetLegendsBoard = () => {
                             boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined,
                           }}
                         >
-                          <span className="text-lg w-8 text-center font-bold">
-                            {getRankIcon(rank)}
-                          </span>
+                          <span className="text-lg w-8 text-center font-bold">{getRankIcon(rank)}</span>
                           <Avatar className="h-10 w-10 border-2 border-white/30">
                             {donor.is_anonymous ? (
                               <AvatarFallback className="bg-gradient-to-br from-gray-500 to-gray-700">
@@ -458,23 +563,23 @@ export const FunPlanetLegendsBoard = () => {
                           </div>
                         </motion.div>
                       );
-                    })
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-          {/* Donate Button */}
-          <div className="relative z-10 mt-4">
-            <Button
-              onClick={() => setShowDonateModal(true)}
-              className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 text-white font-bold py-3 shadow-lg shadow-rose-500/30 transition-all hover:scale-[1.02]"
-            >
-              <Heart className="mr-2 h-5 w-5 animate-pulse" />
-              💎 Ủng hộ FUN Planet
-            </Button>
-          </div>
+              {/* Donate Button */}
+              <div className="mt-4">
+                <Button
+                  onClick={() => setShowDonateModal(true)}
+                  className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 text-white font-bold py-3 shadow-lg shadow-rose-500/30 transition-all hover:scale-[1.02]"
+                >
+                  <Heart className="mr-2 h-5 w-5 animate-pulse" />
+                  💎 Ủng hộ FUN Planet
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
         </motion.div>
 
         <style>{`
@@ -488,7 +593,7 @@ export const FunPlanetLegendsBoard = () => {
       <DonateCAMLYModal 
         open={showDonateModal} 
         onOpenChange={setShowDonateModal}
-        onSuccess={fetchData}
+        onSuccess={fetchAllData}
       />
     </>
   );

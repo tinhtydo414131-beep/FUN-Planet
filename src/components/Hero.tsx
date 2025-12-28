@@ -7,8 +7,7 @@ import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
 import { HeroStats } from "./HeroStats";
 import { FunPlanetTopRanking } from "./FunPlanetTopRanking";
-import { FunPlanetHonorBoard } from "./FunPlanetHonorBoard";
-import { FunPlanetLegendsBoard } from "./FunPlanetLegendsBoard";
+import { FunPlanetHallOfFame } from "./FunPlanetHallOfFame";
 import { motion } from "framer-motion";
 import { MEDIA_URLS } from "@/config/media";
 import { useAuth } from "@/hooks/useAuth";
@@ -187,11 +186,8 @@ export const Hero = () => {
           delay: 0.6
         }} className="pt-6 w-full max-w-6xl mx-auto">
             <div className="grid gap-4 md:grid-cols-2 items-start">
-              {/* Left Column: Honor Board + Legends Board */}
-              <div className="flex flex-col gap-4">
-                <FunPlanetHonorBoard />
-                <FunPlanetLegendsBoard />
-              </div>
+              {/* Left Column: Hall of Fame (merged Honor + Legends) */}
+              <FunPlanetHallOfFame />
               
               {/* Right Column: Top Ranking Board */}
               <FunPlanetTopRanking />
