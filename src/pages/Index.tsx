@@ -32,8 +32,8 @@ import { AngelAI, AngelAIButton } from "@/components/AngelAI";
 import { FunIDOnboarding } from "@/components/FunIDOnboarding";
 import { useFunId } from "@/hooks/useFunId";
 import { RewardGalaxyHomeBanner } from "@/components/RewardGalaxyHomeBanner";
-
 import { TodayRewardsCard } from "@/components/TodayRewardsCard";
+import { HomeSocialFeed } from "@/components/HomeSocialFeed";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -225,6 +225,9 @@ const Index = () => {
       
       {/* Featured Games - Play Instantly */}
       <FeaturedGamesSection />
+      
+      {/* Social Feed Section */}
+      <HomeSocialFeed />
       
       {/* Today's Rewards Card */}
       <TodayRewardsCard />
