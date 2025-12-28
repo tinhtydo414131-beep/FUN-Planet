@@ -34,7 +34,6 @@ import { useFunId } from "@/hooks/useFunId";
 import { RewardGalaxyHomeBanner } from "@/components/RewardGalaxyHomeBanner";
 
 import { TodayRewardsCard } from "@/components/TodayRewardsCard";
-import { FunPlanetStatsSection } from "@/components/FunPlanetStatsSection";
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -217,9 +216,6 @@ const Index = () => {
       )}
       
       <Navigation />
-      
-      {/* FUN Planet Stats - Honor Board & Top Ranking (TRÊN Hero) */}
-      <FunPlanetStatsSection />
       
       {/* Hero Section */}
       <Hero />
