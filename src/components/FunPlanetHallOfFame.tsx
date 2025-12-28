@@ -270,7 +270,7 @@ export const FunPlanetHallOfFame = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl p-3 sm:p-4 shadow-xl"
+          className="relative overflow-hidden rounded-3xl p-3 sm:p-4 shadow-xl h-full flex flex-col"
           style={{
             background: "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)",
           }}
@@ -353,7 +353,7 @@ export const FunPlanetHallOfFame = () => {
                 animation: "shimmer 3s linear infinite",
               }}
             >
-              HALL OF FAME
+              HONOR BOARD
             </h3>
             <motion.span 
               className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
@@ -365,7 +365,7 @@ export const FunPlanetHallOfFame = () => {
           </div>
 
           {/* Tabs */}
-          <Tabs defaultValue="stats" className="relative z-10">
+          <Tabs defaultValue="stats" className="relative z-10 flex-1 flex flex-col">
             <TabsList className="grid grid-cols-3 bg-white/10 backdrop-blur-md rounded-xl p-1 mb-3 h-auto">
               <TabsTrigger 
                 value="stats"
