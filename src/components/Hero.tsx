@@ -1,13 +1,12 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Search, Sparkles, Diamond, Rocket, Trophy } from "lucide-react";
+import { Search, Sparkles, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import camlyCoin from "@/assets/camly-coin.png";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
 import { HeroStats } from "./HeroStats";
-import { HeroActionButtons } from "./HeroActionButtons";
+import { FunPlanetTopRanking } from "./FunPlanetTopRanking";
 import { motion } from "framer-motion";
 import { MEDIA_URLS } from "@/config/media";
 import { useAuth } from "@/hooks/useAuth";
@@ -175,7 +174,7 @@ export const Hero = () => {
             <HeroStats />
           </motion.div>
 
-          {/* 4 Large Action Buttons */}
+          {/* Top Ranking */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -184,8 +183,8 @@ export const Hero = () => {
           y: 0
         }} transition={{
           delay: 0.6
-        }} className="pt-6">
-            <HeroActionButtons onScrollToGames={scrollToFeaturedGames} />
+        }} className="pt-6 max-w-lg mx-auto">
+            <FunPlanetTopRanking />
           </motion.div>
 
           {/* Scroll indicator */}
