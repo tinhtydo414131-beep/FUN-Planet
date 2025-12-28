@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Loader2, Heart, Sparkles, Check, CalendarCheck } from 'lucide-react';
+import { Loader2, Heart, Sparkles, Check, CalendarCheck, Gift } from 'lucide-react';
 import { ReactNode } from 'react';
 
 interface RewardPlanetCardProps {
@@ -20,6 +20,7 @@ interface RewardPlanetCardProps {
   showHeart?: boolean;
   delay?: number;
   cardGradient?: string;
+  isOneTime?: boolean;
 }
 
 export const RewardPlanetCard = ({
@@ -39,6 +40,7 @@ export const RewardPlanetCard = ({
   showHeart,
   delay = 0,
   cardGradient,
+  isOneTime = false,
 }: RewardPlanetCardProps) => {
   // Default card gradient if not provided
   const bgGradient = cardGradient || 'from-white/90 to-white/70';
@@ -191,7 +193,7 @@ export const RewardPlanetCard = ({
               ) : !canClaim && !buttonText ? (
                 <>
                   <Check className="w-5 h-5" />
-                  Đã nhận hôm nay! ✨
+                  {isOneTime ? 'Đã nhận thưởng! ✨' : 'Đã nhận hôm nay! ✨'}
                 </>
               ) : (
                 <>
@@ -202,8 +204,8 @@ export const RewardPlanetCard = ({
             </span>
           </Button>
 
-          {/* "Back Tomorrow" indicator */}
-          {!canClaim && !buttonText && (
+          {/* "Back Tomorrow" indicator - only show for daily rewards, not one-time rewards */}
+          {!canClaim && !buttonText && !isOneTime && (
             <motion.div 
               className="mt-3 flex items-center justify-center gap-1 text-xs text-[#9370DB]"
               initial={{ opacity: 0 }}
@@ -212,6 +214,19 @@ export const RewardPlanetCard = ({
             >
               <CalendarCheck className="w-4 h-4" />
               <span>Quay lại ngày mai nhé! 😊</span>
+            </motion.div>
+          )}
+
+          {/* One-time reward indicator */}
+          {!canClaim && !buttonText && isOneTime && (
+            <motion.div 
+              className="mt-3 flex items-center justify-center gap-1 text-xs text-[#98FB98]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Gift className="w-4 h-4" />
+              <span>Phần thưởng chỉ nhận 1 lần 🎁</span>
             </motion.div>
           )}
         </div>
