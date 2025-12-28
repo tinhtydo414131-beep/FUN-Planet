@@ -294,7 +294,7 @@ export default function RewardGalaxy() {
                 delay={0}
               />
 
-              {/* Welcome Bonus - Sunny orange to pink */}
+              {/* Welcome Bonus - Sunny orange to pink (ONE-TIME ONLY) */}
               <RewardPlanetCard
                 title="Chào Mừng"
                 subtitle="Welcome Bonus"
@@ -308,6 +308,7 @@ export default function RewardGalaxy() {
                 isClaiming={isClaiming}
                 isConnected={actualIsConnected}
                 onClaim={handleClaimFirstWallet}
+                isOneTime={true}
                 delay={0.1}
               />
 
