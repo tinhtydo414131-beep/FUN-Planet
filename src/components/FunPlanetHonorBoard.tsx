@@ -53,28 +53,23 @@ export const FunPlanetHonorBoard = () => {
 
   const fetchStats = async () => {
     try {
-      // Fetch total users
       const { count: usersCount } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true });
 
-      // Fetch total approved games
       const { count: gamesCount } = await supabase
         .from("uploaded_games")
         .select("*", { count: "exact", head: true })
         .eq("status", "approved");
 
-      // Fetch total plays
       const { count: playsCount } = await supabase
         .from("game_plays")
         .select("*", { count: "exact", head: true });
 
-      // Fetch total uploads (all statuses)
       const { count: uploadsCount } = await supabase
         .from("uploaded_games")
         .select("*", { count: "exact", head: true });
 
-      // Fetch total CAMLY (sum of wallet_balance)
       const { data: camlyData } = await supabase
         .from("profiles")
         .select("wallet_balance");
@@ -96,53 +91,53 @@ export const FunPlanetHonorBoard = () => {
   };
 
   const statItems = [
-    { icon: Users, label: "Users", value: stats.totalUsers, gradient: "from-primary to-purple-500" },
-    { icon: Gamepad2, label: "Games", value: stats.totalGames, gradient: "from-accent to-green-500" },
-    { icon: Play, label: "Plays", value: stats.totalPlays, gradient: "from-secondary to-pink-500" },
-    { icon: Upload, label: "Uploads", value: stats.totalUploads, gradient: "from-fun-blue to-blue-500" },
-    { icon: Gem, label: "CAMLY", value: stats.totalCamly, gradient: "from-fun-yellow to-orange-500" },
+    { icon: Users, label: "Users", value: stats.totalUsers, bgColor: "bg-purple-500" },
+    { icon: Gamepad2, label: "Games", value: stats.totalGames, bgColor: "bg-teal-500" },
+    { icon: Play, label: "Plays", value: stats.totalPlays, bgColor: "bg-pink-500" },
+    { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500" },
+    { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500" },
   ];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl border-2 border-primary/30 bg-gradient-to-br from-card via-card to-primary/5 p-6 shadow-xl"
+      className="relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 p-4 shadow-xl h-full"
     >
-      {/* Glow effect */}
-      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-primary/20 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-secondary/20 blur-3xl" />
+      {/* Glow effects */}
+      <div className="absolute -top-10 -right-10 h-20 w-20 rounded-full bg-primary/30 blur-2xl" />
+      <div className="absolute -bottom-10 -left-10 h-20 w-20 rounded-full bg-secondary/30 blur-2xl" />
       
       {/* Header */}
-      <div className="relative mb-6 flex items-center justify-center gap-3">
-        <span className="text-3xl">🌍</span>
-        <h3 className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-2xl font-bold text-transparent">
+      <div className="relative mb-4 flex items-center justify-center gap-2">
+        <span className="text-xl">🌍</span>
+        <h3 className="bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-lg font-bold text-transparent">
           HONOR BOARD
         </h3>
-        <span className="text-3xl">🏆</span>
+        <span className="text-xl">🏆</span>
       </div>
 
-      {/* Stats Grid */}
-      <div className="relative grid grid-cols-3 gap-3 md:grid-cols-5 md:gap-4">
+      {/* Horizontal Stats */}
+      <div className="relative flex flex-wrap justify-center gap-2">
         {statItems.map((item, index) => (
           <motion.div
             key={item.label}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
-            className="flex flex-col items-center rounded-2xl border border-border/50 bg-background/50 p-3 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-lg"
+            className="flex flex-col items-center rounded-xl bg-white/10 backdrop-blur-sm p-2 min-w-[60px] border border-white/10 hover:border-white/30 hover:bg-white/20 transition-all"
           >
-            <div className={`mb-2 rounded-xl bg-gradient-to-br ${item.gradient} p-2`}>
-              <item.icon className="h-5 w-5 text-white" />
+            <div className={`mb-1 rounded-lg ${item.bgColor} p-1.5`}>
+              <item.icon className="h-4 w-4 text-white" />
             </div>
-            <p className="text-xl font-bold text-foreground md:text-2xl">
+            <p className="text-base font-bold text-white">
               {loading ? (
                 <span className="animate-pulse">...</span>
               ) : (
                 <AnimatedCounter value={item.value} />
               )}
             </p>
-            <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
+            <p className="text-[10px] font-medium text-white/70">{item.label}</p>
           </motion.div>
         ))}
       </div>
