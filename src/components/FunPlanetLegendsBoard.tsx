@@ -121,7 +121,7 @@ export const FunPlanetLegendsBoard = () => {
         setCreators(
           Array.from(creatorMap.values())
             .sort((a, b) => b.games_count - a.games_count || b.total_plays - a.total_plays)
-            .slice(0, 10)
+            .slice(0, 5)
         );
       }
 
@@ -155,7 +155,7 @@ export const FunPlanetLegendsBoard = () => {
         setDonors(
           Array.from(donorMap.values())
             .sort((a, b) => b.total_donated - a.total_donated)
-            .slice(0, 10)
+            .slice(0, 5)
         );
       }
     } catch (error) {
@@ -208,7 +208,7 @@ export const FunPlanetLegendsBoard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl p-4 sm:p-6 shadow-xl"
+          className="relative overflow-hidden rounded-3xl p-3 sm:p-4 shadow-xl"
           style={{
             background: "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)",
           }}
@@ -263,16 +263,16 @@ export const FunPlanetLegendsBoard = () => {
           <div className="absolute -bottom-10 -left-10 h-24 w-24 rounded-full bg-blue-500/40 blur-3xl" />
 
           {/* Header */}
-          <div className="relative mb-4 flex items-center justify-center gap-2 z-10">
+          <div className="relative mb-3 flex items-center justify-center gap-2 z-10">
             <motion.span 
-              className="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+              className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
               animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
               👑
             </motion.span>
             <h3 
-              className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]"
+              className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-base sm:text-lg font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]"
               style={{
                 backgroundSize: "200% 100%",
                 animation: "shimmer 3s linear infinite",
@@ -281,7 +281,7 @@ export const FunPlanetLegendsBoard = () => {
               FUN PLANET LEGENDS
             </h3>
             <motion.span 
-              className="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+              className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
               animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             >
@@ -290,7 +290,7 @@ export const FunPlanetLegendsBoard = () => {
           </div>
 
           {/* Tabs */}
-          <div className="relative z-10 flex gap-2 mb-4">
+          <div className="relative z-10 flex gap-2 mb-3">
             <button
               onClick={() => setActiveTab("creators")}
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${
@@ -316,7 +316,7 @@ export const FunPlanetLegendsBoard = () => {
           </div>
 
           {/* Content */}
-          <div className="relative z-10 space-y-2 min-h-[280px]">
+          <div className="relative z-10 space-y-1.5 min-h-[200px]">
             <AnimatePresence mode="wait">
               {loading ? (
                 <motion.div 

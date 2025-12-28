@@ -185,14 +185,17 @@ export const Hero = () => {
           y: 0
         }} transition={{
           delay: 0.6
-        }} className="pt-6 w-full max-w-6xl mx-auto space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 items-stretch">
+        }} className="pt-6 w-full max-w-6xl mx-auto">
+            <div className="grid gap-4 md:grid-cols-2 items-start">
+              {/* Left Column: Honor Board + Legends Board */}
+              <div className="flex flex-col gap-4">
+                <FunPlanetHonorBoard />
+                <FunPlanetLegendsBoard />
+              </div>
+              
+              {/* Right Column: Top Ranking Board */}
               <FunPlanetTopRanking />
-              <FunPlanetHonorBoard />
             </div>
-            
-            {/* FUN PLANET LEGENDS - Top Creators & Donors */}
-            <FunPlanetLegendsBoard />
           </motion.div>
 
           {/* Scroll indicator */}
