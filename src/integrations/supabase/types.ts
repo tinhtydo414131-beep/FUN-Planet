@@ -2315,6 +2315,33 @@ export type Database = {
           },
         ]
       }
+      platform_donations: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          is_anonymous: boolean | null
+          message: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       play_sessions: {
         Row: {
           created_at: string
