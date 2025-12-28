@@ -312,6 +312,14 @@ export default {
             transform: "translateY(-5px)",
           },
         },
+        "metallic-shine": {
+          "0%, 100%": {
+            backgroundPosition: "0% 50%",
+          },
+          "50%": {
+            backgroundPosition: "100% 50%",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -336,6 +344,7 @@ export default {
         "float": "float 4s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         "bounce-gentle": "bounce-gentle 2s ease-in-out infinite",
+        "metallic-shine": "metallic-shine 4s ease infinite",
       },
     },
   },
