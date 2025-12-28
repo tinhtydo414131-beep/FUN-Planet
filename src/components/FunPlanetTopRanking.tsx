@@ -132,7 +132,7 @@ export const FunPlanetTopRanking = () => {
           animation: "shimmer 3s ease-in-out infinite",
         }}
       >
-        <div className="h-full w-full rounded-3xl bg-white/20" />
+        <div className="h-full w-full rounded-3xl bg-black/90" />
       </div>
 
       {/* Golden Glow effect */}
