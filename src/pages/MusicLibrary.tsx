@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Music, Trash2, Download, Coins, AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -32,11 +33,12 @@ interface MusicFile {
 // ===== CẤU HÌNH HIỂN THỊ =====
 const CONFIG = {
   MAX_DAILY_REWARDS: 4,
-  REWARD_AMOUNT: 50000,
+  REWARD_AMOUNT: 20000,
 };
 
 export default function MusicLibrary() {
   const { user } = useAuth();
+  const { isAdmin } = useAdminRole();
   const [uploading, setUploading] = useState(false);
   const [validating, setValidating] = useState(false);
   const [musicFiles, setMusicFiles] = useState<MusicFile[]>([]);
@@ -503,14 +505,16 @@ export default function MusicLibrary() {
                             </a>
                           </Button>
                           
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => handleDelete(file.id, file.storage_path)}
-                            className="border-2 border-destructive/30 hover:bg-destructive/10"
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
+                          {isAdmin && (
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={() => handleDelete(file.id, file.storage_path)}
+                              className="border-2 border-destructive/30 hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}

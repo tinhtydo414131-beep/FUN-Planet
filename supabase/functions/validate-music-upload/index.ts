@@ -11,7 +11,7 @@ const corsHeaders = {
 // ===== CẤU HÌNH CHỐNG ABUSE =====
 const CONFIG = {
   MAX_DAILY_REWARDS: 4,           // Số lần thưởng tối đa mỗi ngày
-  REWARD_AMOUNT: 50000,           // Số Camly coin thưởng mỗi bài
+  REWARD_AMOUNT: 20000,           // Số Camly coin thưởng mỗi bài
   DURATION_TOLERANCE_MS: 1000,    // Sai số duration cho phép (1 giây)
   MIN_DURATION_MS: 30000,         // Thời lượng tối thiểu 30 giây
   MAX_FILE_SIZE_MB: 50,           // Kích thước file tối đa (MB)
