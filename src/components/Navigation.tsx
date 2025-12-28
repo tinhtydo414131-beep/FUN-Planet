@@ -96,6 +96,7 @@ export const Navigation = () => {
   const navLinks = [
     { path: "/games", label: "Play Games" },
     { path: "/public-music", label: "Music" },
+    { path: "/leaderboard", label: "Leaderboard" },
     { path: "/reward-galaxy", label: "🎁 Quà Từ Cha Vũ Trụ", special: true },
     ...(isAdmin ? [{ path: "/admin/master", label: "👑 Admin", admin: true }] : []),
   ];
