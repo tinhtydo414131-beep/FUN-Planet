@@ -329,22 +329,23 @@ export default function RewardGalaxy() {
                 delay={0.2}
               />
 
-              {/* Game Upload Bonus - Creative pink to yellow */}
+              {/* Game Upload Bonus - Creative pink to yellow (ONE-TIME ONLY) */}
               <RewardPlanetCard
                 title="Upload Game"
                 subtitle="Creator Reward"
-                amount={1000000}
+                amount={500000}
                 icon={<Upload className="w-8 h-8" />}
                 gradientFrom="from-[#FF69B4]"
                 gradientTo="to-[#FFD700]"
                 cardGradient="from-[#FFB6C1]/90 via-[#FFF0F5]/95 to-[#FFFACD]/90"
-                description="Game được duyệt"
+                description="Game được duyệt & không trùng lặp"
                 canClaim={false}
                 isClaiming={false}
                 isConnected={actualIsConnected}
                 onClaim={() => navigate('/upload')}
                 buttonText="Upload Game"
                 isSpecial
+                isOneTime={true}
                 delay={0.3}
               />
 
