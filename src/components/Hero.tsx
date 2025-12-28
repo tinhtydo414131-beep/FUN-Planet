@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Search, Sparkles, Diamond, Rocket } from "lucide-react";
+import { Search, Sparkles, Diamond, Rocket, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import camlyCoin from "@/assets/camly-coin.png";
@@ -41,6 +41,12 @@ export const Hero = () => {
   };
   const scrollToFeaturedGames = () => {
     document.getElementById('featured-games')?.scrollIntoView({
+      behavior: 'smooth'
+    });
+  };
+
+  const scrollToStats = () => {
+    document.getElementById('fun-planet-stats')?.scrollIntoView({
       behavior: 'smooth'
     });
   };
@@ -123,6 +129,21 @@ export const Hero = () => {
             🚀 Build Your Planet – Play & Earn Joy! 💎✨
           </motion.p>
 
+          {/* Scroll to Stats Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <Button
+              onClick={scrollToStats}
+              onMouseEnter={() => playPop()}
+              className="group px-6 py-3 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 hover:from-yellow-400 hover:via-pink-400 hover:to-purple-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all animate-pulse hover:animate-none"
+            >
+              <Trophy className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
+              Xem Bảng Xếp Hạng 🏆
+            </Button>
+          </motion.div>
 
           {/* Search bar */}
           <motion.form initial={{

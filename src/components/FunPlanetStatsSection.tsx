@@ -4,7 +4,7 @@ import { FunPlanetTopRanking } from "./FunPlanetTopRanking";
 
 export const FunPlanetStatsSection = () => {
   return (
-    <section className="py-8 px-4 md:py-12">
+    <section id="fun-planet-stats" className="pt-20 pb-8 px-4 md:pt-24 md:pb-12 bg-gradient-to-b from-background via-primary/5 to-background">
       <div className="container mx-auto max-w-7xl">
         {/* Section Header */}
         <motion.div
