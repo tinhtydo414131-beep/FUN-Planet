@@ -107,9 +107,9 @@ export const FunPlanetTopRanking = () => {
       animate={{ opacity: 1, y: 0 }}
       className="relative overflow-hidden rounded-3xl p-6 shadow-2xl"
       style={{
-        background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 100%)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
+        background: "linear-gradient(135deg, rgba(255,182,193,0.4) 0%, rgba(255,218,185,0.35) 25%, rgba(255,255,200,0.3) 50%, rgba(255,200,180,0.35) 75%, rgba(255,182,193,0.4) 100%)",
+        backdropFilter: "blur(25px)",
+        WebkitBackdropFilter: "blur(25px)",
       }}
     >
       {/* CSS Keyframes */}
@@ -122,25 +122,29 @@ export const FunPlanetTopRanking = () => {
         `}
       </style>
 
-      {/* Golden Metallic Border with Shimmer */}
+      {/* Soft warm border */}
       <div 
         className="absolute inset-0 rounded-3xl -z-10"
         style={{
-          padding: "3px",
-          background: "linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FFEC8B 50%, #FFA500 75%, #FFD700 100%)",
-          backgroundSize: "200% 200%",
-          animation: "shimmer 3s ease-in-out infinite",
+          padding: "2px",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,200,180,0.3) 50%, rgba(255,255,255,0.5) 100%)",
         }}
       >
-        <div className="h-full w-full rounded-3xl bg-black/90" />
+        <div 
+          className="h-full w-full rounded-3xl"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,182,193,0.5) 0%, rgba(255,218,185,0.45) 25%, rgba(255,255,200,0.4) 50%, rgba(255,200,180,0.45) 75%, rgba(255,182,193,0.5) 100%)",
+          }}
+        />
       </div>
 
-      {/* Golden Glow effect */}
-      <div className="absolute inset-0 rounded-3xl shadow-[0_0_30px_rgba(255,215,0,0.4)] pointer-events-none" />
+      {/* Soft glow effect */}
+      <div className="absolute inset-0 rounded-3xl shadow-[0_0_40px_rgba(255,182,193,0.3)] pointer-events-none" />
 
-      {/* Inner glow effects */}
-      <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-yellow-500/20 blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 h-40 w-40 rounded-full bg-amber-500/20 blur-3xl" />
+      {/* Colorful blur orbs for depth */}
+      <div className="absolute -top-20 -left-20 h-60 w-60 rounded-full bg-pink-300/30 blur-3xl" />
+      <div className="absolute -bottom-20 -right-20 h-60 w-60 rounded-full bg-orange-300/30 blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full bg-yellow-200/25 blur-3xl" />
       
       {/* Header */}
       <div className="relative mb-4 flex items-center justify-center gap-3">
