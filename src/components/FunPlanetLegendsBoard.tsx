@@ -396,8 +396,8 @@ export const FunPlanetLegendsBoard = () => {
                   : "bg-white/10 !text-white hover:bg-white/20"
               }`}
             >
-              <Gem className="h-4 w-4 !text-white" />
-              <span className="text-sm !text-white">Top Donors</span>
+              <Gem className={`h-4 w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
+              <span className={`text-sm ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Top Donors</span>
             </button>
           </div>
 
