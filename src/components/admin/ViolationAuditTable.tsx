@@ -14,19 +14,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { RefreshCw, Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
 
-interface FraudLog {
-  id: string;
+interface ViolationSummary {
   user_id: string;
   username: string;
-  fraud_type: string;
-  description: string;
-  amount_affected: number;
-  action_taken: string;
-  resolved_at: string;
+  total_deducted: number;
+  web3_previous: number | null;
+  web3_new: number | null;
+  profile_previous: number | null;
+  profile_new: number | null;
+  corrections_count: number;
+  last_corrected: string;
 }
 
 export function ViolationAuditTable() {
-  const [violations, setViolations] = useState<FraudLog[]>([]);
+  const [violations, setViolations] = useState<ViolationSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,19 +45,75 @@ export function ViolationAuditTable() {
         .order("resolved_at", { ascending: false });
 
       if (fraudLogs && fraudLogs.length > 0) {
-        // Get usernames
+        // Get unique user IDs
         const userIds = [...new Set(fraudLogs.map(f => f.user_id))];
+        
+        // Get profiles with usernames and current wallet_balance
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id, username")
+          .select("id, username, wallet_balance")
           .in("id", userIds);
 
-        const withUsernames = fraudLogs.map(log => ({
-          ...log,
-          username: profiles?.find(p => p.id === log.user_id)?.username || "Unknown"
-        }));
+        // Get current web3_rewards balances
+        const { data: web3Rewards } = await supabase
+          .from("web3_rewards")
+          .select("user_id, camly_balance")
+          .in("user_id", userIds);
 
-        setViolations(withUsernames);
+        // Group by user and aggregate
+        const userMap = new Map<string, ViolationSummary>();
+        
+        for (const log of fraudLogs) {
+          const existing = userMap.get(log.user_id);
+          const balances = parseBalances(log.action_taken || "");
+          const isProfileCorrection = log.description?.includes("profiles.wallet_balance");
+          
+          if (!existing) {
+            userMap.set(log.user_id, {
+              user_id: log.user_id,
+              username: profiles?.find(p => p.id === log.user_id)?.username || "Unknown",
+              total_deducted: Number(log.amount_affected || 0),
+              web3_previous: isProfileCorrection ? null : balances.previous,
+              web3_new: isProfileCorrection ? null : balances.new,
+              profile_previous: isProfileCorrection ? balances.previous : null,
+              profile_new: isProfileCorrection ? balances.new : null,
+              corrections_count: 1,
+              last_corrected: log.resolved_at || log.detected_at || ""
+            });
+          } else {
+            // Update with the latest correction info
+            if (isProfileCorrection) {
+              existing.profile_previous = balances.previous;
+              existing.profile_new = balances.new;
+            } else {
+              existing.web3_previous = balances.previous;
+              existing.web3_new = balances.new;
+            }
+            existing.corrections_count++;
+            // Keep the most recent date
+            const existingDate = new Date(existing.last_corrected);
+            const newDate = new Date(log.resolved_at || log.detected_at || "");
+            if (newDate > existingDate) {
+              existing.last_corrected = log.resolved_at || log.detected_at || "";
+            }
+          }
+        }
+
+        // Calculate total deducted per user (use first log's amount since it's the same)
+        const summaries = Array.from(userMap.values()).map(summary => {
+          // Get current balances for verification
+          const profile = profiles?.find(p => p.id === summary.user_id);
+          const web3 = web3Rewards?.find(w => w.user_id === summary.user_id);
+          
+          return {
+            ...summary,
+            // Use actual current balances if available
+            profile_new: profile?.wallet_balance ?? summary.profile_new,
+            web3_new: web3?.camly_balance ?? summary.web3_new
+          };
+        });
+
+        setViolations(summaries);
       } else {
         setViolations([]);
       }
@@ -77,6 +134,9 @@ export function ViolationAuditTable() {
     };
   };
 
+  const uniqueUsers = violations.length;
+  const totalDeducted = violations.reduce((sum, v) => sum + v.total_deducted, 0);
+
   return (
     <Card>
       <CardHeader>
@@ -84,8 +144,8 @@ export function ViolationAuditTable() {
           <CardTitle className="text-lg flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-amber-500" />
             Violation Audit Log
-            {violations.length > 0 && (
-              <Badge variant="destructive">{violations.length} corrected</Badge>
+            {uniqueUsers > 0 && (
+              <Badge variant="destructive">{uniqueUsers} users corrected</Badge>
             )}
           </CardTitle>
           <Button variant="outline" size="sm" onClick={loadViolations}>
@@ -110,42 +170,67 @@ export function ViolationAuditTable() {
               <TableHeader>
                 <TableRow>
                   <TableHead>User</TableHead>
-                  <TableHead>Type</TableHead>
                   <TableHead>Amount Deducted</TableHead>
-                  <TableHead>Previous Balance</TableHead>
-                  <TableHead>New Balance</TableHead>
+                  <TableHead className="text-center">
+                    <div className="flex flex-col">
+                      <span>Web3 Balance</span>
+                      <span className="text-xs text-muted-foreground">(Before → After)</span>
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <div className="flex flex-col">
+                      <span>Profile Balance</span>
+                      <span className="text-xs text-muted-foreground">(Before → After)</span>
+                    </div>
+                  </TableHead>
                   <TableHead>Corrected At</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {violations.map((violation) => {
-                  const balances = parseBalances(violation.action_taken || "");
-                  return (
-                    <TableRow key={violation.id}>
-                      <TableCell className="font-medium">{violation.username}</TableCell>
-                      <TableCell>
-                        <Badge variant="destructive">
-                          Duplicate Claim
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-red-500 font-bold">
-                        -{Number(violation.amount_affected || 0).toLocaleString()} CAMLY
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {balances.previous !== null ? balances.previous.toLocaleString() : "N/A"}
-                      </TableCell>
-                      <TableCell className="font-bold text-green-600">
-                        {balances.new !== null ? balances.new.toLocaleString() : "N/A"}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {violation.resolved_at 
-                          ? format(new Date(violation.resolved_at), "dd/MM/yyyy HH:mm")
-                          : "N/A"
-                        }
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {violations.map((violation) => (
+                  <TableRow key={violation.user_id}>
+                    <TableCell className="font-medium">{violation.username}</TableCell>
+                    <TableCell className="text-red-500 font-bold">
+                      -{violation.total_deducted.toLocaleString()} CAMLY
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-muted-foreground">
+                          {violation.web3_previous !== null 
+                            ? violation.web3_previous.toLocaleString() 
+                            : "N/A"}
+                        </span>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="font-bold text-green-600">
+                          {violation.web3_new !== null 
+                            ? violation.web3_new.toLocaleString() 
+                            : "N/A"}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-muted-foreground">
+                          {violation.profile_previous !== null 
+                            ? violation.profile_previous.toLocaleString() 
+                            : "N/A"}
+                        </span>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="font-bold text-green-600">
+                          {violation.profile_new !== null 
+                            ? violation.profile_new.toLocaleString() 
+                            : "N/A"}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {violation.last_corrected 
+                        ? format(new Date(violation.last_corrected), "dd/MM/yyyy HH:mm")
+                        : "N/A"
+                      }
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
@@ -157,19 +242,19 @@ export function ViolationAuditTable() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-sm text-muted-foreground">Total Users Corrected</p>
-                <p className="text-2xl font-bold">{violations.length}</p>
+                <p className="text-2xl font-bold">{uniqueUsers}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total CAMLY Deducted</p>
                 <p className="text-2xl font-bold text-red-500">
-                  -{violations.reduce((sum, v) => sum + Number(v.amount_affected || 0), 0).toLocaleString()}
+                  -{totalDeducted.toLocaleString()}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Last Correction</p>
                 <p className="text-lg font-medium">
-                  {violations[0]?.resolved_at 
-                    ? format(new Date(violations[0].resolved_at), "dd/MM/yyyy")
+                  {violations[0]?.last_corrected 
+                    ? format(new Date(violations[0].last_corrected), "dd/MM/yyyy HH:mm")
                     : "N/A"
                   }
                 </p>
