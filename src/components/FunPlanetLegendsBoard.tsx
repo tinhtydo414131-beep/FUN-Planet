@@ -77,7 +77,7 @@ export const FunPlanetLegendsBoard = () => {
       // Fetch top creators - users with most approved games
       const { data: gamesData } = await supabase
         .from("uploaded_games")
-        .select("user_id, profiles!inner(id, username, avatar_url)")
+        .select("user_id, profiles!uploaded_games_user_id_fkey(id, username, avatar_url)")
         .eq("status", "approved");
 
       if (gamesData) {
@@ -105,7 +105,7 @@ export const FunPlanetLegendsBoard = () => {
         // Get play counts
         const { data: playsData } = await supabase
           .from("game_plays")
-          .select("game_id, uploaded_games!inner(user_id)");
+          .select("game_id, uploaded_games!game_plays_game_id_fkey(user_id)");
 
         if (playsData) {
           for (const play of playsData) {
@@ -126,7 +126,7 @@ export const FunPlanetLegendsBoard = () => {
       // Fetch top donors
       const { data: donationsData } = await supabase
         .from("platform_donations")
-        .select("user_id, amount, is_anonymous, profiles!inner(id, username, avatar_url)")
+        .select("user_id, amount, is_anonymous, profiles!platform_donations_user_id_fkey(id, username, avatar_url)")
         .order("created_at", { ascending: false });
 
       if (donationsData) {
