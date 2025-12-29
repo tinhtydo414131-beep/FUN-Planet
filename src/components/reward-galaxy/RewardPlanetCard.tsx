@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Loader2, Heart, Sparkles, Check, CalendarCheck, Gift } from 'lucide-react';
+import { Loader2, Heart, Sparkles, Check, CalendarCheck, Gift, Star } from 'lucide-react';
 import { ReactNode } from 'react';
 
 interface RewardPlanetCardProps {
@@ -50,135 +50,185 @@ export const RewardPlanetCard = ({
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay, type: "spring", stiffness: 80, damping: 15 }}
-      whileHover={{ scale: 1.05, y: -8 }}
+      whileHover={{ scale: 1.06, y: -10 }}
       className="relative group"
     >
-      {/* Metallic gold gradient border */}
-      <div className="absolute -inset-[3px] rounded-[30px] bg-gradient-to-br from-[#FFD700] via-[#FFF8DC] via-[#FFD700] via-[#DAA520] to-[#FFD700] opacity-90 group-hover:opacity-100 transition-all duration-500" />
-      <div className="absolute -inset-[2px] rounded-[29px] bg-gradient-to-tr from-[#DAA520] via-[#FFD700] via-[#FFFACD] to-[#DAA520] opacity-80" />
+      {/* Metallic gold gradient border - thicker */}
+      <div className="absolute -inset-[4px] rounded-[32px] bg-gradient-to-br from-[#FFD700] via-[#FFF8DC] via-[#FFD700] via-[#DAA520] to-[#FFD700] opacity-90 group-hover:opacity-100 transition-all duration-500" />
+      <div className="absolute -inset-[3px] rounded-[31px] bg-gradient-to-tr from-[#DAA520] via-[#FFD700] via-[#FFFACD] to-[#DAA520] opacity-85" />
       
-      {/* Glow effect */}
-      <div className="absolute -inset-2 rounded-[32px] bg-gradient-to-r from-[#FFD700]/40 via-[#FFF8DC]/30 to-[#FFD700]/40 blur-md group-hover:blur-lg transition-all duration-500" />
+      {/* Glow effect - stronger */}
+      <motion.div 
+        className="absolute -inset-3 rounded-[36px] bg-gradient-to-r from-[#FFD700]/50 via-[#FFF8DC]/40 to-[#FFD700]/50 blur-xl group-hover:blur-2xl transition-all duration-500"
+        animate={{ opacity: [0.4, 0.7, 0.4] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
       
       {/* Card background with pastel gradient */}
-      <div className={`relative p-6 rounded-3xl bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-0 overflow-hidden h-full shadow-lg shadow-[#FFD700]/10`}>
+      <div className={`relative p-7 rounded-[28px] bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-0 overflow-hidden h-full shadow-xl shadow-[#FFD700]/15`}>
         {/* Sparkle effects on hover */}
         <motion.div
-          className="absolute top-4 left-4 w-2 h-2 rounded-full bg-[#FFD700]"
-          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+          className="absolute top-5 left-5 w-3 h-3 rounded-full bg-[#FFD700]"
+          animate={{ scale: [0, 1.2, 0], opacity: [0, 1, 0] }}
           transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+          style={{ boxShadow: '0 0 10px #FFD700' }}
         />
         <motion.div
-          className="absolute top-8 right-6 w-1.5 h-1.5 rounded-full bg-[#FF69B4]"
-          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+          className="absolute top-10 right-7 w-2 h-2 rounded-full bg-[#FF69B4]"
+          animate={{ scale: [0, 1.2, 0], opacity: [0, 1, 0] }}
           transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+          style={{ boxShadow: '0 0 8px #FF69B4' }}
         />
         <motion.div
-          className="absolute bottom-12 left-6 w-1.5 h-1.5 rounded-full bg-[#87CEEB]"
-          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+          className="absolute bottom-14 left-7 w-2 h-2 rounded-full bg-[#87CEEB]"
+          animate={{ scale: [0, 1.2, 0], opacity: [0, 1, 0] }}
           transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+          style={{ boxShadow: '0 0 8px #87CEEB' }}
         />
         
         {/* Special badge */}
         {isSpecial && (
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-4 right-4">
             <motion.div
-              animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+              animate={{ rotate: [0, 12, -12, 0], scale: [1, 1.15, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <span className="text-2xl drop-shadow-lg">👑</span>
+              <span className="text-3xl" style={{ filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.8))' }}>👑</span>
             </motion.div>
           </div>
         )}
 
         {/* Heart for referral */}
         {showHeart && (
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-4 right-4">
             <motion.div
-              animate={{ scale: [1, 1.3, 1] }}
+              animate={{ scale: [1, 1.35, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
             >
-              <Heart className="w-7 h-7 text-[#FF69B4] fill-[#FF69B4] drop-shadow-lg" />
+              <Heart className="w-9 h-9 text-[#FF69B4] fill-[#FF69B4]" style={{ filter: 'drop-shadow(0 0 15px #FF69B4)' }} />
             </motion.div>
           </div>
         )}
 
-        {/* Planet Icon with glow */}
+        {/* Planet Icon with glow - BIGGER */}
         <motion.div 
-          className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center mb-4 relative`}
+          className={`w-24 h-24 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center mb-5 relative`}
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          whileHover={{ scale: 1.15 }}
+          whileHover={{ scale: 1.18 }}
           style={{
-            boxShadow: `0 0 25px rgba(255, 215, 0, 0.4), 0 8px 30px rgba(0,0,0,0.15)`,
+            boxShadow: `0 0 35px rgba(255, 215, 0, 0.5), 0 10px 40px rgba(0,0,0,0.2)`,
           }}
         >
           {/* Inner glow */}
-          <div className="absolute inset-0 rounded-full bg-white/20 blur-sm" />
+          <div className="absolute inset-0 rounded-full bg-white/25 blur-sm" />
+          {/* Highlight overlay */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
           
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="text-white relative z-10 drop-shadow-lg"
+            className="text-white relative z-10"
+            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
           >
             {icon}
           </motion.div>
           
           {/* Sparkle on icon */}
           <motion.div
-            className="absolute -top-1 -right-1 w-4 h-4"
-            animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360] }}
+            className="absolute -top-2 -right-2 w-6 h-6"
+            animate={{ scale: [1, 1.4, 1], rotate: [0, 180, 360] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Sparkles className="w-4 h-4 text-[#FFD700] fill-[#FFD700]" />
+            <Sparkles className="w-6 h-6 text-[#FFD700] fill-[#FFD700]" style={{ filter: 'drop-shadow(0 0 8px #FFD700)' }} />
+          </motion.div>
+          
+          {/* Orbiting star */}
+          <motion.div
+            className="absolute -bottom-1 -left-1"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          >
+            <Star className="w-5 h-5 text-[#FF69B4] fill-[#FF69B4]" style={{ filter: 'drop-shadow(0 0 6px #FF69B4)' }} />
           </motion.div>
         </motion.div>
 
         {/* Content */}
         <div className="text-center">
-          <h3 className="text-xl font-fredoka font-bold text-[#4A4A4A] mb-1 drop-shadow-sm">{title}</h3>
-          <p className="text-sm text-[#6B6B6B] mb-3">{subtitle}</p>
+          {/* Title - gradient text, BIGGER */}
+          <h3 
+            className="text-2xl md:text-2xl font-fredoka font-bold mb-2"
+            style={{
+              background: 'linear-gradient(135deg, #7C3AED, #EC4899, #7C3AED)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+            }}
+          >
+            {title}
+          </h3>
+          <p className="text-base text-[#6B5B95] font-medium mb-4">{subtitle}</p>
           
-          {/* Amount with gold gradient and shimmer */}
-          <div className="flex items-center justify-center gap-1 mb-3 relative">
+          {/* Amount with gold gradient and shimmer - BIGGER */}
+          <div className="flex items-center justify-center gap-2 mb-4 relative">
             <motion.span 
-              className="text-3xl font-bold"
+              className="text-4xl md:text-5xl font-bold font-fredoka"
               style={{
                 background: 'linear-gradient(135deg, #FFD700, #FFA500, #FFD700)',
                 backgroundSize: '200% 200%',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                textShadow: '0 2px 10px rgba(255, 215, 0, 0.3)',
+                filter: 'drop-shadow(0 0 20px rgba(255, 215, 0, 0.5))',
               }}
               animate={{ 
-                scale: [1, 1.05, 1],
+                scale: [1, 1.06, 1],
                 backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
               }}
               transition={{ duration: 3, repeat: Infinity }}
             >
               {amount.toLocaleString()}
             </motion.span>
-            <span className="text-sm font-bold text-[#FFD700] drop-shadow-sm">CAMLY</span>
+            <span 
+              className="text-lg font-bold"
+              style={{
+                color: '#DAA520',
+                textShadow: '0 0 10px rgba(255,215,0,0.5)',
+              }}
+            >
+              CAMLY
+            </span>
           </div>
           
-          <p className="text-xs text-[#8B8B8B] mb-4">{description}</p>
+          {/* Description - white with shadow */}
+          <p 
+            className="text-sm mb-5 font-medium"
+            style={{
+              color: '#6B5B95',
+              textShadow: '0 1px 2px rgba(255,255,255,0.8)',
+            }}
+          >
+            {description}
+          </p>
 
-          {/* Claim Button - Pastel style */}
+          {/* Claim Button - Pastel style, BIGGER text */}
           <Button
             onClick={onClaim}
             disabled={isClaiming || (!canClaim && !buttonText)}
-            className={`w-full relative overflow-hidden rounded-2xl font-bold py-5 transition-all duration-300 ${
+            className={`w-full relative overflow-hidden rounded-2xl font-bold py-6 text-lg transition-all duration-300 ${
               canClaim || buttonText
-                ? 'bg-gradient-to-r from-[#98FB98] to-[#90EE90] hover:from-[#7CFC00] hover:to-[#98FB98] text-[#2E7D32] shadow-lg shadow-[#98FB98]/30 border-2 border-[#7CFC00]/30'
+                ? 'bg-gradient-to-r from-[#98FB98] to-[#90EE90] hover:from-[#7CFC00] hover:to-[#98FB98] text-[#1B5E20] shadow-lg shadow-[#98FB98]/40 border-2 border-[#7CFC00]/40'
                 : !canClaim && !buttonText
                 ? 'bg-gradient-to-r from-[#98FB98]/80 to-[#90EE90]/80 text-[#2E7D32] border-2 border-[#7CFC00]/30'
                 : 'bg-gradient-to-r from-[#DDA0DD] to-[#E6E6FA] text-[#6B5B95] border-2 border-[#DDA0DD]/30'
             }`}
+            style={{
+              boxShadow: canClaim || buttonText ? '0 6px 25px rgba(152, 251, 152, 0.4)' : undefined,
+            }}
           >
             {/* Shimmer effect */}
             {(canClaim || buttonText) && (
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
                 animate={{ x: ['-100%', '100%'] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
               />
@@ -187,17 +237,17 @@ export const RewardPlanetCard = ({
             <span className="relative flex items-center justify-center gap-2">
               {isClaiming ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-6 h-6 animate-spin" />
                   Đang xử lý...
                 </>
               ) : !canClaim && !buttonText ? (
                 <>
-                  <Check className="w-5 h-5" />
+                  <Check className="w-6 h-6" />
                   {isOneTime ? 'Đã nhận thưởng! ✨' : 'Đã nhận hôm nay! ✨'}
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5" />
+                  <Sparkles className="w-6 h-6" />
                   {buttonText || `Nhận ${amount.toLocaleString()} CAMLY`}
                 </>
               )}
@@ -207,12 +257,12 @@ export const RewardPlanetCard = ({
           {/* "Back Tomorrow" indicator - only show for daily rewards, not one-time rewards */}
           {!canClaim && !buttonText && !isOneTime && (
             <motion.div 
-              className="mt-3 flex items-center justify-center gap-1 text-xs text-[#9370DB]"
+              className="mt-4 flex items-center justify-center gap-2 text-base text-[#9370DB] font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <CalendarCheck className="w-4 h-4" />
+              <CalendarCheck className="w-5 h-5" />
               <span>Quay lại ngày mai nhé! 😊</span>
             </motion.div>
           )}
@@ -220,35 +270,36 @@ export const RewardPlanetCard = ({
           {/* One-time reward indicator */}
           {!canClaim && !buttonText && isOneTime && (
             <motion.div 
-              className="mt-3 flex items-center justify-center gap-1 text-xs text-[#98FB98]"
+              className="mt-4 flex items-center justify-center gap-2 text-base text-[#2E7D32] font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <Gift className="w-4 h-4" />
+              <Gift className="w-5 h-5" />
               <span>Phần thưởng chỉ nhận 1 lần 🎁</span>
             </motion.div>
           )}
         </div>
 
         {/* Floating particles on hover */}
-        {[...Array(4)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 rounded-full opacity-0 group-hover:opacity-100"
+            className="absolute w-3 h-3 rounded-full opacity-0 group-hover:opacity-100"
             style={{
-              left: `${15 + i * 25}%`,
-              bottom: '15%',
+              left: `${12 + i * 20}%`,
+              bottom: '12%',
               background: i % 2 === 0 ? '#FFD700' : '#FF69B4',
+              boxShadow: i % 2 === 0 ? '0 0 10px #FFD700' : '0 0 10px #FF69B4',
             }}
             animate={{
-              y: [0, -40, 0],
+              y: [0, -50, 0],
               opacity: [0, 1, 0],
             }}
             transition={{
               duration: 2,
               repeat: Infinity,
-              delay: i * 0.3,
+              delay: i * 0.25,
             }}
           />
         ))}
