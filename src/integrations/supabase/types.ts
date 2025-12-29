@@ -4601,6 +4601,14 @@ export type Database = {
         Args: { p_amount: number; p_source: string; p_user_id: string }
         Returns: number
       }
+      admin_reset_user_rewards: {
+        Args: {
+          p_admin_user_id: string
+          p_reason?: string
+          p_target_user_id: string
+        }
+        Returns: Json
+      }
       can_claim_daily_login: { Args: { p_user_id: string }; Returns: boolean }
       can_claim_reward: {
         Args: { p_transaction_type: string; p_user_id: string }
