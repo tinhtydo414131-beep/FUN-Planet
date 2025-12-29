@@ -4341,10 +4341,12 @@ export type Database = {
       web3_reward_transactions: {
         Row: {
           amount: number
+          claim_date: string | null
           claimed_to_wallet: boolean
           created_at: string
           description: string | null
           id: string
+          leaderboard_score: number | null
           metadata: Json | null
           reward_type: string
           status: string | null
@@ -4355,10 +4357,12 @@ export type Database = {
         }
         Insert: {
           amount: number
+          claim_date?: string | null
           claimed_to_wallet?: boolean
           created_at?: string
           description?: string | null
           id?: string
+          leaderboard_score?: number | null
           metadata?: Json | null
           reward_type: string
           status?: string | null
@@ -4369,10 +4373,12 @@ export type Database = {
         }
         Update: {
           amount?: number
+          claim_date?: string | null
           claimed_to_wallet?: boolean
           created_at?: string
           description?: string | null
           id?: string
+          leaderboard_score?: number | null
           metadata?: Json | null
           reward_type?: string
           status?: string | null
@@ -4600,6 +4606,10 @@ export type Database = {
         Args: { p_transaction_type: string; p_user_id: string }
         Returns: boolean
       }
+      check_duplicate_ranking_claim: {
+        Args: { p_score: number; p_user_id: string }
+        Returns: boolean
+      }
       check_file_hash_exists: {
         Args: { p_file_hash: string; p_user_id: string }
         Returns: {
@@ -4648,6 +4658,10 @@ export type Database = {
       claim_pending_rewards: {
         Args: { p_tx_hash: string; p_wallet_address: string }
         Returns: number
+      }
+      claim_ranking_reward_safe: {
+        Args: { p_amount: number; p_score: number; p_user_id: string }
+        Returns: Json
       }
       cleanup_duplicate_rewards: {
         Args: { p_transaction_type: string }
