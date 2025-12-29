@@ -231,12 +231,12 @@ const PodiumCard = ({
         )}
       </div>
       <div className="mb-0.5">{getRankBadge(rank)}</div>
-      <p className={`text-xs font-bold truncate max-w-[80px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+      <p className={`text-sm font-bold truncate max-w-[80px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
         {user.username}
       </p>
       <div className="flex items-center gap-1 mt-0.5">
-        <Gem className="h-3 w-3 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
-        <span className="text-xs font-extrabold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+        <Gem className="h-3.5 w-3.5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
+        <span className="text-sm font-extrabold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
           <AnimatedCounter value={user.wallet_balance || 0} duration={2000} />
         </span>
       </div>
@@ -782,13 +782,13 @@ export const FunPlanetUnifiedBoard = () => {
                     </motion.div>
 
                     <div className="relative z-10 flex-1 flex items-center justify-between min-w-0">
-                      <span className="text-sm font-bold text-yellow-200">{item.label}</span>
+                      <span className="text-base font-bold text-yellow-200">{item.label}</span>
                       <div className="flex items-center gap-1">
-                        {isCamly && <Gem className="h-3 w-3 text-rose-400" />}
-                        <span className="text-sm font-black text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+                        {isCamly && <Gem className="h-3.5 w-3.5 text-rose-400" />}
+                        <span className="text-base font-black text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
                           {statsLoading ? <span className="animate-pulse">...</span> : <AnimatedCounter value={item.value} />}
                         </span>
-                        <span className="text-xs text-white/80">{item.suffix}</span>
+                        <span className="text-sm text-white/80">{item.suffix}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -830,8 +830,8 @@ export const FunPlanetUnifiedBoard = () => {
                     : "bg-white/10 !text-yellow-400 hover:bg-white/20"
                 }`}
               >
-                <Gamepad2 className="h-3.5 w-3.5" />
-                <span className="text-xs font-bold">Creators</span>
+                <Gamepad2 className="h-4 w-4" />
+                <span className="text-sm font-bold">Creators</span>
               </button>
               <button
                 onClick={() => setActiveTab("donors")}
@@ -841,8 +841,8 @@ export const FunPlanetUnifiedBoard = () => {
                     : "bg-white/10 !text-yellow-400 hover:bg-white/20"
                 }`}
               >
-                <Gem className="h-3.5 w-3.5" />
-                <span className="text-xs font-bold">Donors</span>
+                <Gem className="h-4 w-4" />
+                <span className="text-sm font-bold">Donors</span>
               </button>
             </div>
 
@@ -870,7 +870,7 @@ export const FunPlanetUnifiedBoard = () => {
                             transition={{ delay: index * 0.05 }}
                             className="flex items-center gap-2 p-1.5 rounded-xl bg-white/10 hover:bg-white/15 transition-all cursor-pointer"
                           >
-                            <span className="text-sm w-6 text-center font-bold !text-white">{getRankIcon(rank)}</span>
+                            <span className="text-base w-6 text-center font-bold !text-white">{getRankIcon(rank)}</span>
                             <Avatar className="h-8 w-8 border border-white/30">
                               <AvatarImage src={creator.avatar_url || undefined} />
                               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500">
@@ -878,12 +878,12 @@ export const FunPlanetUnifiedBoard = () => {
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                              <div className="font-semibold truncate !text-white text-xs">{creator.username}</div>
-                              <div className={`text-[10px] ${badge.color}`}>{badge.label}</div>
+                              <div className="font-semibold truncate !text-white text-sm">{creator.username}</div>
+                              <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                             </div>
                             <div className="text-right">
-                              <div className="flex items-center gap-1 text-xs !text-white">
-                                <Gamepad2 className="h-3 w-3 text-teal-400" />
+                              <div className="flex items-center gap-1 text-sm !text-white">
+                                <Gamepad2 className="h-3.5 w-3.5 text-teal-400" />
                                 <span>{creator.games_count}</span>
                               </div>
                             </div>
@@ -912,10 +912,10 @@ export const FunPlanetUnifiedBoard = () => {
                             transition={{ delay: index * 0.05 }}
                             className="flex items-center gap-2 p-1.5 rounded-xl bg-white/10 hover:bg-white/15 transition-all cursor-pointer"
                           >
-                            <span className="text-sm w-6 text-center font-bold !text-white">{getRankIcon(rank)}</span>
+                            <span className="text-base w-6 text-center font-bold !text-white">{getRankIcon(rank)}</span>
                             <Avatar className="h-8 w-8 border border-white/30">
                               {donor.is_anonymous ? (
-                                <AvatarFallback className="bg-gradient-to-br from-gray-500 to-gray-700"><span className="text-sm">🎭</span></AvatarFallback>
+                                <AvatarFallback className="bg-gradient-to-br from-gray-500 to-gray-700"><span className="text-base">🎭</span></AvatarFallback>
                               ) : (
                                 <>
                                   <AvatarImage src={donor.avatar_url || undefined} />
@@ -924,12 +924,12 @@ export const FunPlanetUnifiedBoard = () => {
                               )}
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                              <div className="font-semibold !text-white truncate text-xs">{donor.username}</div>
-                              <div className={`text-[10px] ${badge.color}`}>{badge.label}</div>
+                              <div className="font-semibold !text-white truncate text-sm">{donor.username}</div>
+                              <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                             </div>
                             <div className="text-right">
-                              <div className="flex items-center gap-1 text-xs font-bold text-rose-300">
-                                <Gem className="h-3 w-3" />
+                              <div className="flex items-center gap-1 text-sm font-bold text-rose-300">
+                                <Gem className="h-3.5 w-3.5" />
                                 <span className="!text-white">{donor.total_donated.toLocaleString()}</span>
                               </div>
                             </div>
@@ -1066,25 +1066,25 @@ export const FunPlanetUnifiedBoard = () => {
                                 whileHover={{ scale: 1.02 }}
                                 className={`flex items-center gap-2 rounded-xl border p-2 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
                               >
-                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
-                                  <span className="text-xs font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">#{rank}</span>
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
+                                  <span className="text-sm font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">#{rank}</span>
                                 </div>
-                                <Avatar className="h-7 w-7 border border-white/40">
+                                <Avatar className="h-8 w-8 border border-white/40">
                                   <AvatarImage src={rankedUser.avatar_url || undefined} />
-                                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xs">
+                                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-sm">
                                     {rankedUser.username?.charAt(0).toUpperCase() || "?"}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
-                                  <p className={`truncate text-xs font-bold ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+                                  <p className={`truncate text-sm font-bold ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
                                     {rankedUser.username}
-                                    {isCurrentUser && <span className="ml-1 text-[10px] text-yellow-300/80">(You)</span>}
+                                    {isCurrentUser && <span className="ml-1 text-xs text-yellow-300/80">(You)</span>}
                                   </p>
                                   <ProgressBar value={rankedUser.wallet_balance || 0} maxValue={maxBalance} />
                                 </div>
                                 <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-2 py-1 border border-yellow-400/70">
-                                  <Gem className="h-3 w-3 text-white" />
-                                  <span className="text-xs font-extrabold text-white">
+                                  <Gem className="h-3.5 w-3.5 text-white" />
+                                  <span className="text-sm font-extrabold text-white">
                                     <AnimatedCounter value={rankedUser.wallet_balance || 0} />
                                   </span>
                                 </div>
