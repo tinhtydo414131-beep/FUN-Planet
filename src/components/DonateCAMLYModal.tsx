@@ -151,7 +151,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
   if (!user) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 border border-slate-600/50 text-white max-w-md p-0">
+        <DialogContent className="bg-gradient-to-br from-pink-600 via-purple-700 to-orange-500 border border-white/20 text-white max-w-md p-0">
           <div className="p-6">
             <DialogHeader>
               <DialogTitle className="text-center text-xl flex items-center justify-center gap-2">
@@ -171,7 +171,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 border border-slate-600/50 text-white max-w-md overflow-hidden p-0">
+      <DialogContent className="bg-gradient-to-br from-pink-600 via-purple-700 to-orange-500 border border-white/20 text-white max-w-md overflow-hidden p-0">
         <AnimatePresence mode="wait">
           {showSuccess ? (
             <motion.div
