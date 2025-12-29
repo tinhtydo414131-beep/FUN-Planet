@@ -14,41 +14,44 @@ export const CosmicBackground = () => {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Base gradient - Pale sky blue to warm rose gold */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#87CEEB] via-[#FFDAB9] to-[#FFEC8B]" />
+      {/* Base gradient - Purple to Pink to Orange (matching reference) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900 via-purple-700 to-pink-500" />
+      
+      {/* Secondary gradient overlay for orange tint */}
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-purple-600/30 to-orange-400/40" />
       
       {/* Strong glassmorphism blur overlay */}
-      <div className="absolute inset-0 backdrop-blur-[15px] bg-white/10" />
+      <div className="absolute inset-0 backdrop-blur-[8px] bg-black/10" />
       
-      {/* Gold ambient glow */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#FFD700] rounded-full blur-[150px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[#FFAA00] rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-[#FFEC8B] rounded-full blur-[100px]" />
+      {/* Purple/Pink ambient glow */}
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-500 rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-pink-500 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-orange-400 rounded-full blur-[100px]" />
       </div>
       
-      {/* Sparkling gold particles */}
-      {[...Array(60)].map((_, i) => (
+      {/* Sparkling white/gold star particles */}
+      {[...Array(80)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
-            width: `${2 + Math.random() * 4}px`,
-            height: `${2 + Math.random() * 4}px`,
-            background: i % 4 === 0 
-              ? 'linear-gradient(135deg, #FFD700, #FFAA00)' 
-              : i % 4 === 1 
-              ? '#FFEC8B' 
-              : i % 4 === 2
-              ? '#FFD700'
-              : '#FFF8DC',
-            boxShadow: `0 0 ${8 + Math.random() * 15}px #FFD700`,
+            width: `${1 + Math.random() * 3}px`,
+            height: `${1 + Math.random() * 3}px`,
+            background: i % 3 === 0 
+              ? '#FFD700' 
+              : i % 3 === 1 
+              ? '#FFFFFF' 
+              : '#FFEC8B',
+            boxShadow: i % 3 === 0 
+              ? '0 0 8px #FFD700, 0 0 16px #FFD700' 
+              : '0 0 6px rgba(255,255,255,0.8)',
           }}
           animate={{
-            opacity: [0.2, 1, 0.2],
-            scale: [1, 1.8, 1],
+            opacity: [0.3, 1, 0.3],
+            scale: [1, 1.5, 1],
           }}
           transition={{
             duration: 1.5 + Math.random() * 2,
@@ -142,35 +145,37 @@ export const CosmicBackground = () => {
         </motion.div>
       ))}
       
-      {/* Large decorative gold planet - bottom right */}
+      {/* Large decorative planet - bottom right with purple tint */}
       <motion.div
-        className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-60"
+        className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-50"
         style={{
-          background: 'radial-gradient(circle at 30% 30%, #FFF8DC, #FFD700, #B8860B)',
-          boxShadow: '0 0 60px rgba(255, 215, 0, 0.4), inset 0 -25px 50px rgba(184, 134, 11, 0.5)',
+          background: 'radial-gradient(circle at 30% 30%, #E9D5FF, #A855F7, #7E22CE)',
+          boxShadow: '0 0 60px rgba(168, 85, 247, 0.4), inset 0 -25px 50px rgba(126, 34, 206, 0.5)',
         }}
         animate={{ rotate: 360 }}
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
       >
-        {/* Planet ring - gold */}
+        {/* Planet ring - purple/gold */}
         <div 
-          className="absolute inset-[-15px] rounded-full border-4 border-[#FFD700]/40"
+          className="absolute inset-[-15px] rounded-full border-4 border-purple-400/40"
           style={{ 
             transform: 'rotateX(75deg)',
-            boxShadow: '0 0 15px rgba(255, 215, 0, 0.2)',
+            boxShadow: '0 0 15px rgba(168, 85, 247, 0.3)',
           }}
         />
       </motion.div>
       
-      {/* Ambient gold light rays */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-15">
+      {/* Ambient light rays - purple/pink tones */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-10">
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={`ray-${i}`}
             className="absolute top-0 left-1/2 w-2 origin-top"
             style={{
               height: '100vh',
-              background: 'linear-gradient(to bottom, #FFD700, transparent)',
+              background: i % 2 === 0 
+                ? 'linear-gradient(to bottom, #A855F7, transparent)' 
+                : 'linear-gradient(to bottom, #FFD700, transparent)',
               transform: `rotate(${i * 60}deg) translateX(-50%)`,
               filter: 'blur(8px)',
             }}

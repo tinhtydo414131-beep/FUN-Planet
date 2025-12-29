@@ -24,32 +24,25 @@ export const WalletStatusCard = ({
     >
       {/* Outer glow */}
       <div className="relative">
-        <div className="absolute -inset-1 rounded-[36px] bg-gradient-to-r from-[#FFD700]/50 via-[#FFEC8B]/30 to-[#FFD700]/50 blur-xl" />
+        <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-r from-yellow-400/40 via-orange-300/30 to-yellow-400/40 blur-xl" />
         
-        {/* Metallic gold border - thick 3px */}
-        <div className="absolute -inset-[3px] rounded-[34px] bg-gradient-to-br from-[#FFD700] via-[#FFF8DC] via-[#FFD700] via-[#DAA520] to-[#FFD700]" />
-        <div className="absolute -inset-[2px] rounded-[33px] bg-gradient-to-tr from-[#DAA520] via-[#FFEC8B] via-[#FFD700] to-[#B8860B]" />
+        {/* Metallic gold border - thick 4px */}
+        <div className="absolute -inset-[4px] rounded-[26px] bg-gradient-to-br from-yellow-500 via-yellow-300 via-amber-400 via-yellow-600 to-yellow-400" />
+        <div className="absolute -inset-[3px] rounded-[25px] bg-gradient-to-tr from-amber-600 via-yellow-200 via-yellow-400 to-amber-500" />
         
-        {/* Glass background */}
-        <div className="relative p-6 rounded-[32px] backdrop-blur-[20px] overflow-hidden"
+        {/* Cream/Yellow background (matching reference image) */}
+        <div 
+          className="relative p-6 rounded-[24px] overflow-hidden"
           style={{
-            background: 'rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.3)',
+            background: 'linear-gradient(135deg, #FEF3C7 0%, #FEF9C3 30%, #FFFBEB 60%, #FED7AA 100%)',
+            boxShadow: '0 8px 32px rgba(251, 191, 36, 0.3), inset 0 2px 4px rgba(255,255,255,0.8)',
           }}
         >
-          {/* Metallic shine overlay */}
+          {/* Subtle shine overlay */}
           <div 
-            className="absolute inset-0 opacity-30 pointer-events-none"
+            className="absolute inset-0 opacity-50 pointer-events-none"
             style={{
-              background: 'linear-gradient(135deg, transparent 40%, rgba(255,248,220,0.8) 50%, transparent 60%)',
-            }}
-          />
-          
-          {/* Bottom reflection */}
-          <div 
-            className="absolute bottom-0 left-0 right-0 h-1/3 opacity-20 pointer-events-none"
-            style={{
-              background: 'linear-gradient(to top, rgba(255,215,0,0.3), transparent)',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.3) 100%)',
             }}
           />
           
@@ -62,68 +55,55 @@ export const WalletStatusCard = ({
                 scale: { duration: 2, repeat: Infinity }
               }}
             >
-              <Sparkles className="w-8 h-8 text-[#FFD700] drop-shadow-[0_0_10px_#FFD700]" />
+              <Sparkles className="w-7 h-7 text-amber-500 drop-shadow-md" />
             </motion.div>
           </div>
           
-          <div className="absolute top-6 left-6">
+          <div className="absolute bottom-4 left-4">
             <motion.div
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <Sparkles className="w-5 h-5 text-[#FFEC8B] drop-shadow-[0_0_8px_#FFD700]" />
+              <Sparkles className="w-5 h-5 text-yellow-500 drop-shadow-md" />
             </motion.div>
           </div>
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Wallet Status */}
             <div className="flex items-center gap-4">
-              {/* 3D Gold icon */}
+              {/* Circular icon with checkmark or wallet */}
               <motion.div 
-                className="w-20 h-20 rounded-2xl flex items-center justify-center relative"
+                className="w-16 h-16 rounded-full flex items-center justify-center relative"
                 style={{
                   background: isConnected 
-                    ? 'linear-gradient(135deg, #FFD700, #DAA520, #B8860B)'
-                    : 'linear-gradient(135deg, #C0C0C0, #A9A9A9, #808080)',
+                    ? 'linear-gradient(135deg, #22C55E 0%, #16A34A 50%, #15803D 100%)'
+                    : 'linear-gradient(135deg, #9333EA 0%, #7E22CE 50%, #6B21A8 100%)',
                   boxShadow: isConnected
-                    ? '0 8px 25px rgba(255, 215, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.2)'
-                    : '0 8px 20px rgba(128, 128, 128, 0.3)',
+                    ? '0 6px 20px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(255,255,255,0.3)'
+                    : '0 6px 20px rgba(147, 51, 234, 0.4), inset 0 2px 4px rgba(255,255,255,0.3)',
                 }}
                 whileHover={{ scale: 1.05 }}
               >
                 {/* Reflection on icon */}
                 <div 
-                  className="absolute inset-0 rounded-2xl opacity-50"
+                  className="absolute inset-0 rounded-full opacity-40"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%)',
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 50%)',
                   }}
                 />
                 {isConnected ? (
-                  <Check className="w-10 h-10 text-white drop-shadow-lg" />
+                  <Check className="w-8 h-8 text-white drop-shadow-md" />
                 ) : (
-                  <Wallet className="w-10 h-10 text-white drop-shadow-lg" />
+                  <Wallet className="w-8 h-8 text-white drop-shadow-md" />
                 )}
               </motion.div>
               
               <div>
-                <p 
-                  className="text-xl font-bold"
-                  style={{
-                    color: '#FFFFFF',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.3)',
-                  }}
-                >
+                <p className="text-lg font-bold text-amber-800">
                   {isConnected ? '✨ Ví Ánh Sáng Của Con' : 'Kết nối ví để nhận thưởng'}
                 </p>
                 {isConnected && walletAddress ? (
-                  <p 
-                    className="text-2xl font-mono font-extrabold tracking-wider"
-                    style={{
-                      color: '#FFFFFF',
-                      textShadow: '0 0 20px #FFD700, 0 2px 6px rgba(0,0,0,0.8), 0 0 40px rgba(255,215,0,0.5)',
-                      WebkitTextStroke: '0.5px rgba(255,215,0,0.8)',
-                    }}
-                  >
+                  <p className="text-xl font-mono font-bold text-amber-700 tracking-wide">
                     {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                   </p>
                 ) : (
@@ -132,8 +112,8 @@ export const WalletStatusCard = ({
                       onClick={onConnect}
                       className="mt-2 font-bold text-white"
                       style={{
-                        background: 'linear-gradient(135deg, #FFD700, #FFAA00, #DAA520)',
-                        boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4)',
+                        background: 'linear-gradient(135deg, #9333EA, #7E22CE, #6B21A8)',
+                        boxShadow: '0 4px 15px rgba(147, 51, 234, 0.4)',
                       }}
                     >
                       <Wallet className="w-5 h-5 mr-2" />
@@ -147,35 +127,35 @@ export const WalletStatusCard = ({
             {/* CAMLY Balance */}
             {isConnected && (
               <motion.div 
-                className="flex items-center gap-4 p-5 rounded-2xl relative overflow-hidden"
+                className="flex items-center gap-4 p-4 rounded-2xl relative overflow-hidden"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.5 }}
                 style={{
-                  background: 'rgba(255,215,0,0.15)',
-                  backdropFilter: 'blur(10px)',
-                  border: '2px solid rgba(255, 215, 0, 0.5)',
-                  boxShadow: '0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.1)',
+                  background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.3))',
+                  border: '2px solid rgba(251, 191, 36, 0.6)',
+                  boxShadow: '0 4px 20px rgba(251, 191, 36, 0.2)',
                 }}
               >
                 {/* Gold shimmer */}
                 <motion.div
                   className="absolute inset-0 opacity-30"
                   animate={{
-                    background: [
-                      'linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.4) 50%, transparent 100%)',
-                      'linear-gradient(90deg, transparent 100%, rgba(255,215,0,0.4) 50%, transparent 0%)',
-                    ],
+                    x: ['-100%', '200%'],
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                  style={{
+                    background: 'linear-gradient(90deg, transparent, rgba(251,191,36,0.5), transparent)',
+                    width: '50%',
+                  }}
                 />
                 
-                {/* 3D Gold coin icon */}
+                {/* OD-style icon box */}
                 <div 
-                  className="w-16 h-16 rounded-xl flex items-center justify-center relative"
+                  className="w-14 h-14 rounded-xl flex items-center justify-center relative"
                   style={{
-                    background: 'linear-gradient(135deg, #FFD700, #DAA520, #B8860B)',
-                    boxShadow: '0 6px 20px rgba(255, 215, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.4)',
+                    background: 'linear-gradient(135deg, #F59E0B, #D97706, #B45309)',
+                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4), inset 0 2px 4px rgba(255,255,255,0.3)',
                   }}
                 >
                   <div 
@@ -184,27 +164,20 @@ export const WalletStatusCard = ({
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%)',
                     }}
                   />
-                  <Coins className="w-9 h-9 text-white drop-shadow-lg relative z-10" />
+                  <Coins className="w-8 h-8 text-white drop-shadow-md relative z-10" />
                 </div>
                 
                 <div className="relative z-10">
-                  <p 
-                    className="text-lg font-bold"
-                    style={{
-                      color: '#FFFFFF',
-                      textShadow: '0 1px 3px rgba(0,0,0,0.5)',
-                    }}
-                  >
+                  <p className="text-sm font-bold text-amber-800">
                     Số dư CAMLY
                   </p>
                   <p 
-                    className="text-4xl font-bold font-fredoka"
+                    className="text-3xl font-bold font-fredoka text-amber-600"
                     style={{
-                      color: '#FFD700',
-                      textShadow: '0 0 20px #FFD700, 0 2px 4px rgba(0,0,0,0.5)',
+                      textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     }}
                   >
-                    {camlyBalance.toLocaleString()} <span className="text-lg">CAMLY</span>
+                    {camlyBalance.toLocaleString()} <span className="text-base">CAMLY</span>
                   </p>
                 </div>
               </motion.div>
