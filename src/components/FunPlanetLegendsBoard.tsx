@@ -453,15 +453,15 @@ export const FunPlanetLegendsBoard = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-white truncate">{creator.username}</div>
+                            <div className="font-semibold truncate" style={{ color: 'white' }}>{creator.username}</div>
                             <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                           </div>
                           <div className="text-right">
-                            <div className="flex items-center gap-1 text-sm text-white">
+                            <div className="flex items-center gap-1 text-sm" style={{ color: 'white' }}>
                               <Gamepad2 className="h-3 w-3 text-teal-400" />
                               <span>{creator.games_count}</span>
                             </div>
-                            <div className="flex items-center gap-1 text-xs text-white/60">
+                            <div className="flex items-center gap-1 text-xs" style={{ color: 'white' }}>
                               <Play className="h-3 w-3" />
                               <span>{creator.total_plays}</span>
                             </div>
