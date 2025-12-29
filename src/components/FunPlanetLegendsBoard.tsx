@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, Gamepad2, Gem, Play, Heart, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,12 +69,10 @@ export const FunPlanetLegendsBoard = () => {
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDonateModal, setShowDonateModal] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+  const [hasUpdate, setHasUpdate] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       // Fetch top creators - users with most approved games
       const { data: gamesData } = await supabase
@@ -158,12 +156,57 @@ export const FunPlanetLegendsBoard = () => {
             .slice(0, 5)
         );
       }
+      
+      // Flash update indicator
+      setHasUpdate(true);
+      setTimeout(() => setHasUpdate(false), 1000);
     } catch (error) {
       console.error("Error fetching legends data:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Real-time subscriptions
+  useEffect(() => {
+    fetchData();
+
+    // Subscribe to uploaded_games changes
+    const gamesChannel = supabase
+      .channel('legends_games')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'uploaded_games' },
+        () => fetchData()
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') setIsLive(true);
+      });
+
+    // Subscribe to game_plays changes
+    const playsChannel = supabase
+      .channel('legends_plays')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'game_plays' },
+        () => fetchData()
+      )
+      .subscribe();
+
+    // Subscribe to platform_donations changes
+    const donationsChannel = supabase
+      .channel('legends_donations')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'platform_donations' },
+        () => fetchData()
+      )
+      .subscribe();
+
+    return () => {
+      setIsLive(false);
+      supabase.removeChannel(gamesChannel);
+      supabase.removeChannel(playsChannel);
+      supabase.removeChannel(donationsChannel);
+    };
+  }, [fetchData]);
 
   return (
     <>
@@ -273,6 +316,37 @@ export const FunPlanetLegendsBoard = () => {
           {/* Glow effects */}
           <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-purple-500/40 blur-3xl" />
           <div className="absolute -bottom-10 -left-10 h-24 w-24 rounded-full bg-blue-500/40 blur-3xl" />
+
+          {/* Live Indicator */}
+          {isLive && (
+            <motion.div 
+              className="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/20 border border-green-500/50"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <motion.div
+                className="w-2 h-2 rounded-full bg-green-400"
+                animate={{ opacity: [1, 0.4, 1], scale: [1, 0.8, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+              <span className="text-[10px] text-green-300 font-medium">LIVE</span>
+            </motion.div>
+          )}
+
+          {/* Update Flash */}
+          <AnimatePresence>
+            {hasUpdate && (
+              <motion.div 
+                className="absolute inset-0 z-30 pointer-events-none rounded-3xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{
+                  background: "radial-gradient(circle at center, rgba(74, 222, 128, 0.2) 0%, transparent 70%)",
+                }}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Header */}
           <div className="relative mb-3 flex items-center justify-center gap-2 z-10">
@@ -445,16 +519,15 @@ export const FunPlanetLegendsBoard = () => {
                             )}
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-white truncate">
-                              {donor.is_anonymous ? "Ẩn danh" : donor.username}
-                            </div>
+                            <div className="font-semibold text-white truncate">{donor.username}</div>
                             <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                           </div>
                           <div className="text-right">
-                            <div className="flex items-center gap-1 text-sm text-rose-300 font-semibold">
+                            <div className="flex items-center gap-1 text-sm font-bold text-rose-300">
                               <Gem className="h-3 w-3" />
                               <span>{donor.total_donated.toLocaleString()}</span>
                             </div>
+                            <div className="text-[10px] text-white/50">CAMLY</div>
                           </div>
                         </motion.div>
                       );
@@ -466,29 +539,30 @@ export const FunPlanetLegendsBoard = () => {
           </div>
 
           {/* Donate Button */}
-          <div className="relative z-10 mt-4">
+          <div className="relative z-10 mt-3">
             <Button
               onClick={() => setShowDonateModal(true)}
-              className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 text-white font-bold py-3 shadow-lg shadow-rose-500/30 transition-all hover:scale-[1.02]"
+              className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold py-2 rounded-xl shadow-lg shadow-rose-500/30 transition-all hover:shadow-rose-500/50"
             >
-              <Heart className="mr-2 h-5 w-5 animate-pulse" />
-              💎 Ủng hộ FUN Planet
+              <Heart className="h-4 w-4 mr-2" />
+              Donate CAMLY
             </Button>
           </div>
         </motion.div>
-
-        <style>{`
-          @keyframes shimmer {
-            0% { background-position: 200% 50%; }
-            100% { background-position: -200% 50%; }
-          }
-        `}</style>
       </div>
 
+      {/* Shimmer keyframes */}
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: 200% 50%; }
+          100% { background-position: -200% 50%; }
+        }
+      `}</style>
+
+      {/* Donate Modal */}
       <DonateCAMLYModal 
         open={showDonateModal} 
-        onOpenChange={setShowDonateModal}
-        onSuccess={fetchData}
+        onOpenChange={setShowDonateModal} 
       />
     </>
   );
