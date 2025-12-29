@@ -155,7 +155,7 @@ export const Hero = () => {
         }} transition={{
           delay: 0.6
         }} className="pt-6 w-full max-w-6xl mx-auto">
-            <div className="grid gap-4 md:grid-cols-2 items-start">
+            <div className="grid gap-4 md:grid-cols-2 items-stretch">
               {/* Left Column: Honor Board + Legends Board */}
               <div className="flex flex-col gap-4">
                 <FunPlanetHonorBoard />
