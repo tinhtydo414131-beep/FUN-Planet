@@ -386,7 +386,7 @@ export const FunPlanetLegendsBoard = () => {
               }`}
             >
               <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
-              <span className={`text-sm ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
+              <span className={`text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
             </button>
             <button
               onClick={() => setActiveTab("donors")}
@@ -397,7 +397,7 @@ export const FunPlanetLegendsBoard = () => {
               }`}
             >
               <Gem className={`h-4 w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
-              <span className={`text-sm ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Top Donors</span>
+              <span className={`text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Top Donors</span>
             </button>
           </div>
 
