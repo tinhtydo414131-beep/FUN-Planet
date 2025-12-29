@@ -513,7 +513,7 @@ export const FunPlanetTopRanking = () => {
       <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-transparent via-white/5 to-white/8 pointer-events-none z-[1]" />
 
       {/* Enhanced Golden Glow effect */}
-      <div className="absolute inset-0 rounded-3xl shadow-[0_0_60px_rgba(255,215,0,0.6),0_0_100px_rgba(255,165,0,0.3)] pointer-events-none z-[1]" />
+      <div className="absolute inset-0 rounded-3xl shadow-[0_0_20px_rgba(255,215,0,0.3),0_0_40px_rgba(255,165,0,0.15)] pointer-events-none z-[1]" />
 
       {/* Inner Border Highlight - Viền sáng bên trong tạo chiều sâu 3D */}
       <div 
