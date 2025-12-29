@@ -47,8 +47,8 @@ const AnimatedCounter = ({ value, duration = 1500 }: { value: number; duration?:
 
   return (
     <span 
-      className="!text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" 
-      style={{ textShadow: '0 0 8px rgba(255,255,255,0.9)' }}
+      className="!text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]" 
+      style={{ textShadow: '0 0 8px rgba(250,204,21,0.9)' }}
     >
       {count.toLocaleString()}
     </span>
