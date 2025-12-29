@@ -151,14 +151,18 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
   if (!user) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 border-2 border-yellow-500/50 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl">
-              💎 Ủng hộ FUN Planet
-            </DialogTitle>
-          </DialogHeader>
-          <div className="text-center py-8">
-            <p className="text-white/70">Vui lòng đăng nhập để ủng hộ!</p>
+        <DialogContent className="bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 border border-slate-600/50 text-white max-w-md p-0">
+          <div className="p-6">
+            <DialogHeader>
+              <DialogTitle className="text-center text-xl flex items-center justify-center gap-2">
+                <span className="text-pink-400">💎</span>
+                Ủng hộ FUN Planet
+                <span className="text-pink-400">💎</span>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="text-center py-8">
+              <p className="text-white/70">Vui lòng đăng nhập để ủng hộ!</p>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -167,7 +171,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 border-2 border-yellow-500/50 text-white max-w-md overflow-hidden">
+      <DialogContent className="bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 border border-slate-600/50 text-white max-w-md overflow-hidden p-0">
         <AnimatePresence mode="wait">
           {showSuccess ? (
             <motion.div
@@ -175,7 +179,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="py-8 text-center relative"
+              className="py-8 px-6 text-center relative"
             >
               {/* Flying diamonds */}
               {[...Array(12)].map((_, i) => (
@@ -237,6 +241,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
+              className="p-6"
             >
               <DialogHeader>
                 <DialogTitle className="text-center text-xl flex items-center justify-center gap-2">
@@ -257,7 +262,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   </div>
                 </div>
 
-                <div className="bg-white/10 rounded-xl p-4 text-center">
+                <div className="bg-slate-800/80 rounded-xl p-4 text-center border border-slate-600/50">
                   <p className="text-sm text-white/70">Số dư sau khi ủng hộ:</p>
                   <p className="text-xl font-semibold text-white">
                     {(balance - numericAmount).toLocaleString()} CAMLY
@@ -275,7 +280,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   <Button
                     variant="outline"
                     onClick={() => setShowConfirm(false)}
-                    className="flex-1 border-white/30 text-white hover:bg-white/10"
+                    className="flex-1 border-slate-500/50 text-white hover:bg-slate-700/50 bg-slate-800/50"
                     disabled={loading}
                   >
                     Quay lại
@@ -283,7 +288,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   <Button
                     onClick={handleDonate}
                     disabled={loading}
-                    className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600"
+                    className="flex-1 bg-gradient-to-r from-pink-500 via-rose-400 to-pink-500 hover:from-pink-600 hover:via-rose-500 hover:to-pink-600"
                   >
                     {loading ? (
                       <span className="animate-pulse">Đang xử lý...</span>
@@ -300,32 +305,42 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
+              className="p-6"
             >
-              <DialogHeader>
+              {/* Header with close button */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-8" /> {/* Spacer */}
                 <DialogTitle className="text-center text-xl flex items-center justify-center gap-2">
-                  <Gem className="h-6 w-6 text-rose-400" />
-                  Ủng hộ FUN Planet
-                  <Gem className="h-6 w-6 text-rose-400" />
+                  <span className="text-pink-400">💎</span>
+                  <span className="text-white font-bold">Ủng hộ FUN Planet</span>
+                  <span className="text-pink-400">💎</span>
                 </DialogTitle>
-              </DialogHeader>
+                <button
+                  onClick={handleClose}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-700/50 hover:bg-slate-600/50 transition-colors"
+                >
+                  <X className="h-4 w-4 text-white/70" />
+                </button>
+              </div>
 
-              <div className="space-y-4 py-4">
-                {/* Balance display */}
-                <div className="flex items-center justify-between p-3 bg-white/10 rounded-xl">
-                  <span className="text-white/70">Số dư hiện tại:</span>
-                  <div className="flex items-center gap-1">
-                    <Gem className="h-4 w-4 text-rose-400" />
+              <div className="space-y-4">
+                {/* Balance display - improved card */}
+                <div className="flex items-center justify-between p-3 bg-slate-800/80 rounded-xl border border-slate-600/50">
+                  <span className="text-white/80 font-medium">Số dư hiện tại:</span>
+                  <div className="flex items-center gap-1.5 bg-slate-700/80 px-3 py-1.5 rounded-lg">
+                    <span className="text-pink-400">💎</span>
                     <span className="font-bold text-white">
                       {balance.toLocaleString()}
                     </span>
-                    <span className="text-sm text-white/70">CAMLY</span>
+                    <span className="text-white/80 text-sm">CAMLY</span>
                   </div>
                 </div>
 
-                {/* Amount input */}
+                {/* Amount input - with CAMLY icon */}
                 <div>
-                  <label className="text-sm text-white/70 mb-1 block">
-                    💎 Số CAMLY muốn ủng hộ
+                  <label className="text-sm text-white/80 mb-2 flex items-center gap-1.5">
+                    <span className="text-pink-400">💎</span>
+                    Số CAMLY muốn ủng hộ
                   </label>
                   <div className="relative">
                     <Input
@@ -333,13 +348,14 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="Nhập số lượng..."
-                      className="bg-white/10 border-white/30 text-white placeholder:text-white/40 pr-16"
+                      className="bg-slate-800/80 border-slate-600/50 text-white placeholder:text-white/40 pr-24 h-12 rounded-xl focus:border-pink-500/50 focus:ring-pink-500/20"
                       min={MIN_AMOUNT}
                       max={balance}
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-white/50">
-                      CAMLY
-                    </span>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-white/70">
+                      <span className="text-pink-400 text-sm">💎</span>
+                      <span className="text-sm font-medium">CAMLY</span>
+                    </div>
                   </div>
                   {amount && numericAmount < MIN_AMOUNT && (
                     <p className="text-xs text-rose-400 mt-1">
@@ -353,18 +369,20 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   )}
                 </div>
 
-                {/* Quick amounts */}
+                {/* Quick amounts - simplified buttons */}
                 <div className="flex flex-wrap gap-2">
                   {QUICK_AMOUNTS.map((value) => (
                     <button
                       key={value}
                       onClick={() => handleQuickAmount(value)}
                       disabled={value > balance}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
                         value <= balance
-                          ? "bg-white/10 hover:bg-white/20 text-white"
-                          : "bg-white/5 text-white/30 cursor-not-allowed"
-                      } ${numericAmount === value ? "ring-2 ring-rose-400" : ""}`}
+                          ? numericAmount === value
+                            ? "bg-pink-500/30 border-pink-500/50 text-pink-300"
+                            : "bg-slate-700/60 hover:bg-slate-600/80 border-slate-500/30 text-white/90"
+                          : "bg-slate-800/30 border-slate-600/20 text-white/30 cursor-not-allowed"
+                      }`}
                     >
                       {value >= 1000000 
                         ? `${value / 1000000}M` 
@@ -373,47 +391,53 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   ))}
                 </div>
 
-                {/* Message */}
+                {/* Message - improved textarea */}
                 <div>
-                  <label className="text-sm text-white/70 mb-1 block">
-                    ✉️ Lời nhắn (tùy chọn)
+                  <label className="text-sm text-white/80 mb-2 flex items-center gap-1.5">
+                    <span>✉️</span>
+                    Lời nhắn (tùy chọn)
                   </label>
-                  <Textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value.slice(0, 200))}
-                    placeholder="Gửi lời nhắn đến FUN Planet..."
-                    className="bg-white/10 border-white/30 text-white placeholder:text-white/40 resize-none"
-                    rows={2}
-                  />
-                  <p className="text-xs text-white/40 text-right mt-1">
-                    {message.length}/200
-                  </p>
+                  <div className="relative">
+                    <Textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value.slice(0, 200))}
+                      placeholder="Gửi lời nhắn đến FUN Planet..."
+                      className="bg-slate-800/80 border-slate-600/50 text-white placeholder:text-white/40 resize-none rounded-xl focus:border-pink-500/50 focus:ring-pink-500/20 pb-6"
+                      rows={3}
+                    />
+                    <p className="absolute bottom-2 right-3 text-xs text-white/40">
+                      {message.length}/200
+                    </p>
+                  </div>
                 </div>
 
-                {/* Anonymous checkbox */}
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="anonymous"
-                    checked={isAnonymous}
-                    onCheckedChange={(checked) => setIsAnonymous(!!checked)}
-                    className="border-white/30 data-[state=checked]:bg-rose-500"
-                  />
-                  <label
-                    htmlFor="anonymous"
-                    className="text-sm text-white/70 cursor-pointer"
-                  >
+                {/* Anonymous option - radio style */}
+                <div 
+                  className="flex items-center gap-3 cursor-pointer group"
+                  onClick={() => setIsAnonymous(!isAnonymous)}
+                >
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                    isAnonymous 
+                      ? "border-pink-500 bg-pink-500" 
+                      : "border-slate-500 bg-transparent group-hover:border-slate-400"
+                  }`}>
+                    {isAnonymous && (
+                      <div className="w-2 h-2 rounded-full bg-white" />
+                    )}
+                  </div>
+                  <span className="text-sm text-white/80">
                     Ủng hộ ẩn danh
-                  </label>
+                  </span>
                 </div>
 
-                {/* Donate button */}
+                {/* Donate button - gradient with glow */}
                 <Button
                   onClick={() => setShowConfirm(true)}
                   disabled={!isValidAmount}
-                  className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 disabled:opacity-50 disabled:cursor-not-allowed py-3 text-lg font-bold"
+                  className="w-full bg-gradient-to-r from-pink-500 via-rose-400 to-pink-500 hover:from-pink-600 hover:via-rose-500 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed py-4 text-lg font-bold rounded-xl shadow-lg shadow-pink-500/30 transition-all hover:shadow-pink-500/40"
                 >
-                  <Heart className="mr-2 h-5 w-5" />
-                  💎 Ủng hộ ngay
+                  <span className="mr-2">💎</span>
+                  Ủng hộ ngay
                 </Button>
               </div>
             </motion.div>
