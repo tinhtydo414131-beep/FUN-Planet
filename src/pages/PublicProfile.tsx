@@ -337,7 +337,7 @@ export default function PublicProfile() {
                 ❤️ Trò chơi yêu thích
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {favoriteGames.map((item) => (
+                {favoriteGames.filter(item => item.games !== null).map((item) => (
                   <Card 
                     key={item.game_id}
                     className="border-2 border-primary/30 hover:border-primary transition-all hover:shadow-lg transform hover:scale-105 cursor-pointer overflow-hidden"
@@ -345,17 +345,17 @@ export default function PublicProfile() {
                   >
                     <div className="relative aspect-video">
                       <img
-                        src={item.games.thumbnail_url || '/placeholder.svg'}
-                        alt={item.games.title}
+                        src={item.games?.thumbnail_url || '/placeholder.svg'}
+                        alt={item.games?.title || 'Game'}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <CardContent className="p-4">
                       <h3 className="font-fredoka font-bold text-lg text-primary mb-1">
-                        {item.games.title}
+                        {item.games?.title || 'Unknown Game'}
                       </h3>
                       <p className="text-sm font-comic text-muted-foreground capitalize">
-                        {item.games.genre}
+                        {item.games?.genre || 'N/A'}
                       </p>
                     </CardContent>
                   </Card>
@@ -371,7 +371,7 @@ export default function PublicProfile() {
                 🎯 Đã chơi gần đây
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recentGames.map((item) => (
+                {recentGames.filter(item => item.games !== null).map((item) => (
                   <Card 
                     key={item.game_id}
                     className="border-2 border-accent/30 hover:border-accent transition-all hover:shadow-lg transform hover:scale-105 cursor-pointer overflow-hidden"
@@ -379,14 +379,14 @@ export default function PublicProfile() {
                   >
                     <div className="relative aspect-video">
                       <img
-                        src={item.games.thumbnail_url || '/placeholder.svg'}
-                        alt={item.games.title}
+                        src={item.games?.thumbnail_url || '/placeholder.svg'}
+                        alt={item.games?.title || 'Game'}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <CardContent className="p-4">
                       <h3 className="font-fredoka font-bold text-lg text-primary mb-2">
-                        {item.games.title}
+                        {item.games?.title || 'Unknown Game'}
                       </h3>
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-sm font-comic">
