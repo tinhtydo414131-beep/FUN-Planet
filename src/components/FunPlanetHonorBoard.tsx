@@ -401,7 +401,7 @@ export const FunPlanetHonorBoard = () => {
 
                 {/* Content */}
                 <div className="relative z-10 flex-1 flex items-center justify-between min-w-0">
-                  <span className="text-xs font-semibold text-yellow-200">{item.label}</span>
+                  <span className="text-base font-bold text-yellow-200">{item.label}</span>
                   <div className="flex items-center gap-1">
                     {isCamly && <Gem className="h-3.5 w-3.5 text-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
                     <span className="relative z-20 text-lg font-black text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 8px #fff, 1px 1px 2px #000' }}>
@@ -411,7 +411,7 @@ export const FunPlanetHonorBoard = () => {
                         <AnimatedCounter value={item.value} />
                       )}
                     </span>
-                    <span className="text-[10px] text-white font-medium drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]">{item.suffix}</span>
+                    <span className="text-sm text-white font-medium drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]">{item.suffix}</span>
                   </div>
                 </div>
               </motion.div>
