@@ -14,20 +14,20 @@ export const CosmicBackground = () => {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Base gradient - Purple to Pink to Orange (matching reference) */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900 via-purple-700 to-pink-500" />
+      {/* Base gradient - Yellow to Pink to Cyan (matching FUN PLANET logo) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-pink-400 to-cyan-300" />
       
-      {/* Secondary gradient overlay for orange tint */}
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-purple-600/30 to-orange-400/40" />
+      {/* Secondary gradient overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-pink-300/20 to-yellow-200/30" />
       
-      {/* Strong glassmorphism blur overlay */}
-      <div className="absolute inset-0 backdrop-blur-[8px] bg-black/10" />
+      {/* Soft glassmorphism blur overlay */}
+      <div className="absolute inset-0 backdrop-blur-[4px] bg-white/5" />
       
-      {/* Purple/Pink ambient glow */}
+      {/* Yellow/Pink/Cyan ambient glow */}
       <div className="absolute inset-0 opacity-40">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-500 rounded-full blur-[150px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-pink-500 rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-orange-400 rounded-full blur-[100px]" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-yellow-300 rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-pink-400 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 right-1/4 w-[300px] h-[300px] bg-cyan-300 rounded-full blur-[100px]" />
       </div>
       
       {/* Sparkling white/gold star particles */}
@@ -145,27 +145,27 @@ export const CosmicBackground = () => {
         </motion.div>
       ))}
       
-      {/* Large decorative planet - bottom right with purple tint */}
+      {/* Large decorative planet - bottom right with pink/cyan tint */}
       <motion.div
         className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-50"
         style={{
-          background: 'radial-gradient(circle at 30% 30%, #E9D5FF, #A855F7, #7E22CE)',
-          boxShadow: '0 0 60px rgba(168, 85, 247, 0.4), inset 0 -25px 50px rgba(126, 34, 206, 0.5)',
+          background: 'radial-gradient(circle at 30% 30%, #FDE68A, #F472B6, #22D3EE)',
+          boxShadow: '0 0 60px rgba(244, 114, 182, 0.4), inset 0 -25px 50px rgba(34, 211, 238, 0.5)',
         }}
         animate={{ rotate: 360 }}
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
       >
-        {/* Planet ring - purple/gold */}
+        {/* Planet ring - pink/cyan */}
         <div 
-          className="absolute inset-[-15px] rounded-full border-4 border-purple-400/40"
+          className="absolute inset-[-15px] rounded-full border-4 border-pink-400/40"
           style={{ 
             transform: 'rotateX(75deg)',
-            boxShadow: '0 0 15px rgba(168, 85, 247, 0.3)',
+            boxShadow: '0 0 15px rgba(244, 114, 182, 0.3)',
           }}
         />
       </motion.div>
       
-      {/* Ambient light rays - purple/pink tones */}
+      {/* Ambient light rays - yellow/pink/cyan tones */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-10">
         {[...Array(6)].map((_, i) => (
           <motion.div
@@ -173,9 +173,11 @@ export const CosmicBackground = () => {
             className="absolute top-0 left-1/2 w-2 origin-top"
             style={{
               height: '100vh',
-              background: i % 2 === 0 
-                ? 'linear-gradient(to bottom, #A855F7, transparent)' 
-                : 'linear-gradient(to bottom, #FFD700, transparent)',
+              background: i % 3 === 0 
+                ? 'linear-gradient(to bottom, #FDE047, transparent)' 
+                : i % 3 === 1
+                ? 'linear-gradient(to bottom, #F472B6, transparent)'
+                : 'linear-gradient(to bottom, #22D3EE, transparent)',
               transform: `rotate(${i * 60}deg) translateX(-50%)`,
               filter: 'blur(8px)',
             }}
