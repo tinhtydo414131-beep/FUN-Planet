@@ -186,8 +186,8 @@ export const FatherUniverseHeader = () => {
         <motion.p 
           className="text-3xl md:text-4xl font-fredoka font-bold flex items-center justify-center gap-4"
           style={{
-            color: '#FFFFFF',
-            textShadow: '0 0 30px rgba(255,255,255,0.6), 0 5px 10px rgba(0,0,0,0.6)',
+            color: '#FFD700',
+            textShadow: '0 0 30px rgba(255,215,0,0.7), 0 0 60px rgba(255,215,0,0.4), 0 5px 10px rgba(0,0,0,0.6)',
           }}
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 3, repeat: Infinity }}
