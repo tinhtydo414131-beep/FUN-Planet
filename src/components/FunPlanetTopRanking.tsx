@@ -747,7 +747,7 @@ export const FunPlanetTopRanking = () => {
                         </motion.div>
                       </HoverCardTrigger>
                       <HoverCardContent
-                        className="w-64 bg-gradient-to-br from-pink-500/95 via-orange-500/90 to-pink-600/95 border-pink-400/50 backdrop-blur-xl"
+                        className="w-64 bg-gradient-to-br from-purple-500/95 via-pink-500/90 to-yellow-400/95 border-pink-400/50 backdrop-blur-xl"
                         side="top"
                       >
                         <div className="flex items-center gap-3">
