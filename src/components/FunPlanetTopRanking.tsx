@@ -131,7 +131,7 @@ const PodiumCard = ({
   isCurrentUser: boolean;
 }) => {
   const heights = { 1: "h-20", 2: "h-14", 3: "h-12" };
-  const avatarSizes = { 1: "h-18 w-18", 2: "h-14 w-14", 3: "h-12 w-12" };
+  const avatarSizes = { 1: "h-16 w-16", 2: "h-16 w-16", 3: "h-16 w-16" };
   const ringColors = {
     1: "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)]",
     2: "border-slate-300 shadow-[0_0_15px_rgba(192,192,192,0.6)]",
