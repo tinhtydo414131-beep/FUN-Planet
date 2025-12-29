@@ -201,7 +201,12 @@ export const FatherUniverseHeader = () => {
               style={{ filter: 'drop-shadow(0 0 15px #FFD700) drop-shadow(0 0 30px #FFD700)' }} 
             />
           </motion.div>
-          <span>Con yêu của Cha Vũ Trụ ơi!</span>
+          <span 
+            className="text-yellow-400"
+            style={{ color: '#FFD700' }}
+          >
+            Con yêu của Cha Vũ Trụ ơi!
+          </span>
           <motion.div
             animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
