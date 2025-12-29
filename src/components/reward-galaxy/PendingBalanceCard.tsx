@@ -102,16 +102,21 @@ export function PendingBalanceCard({
     <motion.div
       initial={{ opacity: 0, scale: 0.95, y: 30 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="mb-12"
     >
-      {/* Outer glow effect */}
+      {/* Outer glow effect - enhanced */}
       <div className="relative">
-        <div className="absolute -inset-2 rounded-[38px] bg-gradient-to-r from-[#FFD700]/40 via-[#FFEC8B]/20 to-[#FFD700]/40 blur-2xl" />
+        <motion.div 
+          className="absolute -inset-3 rounded-[40px] bg-gradient-to-r from-[#FFD700]/50 via-[#FF69B4]/30 to-[#FFD700]/50 blur-3xl"
+          animate={{ opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
         
-        {/* Metallic gold border - 3px thick */}
-        <div className="absolute -inset-[3px] rounded-[36px] bg-gradient-to-br from-[#FFD700] via-[#FFF8DC] via-[#FFD700] via-[#DAA520] to-[#FFD700]" />
-        <div className="absolute -inset-[2px] rounded-[35px] bg-gradient-to-tr from-[#DAA520] via-[#FFEC8B] via-[#FFD700] to-[#B8860B]" />
+        {/* Neon gradient border - 4px thick */}
+        <div className="absolute -inset-[4px] rounded-[38px] bg-gradient-to-br from-[#FFD700] via-[#FF69B4] via-[#A855F7] via-[#FFD700] to-[#FFD700]" />
+        <div className="absolute -inset-[3px] rounded-[37px] bg-gradient-to-tr from-[#DAA520] via-[#FFEC8B] via-[#FFD700] to-[#B8860B]" />
         
         {/* Glass card */}
         <div 

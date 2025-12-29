@@ -269,22 +269,26 @@ export default function RewardGalaxy() {
           />
 
           {/* Reward Categories - Planet Cards */}
-          <div className="mb-12">
+          <div className="mb-14">
             <motion.h2 
-              className="text-2xl md:text-3xl font-fredoka font-bold text-center mb-8"
+              className="text-3xl md:text-4xl font-fredoka font-bold text-center mb-10"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              style={{
-                background: 'linear-gradient(135deg, #FFD700, #FF69B4, #87CEEB)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                textShadow: '0 2px 20px rgba(255, 215, 0, 0.3)',
-              }}
             >
-              🌟 Các Hành Tinh Phần Thưởng 🌟
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700, #FF69B4, #A855F7, #FFD700)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+                }}
+              >
+                🌟 Các Hành Tinh Phần Thưởng 🌟
+              </span>
             </motion.h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {/* Responsive grid: 1 col mobile, 2 col tablet, 5 col desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
               {/* Daily Login Reward - Mint green to warm yellow */}
               <DailyLoginRewardCard
                 canClaim={canClaimDailyLogin}
