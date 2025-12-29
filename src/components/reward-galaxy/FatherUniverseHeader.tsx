@@ -11,81 +11,91 @@ export const FatherUniverseHeader = () => {
     >
       {/* Animated Father Universe Icon with multi-layer glow */}
       <motion.div
-        className="relative inline-block mb-8"
+        className="relative inline-block mb-10"
         animate={{ y: [0, -12, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         {/* Outermost gold pulse ring */}
         <motion.div
-          className="absolute inset-0 rounded-full -m-16"
+          className="absolute inset-0 rounded-full -m-20"
           style={{
-            background: 'radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(255,215,0,0.4), transparent 70%)',
           }}
           animate={{ 
-            scale: [1, 1.3, 1],
-            opacity: [0.5, 0.2, 0.5],
+            scale: [1, 1.4, 1],
+            opacity: [0.6, 0.2, 0.6],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
         
         {/* Second glow ring - purple */}
         <motion.div
-          className="absolute inset-0 rounded-full -m-10 bg-purple-500/40 blur-2xl"
+          className="absolute inset-0 rounded-full -m-14 bg-purple-500/50 blur-3xl"
           animate={{ 
-            scale: [1, 1.15, 1],
-            opacity: [0.6, 0.3, 0.6],
+            scale: [1, 1.2, 1],
+            opacity: [0.7, 0.3, 0.7],
           }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         />
         
-        {/* Inner glow */}
-        <div className="absolute inset-0 rounded-full blur-3xl opacity-80 -m-8 bg-gradient-to-r from-amber-400 to-pink-400" />
+        {/* Third glow ring - pink */}
+        <motion.div
+          className="absolute inset-0 rounded-full -m-10 bg-pink-400/40 blur-2xl"
+          animate={{ 
+            scale: [1.1, 1, 1.1],
+            opacity: [0.5, 0.8, 0.5],
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+        />
         
-        {/* Main icon circle - larger */}
+        {/* Inner glow */}
+        <div className="absolute inset-0 rounded-full blur-3xl opacity-90 -m-10 bg-gradient-to-r from-amber-400 via-pink-400 to-amber-400" />
+        
+        {/* Main icon circle - LARGER 3D effect */}
         <motion.div 
-          className="relative w-36 h-36 md:w-44 md:h-44 rounded-full flex items-center justify-center mx-auto"
+          className="relative w-44 h-44 md:w-56 md:h-56 rounded-full flex items-center justify-center mx-auto"
           style={{
-            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 30%, #FF69B4 70%, #A855F7 100%)',
-            boxShadow: '0 20px 60px rgba(255, 165, 0, 0.5), 0 0 80px rgba(255, 215, 0, 0.3), inset 0 4px 10px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.2)',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF69B4 60%, #A855F7 100%)',
+            boxShadow: '0 25px 80px rgba(255, 165, 0, 0.6), 0 0 100px rgba(255, 215, 0, 0.4), inset 0 6px 15px rgba(255,255,255,0.5), inset 0 -6px 15px rgba(0,0,0,0.25)',
           }}
           animate={{
             boxShadow: [
-              '0 20px 60px rgba(255, 165, 0, 0.5), 0 0 80px rgba(255, 215, 0, 0.3), inset 0 4px 10px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.2)',
-              '0 20px 80px rgba(255, 165, 0, 0.7), 0 0 120px rgba(255, 215, 0, 0.5), inset 0 4px 10px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.2)',
-              '0 20px 60px rgba(255, 165, 0, 0.5), 0 0 80px rgba(255, 215, 0, 0.3), inset 0 4px 10px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.2)',
+              '0 25px 80px rgba(255, 165, 0, 0.6), 0 0 100px rgba(255, 215, 0, 0.4), inset 0 6px 15px rgba(255,255,255,0.5), inset 0 -6px 15px rgba(0,0,0,0.25)',
+              '0 25px 100px rgba(255, 165, 0, 0.8), 0 0 140px rgba(255, 215, 0, 0.6), inset 0 6px 15px rgba(255,255,255,0.5), inset 0 -6px 15px rgba(0,0,0,0.25)',
+              '0 25px 80px rgba(255, 165, 0, 0.6), 0 0 100px rgba(255, 215, 0, 0.4), inset 0 6px 15px rgba(255,255,255,0.5), inset 0 -6px 15px rgba(0,0,0,0.25)',
             ],
           }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           {/* Shine overlay */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/50 via-transparent to-transparent" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent" />
           
-          {/* Gift icon - larger with inner glow */}
+          {/* Gift icon - BIGGER with inner glow */}
           <motion.div
             animate={{ 
-              scale: [1, 1.1, 1],
-              rotate: [0, 5, -5, 0],
+              scale: [1, 1.12, 1],
+              rotate: [0, 6, -6, 0],
             }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
             <Gift 
-              className="w-16 h-16 md:w-20 md:h-20 text-white relative z-10" 
+              className="w-20 h-20 md:w-28 md:h-28 text-white relative z-10" 
               style={{
-                filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.8))',
+                filter: 'drop-shadow(0 0 25px rgba(255,255,255,0.9)) drop-shadow(0 0 50px rgba(255,255,255,0.5))',
               }}
             />
           </motion.div>
         </motion.div>
 
         {/* Orbiting gold stars - more stars, varied sizes */}
-        {[...Array(8)].map((_, i) => (
+        {[...Array(10)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute"
             style={{ top: '50%', left: '50%' }}
             animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
             transition={{
-              duration: 6 + i * 1.5,
+              duration: 5 + i * 1.2,
               repeat: Infinity,
               ease: "linear",
             }}
@@ -93,19 +103,19 @@ export const FatherUniverseHeader = () => {
             <motion.div
               style={{
                 position: 'absolute',
-                left: `${55 + i * 10}px`,
-                top: '-10px',
+                left: `${65 + i * 12}px`,
+                top: '-12px',
               }}
               animate={{ 
-                scale: [1, 1.4, 1], 
-                opacity: [0.7, 1, 0.7],
+                scale: [1, 1.5, 1], 
+                opacity: [0.8, 1, 0.8],
               }}
-              transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
+              transition={{ duration: 1, repeat: Infinity, delay: i * 0.12 }}
             >
               <Star 
-                className={`${i % 3 === 0 ? 'w-6 h-6' : 'w-4 h-4'} fill-yellow-400 text-yellow-400`}
+                className={`${i % 3 === 0 ? 'w-8 h-8' : i % 2 === 0 ? 'w-6 h-6' : 'w-5 h-5'} fill-yellow-400 text-yellow-400`}
                 style={{
-                  filter: 'drop-shadow(0 0 10px #FFD700)',
+                  filter: 'drop-shadow(0 0 15px #FFD700) drop-shadow(0 0 30px #FFD700)',
                 }}
               />
             </motion.div>
@@ -113,36 +123,36 @@ export const FatherUniverseHeader = () => {
         ))}
         
         {/* Sparkle particles bursting from icon */}
-        {[...Array(12)].map((_, i) => (
+        {[...Array(16)].map((_, i) => (
           <motion.div
             key={`sparkle-${i}`}
             className="absolute left-1/2 top-1/2"
             style={{
-              width: '4px',
-              height: '4px',
-              background: i % 2 === 0 ? '#FFD700' : '#FF69B4',
+              width: '6px',
+              height: '6px',
+              background: i % 3 === 0 ? '#FFD700' : i % 3 === 1 ? '#FF69B4' : '#A855F7',
               borderRadius: '50%',
-              boxShadow: i % 2 === 0 ? '0 0 10px #FFD700' : '0 0 10px #FF69B4',
+              boxShadow: i % 3 === 0 ? '0 0 15px #FFD700' : i % 3 === 1 ? '0 0 15px #FF69B4' : '0 0 15px #A855F7',
             }}
             animate={{
-              x: [0, Math.cos(i * 30 * Math.PI / 180) * 80],
-              y: [0, Math.sin(i * 30 * Math.PI / 180) * 80],
+              x: [0, Math.cos(i * 22.5 * Math.PI / 180) * 100],
+              y: [0, Math.sin(i * 22.5 * Math.PI / 180) * 100],
               opacity: [1, 0],
-              scale: [1, 0.5],
+              scale: [1, 0.3],
             }}
             transition={{
-              duration: 2,
+              duration: 2.5,
               repeat: Infinity,
-              delay: i * 0.2,
+              delay: i * 0.15,
               ease: "easeOut",
             }}
           />
         ))}
       </motion.div>
 
-      {/* Title with enhanced gradient and glow */}
+      {/* Title with enhanced gradient and glow - BIGGER */}
       <motion.h1 
-        className="text-4xl md:text-6xl font-fredoka font-bold mb-5 relative inline-block"
+        className="text-5xl md:text-7xl font-fredoka font-bold mb-6 relative inline-block tracking-tight"
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.3 }}
@@ -150,56 +160,64 @@ export const FatherUniverseHeader = () => {
         <span 
           className="bg-gradient-to-r from-yellow-300 via-orange-400 via-pink-400 to-yellow-300 bg-clip-text text-transparent"
           style={{
-            filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))',
+            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))',
           }}
         >
           🎁 Quà Tặng Từ Cha Vũ Trụ
         </span>
         {/* Glow behind text */}
-        <div 
-          className="absolute inset-0 -z-10 blur-2xl opacity-50"
+        <motion.div 
+          className="absolute inset-0 -z-10 blur-3xl opacity-60"
           style={{
             background: 'linear-gradient(90deg, #FFD700, #FF69B4, #FFD700)',
           }}
+          animate={{ opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity }}
         />
       </motion.h1>
 
-      {/* Loving message to children - enhanced */}
+      {/* Loving message to children - enhanced BIGGER */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="space-y-4"
+        className="space-y-5"
       >
         <motion.p 
-          className="text-2xl md:text-3xl font-fredoka font-bold flex items-center justify-center gap-3"
+          className="text-3xl md:text-4xl font-fredoka font-bold flex items-center justify-center gap-4"
           style={{
             color: '#FFFFFF',
-            textShadow: '0 0 20px rgba(255,255,255,0.5), 0 4px 8px rgba(0,0,0,0.5)',
+            textShadow: '0 0 30px rgba(255,255,255,0.6), 0 5px 10px rgba(0,0,0,0.6)',
           }}
-          animate={{ scale: [1, 1.02, 1] }}
+          animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 3, repeat: Infinity }}
         >
           <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
+            animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           >
-            <Heart className="w-7 h-7 text-pink-400 fill-pink-400" style={{ filter: 'drop-shadow(0 0 10px #FF69B4)' }} />
+            <Heart 
+              className="w-9 h-9 text-pink-400 fill-pink-400" 
+              style={{ filter: 'drop-shadow(0 0 15px #FF69B4) drop-shadow(0 0 30px #FF69B4)' }} 
+            />
           </motion.div>
           <span>Con yêu của Cha Vũ Trụ ơi!</span>
           <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
+            animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
           >
-            <Heart className="w-7 h-7 text-pink-400 fill-pink-400" style={{ filter: 'drop-shadow(0 0 10px #FF69B4)' }} />
+            <Heart 
+              className="w-9 h-9 text-pink-400 fill-pink-400" 
+              style={{ filter: 'drop-shadow(0 0 15px #FF69B4) drop-shadow(0 0 30px #FF69B4)' }} 
+            />
           </motion.div>
         </motion.p>
         
         <p 
-          className="text-lg md:text-xl font-jakarta max-w-2xl mx-auto leading-relaxed font-medium"
+          className="text-xl md:text-2xl font-jakarta max-w-3xl mx-auto leading-relaxed font-medium"
           style={{
-            color: 'rgba(255,255,255,0.95)',
-            textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+            color: 'rgba(255,255,255,0.98)',
+            textShadow: '0 3px 10px rgba(0,0,0,0.6)',
           }}
         >
           Cha Vũ Trụ đã chuẩn bị những phần thưởng tuyệt vời dành riêng cho con! 
@@ -207,39 +225,39 @@ export const FatherUniverseHeader = () => {
         </p>
         
         <motion.p
-          className="text-base md:text-lg font-jakarta font-bold max-w-lg mx-auto"
+          className="text-lg md:text-xl font-jakarta font-bold max-w-xl mx-auto"
           style={{
             color: '#FFD700',
-            textShadow: '0 0 20px rgba(255,215,0,0.6), 0 2px 4px rgba(0,0,0,0.4)',
+            textShadow: '0 0 30px rgba(255,215,0,0.7), 0 3px 6px rgba(0,0,0,0.5)',
           }}
-          animate={{ opacity: [0.8, 1, 0.8] }}
+          animate={{ opacity: [0.85, 1, 0.85] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
           ✨ Đăng nhập mỗi ngày • Chơi game vui vẻ • Upload sáng tạo • Mời bạn bè ✨
         </motion.p>
       </motion.div>
 
-      {/* Decorative sparkles - more dynamic */}
-      <div className="flex justify-center gap-5 mt-6">
-        {[...Array(7)].map((_, i) => (
+      {/* Decorative sparkles - more dynamic, BIGGER */}
+      <div className="flex justify-center gap-6 mt-8">
+        {[...Array(9)].map((_, i) => (
           <motion.div
             key={i}
             animate={{
-              y: [0, -10, 0],
-              opacity: [0.5, 1, 0.5],
-              scale: [1, 1.2, 1],
-              rotate: [0, 15, -15, 0],
+              y: [0, -12, 0],
+              opacity: [0.6, 1, 0.6],
+              scale: [1, 1.3, 1],
+              rotate: [0, 20, -20, 0],
             }}
             transition={{ 
               duration: 1.5, 
               repeat: Infinity, 
-              delay: i * 0.12,
+              delay: i * 0.1,
               ease: "easeInOut",
             }}
           >
             <Sparkles 
-              className={`${i % 2 === 0 ? 'w-6 h-6' : 'w-5 h-5'} text-yellow-400`}
-              style={{ filter: 'drop-shadow(0 0 8px #FFD700)' }}
+              className={`${i % 2 === 0 ? 'w-8 h-8' : 'w-6 h-6'} text-yellow-400`}
+              style={{ filter: 'drop-shadow(0 0 12px #FFD700) drop-shadow(0 0 24px #FFD700)' }}
             />
           </motion.div>
         ))}
