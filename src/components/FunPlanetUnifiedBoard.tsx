@@ -676,7 +676,7 @@ export const FunPlanetUnifiedBoard = () => {
           </video>
 
           {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/50 rounded-3xl z-[1]" />
+          <div className="absolute inset-0 bg-black/5 rounded-3xl z-[1]" />
 
           {/* Dot pattern */}
           <div 
