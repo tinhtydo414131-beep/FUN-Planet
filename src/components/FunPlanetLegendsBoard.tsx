@@ -382,7 +382,7 @@ export const FunPlanetLegendsBoard = () => {
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${
                 activeTab === "creators"
                   ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50"
-                  : "bg-white/10 text-white/70 hover:bg-white/20"
+                  : "bg-white/10 text-white hover:bg-white/20"
               }`}
             >
               <Gamepad2 className="h-4 w-4" />
@@ -393,7 +393,7 @@ export const FunPlanetLegendsBoard = () => {
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${
                 activeTab === "donors"
                   ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50"
-                  : "bg-white/10 text-white/70 hover:bg-white/20"
+                  : "bg-white/10 text-white hover:bg-white/20"
               }`}
             >
               <Gem className="h-4 w-4" />
