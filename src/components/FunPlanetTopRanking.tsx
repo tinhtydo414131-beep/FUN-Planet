@@ -374,7 +374,7 @@ export const FunPlanetTopRanking = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl p-4 sm:p-6 shadow-2xl h-full flex flex-col"
+      className="relative overflow-hidden rounded-3xl p-4 sm:p-6 shadow-2xl h-full"
       style={{
         background:
           "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 100%)",
@@ -601,7 +601,7 @@ export const FunPlanetTopRanking = () => {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col flex-1 min-h-0">
+        <>
           {/* Error State */}
           {error && (
             <div className="text-center py-8 relative z-10">
@@ -680,7 +680,7 @@ export const FunPlanetTopRanking = () => {
 
           {/* Remaining Rankings with HoverCard */}
           {remainingUsers.length > 0 && (
-            <ScrollArea className="flex-1 min-h-[120px] pr-2 ranking-scrollbar">
+            <ScrollArea className="h-[220px] pr-2 ranking-scrollbar">
               <div className="space-y-2">
                 {remainingUsers.map((rankedUser, index) => {
                   const rank = index + 4;
@@ -784,7 +784,7 @@ export const FunPlanetTopRanking = () => {
               </div>
             </ScrollArea>
           )}
-        </div>
+        </>
       )}
 
       {/* View All Button */}
@@ -792,7 +792,7 @@ export const FunPlanetTopRanking = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
-        className="relative mt-auto pt-4"
+        className="relative mt-4"
       >
         <Button
           onClick={() => navigate("/full-ranking")}
