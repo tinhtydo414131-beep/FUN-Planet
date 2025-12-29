@@ -28,7 +28,8 @@ import {
   Copy,
   ChevronLeft,
   ChevronRight,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from "lucide-react";
 import { UserBlockModal } from "./UserBlockModal";
 import { UserDetailModal } from "./UserDetailModal";
@@ -42,6 +43,8 @@ interface UserData {
   total_earned: number;
   pending_amount: number;
   claimed_amount: number;
+  wallet_balance: number;
+  camly_balance: number;
   isBlocked: boolean;
   blockReason?: string;
 }
@@ -77,10 +80,10 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
 
       const blockedMap = new Map(blockedData?.map(b => [b.user_id, b.reason]) || []);
 
-      // Build query
+      // Build query - include wallet_balance
       let query = supabase
         .from("profiles")
-        .select("id, username, email, wallet_address, created_at", { count: "exact" });
+        .select("id, username, email, wallet_address, created_at, wallet_balance", { count: "exact" });
 
       // Apply search
       if (searchQuery) {
@@ -103,7 +106,14 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
           .select("user_id, total_earned, pending_amount, claimed_amount")
           .in("user_id", userIds);
 
+        // Get web3_rewards for camly_balance
+        const { data: web3Data } = await supabase
+          .from("web3_rewards")
+          .select("user_id, camly_balance")
+          .in("user_id", userIds);
+
         const rewardsMap = new Map(rewardsData?.map(r => [r.user_id, r]) || []);
+        const web3Map = new Map(web3Data?.map(w => [w.user_id, w]) || []);
 
         let usersWithData = profilesData.map(profile => ({
           id: profile.id,
@@ -111,6 +121,8 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
           email: profile.email,
           wallet_address: profile.wallet_address,
           created_at: profile.created_at,
+          wallet_balance: Number(profile.wallet_balance || 0),
+          camly_balance: Number(web3Map.get(profile.id)?.camly_balance || 0),
           total_earned: Number(rewardsMap.get(profile.id)?.total_earned || 0),
           pending_amount: Number(rewardsMap.get(profile.id)?.pending_amount || 0),
           claimed_amount: Number(rewardsMap.get(profile.id)?.claimed_amount || 0),
@@ -237,9 +249,8 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
                     <TableRow>
                       <TableHead>User</TableHead>
                       <TableHead>Wallet</TableHead>
-                      <TableHead className="text-right">Earned</TableHead>
+                      <TableHead className="text-right">Balance</TableHead>
                       <TableHead className="text-right">Pending</TableHead>
-                      <TableHead className="text-right">Claimed</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -272,14 +283,19 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
                             <span className="text-muted-foreground">-</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-right font-mono">
-                          {formatNumber(user.total_earned)}
+                        <TableCell className="text-right">
+                          <div className="flex flex-col items-end">
+                            <span className="font-mono text-sm">{formatNumber(user.wallet_balance)}</span>
+                            {user.wallet_balance !== user.camly_balance && (
+                              <span className="text-xs text-amber-500 flex items-center gap-1">
+                                <AlertTriangle className="h-3 w-3" />
+                                CAMLY: {formatNumber(user.camly_balance)}
+                              </span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right font-mono text-amber-500">
                           {formatNumber(user.pending_amount)}
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-green-500">
-                          {formatNumber(user.claimed_amount)}
                         </TableCell>
                         <TableCell>
                           {user.isBlocked ? (
@@ -371,6 +387,10 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
             user={selectedUser}
             open={detailModalOpen}
             onClose={() => setDetailModalOpen(false)}
+            onDataRefresh={() => {
+              loadUsers();
+              onStatsUpdate();
+            }}
           />
         </>
       )}
