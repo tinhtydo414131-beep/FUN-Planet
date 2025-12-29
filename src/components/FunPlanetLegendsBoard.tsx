@@ -385,8 +385,8 @@ export const FunPlanetLegendsBoard = () => {
                   : "bg-white/10 !text-white hover:bg-white/20"
               }`}
             >
-              <Gamepad2 className="h-4 w-4 !text-white" />
-              <span className="text-sm !text-white">Top Creators</span>
+              <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
+              <span className={`text-sm ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
             </button>
             <button
               onClick={() => setActiveTab("donors")}
