@@ -65,7 +65,7 @@ export const RewardPlanetCard = ({
       />
       
       {/* Card background with pastel gradient */}
-      <div className={`relative p-7 rounded-[28px] bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-0 overflow-hidden h-full shadow-xl shadow-[#FFD700]/15`}>
+      <div className={`relative p-4 md:p-5 rounded-[28px] bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-0 overflow-hidden h-full shadow-xl shadow-[#FFD700]/15`}>
         {/* Sparkle effects on hover */}
         <motion.div
           className="absolute top-5 left-5 w-3 h-3 rounded-full bg-[#FFD700]"
@@ -110,9 +110,9 @@ export const RewardPlanetCard = ({
           </div>
         )}
 
-        {/* Planet Icon with glow - BIGGER */}
+        {/* Planet Icon with glow */}
         <motion.div 
-          className={`w-24 h-24 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center mb-5 relative`}
+          className={`w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center mb-4 relative`}
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           whileHover={{ scale: 1.18 }}
@@ -155,9 +155,9 @@ export const RewardPlanetCard = ({
 
         {/* Content */}
         <div className="text-center">
-          {/* Title - gradient text, BIGGER */}
+          {/* Title - gradient text */}
           <h3 
-            className="text-2xl md:text-3xl font-fredoka font-bold mb-2 tracking-wide"
+            className="text-lg md:text-xl font-fredoka font-bold mb-1 tracking-wide"
             style={{
               background: 'linear-gradient(135deg, #7C3AED, #EC4899, #7C3AED)',
               WebkitBackgroundClip: 'text',
@@ -167,12 +167,12 @@ export const RewardPlanetCard = ({
           >
             {title}
           </h3>
-          <p className="text-lg md:text-xl text-[#7C3AED] font-fredoka font-semibold mb-4 tracking-wide" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>{subtitle}</p>
+          <p className="text-sm md:text-base text-[#7C3AED] font-fredoka font-semibold mb-3 tracking-wide" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>{subtitle}</p>
           
-          {/* Amount with gold gradient and shimmer - BIGGER */}
-          <div className="flex items-center justify-center gap-2 mb-4 relative">
+          {/* Amount with gold gradient and shimmer */}
+          <div className="flex items-center justify-center gap-1.5 mb-3 relative">
             <motion.span 
-              className="text-4xl md:text-5xl font-bold font-fredoka"
+              className="text-2xl md:text-3xl font-bold font-fredoka"
               style={{
                 background: 'linear-gradient(135deg, #FFD700, #FFA500, #FFD700)',
                 backgroundSize: '200% 200%',
@@ -189,7 +189,7 @@ export const RewardPlanetCard = ({
               {amount.toLocaleString()}
             </motion.span>
             <span 
-              className="text-xl font-bold"
+              className="text-base md:text-lg font-bold"
               style={{
                 color: '#B8860B',
                 textShadow: '0 0 15px rgba(255,215,0,0.7)',
@@ -201,7 +201,7 @@ export const RewardPlanetCard = ({
           
           {/* Description - darker purple with shadow */}
           <p 
-            className="text-base md:text-lg mb-5 font-fredoka font-semibold leading-relaxed"
+            className="text-xs md:text-sm mb-4 font-fredoka font-semibold leading-relaxed"
             style={{
               color: '#7C3AED',
               textShadow: '0 1px 2px rgba(255,255,255,0.8)',
@@ -210,11 +210,11 @@ export const RewardPlanetCard = ({
             {description}
           </p>
 
-          {/* Claim Button - Pastel style, BIGGER text */}
+          {/* Claim Button - Pastel style */}
           <Button
             onClick={onClaim}
             disabled={isClaiming || (!canClaim && !buttonText)}
-            className={`w-full relative overflow-hidden rounded-2xl font-bold py-6 text-lg transition-all duration-300 ${
+            className={`w-full relative overflow-hidden rounded-xl font-bold py-4 text-sm md:text-base transition-all duration-300 ${
               canClaim || buttonText
                 ? 'bg-gradient-to-r from-[#98FB98] to-[#90EE90] hover:from-[#7CFC00] hover:to-[#98FB98] text-[#1B5E20] shadow-lg shadow-[#98FB98]/40 border-2 border-[#7CFC00]/40'
                 : !canClaim && !buttonText
@@ -234,20 +234,20 @@ export const RewardPlanetCard = ({
               />
             )}
             
-            <span className="relative flex items-center justify-center gap-2">
+            <span className="relative flex items-center justify-center gap-1.5">
               {isClaiming ? (
                 <>
-                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   Đang xử lý...
                 </>
               ) : !canClaim && !buttonText ? (
                 <>
-                  <Check className="w-6 h-6" />
+                  <Check className="w-5 h-5" />
                   {isOneTime ? 'Đã nhận thưởng! ✨' : 'Đã nhận hôm nay! ✨'}
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-6 h-6" />
+                  <Sparkles className="w-5 h-5" />
                   {buttonText || `Nhận ${amount.toLocaleString()} CAMLY`}
                 </>
               )}
@@ -257,13 +257,13 @@ export const RewardPlanetCard = ({
           {/* "Back Tomorrow" indicator - only show for daily rewards, not one-time rewards */}
           {!canClaim && !buttonText && !isOneTime && (
             <motion.div 
-              className="mt-4 flex items-center justify-center gap-2 text-lg md:text-xl text-[#7C3AED] font-fredoka font-bold tracking-wide"
+              className="mt-3 flex items-center justify-center gap-1.5 text-sm md:text-base text-[#7C3AED] font-fredoka font-bold tracking-wide"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               style={{ textShadow: '0 1px 2px rgba(255,255,255,0.6)' }}
             >
-              <CalendarCheck className="w-6 h-6" />
+              <CalendarCheck className="w-5 h-5" />
               <span>Quay lại ngày mai nhé! 😊</span>
             </motion.div>
           )}
@@ -271,12 +271,12 @@ export const RewardPlanetCard = ({
           {/* One-time reward indicator */}
           {!canClaim && !buttonText && isOneTime && (
             <motion.div 
-              className="mt-4 flex items-center justify-center gap-2 text-base text-[#2E7D32] font-medium"
+              className="mt-3 flex items-center justify-center gap-1.5 text-xs md:text-sm text-[#2E7D32] font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <Gift className="w-5 h-5" />
+              <Gift className="w-4 h-4" />
               <span>Phần thưởng chỉ nhận 1 lần 🎁</span>
             </motion.div>
           )}
