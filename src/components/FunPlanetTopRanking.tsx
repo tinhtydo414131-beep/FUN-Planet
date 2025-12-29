@@ -680,7 +680,7 @@ export const FunPlanetTopRanking = () => {
 
           {/* Remaining Rankings with HoverCard */}
           {remainingUsers.length > 0 && (
-            <ScrollArea className="h-[220px] pr-2 ranking-scrollbar">
+            <ScrollArea className="h-[350px] pr-2 ranking-scrollbar">
               <div className="space-y-2">
                 {remainingUsers.map((rankedUser, index) => {
                   const rank = index + 4;
