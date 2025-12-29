@@ -331,7 +331,7 @@ export const FunPlanetHonorBoard = () => {
             🌍
           </motion.span>
           <h3 
-            className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-base font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]"
+            className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-base sm:text-lg font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]"
             style={{
               backgroundSize: "200% 100%",
               animation: "shimmer 3s linear infinite",
