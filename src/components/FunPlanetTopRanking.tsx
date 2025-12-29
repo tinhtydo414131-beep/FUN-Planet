@@ -765,10 +765,10 @@ export const FunPlanetTopRanking = () => {
                                 {(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY
                               </span>
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">
-                              🏆 Xếp hạng: #{rank}
-                            </p>
-                            <p className="text-xs text-gray-400">
+                        <p className="text-xs text-white mt-1">
+                          🏆 Xếp hạng: #{rank}
+                        </p>
+                        <p className="text-xs text-white">
                               📊{" "}
                               {Math.round(
                                 ((rankedUser.wallet_balance || 0) / maxBalance) * 100
