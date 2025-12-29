@@ -69,14 +69,27 @@ export const FunPlanetHonorBoard = () => {
         .from("profiles")
         .select("*", { count: "exact", head: true });
 
-      const { count: gamesCount } = await supabase
+      // Count games from uploaded_games (approved)
+      const { count: uploadedGamesCount } = await supabase
         .from("uploaded_games")
         .select("*", { count: "exact", head: true })
         .eq("status", "approved");
 
-      const { count: playsCount } = await supabase
+      // Count games from lovable_games (approved)
+      const { count: lovableGamesCount } = await supabase
+        .from("lovable_games")
+        .select("*", { count: "exact", head: true })
+        .eq("approved", true);
+
+      // Total games = uploaded_games + lovable_games
+      const totalGames = (uploadedGamesCount || 0) + (lovableGamesCount || 0);
+
+      // Count unique players from game_plays
+      const { data: playersData } = await supabase
         .from("game_plays")
-        .select("*", { count: "exact", head: true });
+        .select("user_id");
+      
+      const uniquePlayers = new Set(playersData?.map(p => p.user_id) || []).size;
 
       const { count: uploadsCount } = await supabase
         .from("uploaded_games")
@@ -90,8 +103,8 @@ export const FunPlanetHonorBoard = () => {
 
       setStats({
         totalUsers: usersCount || 0,
-        totalGames: gamesCount || 0,
-        totalPlays: playsCount || 0,
+        totalGames: totalGames,
+        totalPlays: uniquePlayers,
         totalUploads: uploadsCount || 0,
         totalCamly: totalCamly,
       });
@@ -139,11 +152,21 @@ export const FunPlanetHonorBoard = () => {
       )
       .subscribe();
 
+    // Subscribe to lovable_games changes
+    const lovableGamesChannel = supabase
+      .channel('honor_board_lovable_games')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'lovable_games' },
+        () => fetchStats()
+      )
+      .subscribe();
+
     return () => {
       setIsLive(false);
       supabase.removeChannel(profilesChannel);
       supabase.removeChannel(gamesChannel);
       supabase.removeChannel(playsChannel);
+      supabase.removeChannel(lovableGamesChannel);
     };
   }, [fetchStats]);
 
@@ -153,7 +176,7 @@ export const FunPlanetHonorBoard = () => {
   const statItems = [
     { icon: Users, label: "Users", value: stats.totalUsers, bgColor: "bg-purple-500", accentColor: "#a855f7", suffix: "players" },
     { icon: Gamepad2, label: "Games", value: stats.totalGames, bgColor: "bg-teal-500", accentColor: "#14b8a6", suffix: "titles" },
-    { icon: Play, label: "Plays", value: stats.totalPlays, bgColor: "bg-pink-500", accentColor: "#ec4899", suffix: "sessions" },
+    { icon: Play, label: "Players", value: stats.totalPlays, bgColor: "bg-pink-500", accentColor: "#ec4899", suffix: "gamers" },
     { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500", accentColor: "#22c55e", suffix: "games" },
     { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500", accentColor: "#f43f5e", suffix: "💎" },
   ];
