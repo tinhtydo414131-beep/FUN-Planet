@@ -186,8 +186,8 @@ export const FatherUniverseHeader = () => {
         <motion.p 
           className="text-3xl md:text-4xl font-fredoka font-bold flex items-center justify-center gap-4"
           style={{
-            color: '#FFFFFF',
-            textShadow: '0 0 30px rgba(255,255,255,0.6), 0 5px 10px rgba(0,0,0,0.6)',
+            color: '#FFD700',
+            textShadow: '0 0 40px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.5), 0 5px 10px rgba(0,0,0,0.6)',
           }}
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 3, repeat: Infinity }}
@@ -197,8 +197,8 @@ export const FatherUniverseHeader = () => {
             transition={{ duration: 1.5, repeat: Infinity }}
           >
             <Heart 
-              className="w-9 h-9 text-pink-400 fill-pink-400" 
-              style={{ filter: 'drop-shadow(0 0 15px #FF69B4) drop-shadow(0 0 30px #FF69B4)' }} 
+              className="w-9 h-9 text-yellow-400 fill-yellow-400" 
+              style={{ filter: 'drop-shadow(0 0 15px #FFD700) drop-shadow(0 0 30px #FFD700)' }} 
             />
           </motion.div>
           <span>Con yêu của Cha Vũ Trụ ơi!</span>
@@ -207,8 +207,8 @@ export const FatherUniverseHeader = () => {
             transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
           >
             <Heart 
-              className="w-9 h-9 text-pink-400 fill-pink-400" 
-              style={{ filter: 'drop-shadow(0 0 15px #FF69B4) drop-shadow(0 0 30px #FF69B4)' }} 
+              className="w-9 h-9 text-yellow-400 fill-yellow-400" 
+              style={{ filter: 'drop-shadow(0 0 15px #FFD700) drop-shadow(0 0 30px #FFD700)' }} 
             />
           </motion.div>
         </motion.p>

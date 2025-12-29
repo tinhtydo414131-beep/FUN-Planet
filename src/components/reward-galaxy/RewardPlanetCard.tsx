@@ -167,7 +167,7 @@ export const RewardPlanetCard = ({
           >
             {title}
           </h3>
-          <p className="text-base text-[#6B5B95] font-medium mb-4">{subtitle}</p>
+          <p className="text-lg text-[#7C3AED] font-semibold mb-4" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>{subtitle}</p>
           
           {/* Amount with gold gradient and shimmer - BIGGER */}
           <div className="flex items-center justify-center gap-2 mb-4 relative">
@@ -189,21 +189,21 @@ export const RewardPlanetCard = ({
               {amount.toLocaleString()}
             </motion.span>
             <span 
-              className="text-lg font-bold"
+              className="text-xl font-bold"
               style={{
-                color: '#DAA520',
-                textShadow: '0 0 10px rgba(255,215,0,0.5)',
+                color: '#B8860B',
+                textShadow: '0 0 15px rgba(255,215,0,0.7)',
               }}
             >
               CAMLY
             </span>
           </div>
           
-          {/* Description - white with shadow */}
+          {/* Description - darker purple with shadow */}
           <p 
-            className="text-sm mb-5 font-medium"
+            className="text-base mb-5 font-semibold"
             style={{
-              color: '#6B5B95',
+              color: '#7C3AED',
               textShadow: '0 1px 2px rgba(255,255,255,0.8)',
             }}
           >
@@ -257,12 +257,13 @@ export const RewardPlanetCard = ({
           {/* "Back Tomorrow" indicator - only show for daily rewards, not one-time rewards */}
           {!canClaim && !buttonText && !isOneTime && (
             <motion.div 
-              className="mt-4 flex items-center justify-center gap-2 text-base text-[#9370DB] font-medium"
+              className="mt-4 flex items-center justify-center gap-2 text-lg text-[#7C3AED] font-semibold"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
+              style={{ textShadow: '0 1px 2px rgba(255,255,255,0.6)' }}
             >
-              <CalendarCheck className="w-5 h-5" />
+              <CalendarCheck className="w-6 h-6" />
               <span>Quay lại ngày mai nhé! 😊</span>
             </motion.div>
           )}
