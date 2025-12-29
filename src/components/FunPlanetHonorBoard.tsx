@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Users, Gamepad2, Play, Upload, Gem } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,19 +13,24 @@ interface Stats {
 
 const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?: number }) => {
   const [count, setCount] = useState(0);
+  const prevValueRef = useRef(value);
   
   useEffect(() => {
     let startTime: number;
     let animationFrame: number;
+    const startValue = prevValueRef.current;
     
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
       
-      setCount(Math.floor(progress * value));
+      // Smooth interpolation from previous value to new value
+      setCount(Math.floor(startValue + (value - startValue) * progress));
       
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
+      } else {
+        prevValueRef.current = value;
       }
     };
     
@@ -55,12 +60,10 @@ export const FunPlanetHonorBoard = () => {
     totalCamly: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+  const [hasUpdate, setHasUpdate] = useState(false);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const { count: usersCount } = await supabase
         .from("profiles")
@@ -92,12 +95,57 @@ export const FunPlanetHonorBoard = () => {
         totalUploads: uploadsCount || 0,
         totalCamly: totalCamly,
       });
+      
+      // Flash update indicator
+      setHasUpdate(true);
+      setTimeout(() => setHasUpdate(false), 1000);
     } catch (error) {
       console.error("Error fetching stats:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Real-time subscriptions
+  useEffect(() => {
+    fetchStats();
+
+    // Subscribe to profiles changes
+    const profilesChannel = supabase
+      .channel('honor_board_profiles')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => fetchStats()
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') setIsLive(true);
+      });
+
+    // Subscribe to uploaded_games changes
+    const gamesChannel = supabase
+      .channel('honor_board_games')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'uploaded_games' },
+        () => fetchStats()
+      )
+      .subscribe();
+
+    // Subscribe to game_plays changes
+    const playsChannel = supabase
+      .channel('honor_board_plays')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'game_plays' },
+        () => fetchStats()
+      )
+      .subscribe();
+
+    return () => {
+      setIsLive(false);
+      supabase.removeChannel(profilesChannel);
+      supabase.removeChannel(gamesChannel);
+      supabase.removeChannel(playsChannel);
+    };
+  }, [fetchStats]);
 
   // Calculate max value for progress bar percentage
   const maxValue = Math.max(stats.totalUsers, stats.totalGames, stats.totalPlays, stats.totalUploads, stats.totalCamly, 1);
@@ -219,6 +267,37 @@ export const FunPlanetHonorBoard = () => {
         <div className="absolute -bottom-10 -left-10 h-24 w-24 rounded-full bg-blue-500/40 blur-3xl" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-32 rounded-full bg-yellow-400/15 blur-2xl" />
         
+        {/* Live Indicator */}
+        {isLive && (
+          <motion.div 
+            className="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/20 border border-green-500/50"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <motion.div
+              className="w-2 h-2 rounded-full bg-green-400"
+              animate={{ opacity: [1, 0.4, 1], scale: [1, 0.8, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            <span className="text-[10px] text-green-300 font-medium">LIVE</span>
+          </motion.div>
+        )}
+
+        {/* Update Flash */}
+        <AnimatePresence>
+          {hasUpdate && (
+            <motion.div 
+              className="absolute inset-0 z-30 pointer-events-none rounded-3xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                background: "radial-gradient(circle at center, rgba(74, 222, 128, 0.2) 0%, transparent 70%)",
+              }}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Header with Animated Emojis */}
         <div className="relative mb-2 flex items-center justify-center gap-2 z-10">
           <motion.span 
