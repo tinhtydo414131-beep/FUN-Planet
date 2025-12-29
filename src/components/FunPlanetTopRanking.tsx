@@ -371,17 +371,53 @@ export const FunPlanetTopRanking = () => {
   const remainingUsers = topUsers.slice(3);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl p-4 sm:p-6 shadow-2xl h-full"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 100%)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-      }}
-    >
+    <div className="relative h-full flex flex-col">
+      {/* Outer Gold Glow - Outside overflow-hidden */}
+      <div 
+        className="absolute rounded-3xl pointer-events-none"
+        style={{
+          inset: "-12px",
+          boxShadow: `
+            0 0 30px rgba(255, 215, 0, 0.5),
+            0 0 50px rgba(255, 165, 0, 0.3),
+            0 0 80px rgba(255, 215, 0, 0.2)
+          `,
+          zIndex: -15,
+        }}
+      />
+
+      {/* Gold Metallic Border - Outside overflow-hidden */}
+      <div
+        className="absolute rounded-3xl animate-metallic-shine"
+        style={{
+          inset: "-8px",
+          background: `
+            linear-gradient(135deg, 
+              #FFD700 0%, #FFFACD 10%, #FFF8DC 20%, 
+              #FFD700 35%, #B8860B 50%, #FFD700 65%, 
+              #FFF8DC 80%, #FFFACD 90%, #FFD700 100%
+            )
+          `,
+          backgroundSize: "200% 200%",
+          boxShadow: `
+            0 0 10px rgba(255, 215, 0, 0.5),
+            0 0 20px rgba(255, 215, 0, 0.3),
+            inset 0 1px 3px rgba(255, 255, 255, 0.5),
+            inset 0 -1px 3px rgba(0, 0, 0, 0.3)
+          `,
+          zIndex: -10,
+        }}
+      />
+
+      {/* Inner Content Panel */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-3xl p-4 sm:p-6 shadow-xl flex-1 flex flex-col"
+        style={{
+          background: "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)",
+        }}
+      >
       {/* CSS Keyframes */}
       <style>
         {`
@@ -512,10 +548,7 @@ export const FunPlanetTopRanking = () => {
       {/* Light overlay gradient for brightness */}
       <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-transparent via-white/5 to-white/8 pointer-events-none z-[1]" />
 
-      {/* Enhanced Golden Glow effect */}
-      <div className="absolute inset-0 rounded-3xl shadow-[0_0_20px_rgba(255,215,0,0.3),0_0_40px_rgba(255,165,0,0.15)] pointer-events-none z-[1]" />
-
-      {/* Inner Border Highlight - Viền sáng bên trong tạo chiều sâu 3D */}
+      {/* Inner Border Highlight - Inside content panel */}
       <div 
         className="absolute inset-0 rounded-3xl pointer-events-none"
         style={{
@@ -804,5 +837,6 @@ export const FunPlanetTopRanking = () => {
         </Button>
       </motion.div>
     </motion.div>
+    </div>
   );
 };
