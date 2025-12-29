@@ -497,7 +497,7 @@ export const FunPlanetTopRanking = () => {
       </video>
 
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 rounded-3xl bg-black/30 z-0" />
+      <div className="absolute inset-0 rounded-3xl bg-black/50 z-0" />
 
       {/* Subtle dot pattern overlay */}
       <div
