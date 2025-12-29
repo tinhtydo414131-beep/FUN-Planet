@@ -218,10 +218,10 @@ export const WalletStatusCard = ({
                 
                 <div className="relative z-10">
                   <p 
-                    className="text-lg font-bold"
+                    className="text-xl font-bold"
                     style={{
-                      color: '#92400E',
-                      textShadow: '0 1px 2px rgba(255,255,255,0.5)',
+                      color: '#B8860B',
+                      textShadow: '0 0 15px rgba(255,215,0,0.7), 0 1px 2px rgba(255,255,255,0.5)',
                     }}
                   >
                     Số dư CAMLY
@@ -229,16 +229,24 @@ export const WalletStatusCard = ({
                   <motion.p 
                     className="text-4xl md:text-5xl font-bold font-fredoka"
                     style={{
-                      background: 'linear-gradient(135deg, #F59E0B, #D97706, #B45309)',
+                      background: 'linear-gradient(135deg, #FFD700, #FFA500, #FFD700)',
+                      backgroundSize: '200% 200%',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+                      filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.5))',
                     }}
                     key={camlyBalance}
                     initial={{ scale: 1.2 }}
-                    animate={{ scale: 1 }}
+                    animate={{ 
+                      scale: 1,
+                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                    }}
+                    transition={{ 
+                      scale: { duration: 0.3 },
+                      backgroundPosition: { duration: 3, repeat: Infinity }
+                    }}
                   >
-                    {camlyBalance.toLocaleString()} <span className="text-xl">CAMLY</span>
+                    {camlyBalance.toLocaleString()} <span className="text-xl" style={{ color: '#B8860B', textShadow: '0 0 15px rgba(255,215,0,0.7)' }}>CAMLY</span>
                   </motion.p>
                 </div>
               </motion.div>

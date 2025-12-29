@@ -111,7 +111,7 @@ export function DailyLoginRewardCard({
           >
             Đăng Nhập Hàng Ngày
           </h3>
-          <p className="text-[#4A7C59] text-base text-center mb-4 font-medium">Daily Login Reward</p>
+          <p className="text-[#2E7D32] text-lg text-center mb-4 font-semibold" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>Daily Login Reward</p>
 
           {/* Amount with gold shimmer - BIGGER */}
           <div className="text-center mb-5">
@@ -133,10 +133,10 @@ export function DailyLoginRewardCard({
               5,000
             </motion.span>
             <span 
-              className="text-lg ml-2 font-bold"
+              className="text-xl ml-2 font-bold"
               style={{
-                color: '#DAA520',
-                textShadow: '0 0 10px rgba(255,215,0,0.5)',
+                color: '#B8860B',
+                textShadow: '0 0 15px rgba(255,215,0,0.7)',
               }}
             >
               CAMLY
@@ -144,7 +144,7 @@ export function DailyLoginRewardCard({
           </div>
 
           {/* Description */}
-          <p className="text-[#4A7C59] text-base text-center mb-5 font-medium">
+          <p className="text-[#2E7D32] text-base text-center mb-5 font-semibold" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>
             Mỗi ngày đăng nhập nhận quà từ Cha Vũ Trụ 🌟
           </p>
 
@@ -203,10 +203,10 @@ export function DailyLoginRewardCard({
                   Nhận Thưởng
                 </>
               ) : (
-                <>
-                  <CalendarCheck className="w-6 h-6" />
+                <span className="text-lg font-semibold">
+                  <CalendarCheck className="w-6 h-6 inline mr-2" />
                   Quay lại ngày mai 😊
-                </>
+                </span>
               )}
             </span>
           </Button>
