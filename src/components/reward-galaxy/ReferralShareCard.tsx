@@ -124,7 +124,7 @@ export const ReferralShareCard = ({
             <div>
               {/* Title - gradient, BIGGER */}
               <h3 
-                className="text-2xl md:text-3xl font-fredoka font-bold"
+                className="text-2xl md:text-3xl font-fredoka font-bold tracking-wide"
                 style={{
                   background: 'linear-gradient(135deg, #FFFFFF, #FF69B4, #FFFFFF)',
                   WebkitBackgroundClip: 'text',
@@ -134,7 +134,7 @@ export const ReferralShareCard = ({
               >
                 Mời Bạn Bè - Nhận 25,000 CAMLY Mỗi Người!
               </h3>
-              <p className="text-white/70 text-base font-medium mt-1">Chia sẻ link mời và lan tỏa niềm vui cùng FUN Planet</p>
+              <p className="text-white/70 text-base md:text-lg font-fredoka font-medium mt-1 leading-relaxed">Chia sẻ link mời và lan tỏa niềm vui cùng FUN Planet</p>
             </div>
           </div>
 
@@ -151,7 +151,7 @@ export const ReferralShareCard = ({
             >
               <div className="flex items-center justify-center gap-2 text-blue-300 mb-2">
                 <Users className="w-6 h-6" />
-                <span className="text-base font-medium">Bạn đã mời</span>
+                <span className="text-base md:text-lg font-fredoka font-semibold">Bạn đã mời</span>
               </div>
               <p 
                 className="text-4xl font-fredoka font-bold text-white"
@@ -171,7 +171,7 @@ export const ReferralShareCard = ({
             >
               <div className="flex items-center justify-center gap-2 text-amber-300 mb-2">
                 <Coins className="w-6 h-6" />
-                <span className="text-base font-medium">Đã kiếm được</span>
+                <span className="text-base md:text-lg font-fredoka font-semibold">Đã kiếm được</span>
               </div>
               <p 
                 className="text-4xl font-fredoka font-bold"

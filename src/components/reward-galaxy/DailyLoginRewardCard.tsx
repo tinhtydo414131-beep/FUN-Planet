@@ -101,7 +101,7 @@ export function DailyLoginRewardCard({
 
           {/* Title - gradient text, BIGGER */}
           <h3 
-            className="text-2xl font-fredoka font-bold text-center mb-2"
+            className="text-2xl md:text-3xl font-fredoka font-bold text-center mb-2 tracking-wide"
             style={{
               background: 'linear-gradient(135deg, #2E7D32, #4CAF50, #2E7D32)',
               WebkitBackgroundClip: 'text',
@@ -111,7 +111,7 @@ export function DailyLoginRewardCard({
           >
             Đăng Nhập Hàng Ngày
           </h3>
-          <p className="text-[#2E7D32] text-lg text-center mb-4 font-semibold" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>Daily Login Reward</p>
+          <p className="text-[#2E7D32] text-lg md:text-xl text-center mb-4 font-fredoka font-semibold tracking-wide" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>Daily Login Reward</p>
 
           {/* Amount with gold shimmer - BIGGER */}
           <div className="text-center mb-5">
@@ -144,7 +144,7 @@ export function DailyLoginRewardCard({
           </div>
 
           {/* Description */}
-          <p className="text-[#2E7D32] text-base text-center mb-5 font-semibold" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>
+          <p className="text-[#2E7D32] text-base md:text-lg text-center mb-5 font-fredoka font-semibold leading-relaxed" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>
             Mỗi ngày đăng nhập nhận quà từ Cha Vũ Trụ 🌟
           </p>
 
@@ -203,7 +203,7 @@ export function DailyLoginRewardCard({
                   Nhận Thưởng
                 </>
               ) : (
-                <span className="text-lg font-semibold">
+                <span className="text-lg md:text-xl font-fredoka font-bold tracking-wide">
                   <CalendarCheck className="w-6 h-6 inline mr-2" />
                   Quay lại ngày mai 😊
                 </span>

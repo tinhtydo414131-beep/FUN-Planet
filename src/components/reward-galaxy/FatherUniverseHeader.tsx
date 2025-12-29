@@ -214,7 +214,7 @@ export const FatherUniverseHeader = () => {
         </motion.p>
         
         <p 
-          className="text-xl md:text-2xl font-jakarta max-w-3xl mx-auto leading-relaxed font-medium"
+          className="text-2xl md:text-3xl font-fredoka max-w-3xl mx-auto leading-relaxed font-semibold tracking-wide"
           style={{
             color: 'rgba(255,255,255,0.98)',
             textShadow: '0 3px 10px rgba(0,0,0,0.6)',
@@ -225,7 +225,7 @@ export const FatherUniverseHeader = () => {
         </p>
         
         <motion.p
-          className="text-lg md:text-xl font-jakarta font-bold max-w-xl mx-auto"
+          className="text-xl md:text-2xl font-fredoka font-bold max-w-xl mx-auto tracking-wide"
           style={{
             color: '#FFD700',
             textShadow: '0 0 30px rgba(255,215,0,0.7), 0 3px 6px rgba(0,0,0,0.5)',

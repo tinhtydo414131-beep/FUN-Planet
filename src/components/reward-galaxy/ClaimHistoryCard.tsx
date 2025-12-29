@@ -200,7 +200,7 @@ export const ClaimHistoryCard = ({ claims, isLoading }: ClaimHistoryCardProps) =
             </motion.div>
             <div>
               <h3 
-                className="text-2xl md:text-3xl font-fredoka font-bold"
+                className="text-2xl md:text-3xl font-fredoka font-bold tracking-wide"
                 style={{
                   background: 'linear-gradient(135deg, #FFFFFF, #FFD700, #FFFFFF)',
                   WebkitBackgroundClip: 'text',
@@ -210,7 +210,7 @@ export const ClaimHistoryCard = ({ claims, isLoading }: ClaimHistoryCardProps) =
               >
                 Lịch Sử Quà Tặng Từ Vũ Trụ
               </h3>
-              <p className="text-white/60 text-base font-medium mt-1">Các phần thưởng con đã nhận được</p>
+              <p className="text-white/60 text-base md:text-lg font-fredoka font-medium mt-1 leading-relaxed">Các phần thưởng con đã nhận được</p>
             </div>
           </div>
 
@@ -227,8 +227,8 @@ export const ClaimHistoryCard = ({ claims, isLoading }: ClaimHistoryCardProps) =
               >
                 <Star className="w-20 h-20 text-yellow-400/30 mx-auto mb-5" style={{ filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.3))' }} />
               </motion.div>
-              <p className="text-white/60 text-xl font-medium">Chưa có phần thưởng nào</p>
-              <p className="text-white/40 text-base mt-2">Hãy kết nối ví và bắt đầu chơi game!</p>
+              <p className="text-white/60 text-xl md:text-2xl font-fredoka font-semibold">Chưa có phần thưởng nào</p>
+              <p className="text-white/40 text-base md:text-lg font-fredoka mt-2 leading-relaxed">Hãy kết nối ví và bắt đầu chơi game!</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -263,12 +263,12 @@ export const ClaimHistoryCard = ({ claims, isLoading }: ClaimHistoryCardProps) =
                     {/* Details */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <span className="font-bold text-lg text-white">
+                        <span className="font-fredoka font-bold text-lg md:text-xl text-white tracking-wide">
                           {getClaimLabel(claim.claim_type)}
                         </span>
                         {getStatusBadge(claim.status)}
                       </div>
-                      <p className="text-sm text-white/50 mt-1 font-medium">
+                      <p className="text-sm md:text-base text-white/50 mt-1 font-fredoka font-medium">
                         {format(new Date(claim.created_at), 'dd MMM yyyy, HH:mm', { locale: vi })}
                       </p>
                     </div>

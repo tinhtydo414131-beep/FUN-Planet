@@ -198,7 +198,7 @@ export function PendingBalanceCard({
               </motion.div>
               
               <h2 
-                className="text-3xl md:text-4xl font-fredoka font-bold mb-3 bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-300 bg-clip-text text-transparent"
+                className="text-3xl md:text-4xl font-fredoka font-bold mb-3 bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-300 bg-clip-text text-transparent tracking-wide"
                 style={{
                   filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
                 }}
@@ -206,7 +206,7 @@ export function PendingBalanceCard({
                 💰 Số Dư Chờ Rút 💰
               </h2>
               <p 
-                className="text-lg md:text-xl font-bold text-white drop-shadow-lg"
+                className="text-xl md:text-2xl font-fredoka font-semibold text-white drop-shadow-lg leading-relaxed"
               >
                 Hoàn thành nhiệm vụ để tích lũy → Rút về ví bất kỳ lúc nào!
               </p>
@@ -237,7 +237,7 @@ export function PendingBalanceCard({
               
               <div className="flex items-center justify-between mb-4 relative z-10">
                 <span 
-                  className="text-xl md:text-2xl font-bold"
+                  className="text-xl md:text-2xl font-fredoka font-bold tracking-wide"
                   style={{
                     color: '#FFFFFF',
                     textShadow: '0 2px 4px rgba(0,0,0,0.5)',
@@ -275,7 +275,7 @@ export function PendingBalanceCard({
 
               <div className="flex items-center justify-between relative z-10">
                 <span 
-                  className="text-lg md:text-xl font-bold"
+                  className="text-xl md:text-2xl font-fredoka font-bold tracking-wide"
                   style={{
                     color: '#FFFFFF',
                     textShadow: '0 1px 3px rgba(0,0,0,0.5)',
@@ -300,7 +300,7 @@ export function PendingBalanceCard({
             {/* Claim Slider */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-white text-lg">Số lượng muốn nhận:</span>
+                <span className="font-fredoka font-bold text-white text-xl tracking-wide">Số lượng muốn nhận:</span>
                 <div className="flex items-center gap-2">
                   <Input
                     type="text"
@@ -366,10 +366,11 @@ export function PendingBalanceCard({
                 <Button
                   onClick={handleClaim}
                   disabled={isClaiming || claimAmount <= 0 || !isConnected}
-                  className="w-full h-16 text-2xl font-bold text-white border-0"
+                  className="w-full h-16 text-2xl font-fredoka font-bold text-amber-900 border-0 tracking-wide"
                   style={{
                     background: 'linear-gradient(135deg, #FFD700 0%, #FFF8DC 25%, #FFD700 50%, #DAA520 75%, #FFD700 100%)',
                     boxShadow: '0 8px 30px rgba(255, 215, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1)',
+                    textShadow: '0 1px 2px rgba(255,255,255,0.3)',
                   }}
                 >
                   {isClaiming ? (

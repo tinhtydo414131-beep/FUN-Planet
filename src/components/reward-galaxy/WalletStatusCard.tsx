@@ -218,7 +218,7 @@ export const WalletStatusCard = ({
                 
                 <div className="relative z-10">
                   <p 
-                    className="text-xl font-bold"
+                    className="text-xl md:text-2xl font-fredoka font-bold tracking-wide"
                     style={{
                       color: '#B8860B',
                       textShadow: '0 0 15px rgba(255,215,0,0.7), 0 1px 2px rgba(255,255,255,0.5)',
