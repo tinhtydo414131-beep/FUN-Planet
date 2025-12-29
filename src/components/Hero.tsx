@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
-import { FunPlanetTopRanking } from "./FunPlanetTopRanking";
-import { FunPlanetCombinedBoard } from "./FunPlanetCombinedBoard";
+import { FunPlanetUnifiedBoard } from "./FunPlanetUnifiedBoard";
 import { motion } from "framer-motion";
 import { MEDIA_URLS } from "@/config/media";
 import { useAuth } from "@/hooks/useAuth";
@@ -154,13 +153,8 @@ export const Hero = () => {
         }} transition={{
           delay: 0.6
         }} className="pt-6 w-full max-w-6xl mx-auto">
-            <div className="grid gap-4 md:grid-cols-2 items-stretch">
-              {/* Left Column: Combined Honor + Legends Board */}
-              <FunPlanetCombinedBoard />
-              
-              {/* Right Column: Top Ranking Board */}
-              <FunPlanetTopRanking />
-            </div>
+            {/* Unified Board with Honor + Legends + Top Ranking */}
+            <FunPlanetUnifiedBoard />
           </motion.div>
 
           {/* Scroll indicator */}
