@@ -374,7 +374,7 @@ export const FunPlanetTopRanking = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl p-4 sm:p-6 shadow-2xl"
+      className="relative overflow-hidden rounded-3xl p-4 sm:p-6 shadow-2xl h-full"
       style={{
         background:
           "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 100%)",
