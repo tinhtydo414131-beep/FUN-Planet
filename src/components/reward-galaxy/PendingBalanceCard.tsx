@@ -173,12 +173,12 @@ export function PendingBalanceCard({
                 transition={{ duration: 3, repeat: Infinity }}
                 className="inline-block mb-4"
               >
-                {/* 3D Gold gift icon */}
+                {/* Purple circle with money bag icon */}
                 <div 
-                  className="w-24 h-24 rounded-full flex items-center justify-center relative"
+                  className="w-20 h-20 rounded-full flex items-center justify-center relative"
                   style={{
-                    background: 'linear-gradient(135deg, #FFD700, #DAA520, #B8860B)',
-                    boxShadow: '0 10px 40px rgba(255, 215, 0, 0.6), inset 0 3px 6px rgba(255,255,255,0.5), inset 0 -3px 6px rgba(0,0,0,0.2)',
+                    background: 'linear-gradient(135deg, #A855F7 0%, #7E22CE 50%, #581C87 100%)',
+                    boxShadow: '0 10px 40px rgba(168, 85, 247, 0.5), inset 0 3px 6px rgba(255,255,255,0.3), inset 0 -3px 6px rgba(0,0,0,0.2)',
                   }}
                 >
                   {/* Shine on icon */}
@@ -188,25 +188,20 @@ export function PendingBalanceCard({
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%)',
                     }}
                   />
-                  <Gift className="w-12 h-12 text-white drop-shadow-lg relative z-10" />
+                  <Coins className="w-10 h-10 text-white drop-shadow-lg relative z-10" />
                 </div>
               </motion.div>
               
               <h2 
-                className="text-4xl md:text-5xl font-fredoka font-bold mb-3"
+                className="text-3xl md:text-4xl font-fredoka font-bold mb-3 bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-300 bg-clip-text text-transparent"
                 style={{
-                  color: '#FFD700',
-                  textShadow: '0 0 30px #FFD700, 0 3px 6px rgba(0,0,0,0.5)',
+                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
                 }}
               >
                 💰 Số Dư Chờ Rút 💰
               </h2>
               <p 
-                className="text-xl md:text-2xl font-bold"
-                style={{
-                  color: '#FFFFFF',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                }}
+                className="text-lg md:text-xl font-bold text-white drop-shadow-lg"
               >
                 Hoàn thành nhiệm vụ để tích lũy → Rút về ví bất kỳ lúc nào!
               </p>
