@@ -40,7 +40,7 @@ export function DailyLoginRewardCard({
       
       {/* Card with mint green to warm yellow gradient */}
       <Card className="relative overflow-hidden bg-gradient-to-br from-[#98FB98]/90 via-[#F0FFF0]/95 to-[#FFFACD]/90 border-0 rounded-[28px] backdrop-blur-sm shadow-xl shadow-[#98FB98]/25 h-full">
-        <CardContent className="p-7">
+        <CardContent className="p-4 md:p-5">
           {/* Sparkle effects */}
           <motion.div
             className="absolute top-5 left-5 w-3 h-3 rounded-full bg-[#FFD700]"
@@ -61,9 +61,9 @@ export function DailyLoginRewardCard({
             style={{ boxShadow: '0 0 8px #87CEEB' }}
           />
 
-          {/* Planet Icon with glow - BIGGER */}
+          {/* Planet Icon with glow */}
           <motion.div
-            className="relative w-24 h-24 mx-auto mb-5"
+            className="relative w-16 h-16 md:w-20 md:h-20 mx-auto mb-4"
             animate={{ rotate: 360 }}
             transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
           >
@@ -77,16 +77,16 @@ export function DailyLoginRewardCard({
               <div className="absolute inset-0 rounded-full bg-white/25 blur-sm" />
               {/* Highlight */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
-              <Calendar className="w-12 h-12 text-white relative z-10" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
+              <Calendar className="w-8 h-8 md:w-10 md:h-10 text-white relative z-10" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
             </div>
             
-            {/* Orbiting star with sparkle - BIGGER */}
+            {/* Orbiting star with sparkle */}
             <motion.div
-              className="absolute -top-3 -right-3"
+              className="absolute -top-2 -right-2"
               animate={{ rotate: -360 }}
               transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
             >
-              <Star className="w-8 h-8 text-[#FFD700] fill-[#FFD700]" style={{ filter: 'drop-shadow(0 0 12px #FFD700)' }} />
+              <Star className="w-6 h-6 text-[#FFD700] fill-[#FFD700]" style={{ filter: 'drop-shadow(0 0 12px #FFD700)' }} />
             </motion.div>
             
             {/* Additional sparkle */}
@@ -99,9 +99,9 @@ export function DailyLoginRewardCard({
             </motion.div>
           </motion.div>
 
-          {/* Title - gradient text, BIGGER */}
+          {/* Title - gradient text */}
           <h3 
-            className="text-2xl md:text-3xl font-fredoka font-bold text-center mb-2 tracking-wide"
+            className="text-lg md:text-xl font-fredoka font-bold text-center mb-1 tracking-wide"
             style={{
               background: 'linear-gradient(135deg, #2E7D32, #4CAF50, #2E7D32)',
               WebkitBackgroundClip: 'text',
@@ -111,12 +111,12 @@ export function DailyLoginRewardCard({
           >
             Đăng Nhập Hàng Ngày
           </h3>
-          <p className="text-[#2E7D32] text-lg md:text-xl text-center mb-4 font-fredoka font-semibold tracking-wide" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>Daily Login Reward</p>
+          <p className="text-[#2E7D32] text-sm md:text-base text-center mb-3 font-fredoka font-semibold tracking-wide" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>Daily Login Reward</p>
 
-          {/* Amount with gold shimmer - BIGGER */}
-          <div className="text-center mb-5">
+          {/* Amount with gold shimmer */}
+          <div className="text-center mb-3">
             <motion.span 
-              className="text-4xl md:text-5xl font-fredoka font-bold"
+              className="text-2xl md:text-3xl font-fredoka font-bold"
               style={{
                 background: 'linear-gradient(135deg, #FFD700, #FFA500, #FFD700)',
                 backgroundSize: '200% 200%',
@@ -133,7 +133,7 @@ export function DailyLoginRewardCard({
               5,000
             </motion.span>
             <span 
-              className="text-xl ml-2 font-bold"
+              className="text-base md:text-lg ml-1.5 font-bold"
               style={{
                 color: '#B8860B',
                 textShadow: '0 0 15px rgba(255,215,0,0.7)',
@@ -144,14 +144,14 @@ export function DailyLoginRewardCard({
           </div>
 
           {/* Description */}
-          <p className="text-[#2E7D32] text-base md:text-lg text-center mb-5 font-fredoka font-semibold leading-relaxed" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>
+          <p className="text-[#2E7D32] text-xs md:text-sm text-center mb-4 font-fredoka font-semibold leading-relaxed" style={{ textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>
             Mỗi ngày đăng nhập nhận quà từ Cha Vũ Trụ 🌟
           </p>
 
           {/* Status Badge - Received today */}
           {!canClaim && !isChecking && (
             <Badge 
-              className="w-full justify-center py-3 mb-4 font-bold text-base"
+              className="w-full justify-center py-2 mb-3 font-bold text-sm"
               style={{
                 background: 'linear-gradient(135deg, #98FB98, #90EE90)',
                 color: '#1B5E20',
@@ -164,11 +164,11 @@ export function DailyLoginRewardCard({
             </Badge>
           )}
 
-          {/* Claim Button - Pastel mint green, BIGGER */}
+          {/* Claim Button - Pastel mint green */}
           <Button
             onClick={onClaim}
             disabled={!canClaim || isClaiming || isChecking}
-            className={`w-full font-fredoka font-bold py-6 rounded-2xl transition-all relative overflow-hidden text-lg ${
+            className={`w-full font-fredoka font-bold py-4 rounded-xl transition-all relative overflow-hidden text-sm md:text-base ${
               canClaim
                 ? 'bg-gradient-to-r from-[#98FB98] to-[#7CFC00] hover:from-[#7CFC00] hover:to-[#98FB98] text-[#1B5E20] shadow-lg shadow-[#98FB98]/50 border-2 border-[#7CFC00]/40'
                 : 'bg-gradient-to-r from-[#DDA0DD]/80 to-[#E6E6FA]/80 text-[#6B5B95] border-2 border-[#DDA0DD]/30'
@@ -186,25 +186,25 @@ export function DailyLoginRewardCard({
               />
             )}
             
-            <span className="relative flex items-center justify-center gap-2">
+            <span className="relative flex items-center justify-center gap-1.5">
               {isChecking ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Đang kiểm tra...
                 </>
               ) : isClaiming ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Đang nhận...
                 </>
               ) : canClaim ? (
                 <>
-                  <Star className="w-6 h-6" />
+                  <Star className="w-5 h-5" />
                   Nhận Thưởng
                 </>
               ) : (
-                <span className="text-lg md:text-xl font-fredoka font-bold tracking-wide">
-                  <CalendarCheck className="w-6 h-6 inline mr-2" />
+                <span className="text-sm md:text-base font-fredoka font-bold tracking-wide">
+                  <CalendarCheck className="w-5 h-5 inline mr-1.5" />
                   Quay lại ngày mai 😊
                 </span>
               )}
