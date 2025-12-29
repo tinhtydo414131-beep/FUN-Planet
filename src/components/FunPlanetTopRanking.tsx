@@ -433,22 +433,22 @@ export const FunPlanetTopRanking = () => {
       <div 
         className="absolute rounded-3xl pointer-events-none"
         style={{
-          inset: "-24px",
+          inset: "-12px",
           background: "transparent",
           boxShadow: `
-            0 0 50px rgba(255, 215, 0, 0.6),
-            0 0 80px rgba(255, 165, 0, 0.4),
-            0 0 120px rgba(255, 215, 0, 0.25)
+            0 0 30px rgba(255, 215, 0, 0.5),
+            0 0 50px rgba(255, 165, 0, 0.3),
+            0 0 80px rgba(255, 215, 0, 0.2)
           `,
           zIndex: -15,
         }}
       />
 
-      {/* Luxurious Gold Metallic Border - Viền vàng kim loại 18px */}
+      {/* Luxurious Gold Metallic Border - Viền vàng kim loại 8px */}
       <div
         className="absolute rounded-3xl"
         style={{
-          inset: "-18px",
+          inset: "-8px",
           background: `
             linear-gradient(135deg, 
               #FFD700 0%, 
@@ -465,10 +465,10 @@ export const FunPlanetTopRanking = () => {
           backgroundSize: "200% 200%",
           animation: "metallic-shine 4s ease infinite",
           boxShadow: `
-            0 0 15px rgba(255, 215, 0, 0.6),
-            0 0 30px rgba(255, 215, 0, 0.4),
-            inset 0 2px 4px rgba(255, 255, 255, 0.5),
-            inset 0 -2px 4px rgba(0, 0, 0, 0.3)
+            0 0 10px rgba(255, 215, 0, 0.5),
+            0 0 20px rgba(255, 215, 0, 0.3),
+            inset 0 1px 3px rgba(255, 255, 255, 0.5),
+            inset 0 -1px 3px rgba(0, 0, 0, 0.3)
           `,
           zIndex: -10,
         }}
@@ -519,8 +519,8 @@ export const FunPlanetTopRanking = () => {
       <div 
         className="absolute inset-0 rounded-3xl pointer-events-none"
         style={{
-          border: "4px solid rgba(255, 215, 0, 0.8)",
-          boxShadow: "inset 0 0 35px rgba(255, 215, 0, 0.4)",
+          border: "2px solid rgba(255, 215, 0, 0.7)",
+          boxShadow: "inset 0 0 25px rgba(255, 215, 0, 0.3)",
           zIndex: 5,
         }}
       />
