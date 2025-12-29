@@ -480,7 +480,7 @@ export const FunPlanetLegendsBoard = () => {
                   className="space-y-2"
                 >
                   {donors.length === 0 ? (
-                    <div className="text-center text-white/60 py-8">
+                    <div className="text-center py-8" style={{ color: 'white' }}>
                       <Heart className="h-8 w-8 mx-auto mb-2 text-rose-400" />
                       <p>Chưa có ai ủng hộ. Hãy là người đầu tiên!</p>
                     </div>
