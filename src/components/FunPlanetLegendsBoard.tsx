@@ -443,7 +443,7 @@ export const FunPlanetLegendsBoard = () => {
                             boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined,
                           }}
                         >
-                          <span className="text-lg w-8 text-center font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                          <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
                             {getRankIcon(rank)}
                           </span>
                           <Avatar className="h-10 w-10 border-2 border-white/30">
@@ -453,17 +453,17 @@ export const FunPlanetLegendsBoard = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <div className="font-semibold truncate text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{creator.username}</div>
+                            <div className="font-semibold truncate !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{creator.username}</div>
                             <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                           </div>
                           <div className="text-right">
-                            <div className="flex items-center gap-1 text-sm text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                            <div className="flex items-center gap-1 text-sm !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
                               <Gamepad2 className="h-3 w-3 text-teal-400" />
-                              <span className="text-white">{creator.games_count}</span>
+                              <span className="!text-white">{creator.games_count}</span>
                             </div>
-                            <div className="flex items-center gap-1 text-xs text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                              <Play className="h-3 w-3 text-white" />
-                              <span className="text-white">{creator.total_plays}</span>
+                            <div className="flex items-center gap-1 text-xs !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                              <Play className="h-3 w-3 !text-white" />
+                              <span className="!text-white">{creator.total_plays}</span>
                             </div>
                           </div>
                         </motion.div>
@@ -501,7 +501,7 @@ export const FunPlanetLegendsBoard = () => {
                             boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined,
                           }}
                         >
-                          <span className="text-lg w-8 text-center font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+                          <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
                             {getRankIcon(rank)}
                           </span>
                           <Avatar className="h-10 w-10 border-2 border-white/30">
@@ -519,15 +519,15 @@ export const FunPlanetLegendsBoard = () => {
                             )}
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-white truncate drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{donor.username}</div>
+                            <div className="font-semibold !text-white truncate drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{donor.username}</div>
                             <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                           </div>
                           <div className="text-right">
                             <div className="flex items-center gap-1 text-sm font-bold text-rose-300 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
                               <Gem className="h-3 w-3" />
-                              <span className="text-white">{donor.total_donated.toLocaleString()}</span>
+                              <span className="!text-white">{donor.total_donated.toLocaleString()}</span>
                             </div>
-                            <div className="text-[10px] text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">CAMLY</div>
+                            <div className="text-[10px] !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">CAMLY</div>
                           </div>
                         </motion.div>
                       );
