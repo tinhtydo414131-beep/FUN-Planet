@@ -1070,26 +1070,22 @@ export const FunPlanetUnifiedBoard = () => {
           </div>
 
           {/* =============== VERTICAL GOLD METAL BAR =============== */}
-          <div className="hidden md:block w-2 flex-shrink-0 relative z-10">
+          <div className="hidden md:block w-1 flex-shrink-0 relative z-10">
             <div 
               className="h-full w-full"
               style={{
                 background: `linear-gradient(180deg, 
                   transparent 0%, 
-                  #FFD700 5%, 
-                  #FFFACD 20%,
-                  #FFD700 40%, 
-                  #B8860B 50%,
-                  #FFD700 60%,
-                  #FFFACD 80%,
-                  #FFD700 95%, 
+                  #FFD700 15%, 
+                  #FFFACD 30%,
+                  #FFD700 50%, 
+                  #FFFACD 70%,
+                  #FFD700 85%, 
                   transparent 100%
                 )`,
                 boxShadow: `
-                  0 0 15px rgba(255, 215, 0, 0.6),
-                  0 0 30px rgba(255, 215, 0, 0.3),
-                  inset 1px 0 2px rgba(255, 255, 255, 0.5),
-                  inset -1px 0 2px rgba(0, 0, 0, 0.3)
+                  0 0 10px rgba(255, 215, 0, 0.6),
+                  0 0 20px rgba(255, 215, 0, 0.3)
                 `,
               }}
             />
