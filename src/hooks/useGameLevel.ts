@@ -112,7 +112,7 @@ export const useGameLevel = (gameId: string) => {
             .update({ wallet_balance: newBalance })
             .eq("id", user.id);
           
-          toast.success(`🎉 Hoàn thành Level ${level}! +${coinReward} Camly Coins!`);
+          toast.success(`🎉 Hoàn thành Level ${level}! +${coinReward} Game Coins!`);
         }
       }
     } catch (error) {
