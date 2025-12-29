@@ -36,8 +36,34 @@ export default function Leaderboard() {
     username: string;
   } | null>(null);
   const [claimingReward, setClaimingReward] = useState(false);
+  const [claimCooldown, setClaimCooldown] = useState(0);
+  const [hasClaimedToday, setHasClaimedToday] = useState(false);
   const [userRank, setUserRank] = useState<number | null>(null);
   const [userScore, setUserScore] = useState<number>(0);
+
+  // Cooldown timer effect
+  useEffect(() => {
+    if (claimCooldown > 0) {
+      const timer = setTimeout(() => setClaimCooldown(claimCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [claimCooldown]);
+
+  // Check if user already claimed today
+  useEffect(() => {
+    const checkClaimedToday = async () => {
+      if (!user || userScore <= 0) return;
+      
+      const { data } = await supabase.rpc('check_duplicate_ranking_claim', {
+        p_user_id: user.id,
+        p_score: userScore
+      });
+      
+      setHasClaimedToday(data === true);
+    };
+    
+    checkClaimedToday();
+  }, [user, userScore]);
   useEffect(() => {
     fetchLeaderboard();
   }, [user]);
@@ -68,37 +94,50 @@ export default function Leaderboard() {
     }
   };
   const calculateCamlyCoins = (points: number) => points * POINTS_TO_CAMLY_RATIO;
+  
   const claimRankingReward = async () => {
     if (!user || userScore <= 0) {
       toast.error("No points to claim!");
       return;
     }
+    
+    // Prevent spam clicks
+    if (claimingReward || claimCooldown > 0 || hasClaimedToday) {
+      return;
+    }
+    
     setClaimingReward(true);
+    
     try {
       const camlyAmount = calculateCamlyCoins(userScore);
 
-      // Get current balance
-      const {
-        data: current
-      } = await supabase.from('web3_rewards').select('camly_balance').eq('user_id', user.id).maybeSingle();
-      const newBalance = (Number(current?.camly_balance) || 0) + camlyAmount;
-
-      // Update or insert rewards
-      await supabase.from('web3_rewards').upsert({
-        user_id: user.id,
-        camly_balance: newBalance
-      }, {
-        onConflict: 'user_id'
+      // Use the safe RPC function with duplicate prevention
+      const { data, error } = await supabase.rpc('claim_ranking_reward_safe', {
+        p_user_id: user.id,
+        p_score: userScore,
+        p_amount: camlyAmount
       });
 
-      // Record transaction
-      await supabase.from('web3_reward_transactions').insert({
-        user_id: user.id,
-        amount: camlyAmount,
-        reward_type: 'ranking_reward',
-        description: `Ranking reward: ${userScore} points × 100 = ${camlyAmount.toLocaleString()} Camly`
-      });
+      if (error) {
+        console.error('Error claiming reward:', error);
+        toast.error('Failed to claim reward');
+        return;
+      }
+
+      const result = data as { success: boolean; error?: string; new_balance?: number; claimed_amount?: number };
+
+      if (!result.success) {
+        toast.error(result.error || 'Failed to claim reward');
+        if (result.error?.includes('Already claimed')) {
+          setHasClaimedToday(true);
+        }
+        return;
+      }
+
       toast.success(`🎉 Claimed ${camlyAmount.toLocaleString()} Camly Coins!`);
+      setHasClaimedToday(true);
+      setClaimCooldown(60); // 60 second cooldown
+      
     } catch (error) {
       console.error('Error claiming reward:', error);
       toast.error('Failed to claim reward');
@@ -181,9 +220,20 @@ export default function Leaderboard() {
                       </p>
                     </div>
                   </div>
-                  <Button onClick={claimRankingReward} disabled={claimingReward} className="w-full sm:w-auto" size="lg">
+                  <Button 
+                    onClick={claimRankingReward} 
+                    disabled={claimingReward || claimCooldown > 0 || hasClaimedToday} 
+                    className="w-full sm:w-auto" 
+                    size="lg"
+                  >
                     <Gift className="w-5 h-5 mr-2" />
-                    {claimingReward ? 'Claiming...' : 'Claim Reward'}
+                    {hasClaimedToday 
+                      ? 'Đã nhận hôm nay ✓' 
+                      : claimCooldown > 0 
+                        ? `Chờ ${claimCooldown}s...` 
+                        : claimingReward 
+                          ? 'Đang nhận...' 
+                          : 'Claim Reward'}
                   </Button>
                 </div>
               </CardContent>
