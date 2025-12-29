@@ -155,7 +155,7 @@ export const RewardGalaxyHomeBanner = () => {
               >
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <Coins className="w-5 h-5 text-yellow-500" />
-                  <span className="text-sm font-bold text-foreground/70">Đang Chờ</span>
+                  <span className="text-sm font-bold text-foreground/70">Pending Rewards</span>
                 </div>
                 <p 
                   className="text-3xl font-black"
@@ -164,7 +164,10 @@ export const RewardGalaxyHomeBanner = () => {
                     textShadow: '0 0 15px rgba(255,215,0,0.8)',
                   }}
                 >
-                  {isLoading ? '...' : `${formatBalance(pendingBalance)} CAMLY`}
+                  {isLoading ? '...' : formatBalance(pendingBalance)}
+                </p>
+                <p className="text-xs text-foreground/60 mt-1">
+                  (Chưa claim)
                 </p>
               </motion.div>
 
