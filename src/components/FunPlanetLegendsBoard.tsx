@@ -123,17 +123,28 @@ export const FunPlanetLegendsBoard = () => {
         );
       }
 
-      // Fetch top donors
+      // Fetch top donors - fetch donations first, then profiles separately
       const { data: donationsData } = await supabase
         .from("platform_donations")
-        .select("user_id, amount, is_anonymous, profiles!platform_donations_user_id_fkey(id, username, avatar_url)")
+        .select("user_id, amount, is_anonymous, message")
         .order("created_at", { ascending: false });
 
-      if (donationsData) {
+      if (donationsData && donationsData.length > 0) {
+        // Get unique user IDs
+        const userIds = [...new Set(donationsData.map(d => d.user_id))];
+        
+        // Fetch profiles separately
+        const { data: profilesData } = await supabase
+          .from("profiles")
+          .select("id, username, avatar_url")
+          .in("id", userIds);
+        
+        const profileMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+        
         const donorMap = new Map<string, Donor>();
         
         for (const donation of donationsData) {
-          const profile = donation.profiles as any;
+          const profile = profileMap.get(donation.user_id);
           if (!profile) continue;
           
           const existing = donorMap.get(profile.id);
@@ -145,7 +156,7 @@ export const FunPlanetLegendsBoard = () => {
               username: donation.is_anonymous ? "Anonymous" : profile.username,
               avatar_url: donation.is_anonymous ? null : profile.avatar_url,
               total_donated: donation.amount,
-              is_anonymous: donation.is_anonymous,
+              is_anonymous: donation.is_anonymous || false,
             });
           }
         }
