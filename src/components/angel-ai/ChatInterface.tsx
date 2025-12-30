@@ -290,11 +290,11 @@ export function ChatInterface() {
           )}
 
           {/* Messages */}
-          {messages.map((message, index) => (
+          {messages.map((message, idx) => (
             <ChatMessageBubble
-              key={index}
+              key={message.id || `msg-${message.created_at}-${idx}`}
               message={message}
-              isStreaming={isLoading && index === messages.length - 1 && message.role === 'assistant'}
+              isStreaming={isLoading && idx === messages.length - 1 && message.role === 'assistant'}
               onSpeak={speak}
               isSpeaking={isSpeaking}
               onStopSpeaking={stopSpeaking}

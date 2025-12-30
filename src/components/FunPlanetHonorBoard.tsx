@@ -11,32 +11,42 @@ interface Stats {
   totalCamly: number;
 }
 
-const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?: number }) => {
-  const [count, setCount] = useState(0);
+// Optimized AnimatedCounter - throttled updates for better performance
+const AnimatedCounter = ({ value, duration = 1500 }: { value: number; duration?: number }) => {
+  const [count, setCount] = useState(value);
   const prevValueRef = useRef(value);
+  const frameRef = useRef<number>();
   
   useEffect(() => {
-    let startTime: number;
-    let animationFrame: number;
+    if (prevValueRef.current === value) return;
+    
     const startValue = prevValueRef.current;
+    const startTime = performance.now();
+    const diff = value - startValue;
+    
+    if (Math.abs(diff) < 1) {
+      setCount(value);
+      prevValueRef.current = value;
+      return;
+    }
     
     const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
-      
-      // Smooth interpolation from previous value to new value
-      setCount(Math.floor(startValue + (value - startValue) * progress));
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(startValue + diff * easeProgress));
       
       if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
+        frameRef.current = requestAnimationFrame(animate);
       } else {
         prevValueRef.current = value;
       }
     };
     
-    animationFrame = requestAnimationFrame(animate);
-    
-    return () => cancelAnimationFrame(animationFrame);
+    frameRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    };
   }, [value, duration]);
   
   return <span className="text-white">{count.toLocaleString()}</span>;
@@ -44,11 +54,11 @@ const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?:
 
 // Floating particles configuration
 const floatingParticles = [
-  { emoji: "👤", delay: 0, x: "10%", y: "15%", duration: 4 },
-  { emoji: "🎮", delay: 0.5, x: "85%", y: "25%", duration: 5 },
-  { emoji: "▶️", delay: 1, x: "12%", y: "65%", duration: 4.5 },
-  { emoji: "📤", delay: 1.5, x: "82%", y: "70%", duration: 3.5 },
-  { emoji: "💎", delay: 2, x: "50%", y: "8%", duration: 4 },
+  { id: "p1", emoji: "👤", delay: 0, x: "10%", y: "15%", duration: 4 },
+  { id: "p2", emoji: "🎮", delay: 0.5, x: "85%", y: "25%", duration: 5 },
+  { id: "p3", emoji: "▶️", delay: 1, x: "12%", y: "65%", duration: 4.5 },
+  { id: "p4", emoji: "📤", delay: 1.5, x: "82%", y: "70%", duration: 3.5 },
+  { id: "p5", emoji: "💎", delay: 2, x: "50%", y: "8%", duration: 4 },
 ];
 
 export const FunPlanetHonorBoard = () => {
@@ -119,56 +129,51 @@ export const FunPlanetHonorBoard = () => {
     }
   }, []);
 
-  // Real-time subscriptions
+  // Debounced fetch to prevent rapid consecutive calls
+  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const debouncedFetch = useCallback(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchStats();
+    }, 500);
+  }, [fetchStats]);
+
+  // Real-time subscriptions - single combined channel
   useEffect(() => {
     fetchStats();
 
-    // Subscribe to profiles changes
-    const profilesChannel = supabase
-      .channel('honor_board_profiles')
+    const combinedChannel = supabase
+      .channel('honor_board_realtime')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'profiles' },
-        () => fetchStats()
+        debouncedFetch
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'uploaded_games' },
+        debouncedFetch
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'game_plays' },
+        debouncedFetch
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'lovable_games' },
+        debouncedFetch
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') setIsLive(true);
       });
 
-    // Subscribe to uploaded_games changes
-    const gamesChannel = supabase
-      .channel('honor_board_games')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'uploaded_games' },
-        () => fetchStats()
-      )
-      .subscribe();
-
-    // Subscribe to game_plays changes
-    const playsChannel = supabase
-      .channel('honor_board_plays')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'game_plays' },
-        () => fetchStats()
-      )
-      .subscribe();
-
-    // Subscribe to lovable_games changes
-    const lovableGamesChannel = supabase
-      .channel('honor_board_lovable_games')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'lovable_games' },
-        () => fetchStats()
-      )
-      .subscribe();
-
     return () => {
       setIsLive(false);
-      supabase.removeChannel(profilesChannel);
-      supabase.removeChannel(gamesChannel);
-      supabase.removeChannel(playsChannel);
-      supabase.removeChannel(lovableGamesChannel);
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      supabase.removeChannel(combinedChannel);
     };
-  }, [fetchStats]);
+  }, [fetchStats, debouncedFetch]);
 
   // Calculate max value for progress bar percentage
   const maxValue = Math.max(stats.totalUsers, stats.totalGames, stats.totalPlays, stats.totalUploads, stats.totalCamly, 1);
@@ -263,9 +268,9 @@ export const FunPlanetHonorBoard = () => {
         />
 
         {/* Floating Particles */}
-        {floatingParticles.map((particle, index) => (
+        {floatingParticles.map((particle) => (
           <motion.div
-            key={index}
+            key={particle.id}
             className="absolute text-sm pointer-events-none z-20"
             style={{ left: particle.x, top: particle.y }}
             initial={{ opacity: 0, scale: 0 }}
