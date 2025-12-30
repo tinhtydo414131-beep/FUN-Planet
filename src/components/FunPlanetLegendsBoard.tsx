@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, Gamepad2, Gem, Play, Heart, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,11 +56,11 @@ const getRankIcon = (rank: number) => {
 };
 
 const floatingParticles = [
-  { emoji: "👑", delay: 0, x: "8%", y: "20%", duration: 4 },
-  { emoji: "💎", delay: 0.5, x: "88%", y: "15%", duration: 5 },
-  { emoji: "✨", delay: 1, x: "15%", y: "75%", duration: 4.5 },
-  { emoji: "🎮", delay: 1.5, x: "85%", y: "80%", duration: 3.5 },
-  { emoji: "💜", delay: 2, x: "50%", y: "5%", duration: 4 },
+  { id: "lp1", emoji: "👑", delay: 0, x: "8%", y: "20%", duration: 4 },
+  { id: "lp2", emoji: "💎", delay: 0.5, x: "88%", y: "15%", duration: 5 },
+  { id: "lp3", emoji: "✨", delay: 1, x: "15%", y: "75%", duration: 4.5 },
+  { id: "lp4", emoji: "🎮", delay: 1.5, x: "85%", y: "80%", duration: 3.5 },
+  { id: "lp5", emoji: "💜", delay: 2, x: "50%", y: "5%", duration: 4 },
 ];
 
 export const FunPlanetLegendsBoard = () => {
@@ -178,46 +178,47 @@ export const FunPlanetLegendsBoard = () => {
     }
   }, []);
 
-  // Real-time subscriptions
+  // Debounced fetch to prevent rapid consecutive calls
+  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const debouncedFetch = useCallback(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchData();
+    }, 500);
+  }, [fetchData]);
+
+  // Real-time subscriptions - single combined channel
   useEffect(() => {
     fetchData();
 
-    // Subscribe to uploaded_games changes
-    const gamesChannel = supabase
-      .channel('legends_games')
+    const combinedChannel = supabase
+      .channel('legends_board_realtime')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'uploaded_games' },
-        () => fetchData()
+        debouncedFetch
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'game_plays' },
+        debouncedFetch
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'platform_donations' },
+        debouncedFetch
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') setIsLive(true);
       });
 
-    // Subscribe to game_plays changes
-    const playsChannel = supabase
-      .channel('legends_plays')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'game_plays' },
-        () => fetchData()
-      )
-      .subscribe();
-
-    // Subscribe to platform_donations changes
-    const donationsChannel = supabase
-      .channel('legends_donations')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'platform_donations' },
-        () => fetchData()
-      )
-      .subscribe();
-
     return () => {
       setIsLive(false);
-      supabase.removeChannel(gamesChannel);
-      supabase.removeChannel(playsChannel);
-      supabase.removeChannel(donationsChannel);
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      supabase.removeChannel(combinedChannel);
     };
-  }, [fetchData]);
+  }, [fetchData, debouncedFetch]);
 
   return (
     <>
@@ -302,9 +303,9 @@ export const FunPlanetLegendsBoard = () => {
           />
 
           {/* Floating Particles */}
-          {floatingParticles.map((particle, index) => (
+          {floatingParticles.map((particle) => (
             <motion.div
-              key={index}
+              key={particle.id}
               className="absolute text-sm pointer-events-none z-20"
               style={{ left: particle.x, top: particle.y }}
               initial={{ opacity: 0, scale: 0 }}

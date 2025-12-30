@@ -432,8 +432,8 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {historyGroups.map((group, groupIndex) => (
-                        <div key={groupIndex} className="space-y-2">
+                      {historyGroups.map((group) => (
+                        <div key={`history-${group.date}`} className="space-y-2">
                           <div className="flex items-center gap-2 text-xs text-muted-foreground sticky top-0 bg-white/80 dark:bg-slate-900/80 py-1 backdrop-blur-sm">
                             <div className="w-4 h-4 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
                               <Star className="w-2.5 h-2.5 text-yellow-600" />
@@ -443,9 +443,9 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                           </div>
                           
                           <div className="space-y-2 pl-6">
-                            {group.messages.slice(0, 6).map((msg, msgIndex) => (
+                            {group.messages.slice(0, 6).map((msg) => (
                               <div
-                                key={msgIndex}
+                                key={msg.id || `msg-${msg.created_at}`}
                                 className={`text-xs p-2 rounded-lg ${
                                   msg.role === 'user'
                                     ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200'
@@ -505,8 +505,8 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                   )}
 
                   {/* Chat History */}
-                  {messages.map((msg, index) => (
-                    <MessageBubble key={index} message={msg} />
+                  {messages.map((msg) => (
+                    <MessageBubble key={msg.id || `msg-${msg.created_at}`} message={msg} />
                   ))}
 
                   {/* Loading Indicator */}
