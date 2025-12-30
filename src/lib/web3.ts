@@ -9,6 +9,10 @@ const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
 
+// Dedicated Donation Wallet for FUN Planet (BSC)
+// This wallet receives on-chain CAMLY token donations
+export const DONATION_WALLET_ADDRESS = '0x742d35Cc6634C0532925a3b844Bc9e7595f8fE00';
+
 // Reward amounts
 export const REWARDS = {
   FIRST_WALLET_CONNECT: 50000,

@@ -3,13 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Checkbox } from "./ui/checkbox";
 import { Textarea } from "./ui/textarea";
-import { Gem, Heart, AlertTriangle, Sparkles, X } from "lucide-react";
+import { Gem, Heart, AlertTriangle, Sparkles, X, Wallet, Link2, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { fireDiamondConfetti } from "./DiamondConfetti";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { ethers } from "ethers";
+import { CAMLY_CONTRACT_ADDRESS, DONATION_WALLET_ADDRESS, CAMLY_ABI } from "@/lib/web3";
 
 interface DonateCAMLYModalProps {
   open: boolean;
@@ -19,23 +21,36 @@ interface DonateCAMLYModalProps {
 
 const QUICK_AMOUNTS = [10000, 50000, 100000, 500000, 1000000];
 const MIN_AMOUNT = 1000;
+const CAMLY_DECIMALS = 3;
+
+type DonationType = "internal" | "onchain";
 
 export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYModalProps) => {
   const { user } = useAuth();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { switchChain } = useSwitchChain();
+  
   const [amount, setAmount] = useState<string>("");
   const [message, setMessage] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [balance, setBalance] = useState(0);
+  const [onchainBalance, setOnchainBalance] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [donatedAmount, setDonatedAmount] = useState(0);
+  const [donationType, setDonationType] = useState<DonationType>("internal");
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && user) {
       fetchBalance();
+      if (isConnected && address) {
+        fetchOnchainBalance();
+      }
     }
-  }, [open, user]);
+  }, [open, user, isConnected, address]);
 
   const fetchBalance = async () => {
     if (!user) return;
@@ -50,16 +65,115 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
     }
   };
 
+  const fetchOnchainBalance = async () => {
+    if (!window.ethereum || !address) return;
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, provider);
+      const balanceWei = await contract.balanceOf(address);
+      const balanceFormatted = parseFloat(ethers.formatUnits(balanceWei, CAMLY_DECIMALS));
+      setOnchainBalance(Math.floor(balanceFormatted));
+    } catch (error) {
+      console.error("Error fetching on-chain balance:", error);
+    }
+  };
+
   const numericAmount = parseInt(amount) || 0;
-  const isValidAmount = numericAmount >= MIN_AMOUNT && numericAmount <= balance;
+  const currentBalance = donationType === "internal" ? balance : onchainBalance;
+  const isValidAmount = numericAmount >= MIN_AMOUNT && numericAmount <= currentBalance;
 
   const handleQuickAmount = (value: number) => {
-    if (value <= balance) {
+    if (value <= currentBalance) {
       setAmount(value.toString());
     }
   };
 
-  const handleDonate = async () => {
+  const handleOnchainDonate = async () => {
+    if (!address || !window.ethereum) {
+      toast.error("Vui lòng kết nối ví trước!");
+      return;
+    }
+
+    // Check if on BSC mainnet (56)
+    if (chainId !== 56) {
+      toast.info("Đang chuyển sang BSC Mainnet...");
+      try {
+        await switchChain({ chainId: 56 });
+      } catch (error) {
+        toast.error("Không thể chuyển mạng. Vui lòng chuyển thủ công sang BSC.");
+        return;
+      }
+    }
+
+    setLoading(true);
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, signer);
+
+      const amountWei = ethers.parseUnits(numericAmount.toString(), CAMLY_DECIMALS);
+
+      toast.info("Vui lòng xác nhận giao dịch trong ví... 🦊");
+
+      const tx = await contract.transfer(DONATION_WALLET_ADDRESS, amountWei);
+      toast.success("Giao dịch đã gửi! Đang chờ xác nhận... ⏳");
+
+      const receipt = await tx.wait();
+      const finalTxHash = receipt.hash || tx.hash;
+      setTxHash(finalTxHash);
+
+      // Log on-chain donation to database
+      const { error: donationError } = await supabase
+        .from("platform_donations")
+        .insert({
+          user_id: user?.id,
+          amount: numericAmount,
+          message: message || null,
+          is_anonymous: isAnonymous,
+          is_onchain: true,
+          tx_hash: finalTxHash,
+          wallet_address: address,
+          donation_type: "onchain",
+        });
+
+      if (donationError) console.error("Error logging donation:", donationError);
+
+      // Log transaction
+      if (user) {
+        await supabase.from("camly_coin_transactions").insert({
+          user_id: user.id,
+          amount: -numericAmount,
+          transaction_type: "onchain_donation",
+          description: `On-chain donation to FUN Planet - TX: ${finalTxHash.slice(0, 10)}...`,
+        });
+      }
+
+      // Success!
+      setDonatedAmount(numericAmount);
+      setShowConfirm(false);
+      setShowSuccess(true);
+      fireDiamondConfetti("rainbow");
+      playSuccessSound();
+
+      toast.success(`🎉 Ủng hộ on-chain ${numericAmount.toLocaleString()} CAMLY thành công!`);
+
+      setTimeout(() => {
+        resetAndClose();
+      }, 5000);
+
+    } catch (error: any) {
+      console.error("On-chain donation error:", error);
+      if (error.code === 4001 || error.code === "ACTION_REJECTED") {
+        toast.error("Giao dịch đã bị hủy");
+      } else {
+        toast.error("Lỗi giao dịch: " + (error.message || "Vui lòng thử lại!"));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInternalDonate = async () => {
     if (!user || !isValidAmount) return;
     
     setLoading(true);
@@ -92,6 +206,8 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
           amount: numericAmount,
           message: message || null,
           is_anonymous: isAnonymous,
+          is_onchain: false,
+          donation_type: "internal",
         });
 
       if (donationError) throw donationError;
@@ -100,37 +216,13 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
       setDonatedAmount(numericAmount);
       setShowConfirm(false);
       setShowSuccess(true);
-      
-      // Fire confetti
       fireDiamondConfetti("rainbow");
-      
-      // Play success sound
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        oscillator.frequency.value = 528;
-        oscillator.type = "sine";
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
-      } catch (e) {
-        // Audio not supported
-      }
+      playSuccessSound();
 
       toast.success(`Cảm ơn bạn đã ủng hộ ${numericAmount.toLocaleString()} CAMLY! 💜`);
       
-      // Reset and close after delay
       setTimeout(() => {
-        setShowSuccess(false);
-        setAmount("");
-        setMessage("");
-        setIsAnonymous(false);
-        onOpenChange(false);
-        onSuccess?.();
+        resetAndClose();
       }, 3000);
 
     } catch (error: any) {
@@ -139,6 +231,43 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDonate = async () => {
+    if (donationType === "onchain") {
+      await handleOnchainDonate();
+    } else {
+      await handleInternalDonate();
+    }
+  };
+
+  const playSuccessSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.value = 528;
+      oscillator.type = "sine";
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (e) {
+      // Audio not supported
+    }
+  };
+
+  const resetAndClose = () => {
+    setShowSuccess(false);
+    setAmount("");
+    setMessage("");
+    setIsAnonymous(false);
+    setTxHash(null);
+    setDonationType("internal");
+    onOpenChange(false);
+    onSuccess?.();
   };
 
   const handleClose = () => {
@@ -234,6 +363,18 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                 </span>
               </p>
               <p className="text-white/70 mt-1">cho FUN Planet! 💜</p>
+
+              {txHash && (
+                <a
+                  href={`https://bscscan.com/tx/${txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-slate-800/50 rounded-lg text-sm text-emerald-400 hover:bg-slate-700/50 transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Xem giao dịch trên BSCScan
+                </a>
+              )}
             </motion.div>
           ) : showConfirm ? (
             <motion.div
@@ -262,17 +403,47 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   </div>
                 </div>
 
+                {/* Donation Type Indicator */}
+                <div className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg ${
+                  donationType === "onchain" 
+                    ? "bg-emerald-500/20 border border-emerald-500/30" 
+                    : "bg-blue-500/20 border border-blue-500/30"
+                }`}>
+                  {donationType === "onchain" ? (
+                    <>
+                      <Link2 className="h-4 w-4 text-emerald-400" />
+                      <span className="text-sm text-emerald-300">On-chain (Giao dịch thực)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="h-4 w-4 text-blue-400" />
+                      <span className="text-sm text-blue-300">Internal (Số dư nội bộ)</span>
+                    </>
+                  )}
+                </div>
+
+                {donationType === "onchain" && (
+                  <div className="bg-slate-800/80 rounded-xl p-3 text-center border border-slate-600/50">
+                    <p className="text-xs text-white/50">Gửi đến ví:</p>
+                    <p className="text-xs font-mono text-emerald-400 break-all">
+                      {DONATION_WALLET_ADDRESS}
+                    </p>
+                  </div>
+                )}
+
                 <div className="bg-slate-800/80 rounded-xl p-4 text-center border border-slate-600/50">
                   <p className="text-sm text-white/70">Số dư sau khi ủng hộ:</p>
                   <p className="text-xl font-semibold text-white">
-                    {(balance - numericAmount).toLocaleString()} CAMLY
+                    {(currentBalance - numericAmount).toLocaleString()} CAMLY
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 p-3 bg-yellow-500/20 rounded-xl border border-yellow-500/30">
                   <AlertTriangle className="h-5 w-5 text-yellow-400 flex-shrink-0" />
                   <p className="text-sm text-yellow-200">
-                    Khoản ủng hộ không thể hoàn lại!
+                    {donationType === "onchain" 
+                      ? "Giao dịch on-chain không thể hoàn lại!"
+                      : "Khoản ủng hộ không thể hoàn lại!"}
                   </p>
                 </div>
 
@@ -309,7 +480,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
             >
               {/* Header with close button */}
               <div className="flex items-center justify-between mb-4">
-                <div className="w-8" /> {/* Spacer */}
+                <div className="w-8" />
                 <DialogTitle className="text-center text-xl flex items-center justify-center gap-2">
                   <span className="text-pink-400">💎</span>
                   <span className="text-white font-bold">Ủng hộ FUN Planet</span>
@@ -324,19 +495,66 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
               </div>
 
               <div className="space-y-4">
-                {/* Balance display - improved card */}
+                {/* Donation Type Toggle */}
+                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-800/80 rounded-xl">
+                  <button
+                    onClick={() => setDonationType("internal")}
+                    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      donationType === "internal"
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                        : "text-white/60 hover:text-white/80"
+                    }`}
+                  >
+                    <Wallet className="h-4 w-4" />
+                    Internal
+                  </button>
+                  <button
+                    onClick={() => setDonationType("onchain")}
+                    disabled={!isConnected}
+                    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      donationType === "onchain"
+                        ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg"
+                        : isConnected
+                          ? "text-white/60 hover:text-white/80"
+                          : "text-white/30 cursor-not-allowed"
+                    }`}
+                  >
+                    <Link2 className="h-4 w-4" />
+                    On-chain
+                  </button>
+                </div>
+
+                {!isConnected && donationType === "internal" && (
+                  <p className="text-xs text-center text-white/50">
+                    💡 Kết nối ví để mở khóa gửi on-chain token thực
+                  </p>
+                )}
+
+                {/* Balance display */}
                 <div className="flex items-center justify-between p-3 bg-slate-800/80 rounded-xl border border-slate-600/50">
-                  <span className="text-white/80 font-medium">Số dư hiện tại:</span>
+                  <span className="text-white/80 font-medium flex items-center gap-2">
+                    {donationType === "onchain" ? (
+                      <>
+                        <Link2 className="h-4 w-4 text-emerald-400" />
+                        On-chain:
+                      </>
+                    ) : (
+                      <>
+                        <Wallet className="h-4 w-4 text-blue-400" />
+                        Số dư nội bộ:
+                      </>
+                    )}
+                  </span>
                   <div className="flex items-center gap-1.5 bg-slate-700/80 px-3 py-1.5 rounded-lg">
                     <span className="text-pink-400">💎</span>
                     <span className="font-bold text-white">
-                      {balance.toLocaleString()}
+                      {currentBalance.toLocaleString()}
                     </span>
                     <span className="text-white/80 text-sm">CAMLY</span>
                   </div>
                 </div>
 
-                {/* Amount input - with CAMLY icon */}
+                {/* Amount input */}
                 <div>
                   <label className="text-sm text-white/80 mb-2 flex items-center gap-1.5">
                     <span className="text-pink-400">💎</span>
@@ -350,7 +568,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                       placeholder="Nhập số lượng..."
                       className="bg-slate-800/80 border-slate-600/50 text-white placeholder:text-white/40 pr-24 h-12 rounded-xl focus:border-pink-500/50 focus:ring-pink-500/20"
                       min={MIN_AMOUNT}
-                      max={balance}
+                      max={currentBalance}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-white/70">
                       <span className="text-pink-400 text-sm">💎</span>
@@ -362,22 +580,22 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                       Tối thiểu {MIN_AMOUNT.toLocaleString()} CAMLY
                     </p>
                   )}
-                  {amount && numericAmount > balance && (
+                  {amount && numericAmount > currentBalance && (
                     <p className="text-xs text-rose-400 mt-1">
                       Không đủ số dư
                     </p>
                   )}
                 </div>
 
-                {/* Quick amounts - simplified buttons */}
+                {/* Quick amounts */}
                 <div className="flex flex-wrap gap-2">
                   {QUICK_AMOUNTS.map((value) => (
                     <button
                       key={value}
                       onClick={() => handleQuickAmount(value)}
-                      disabled={value > balance}
+                      disabled={value > currentBalance}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
-                        value <= balance
+                        value <= currentBalance
                           ? numericAmount === value
                             ? "bg-pink-500/30 border-pink-500/50 text-pink-300"
                             : "bg-slate-700/60 hover:bg-slate-600/80 border-slate-500/30 text-white/90"
@@ -391,7 +609,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   ))}
                 </div>
 
-                {/* Message - improved textarea */}
+                {/* Message */}
                 <div>
                   <label className="text-sm text-white/80 mb-2 flex items-center gap-1.5">
                     <span>✉️</span>
@@ -411,7 +629,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   </div>
                 </div>
 
-                {/* Anonymous option - radio style */}
+                {/* Anonymous option */}
                 <div 
                   className="flex items-center gap-3 cursor-pointer group"
                   onClick={() => setIsAnonymous(!isAnonymous)}
@@ -430,15 +648,28 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   </span>
                 </div>
 
-                {/* Donate button - gradient with glow */}
+                {/* Donate button */}
                 <Button
                   onClick={() => setShowConfirm(true)}
-                  disabled={!isValidAmount}
-                  className="w-full bg-gradient-to-r from-pink-500 via-rose-400 to-pink-500 hover:from-pink-600 hover:via-rose-500 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed py-4 text-lg font-bold rounded-xl shadow-lg shadow-pink-500/30 transition-all hover:shadow-pink-500/40"
+                  disabled={!isValidAmount || (donationType === "onchain" && !isConnected)}
+                  className={`w-full py-4 text-lg font-bold rounded-xl shadow-lg transition-all ${
+                    donationType === "onchain"
+                      ? "bg-gradient-to-r from-emerald-500 via-cyan-400 to-emerald-500 hover:from-emerald-600 hover:via-cyan-500 hover:to-emerald-600 shadow-emerald-500/30 hover:shadow-emerald-500/40"
+                      : "bg-gradient-to-r from-pink-500 via-rose-400 to-pink-500 hover:from-pink-600 hover:via-rose-500 hover:to-pink-600 shadow-pink-500/30 hover:shadow-pink-500/40"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  <span className="mr-2">💎</span>
-                  Ủng hộ ngay
+                  <Heart className="h-5 w-5 mr-2" />
+                  {donationType === "onchain" ? "Gửi On-chain" : "Ủng hộ"}
                 </Button>
+
+                {donationType === "onchain" && (
+                  <p className="text-xs text-center text-white/50">
+                    🔗 Giao dịch thực trên BSC Mainnet đến ví{" "}
+                    <span className="font-mono text-emerald-400/70">
+                      {DONATION_WALLET_ADDRESS.slice(0, 6)}...{DONATION_WALLET_ADDRESS.slice(-4)}
+                    </span>
+                  </p>
+                )}
               </div>
             </motion.div>
           )}
