@@ -2533,26 +2533,38 @@ export type Database = {
         Row: {
           amount: number
           created_at: string | null
+          donation_type: string | null
           id: string
           is_anonymous: boolean | null
+          is_onchain: boolean | null
           message: string | null
+          tx_hash: string | null
           user_id: string
+          wallet_address: string | null
         }
         Insert: {
           amount: number
           created_at?: string | null
+          donation_type?: string | null
           id?: string
           is_anonymous?: boolean | null
+          is_onchain?: boolean | null
           message?: string | null
+          tx_hash?: string | null
           user_id: string
+          wallet_address?: string | null
         }
         Update: {
           amount?: number
           created_at?: string | null
+          donation_type?: string | null
           id?: string
           is_anonymous?: boolean | null
+          is_onchain?: boolean | null
           message?: string | null
+          tx_hash?: string | null
           user_id?: string
+          wallet_address?: string | null
         }
         Relationships: [
           {
