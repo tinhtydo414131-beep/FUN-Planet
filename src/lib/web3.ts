@@ -11,7 +11,7 @@ export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e41
 
 // Dedicated Donation Wallet for FUN Planet (BSC)
 // This wallet receives on-chain CAMLY token donations
-export const DONATION_WALLET_ADDRESS = '0x742d35Cc6634C0532925a3b844Bc9e7595f8fE00';
+export const DONATION_WALLET_ADDRESS = '0xabeb558cc6d34e56eadb53d248872bed1e7b77be';
 
 // Reward amounts
 export const REWARDS = {
