@@ -18,7 +18,7 @@ interface RankedUser {
   avatar_url: string | null;
   wallet_balance: number | null;
   wallet_address: string | null;
-  total_earned: number | null;
+  claimed_amount: number | null;
 }
 
 const USERS_PER_PAGE = 20;
@@ -195,11 +195,11 @@ const PodiumCard = ({
         </span>
       </div>
 
-      {/* Total Earned */}
+      {/* Claimed Amount */}
       <div className="flex items-center gap-1 mt-1">
         <Gift className="h-3 w-3 text-green-400" />
         <span className="text-xs text-green-300">
-          {(user.total_earned || 0).toLocaleString()} đã nhận
+          {(user.claimed_amount || 0).toLocaleString()} đã nhận
         </span>
       </div>
 
@@ -318,11 +318,11 @@ const UserRow = ({
         </p>
       </div>
 
-      {/* Total Earned */}
+      {/* Claimed Amount */}
       <div className="flex items-center gap-1 shrink-0">
         <Gift className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
         <span className="text-xs sm:text-sm text-green-300 font-medium">
-          {(user.total_earned || 0).toLocaleString()}
+          {(user.claimed_amount || 0).toLocaleString()}
         </span>
       </div>
 
@@ -393,22 +393,22 @@ export default function FullRanking() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch total_earned from user_rewards for all users
+      // Fetch claimed_amount from user_rewards for all users
       const userIds = (profilesData || []).map(p => p.id);
       const { data: rewardsData } = await supabase
         .from("user_rewards")
-        .select("user_id, total_earned")
+        .select("user_id, claimed_amount")
         .in("user_id", userIds);
 
       // Map rewards to users
       const rewardsMap = new Map<string, number>();
       (rewardsData || []).forEach(r => {
-        rewardsMap.set(r.user_id, r.total_earned || 0);
+        rewardsMap.set(r.user_id, r.claimed_amount || 0);
       });
 
       const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => ({
         ...p,
-        total_earned: rewardsMap.get(p.id) || 0
+        claimed_amount: rewardsMap.get(p.id) || 0
       }));
 
       setAllUsers(usersWithEarnings);
