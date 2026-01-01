@@ -17,10 +17,13 @@ import {
 } from "./ui/hover-card";
 import confetti from "canvas-confetti";
 
-// Treasury wallet address and BSC RPC
+// Treasury wallet address and BSC RPC (with backup URLs)
 const FUN_PLANET_TREASURY = "0xDb792AF6a426E1c2AbF4A2A1F8716775b7145C69";
-const BSC_RPC_URL = "https://bsc-dataseed.binance.org";
-const CAMLY_DECIMALS = 3;
+const BSC_RPC_URLS = [
+  "https://bsc-dataseed.binance.org",
+  "https://bsc-dataseed1.binance.org",
+  "https://bsc-dataseed2.binance.org"
+];
 
 // Debounce utility
 const debounce = <T extends (...args: any[]) => any>(fn: T, ms: number) => {
@@ -266,18 +269,38 @@ export const FunPlanetUnifiedBoard = () => {
   const [isLive, setIsLive] = useState(false);
   const [hasUpdate, setHasUpdate] = useState(false);
 
-  // Fetch Treasury Balance from BSC
+  // Fetch Treasury Balance from BSC with backup RPCs
   const fetchTreasuryBalance = useCallback(async (): Promise<number> => {
-    try {
-      const provider = new ethers.JsonRpcProvider(BSC_RPC_URL);
-      const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, provider);
-      const balance = await contract.balanceOf(FUN_PLANET_TREASURY);
-      const formattedBalance = ethers.formatUnits(balance, CAMLY_DECIMALS);
-      return Math.floor(parseFloat(formattedBalance));
-    } catch (error) {
-      console.error("Error fetching treasury balance:", error);
-      return 0;
+    console.log("🏦 Fetching treasury balance for:", FUN_PLANET_TREASURY);
+    
+    for (const rpcUrl of BSC_RPC_URLS) {
+      try {
+        const provider = new ethers.JsonRpcProvider(rpcUrl);
+        const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, provider);
+        
+        // Fetch decimals from contract
+        const decimals = await contract.decimals();
+        console.log("📊 CAMLY decimals from contract:", decimals.toString());
+        
+        const balance = await contract.balanceOf(FUN_PLANET_TREASURY);
+        console.log("💰 Raw balance:", balance.toString());
+        
+        const formattedBalance = ethers.formatUnits(balance, Number(decimals));
+        console.log("✨ Formatted balance:", formattedBalance);
+        
+        // Use Math.round() for accurate rounding
+        const roundedBalance = Math.round(parseFloat(formattedBalance));
+        console.log("🎯 Rounded balance:", roundedBalance);
+        
+        return roundedBalance;
+      } catch (error) {
+        console.warn(`⚠️ RPC ${rpcUrl} failed:`, error);
+        continue;
+      }
     }
+    
+    console.error("❌ All RPC endpoints failed");
+    return 0;
   }, []);
 
   // Fetch Honor Board Stats
