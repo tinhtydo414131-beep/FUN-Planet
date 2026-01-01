@@ -31,11 +31,8 @@ import { WordScramble } from "@/components/games/WordScramble";
 import { MathQuiz } from "@/components/games/MathQuiz";
 import { SimonSays } from "@/components/games/SimonSays";
 import { TriviaQuiz } from "@/components/games/TriviaQuiz";
-import { MazeRunner } from "@/components/games/MazeRunner";
 import { TreasureHunt } from "@/components/games/TreasureHunt";
 import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
-import { Platformer } from "@/components/games/Platformer";
-import { Platformer3D } from "@/components/games/Platformer3D";
 import { Racing3D } from "@/components/games/Racing3D";
 import { BalloonPop3D } from "@/components/games/BalloonPop3D";
 import { ColorMatch3D } from "@/components/games/ColorMatch3D";
@@ -67,7 +64,7 @@ import { ArtStudio } from "@/components/games/ArtStudio";
 import { PetCare } from "@/components/games/PetCare";
 import { FarmBuilder } from "@/components/games/FarmBuilder";
 import { SpaceStation } from "@/components/games/SpaceStation";
-import { ZooKeeper } from "@/components/games/ZooKeeper";
+
 import { HospitalManager } from "@/components/games/HospitalManager";
 import { CinemaBoss } from "@/components/games/CinemaBoss";
 import { LibraryKeeper } from "@/components/games/LibraryKeeper";
@@ -76,14 +73,12 @@ import { ThemeParkBuilder } from "@/components/games/ThemeParkBuilder";
 import { GoldMiner } from "@/components/games/GoldMiner";
 import { GoldMiner3D } from "@/components/games/GoldMiner3D";
 import { GoldHookMaster } from "@/components/games/GoldHookMaster";
-import { Snake } from "@/components/games/Snake";
-import { Snake3D } from "@/components/games/Snake3D";
 import { TicTacToe } from "@/components/games/TicTacToe";
 import { RockPaperScissors } from "@/components/games/RockPaperScissors";
 import { WhackAMole } from "@/components/games/WhackAMole";
 import { Sudoku } from "@/components/games/Sudoku";
 import { FlappyBird } from "@/components/games/FlappyBird";
-import { MazeRunner3D } from "@/components/games/MazeRunner3D";
+
 import { MemoryCards3D } from "@/components/games/MemoryCards3D";
 import { SimonSays3D } from "@/components/games/SimonSays3D";
 import { GuessNumber3D } from "@/components/games/GuessNumber3D";
@@ -114,7 +109,7 @@ import RockPaperScissors3D from "@/components/games/RockPaperScissors3D";
 import Sudoku3D from "@/components/games/Sudoku3D";
 import FlappyBird3D from "@/components/games/FlappyBird3D";
 import PetCare3D from "@/components/games/PetCare3D";
-import ZooKeeper3D from "@/components/games/ZooKeeper3D";
+
 import HospitalManager3D from "@/components/games/HospitalManager3D";
 import CinemaBoss3D from "@/components/games/CinemaBoss3D";
 import LibraryKeeper3D from "@/components/games/LibraryKeeper3D";
@@ -127,7 +122,7 @@ import CookingMama3D from "@/components/games/CookingMama3D";
 import Game2048Nexus3D from "@/components/games/Game2048Nexus3D";
 import HappyKitchenJoy3D from "@/components/games/HappyKitchenJoy3D";
 import GoldHookMaster3D from "@/components/games/GoldHookMaster3D";
-import { HarvestHaven } from "@/components/games/HarvestHaven";
+
 
 interface Game {
   id: string;
@@ -420,10 +415,6 @@ const GamePlay = () => {
       case "space-station":
         return <SpaceStation3D {...gameProps} />;
       case "SpaceStation2D": return <SpaceStation {...gameProps} />;
-      case "ZooKeeper":
-      case "zoo-keeper":
-        return <ZooKeeper3D {...gameProps} />;
-      case "ZooKeeper2D": return <ZooKeeper {...gameProps} />;
       case "HospitalManager":
       case "hospital-manager":
         return <HospitalManager3D {...gameProps} />;
@@ -460,14 +451,8 @@ const GamePlay = () => {
       case "SpaceExplorer2D": return <SpaceExplorer {...gameProps} />;
       case "OceanExplorer": return <OceanExplorer3D {...gameProps} />;
       case "OceanExplorer2D": return <OceanExplorer {...gameProps} />;
-      case "MazeRunner":
-      case "maze-runner":
-      case "MazeRunner3D": return <MazeRunner3D {...gameProps} />;
-      case "MazeRunner2D": return <MazeRunner {...gameProps} />;
       case "TreasureHunt": return <TreasureHunt3D {...gameProps} />;
       case "TreasureHunt2D": return <TreasureHunt {...gameProps} />;
-      case "Platformer": return <Platformer3D {...gameProps} />;
-      case "Platformer2D": return <Platformer {...gameProps} />;
       case "Racing": return <Racing3D {...gameProps} />;
       case "Racing2D": return <Racing {...gameProps} />;
       case "LilBlockBuddy": return <LilBlockBuddy3D {...gameProps} />;
@@ -496,11 +481,6 @@ const GamePlay = () => {
         return <HappyKitchenJoy onBack={handleBackToLevelSelect} />;
       
       // Classic & Arcade Games
-      case "Snake":
-      case "snake":
-        return <Snake3D {...gameProps} />;
-      case "Snake2D":
-        return <Snake {...gameProps} />;
       case "TicTacToe":
       case "tic-tac-toe":
         return <TicTacToe {...gameProps} />;
@@ -522,10 +502,6 @@ const GamePlay = () => {
         return <FlappyBird3D {...gameProps} />;
       case "FlappyBird2D": return <FlappyBird {...gameProps} />;
       
-      // Farming & City Building
-      case "HarvestHaven":
-      case "harvest-haven":
-        return <HarvestHaven onBack={handleBackToLevelSelect} />;
       
       default:
         return (
@@ -562,15 +538,13 @@ const GamePlay = () => {
                        gameId === 'pet-care' ||
                        gameId === 'farm-builder' ||
                        gameId === 'space-station' ||
-                       gameId === 'zoo-keeper' ||
                        gameId === 'hospital-manager' ||
                        gameId === 'cinema-boss' ||
                        gameId === 'library-keeper' ||
                        gameId === 'restaurant-chef' ||
-                        gameId === 'theme-park-builder' ||
-                        gameId === 'gold-miner' ||
-                        gameId === 'gold-hook-master' ||
-                        gameId === 'harvest-haven';
+                       gameId === 'theme-park-builder' ||
+                       gameId === 'gold-miner' ||
+                       gameId === 'gold-hook-master';
   
   if (!game && !isDirectGame) {
     return (
