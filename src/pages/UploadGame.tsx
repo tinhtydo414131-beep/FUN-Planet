@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { 
   Upload, Loader2, Link, FileArchive, CheckCircle, XCircle, 
-  Sparkles, Play, Diamond, Wand2, Image,
+  Sparkles, Play, Diamond, Wand2, Image, AlertCircle, Gift,
   BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+// Constants for validation
+const MAX_ZIP_SIZE_MB = 50;
+const MAX_ZIP_SIZE = MAX_ZIP_SIZE_MB * 1024 * 1024;
+const MAX_THUMB_SIZE_MB = 5;
+const MAX_THUMB_SIZE = MAX_THUMB_SIZE_MB * 1024 * 1024;
+const MIN_THUMB_WIDTH = 400;
+const MIN_THUMB_HEIGHT = 300;
+const MAX_DAILY_UPLOAD_REWARDS = 4;
 
 interface ScanResult {
   safe: boolean;
@@ -101,9 +122,12 @@ export default function UploadGame() {
   const [isDraggingGame, setIsDraggingGame] = useState(false);
   const [isDraggingThumb, setIsDraggingThumb] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [urlValidated, setUrlValidated] = useState(false);
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [dailyRewardsRemaining, setDailyRewardsRemaining] = useState(MAX_DAILY_UPLOAD_REWARDS);
+  const [checkingUrl, setCheckingUrl] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -111,6 +135,24 @@ export default function UploadGame() {
     deployUrl: "",
     thumbnailUrl: "",
   });
+
+  // Check daily rewards remaining
+  useEffect(() => {
+    const checkDailyRewards = async () => {
+      if (!user) return;
+      try {
+        const { data } = await supabase.rpc('get_or_create_daily_reward', {
+          p_user_id: user.id
+        });
+        if (data && data.length > 0) {
+          setDailyRewardsRemaining(data[0].remaining_rewards || MAX_DAILY_UPLOAD_REWARDS);
+        }
+      } catch (error) {
+        console.error('Error checking daily rewards:', error);
+      }
+    };
+    checkDailyRewards();
+  }, [user]);
 
   // Validate deploy URL
   const validateDeployUrl = useCallback((url: string) => {
@@ -187,18 +229,71 @@ export default function UploadGame() {
     setIsDraggingGame(false);
   }, []);
 
+  // Validate ZIP file size
+  const validateZipFile = useCallback((file: File): boolean => {
+    if (file.size > MAX_ZIP_SIZE) {
+      toast.error(`File quá lớn! Tối đa ${MAX_ZIP_SIZE_MB}MB. File của bạn: ${(file.size / 1024 / 1024).toFixed(1)}MB`);
+      return false;
+    }
+    return true;
+  }, []);
+
+  // Validate thumbnail dimensions
+  const validateThumbnail = useCallback((file: File): Promise<boolean> => {
+    return new Promise((resolve) => {
+      // Check file size first
+      if (file.size > MAX_THUMB_SIZE) {
+        toast.error(`Ảnh quá lớn! Tối đa ${MAX_THUMB_SIZE_MB}MB`);
+        resolve(false);
+        return;
+      }
+
+      const img = new window.Image();
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+        if (img.width < MIN_THUMB_WIDTH || img.height < MIN_THUMB_HEIGHT) {
+          toast.error(`Ảnh quá nhỏ! Tối thiểu ${MIN_THUMB_WIDTH}x${MIN_THUMB_HEIGHT} pixels. Ảnh của bạn: ${img.width}x${img.height}`);
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      };
+      img.onerror = () => {
+        toast.error("Không thể đọc ảnh. Vui lòng thử ảnh khác.");
+        resolve(false);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  }, []);
+
+  // Check URL accessibility
+  const checkUrlAccessibility = useCallback(async (url: string) => {
+    if (!url) return;
+    setCheckingUrl(true);
+    try {
+      // Use no-cors mode as we can't check cross-origin responses directly
+      await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+      toast.success("✅ Link có thể truy cập!");
+    } catch (error) {
+      toast.warning("⚠️ Không thể kiểm tra link. Hãy đảm bảo link hoạt động!");
+    } finally {
+      setCheckingUrl(false);
+    }
+  }, []);
+
   const handleGameDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingGame(false);
     const file = e.dataTransfer.files[0];
     if (file && file.name.endsWith('.zip')) {
+      if (!validateZipFile(file)) return;
       setGameFile(file);
       setUploadMethod("zip");
-      toast.success(`🎮 "${file.name}" ready for upload!`);
+      toast.success(`🎮 "${file.name}" (${(file.size / 1024 / 1024).toFixed(1)}MB) ready for upload!`);
     } else {
       toast.error("Please drop a .zip file");
     }
-  }, []);
+  }, [validateZipFile]);
 
   const handleThumbDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -210,17 +305,20 @@ export default function UploadGame() {
     setIsDraggingThumb(false);
   }, []);
 
-  const handleThumbDrop = useCallback((e: React.DragEvent) => {
+  const handleThumbDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingThumb(false);
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
-      setThumbnail(file);
-      toast.success(`🖼️ Thumbnail ready!`);
+      const isValid = await validateThumbnail(file);
+      if (isValid) {
+        setThumbnail(file);
+        toast.success(`🖼️ Thumbnail ready!`);
+      }
     } else {
       toast.error("Please drop an image file");
     }
-  }, []);
+  }, [validateThumbnail]);
 
   const toggleTopic = (topicId: string) => {
     setSelectedTopics(prev => 
@@ -287,33 +385,58 @@ export default function UploadGame() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  // Validate form before showing confirmation
+  const validateForm = async (): Promise<boolean> => {
     if (!user) {
-      toast.error("Please login to upload games!");
+      toast.error("Vui lòng đăng nhập để tải game!");
       navigate("/auth");
-      return;
+      return false;
     }
 
     if (!formData.title || !formData.description) {
-      toast.error("Please fill in the game name and description");
-      return;
+      toast.error("Vui lòng điền tên game và mô tả");
+      return false;
     }
 
     if (uploadMethod === "link" && !formData.deployUrl) {
-      toast.error("Please paste your deploy link");
-      return;
+      toast.error("Vui lòng dán link deploy của bạn");
+      return false;
     }
 
     if (uploadMethod === "zip" && !gameFile) {
-      toast.error("Please upload your game ZIP file");
-      return;
+      toast.error("Vui lòng tải lên file ZIP game");
+      return false;
     }
 
+    // Require thumbnail
+    if (!thumbnail && !formData.thumbnailUrl) {
+      toast.error("Vui lòng tải lên ảnh thumbnail cho game! 🖼️");
+      return false;
+    }
+
+    // Require age rating
+    if (!formData.ageAppropriate) {
+      toast.error("Vui lòng chọn độ tuổi phù hợp! 👶");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const isValid = await validateForm();
+    if (isValid) {
+      setShowConfirmDialog(true);
+    }
+  };
+
+  const handleConfirmedSubmit = async () => {
+    setShowConfirmDialog(false);
+    
     const isSafe = await runSafetyScan();
     if (!isSafe) {
-      toast.error("Content did not pass safety check");
+      toast.error("Nội dung không qua được kiểm tra an toàn");
       return;
     }
 
@@ -517,6 +640,26 @@ export default function UploadGame() {
             <Diamond className="w-6 h-6 text-orange-700" />
             <span className="font-black text-orange-800 text-xl">+500,000 CAMLY</span>
           </motion.div>
+
+          {/* Daily Rewards Remaining Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-4"
+          >
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${
+              dailyRewardsRemaining > 0 
+                ? 'bg-green-100 text-green-700 border border-green-300' 
+                : 'bg-red-100 text-red-700 border border-red-300'
+            }`}>
+              <Gift className="w-4 h-4" />
+              {dailyRewardsRemaining > 0 
+                ? `Còn ${dailyRewardsRemaining}/${MAX_DAILY_UPLOAD_REWARDS} lượt nhận thưởng hôm nay`
+                : `Đã hết lượt thưởng hôm nay - Quay lại ngày mai nhé! 💝`
+              }
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Guide Button - Cute style */}
@@ -677,7 +820,7 @@ export default function UploadGame() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              onSubmit={handleSubmit}
+              onSubmit={handleFormSubmit}
               className="space-y-6 bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 border-2 border-pink-100 shadow-xl"
             >
               {/* Deploy Link Input */}
@@ -685,21 +828,36 @@ export default function UploadGame() {
                 <div className="space-y-3">
                   <Label className="text-lg font-bold text-purple-700 flex items-center gap-2">
                     <Link className="w-5 h-5 text-pink-500" />
-                    Deploy Link
+                    Deploy Link <span className="text-red-500">*</span>
                   </Label>
-                  <div className="relative">
-                    <Input
-                      type="url"
-                      placeholder="https://my-game.vercel.app"
-                      value={formData.deployUrl}
-                      onChange={(e) => setFormData({ ...formData, deployUrl: e.target.value })}
-                      className={`text-lg py-6 pr-12 rounded-2xl border-2 bg-white/70 ${
-                        urlValidated ? 'border-green-400 bg-green-50/50' : 'border-pink-200'
-                      }`}
-                    />
-                    {urlValidated && (
-                      <CheckCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-green-500" />
-                    )}
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        type="url"
+                        placeholder="https://my-game.vercel.app"
+                        value={formData.deployUrl}
+                        onChange={(e) => setFormData({ ...formData, deployUrl: e.target.value })}
+                        className={`text-lg py-6 pr-12 rounded-2xl border-2 bg-white/70 ${
+                          urlValidated ? 'border-green-400 bg-green-50/50' : 'border-pink-200'
+                        }`}
+                      />
+                      {urlValidated && (
+                        <CheckCircle className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-green-500" />
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => checkUrlAccessibility(formData.deployUrl)}
+                      disabled={!formData.deployUrl || checkingUrl}
+                      className="rounded-xl px-4 border-purple-200 hover:bg-purple-50"
+                    >
+                      {checkingUrl ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "🔍 Kiểm tra"
+                      )}
+                    </Button>
                   </div>
                   
                   {/* Live preview */}
@@ -750,8 +908,12 @@ export default function UploadGame() {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
+                          if (!validateZipFile(file)) {
+                            e.target.value = '';
+                            return;
+                          }
                           setGameFile(file);
-                          toast.success(`🎮 "${file.name}" ready!`);
+                          toast.success(`🎮 "${file.name}" (${(file.size / 1024 / 1024).toFixed(1)}MB) ready!`);
                         }
                       }}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -775,7 +937,7 @@ export default function UploadGame() {
 
               {/* Game Name */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">🎮 Game Name</Label>
+                <Label className="text-lg font-bold text-purple-700">🎮 Game Name <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="My Awesome Game"
                   value={formData.title}
@@ -893,11 +1055,16 @@ export default function UploadGame() {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            setThumbnail(file);
-                            setFormData({ ...formData, thumbnailUrl: "" });
+                            const isValid = await validateThumbnail(file);
+                            if (isValid) {
+                              setThumbnail(file);
+                              setFormData({ ...formData, thumbnailUrl: "" });
+                            } else {
+                              e.target.value = '';
+                            }
                           }
                         }}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -1027,6 +1194,88 @@ export default function UploadGame() {
           </motion.div>
         )}
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="max-w-lg bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-purple-700 flex items-center gap-2">
+              <CheckCircle className="w-6 h-6 text-green-500" />
+              Xác nhận tải game lên
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-purple-600">
+              Kiểm tra lại thông tin trước khi tải lên nhé!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Preview */}
+            <div className="flex gap-4 items-start">
+              {thumbnailPreview && (
+                <img 
+                  src={thumbnailPreview} 
+                  alt="Game thumbnail" 
+                  className="w-24 h-16 object-cover rounded-xl border-2 border-pink-200"
+                />
+              )}
+              <div className="flex-1">
+                <h4 className="font-bold text-lg text-purple-800">{formData.title || "Chưa đặt tên"}</h4>
+                <p className="text-sm text-purple-500 line-clamp-2">{formData.description || "Chưa có mô tả"}</p>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="p-3 bg-white/60 rounded-xl">
+                <span className="text-purple-400">Độ tuổi:</span>
+                <span className="font-bold text-purple-700 ml-2">{formData.ageAppropriate || "Chưa chọn"}</span>
+              </div>
+              <div className="p-3 bg-white/60 rounded-xl">
+                <span className="text-purple-400">Phương thức:</span>
+                <span className="font-bold text-purple-700 ml-2">
+                  {uploadMethod === "link" ? "🔗 Deploy Link" : "📦 ZIP File"}
+                </span>
+              </div>
+            </div>
+
+            {/* Topics */}
+            {selectedTopics.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {selectedTopics.map(topicId => {
+                  const topic = TOPIC_OPTIONS.find(t => t.id === topicId);
+                  return topic ? (
+                    <Badge key={topicId} variant="secondary" className="bg-purple-100 text-purple-700">
+                      {topic.label}
+                    </Badge>
+                  ) : null;
+                })}
+              </div>
+            )}
+
+            {/* Reward info */}
+            <div className="p-4 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl border border-amber-300">
+              <div className="flex items-center gap-2 text-amber-800 font-bold">
+                <Diamond className="w-5 h-5" />
+                {dailyRewardsRemaining > 0 
+                  ? `Bạn sẽ nhận được 500,000 CAMLY! (Còn ${dailyRewardsRemaining} lượt)`
+                  : "Đã hết lượt thưởng hôm nay - Game vẫn được tải lên"
+                }
+              </div>
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Quay lại chỉnh sửa</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmedSubmit}
+              className="bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white rounded-xl gap-2"
+            >
+              <Sparkles className="w-4 h-4" />
+              Xác nhận & Upload
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
