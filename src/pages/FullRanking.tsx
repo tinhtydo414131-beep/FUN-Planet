@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff } from "lucide-react";
+import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,13 +9,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import confetti from "canvas-confetti";
-import { FriendActionButton } from "@/components/FriendActionButton";
+import { TransferModal } from "@/components/TransferModal";
+import { toast } from "sonner";
 
 interface RankedUser {
   id: string;
   username: string;
   avatar_url: string | null;
   wallet_balance: number | null;
+  wallet_address: string | null;
+  total_earned: number | null;
 }
 
 const USERS_PER_PAGE = 20;
@@ -102,11 +105,13 @@ const PodiumCard = ({
   rank,
   isCurrentUser,
   currentUserId,
+  onTransfer,
 }: {
   user: RankedUser;
   rank: number;
   isCurrentUser: boolean;
   currentUserId?: string;
+  onTransfer: (user: RankedUser) => void;
 }) => {
   const heights = { 1: "h-24", 2: "h-16", 3: "h-14" };
   const avatarSizes = { 1: "h-20 w-20", 2: "h-16 w-16", 3: "h-14 w-14" };
@@ -190,16 +195,29 @@ const PodiumCard = ({
         </span>
       </div>
 
-      {/* Friend Action Button */}
+      {/* Total Earned */}
+      <div className="flex items-center gap-1 mt-1">
+        <Gift className="h-3 w-3 text-green-400" />
+        <span className="text-xs text-green-300">
+          {(user.total_earned || 0).toLocaleString()} đã nhận
+        </span>
+      </div>
+
+      {/* Transfer Button */}
       {!isCurrentUser && currentUserId && (
         <div className="mt-2">
-          <FriendActionButton
-            targetUserId={user.id}
-            targetUsername={user.username || "User"}
-            showMessage={false}
+          <Button
             size="sm"
-            className="scale-90"
-          />
+            onClick={(e) => {
+              e.stopPropagation();
+              onTransfer(user);
+            }}
+            disabled={!user.wallet_address}
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs px-3 py-1 h-7"
+          >
+            <Send className="w-3 h-3 mr-1" />
+            Gửi
+          </Button>
         </div>
       )}
 
@@ -241,12 +259,14 @@ const UserRow = ({
   isCurrentUser,
   index,
   currentUserId,
+  onTransfer,
 }: {
   user: RankedUser;
   rank: number;
   isCurrentUser: boolean;
   index: number;
   currentUserId?: string;
+  onTransfer: (user: RankedUser) => void;
 }) => {
   const navigate = useNavigate();
   
@@ -298,18 +318,13 @@ const UserRow = ({
         </p>
       </div>
 
-      {/* Friend Action Button */}
-      {!isCurrentUser && currentUserId && (
-        <div onClick={(e) => e.stopPropagation()}>
-          <FriendActionButton
-            targetUserId={user.id}
-            targetUsername={user.username || "User"}
-            showMessage={false}
-            size="sm"
-            className="shrink-0"
-          />
-        </div>
-      )}
+      {/* Total Earned */}
+      <div className="flex items-center gap-1 shrink-0">
+        <Gift className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
+        <span className="text-xs sm:text-sm text-green-300 font-medium">
+          {(user.total_earned || 0).toLocaleString()}
+        </span>
+      </div>
 
       {/* Balance */}
       <div className="flex items-center gap-1.5 shrink-0">
@@ -321,6 +336,20 @@ const UserRow = ({
           {(user.wallet_balance || 0).toLocaleString()}
         </span>
       </div>
+
+      {/* Transfer Button */}
+      {!isCurrentUser && currentUserId && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Button
+            size="sm"
+            onClick={() => onTransfer(user)}
+            disabled={!user.wallet_address}
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs px-2 py-1 h-7 shrink-0"
+          >
+            <Send className="w-3 h-3" />
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -335,22 +364,55 @@ export default function FullRanking() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [confettiFired, setConfettiFired] = useState(false);
   const [realtimeUpdated, setRealtimeUpdated] = useState(false);
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [selectedRecipient, setSelectedRecipient] = useState<{ address: string; username: string } | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const handleTransfer = (targetUser: RankedUser) => {
+    if (!targetUser.wallet_address) {
+      toast.error("Người dùng chưa kết nối ví");
+      return;
+    }
+    setSelectedRecipient({
+      address: targetUser.wallet_address,
+      username: targetUser.username || "User"
+    });
+    setTransferModalOpen(true);
+  };
 
   const fetchAllUsers = useCallback(async (isRefresh = false, isRealtime = false) => {
     try {
       if (isRefresh && !isRealtime) setRefreshing(true);
 
-      const { data, error, count } = await supabase
+      // Fetch profiles with wallet_address
+      const { data: profilesData, error: profilesError, count } = await supabase
         .from("profiles")
-        .select("id, username, avatar_url, wallet_balance", { count: "exact" })
+        .select("id, username, avatar_url, wallet_balance, wallet_address", { count: "exact" })
         .order("wallet_balance", { ascending: false, nullsFirst: false });
 
-      if (error) throw error;
+      if (profilesError) throw profilesError;
 
-      setAllUsers(data || []);
-      setFilteredUsers(data || []);
+      // Fetch total_earned from user_rewards for all users
+      const userIds = (profilesData || []).map(p => p.id);
+      const { data: rewardsData } = await supabase
+        .from("user_rewards")
+        .select("user_id, total_earned")
+        .in("user_id", userIds);
+
+      // Map rewards to users
+      const rewardsMap = new Map<string, number>();
+      (rewardsData || []).forEach(r => {
+        rewardsMap.set(r.user_id, r.total_earned || 0);
+      });
+
+      const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => ({
+        ...p,
+        total_earned: rewardsMap.get(p.id) || 0
+      }));
+
+      setAllUsers(usersWithEarnings);
+      setFilteredUsers(usersWithEarnings);
       setTotalUsers(count || 0);
       
       // Show update indicator for realtime updates
@@ -589,6 +651,7 @@ export default function FullRanking() {
                 rank={2}
                 isCurrentUser={user?.id === top3Users[1]?.id}
                 currentUserId={user?.id}
+                onTransfer={handleTransfer}
               />
               {/* 1st Place */}
               <PodiumCard
@@ -596,6 +659,7 @@ export default function FullRanking() {
                 rank={1}
                 isCurrentUser={user?.id === top3Users[0]?.id}
                 currentUserId={user?.id}
+                onTransfer={handleTransfer}
               />
               {/* 3rd Place */}
               <PodiumCard
@@ -603,6 +667,7 @@ export default function FullRanking() {
                 rank={3}
                 isCurrentUser={user?.id === top3Users[2]?.id}
                 currentUserId={user?.id}
+                onTransfer={handleTransfer}
               />
             </div>
           </motion.div>
@@ -646,6 +711,7 @@ export default function FullRanking() {
                   isCurrentUser={user?.id === u.id}
                   index={index}
                   currentUserId={user?.id}
+                  onTransfer={handleTransfer}
                 />
               );
             })
@@ -719,6 +785,14 @@ export default function FullRanking() {
           </p>
         )}
       </div>
+
+      {/* Transfer Modal */}
+      <TransferModal
+        open={transferModalOpen}
+        onOpenChange={setTransferModalOpen}
+        recipientAddress={selectedRecipient?.address || ""}
+        recipientUsername={selectedRecipient?.username || ""}
+      />
     </div>
   );
 }
