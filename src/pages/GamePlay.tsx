@@ -23,7 +23,6 @@ import confetti from "canvas-confetti";
 import { toast } from "sonner";
 
 // Import all game components
-import { MemoryCards } from "@/components/games/MemoryCards";
 import { GuessNumber } from "@/components/games/GuessNumber";
 import { ColorMatch } from "@/components/games/ColorMatch";
 import { BalloonPop } from "@/components/games/BalloonPop";
@@ -33,10 +32,8 @@ import { SimonSays } from "@/components/games/SimonSays";
 import { TriviaQuiz } from "@/components/games/TriviaQuiz";
 import { TreasureHunt } from "@/components/games/TreasureHunt";
 import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
-import { Racing3D } from "@/components/games/Racing3D";
 import { BalloonPop3D } from "@/components/games/BalloonPop3D";
 import { ColorMatch3D } from "@/components/games/ColorMatch3D";
-import { Racing } from "@/components/games/Racing";
 import PlanetBuilder from "@/components/games/PlanetBuilder";
 import HappinessGarden from "@/components/games/HappinessGarden";
 import SpaceExplorer from "@/components/games/SpaceExplorer";
@@ -70,16 +67,9 @@ import { CinemaBoss } from "@/components/games/CinemaBoss";
 import { LibraryKeeper } from "@/components/games/LibraryKeeper";
 import { RestaurantChef } from "@/components/games/RestaurantChef";
 import { ThemeParkBuilder } from "@/components/games/ThemeParkBuilder";
-import { GoldMiner } from "@/components/games/GoldMiner";
-import { GoldMiner3D } from "@/components/games/GoldMiner3D";
-import { GoldHookMaster } from "@/components/games/GoldHookMaster";
-import { TicTacToe } from "@/components/games/TicTacToe";
 import { RockPaperScissors } from "@/components/games/RockPaperScissors";
-import { WhackAMole } from "@/components/games/WhackAMole";
-import { Sudoku } from "@/components/games/Sudoku";
 import { FlappyBird } from "@/components/games/FlappyBird";
 
-import { MemoryCards3D } from "@/components/games/MemoryCards3D";
 import { SimonSays3D } from "@/components/games/SimonSays3D";
 import { GuessNumber3D } from "@/components/games/GuessNumber3D";
 import { WordScramble3D } from "@/components/games/WordScramble3D";
@@ -103,10 +93,7 @@ import ArtStudio3D from "@/components/games/ArtStudio3D";
 import ThemeParkBuilder3D from "@/components/games/ThemeParkBuilder3D";
 import EcoVillage3D from "@/components/games/EcoVillage3D";
 import HomeDesigner3D from "@/components/games/HomeDesigner3D";
-import WhackAMole3D from "@/components/games/WhackAMole3D";
-import TicTacToe3D from "@/components/games/TicTacToe3D";
 import RockPaperScissors3D from "@/components/games/RockPaperScissors3D";
-import Sudoku3D from "@/components/games/Sudoku3D";
 import FlappyBird3D from "@/components/games/FlappyBird3D";
 import PetCare3D from "@/components/games/PetCare3D";
 
@@ -121,7 +108,6 @@ import LilBlockBuddy3D from "@/components/games/LilBlockBuddy3D";
 import CookingMama3D from "@/components/games/CookingMama3D";
 import Game2048Nexus3D from "@/components/games/Game2048Nexus3D";
 import HappyKitchenJoy3D from "@/components/games/HappyKitchenJoy3D";
-import GoldHookMaster3D from "@/components/games/GoldHookMaster3D";
 
 
 interface Game {
@@ -337,8 +323,6 @@ const GamePlay = () => {
     // Map component_name from database to actual components
     switch (componentKey) {
       // Casual & Happy Games
-      case "MemoryCards": return <MemoryCards3D {...gameProps} />;
-      case "MemoryCards2D": return <MemoryCards {...gameProps} />;
       case "ColorMatch":
       case "color-match":
         return <ColorMatch {...gameProps} />;
@@ -435,16 +419,6 @@ const GamePlay = () => {
       case "theme-park-builder":
         return <ThemeParkBuilder3D {...gameProps} />;
       case "ThemeParkBuilder2D": return <ThemeParkBuilder {...gameProps} />;
-      case "GoldMiner":
-      case "gold-miner":
-        return <GoldMiner3D {...gameProps} />;
-      case "GoldMiner2D":
-        return <GoldMiner {...gameProps} />;
-      case "GoldHookMaster":
-      case "gold-hook-master":
-        return <GoldHookMaster3D {...gameProps} />;
-      case "GoldHookMaster2D":
-        return <GoldHookMaster onBack={handleBackToLevelSelect} />;
       
       // Exploration & Adventure Games
       case "SpaceExplorer": return <SpaceExplorer3D {...gameProps} />;
@@ -453,8 +427,6 @@ const GamePlay = () => {
       case "OceanExplorer2D": return <OceanExplorer {...gameProps} />;
       case "TreasureHunt": return <TreasureHunt3D {...gameProps} />;
       case "TreasureHunt2D": return <TreasureHunt {...gameProps} />;
-      case "Racing": return <Racing3D {...gameProps} />;
-      case "Racing2D": return <Racing {...gameProps} />;
       case "LilBlockBuddy": return <LilBlockBuddy3D {...gameProps} />;
       case "LilBlockBuddy2D": return <LilBlockBuddy {...gameProps} />;
       case "TetrisGame":
@@ -481,22 +453,10 @@ const GamePlay = () => {
         return <HappyKitchenJoy onBack={handleBackToLevelSelect} />;
       
       // Classic & Arcade Games
-      case "TicTacToe":
-      case "tic-tac-toe":
-        return <TicTacToe {...gameProps} />;
-      case "TicTacToe3D": return <TicTacToe3D {...gameProps} />;
       case "RockPaperScissors":
       case "rock-paper-scissors":
         return <RockPaperScissors3D {...gameProps} />;
       case "RockPaperScissors2D": return <RockPaperScissors {...gameProps} />;
-      case "WhackAMole":
-      case "whack-a-mole":
-        return <WhackAMole3D {...gameProps} />;
-      case "WhackAMole2D": return <WhackAMole {...gameProps} />;
-      case "Sudoku":
-      case "sudoku":
-        return <Sudoku3D {...gameProps} />;
-      case "Sudoku2D": return <Sudoku {...gameProps} />;
       case "FlappyBird":
       case "flappy-bird":
         return <FlappyBird3D {...gameProps} />;
@@ -542,9 +502,7 @@ const GamePlay = () => {
                        gameId === 'cinema-boss' ||
                        gameId === 'library-keeper' ||
                        gameId === 'restaurant-chef' ||
-                       gameId === 'theme-park-builder' ||
-                       gameId === 'gold-miner' ||
-                       gameId === 'gold-hook-master';
+                       gameId === 'theme-park-builder';
   
   if (!game && !isDirectGame) {
     return (

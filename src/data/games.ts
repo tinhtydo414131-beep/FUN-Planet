@@ -1,4 +1,3 @@
-import memoryCardsImg from '@/assets/games/memory-cards.jpg';
 import colorMatchImg from '@/assets/games/color-match.jpg';
 import balloonPopImg from '@/assets/games/balloon-pop.jpg';
 import guessNumberImg from '@/assets/games/guess-number.jpg';
@@ -17,15 +16,6 @@ export interface Game {
 
 export const games: Game[] = [
   // Casual & Happy Games
-  {
-    id: 'memory-cards',
-    title: 'Memory Cards',
-    description: 'Lật thẻ và tìm các cặp giống nhau',
-    category: 'casual',
-    difficulty: 'easy',
-    image: memoryCardsImg,
-    playable: true,
-  },
   {
     id: 'color-match',
     title: 'Color Match',
