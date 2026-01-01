@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Star, Heart, Rocket, X, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft, Settings } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { Angel3DButton } from "@/components/angel-ai/Angel3DCharacter";
+// Lazy load 3D components to reduce initial bundle size
+const Angel3DButton = lazy(() => import("@/components/angel-ai/Angel3DCharacter").then(m => ({ default: m.Angel3DButton })));
 import { Angel2DFallback } from "@/components/angel-ai/Angel2DFallback";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -870,7 +871,9 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         {use2DFallback ? (
           <Angel2DFallback onClick={handleClick} />
         ) : (
-          <Angel3DButton onClick={handleClick} />
+          <Suspense fallback={<Angel2DFallback onClick={handleClick} />}>
+            <Angel3DButton onClick={handleClick} />
+          </Suspense>
         )}
         
         {/* Notification dot */}
