@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Gamepad2, Play, Upload, Gem, Wallet } from "lucide-react";
+import { Users, Gamepad2, Upload, Gem, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ethers } from "ethers";
 import { CAMLY_CONTRACT_ADDRESS, CAMLY_ABI } from "@/lib/web3";
