@@ -1,68 +1,79 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import GlobalAirdrop from "./pages/GlobalAirdrop";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { BackgroundMusicPlayer } from "@/components/BackgroundMusicPlayer";
-import { MobileBottomNavEnhanced } from "@/components/MobileBottomNavEnhanced";
 import { Web3Provider } from "@/providers/Web3Provider";
 import { CoinNotification } from "@/components/CoinNotification";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
-import { RoleSelectionModal } from "@/components/RoleSelectionModal";
-
-import { FloatingChatWindows, useChatWindows } from "@/components/private-chat/FloatingChatWindows";
-import { CallProvider } from "@/components/private-chat/CallProvider";
-import { FloatingChatButton } from "@/components/FloatingChatButton";
-import { WelcomeCreatorPopup } from "@/components/WelcomeCreatorPopup";
-import { GameCompleteClaimPopup } from "@/components/GameCompleteClaimPopup";
-import { DailyLoginRewardPopup } from "@/components/reward-galaxy/DailyLoginRewardPopup";
-import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
-import { useDailyLoginReward } from "@/hooks/useDailyLoginReward";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEffect, useRef } from "react";
-import Index from "./pages/Index";
-import Games from "./pages/Games";
-import GamePlay from "./pages/GamePlay";
-import Auth from "./pages/Auth";
-import Settings from "./pages/Settings";
-import PublicProfile from "./pages/PublicProfile";
-import Leaderboard from "./pages/Leaderboard";
-import Friends from "./pages/Friends";
-import Chat from "./pages/Chat";
-import NexusLeaderboard from "./pages/NexusLeaderboard";
-import FunWallet from "./pages/FunWallet";
-import MusicLibrary from "./pages/MusicLibrary";
-import PublicMusic from "./pages/PublicMusic";
-import WalletGuide from "./pages/WalletGuide";
-import RecentlyPlayed from "./pages/RecentlyPlayed";
-import ResetPassword from "./pages/ResetPassword";
-import Install from "./pages/Install";
-import NotFound from "./pages/NotFound";
-import ComboLeaderboard from "./pages/ComboLeaderboard";
-import FullRanking from "./pages/FullRanking";
-import UploadGame from "./pages/UploadGame";
-import MyGames from "./pages/MyGames";
-import EditGame from "./pages/EditGame";
-import GameDetails from "./pages/GameDetails";
-import RewardsHistory from "./pages/RewardsHistory";
-import CamlyLeaderboard from "./pages/CamlyLeaderboard";
-import Profile from "./pages/Profile";
-import FindFriends from "./pages/FindFriends";
-import PrivateMessages from "./pages/PrivateMessages";
-import NFTGallery from "./pages/NFTGallery";
-import Education from "./pages/Education";
-import ParentDashboard from "./pages/ParentDashboard";
-import PlanetExplorer from "./pages/PlanetExplorer";
-import AdminMasterDashboard from "./pages/AdminMasterDashboard";
-import About from "./pages/About";
-import LovableGamePlay from "./pages/LovableGamePlay";
-import SampleGames from "./pages/SampleGames";
-import RewardGalaxy from "./pages/RewardGalaxy";
-import AngelAIHubPage from "./pages/AngelAIHubPage";
+import { LoadingFallback } from "@/components/LoadingFallback";
 
+// Critical pages - load immediately
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import NotFound from "./pages/NotFound";
+
+// Lazy load all other pages
+const Games = lazy(() => import("./pages/Games"));
+const GamePlay = lazy(() => import("./pages/GamePlay"));
+const Settings = lazy(() => import("./pages/Settings"));
+const PublicProfile = lazy(() => import("./pages/PublicProfile"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const Friends = lazy(() => import("./pages/Friends"));
+const Chat = lazy(() => import("./pages/Chat"));
+const NexusLeaderboard = lazy(() => import("./pages/NexusLeaderboard"));
+const FunWallet = lazy(() => import("./pages/FunWallet"));
+const MusicLibrary = lazy(() => import("./pages/MusicLibrary"));
+const PublicMusic = lazy(() => import("./pages/PublicMusic"));
+const WalletGuide = lazy(() => import("./pages/WalletGuide"));
+const RecentlyPlayed = lazy(() => import("./pages/RecentlyPlayed"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Install = lazy(() => import("./pages/Install"));
+const ComboLeaderboard = lazy(() => import("./pages/ComboLeaderboard"));
+const FullRanking = lazy(() => import("./pages/FullRanking"));
+const UploadGame = lazy(() => import("./pages/UploadGame"));
+const MyGames = lazy(() => import("./pages/MyGames"));
+const EditGame = lazy(() => import("./pages/EditGame"));
+const GameDetails = lazy(() => import("./pages/GameDetails"));
+const RewardsHistory = lazy(() => import("./pages/RewardsHistory"));
+const CamlyLeaderboard = lazy(() => import("./pages/CamlyLeaderboard"));
+const Profile = lazy(() => import("./pages/Profile"));
+const FindFriends = lazy(() => import("./pages/FindFriends"));
+const PrivateMessages = lazy(() => import("./pages/PrivateMessages"));
+const NFTGallery = lazy(() => import("./pages/NFTGallery"));
+const Education = lazy(() => import("./pages/Education"));
+const ParentDashboard = lazy(() => import("./pages/ParentDashboard"));
+const PlanetExplorer = lazy(() => import("./pages/PlanetExplorer"));
+const AdminMasterDashboard = lazy(() => import("./pages/AdminMasterDashboard"));
+const About = lazy(() => import("./pages/About"));
+const LovableGamePlay = lazy(() => import("./pages/LovableGamePlay"));
+const SampleGames = lazy(() => import("./pages/SampleGames"));
+const RewardGalaxy = lazy(() => import("./pages/RewardGalaxy"));
+const AngelAIHubPage = lazy(() => import("./pages/AngelAIHubPage"));
+const GlobalAirdrop = lazy(() => import("./pages/GlobalAirdrop"));
+
+// Lazy load heavy components
+const BackgroundMusicPlayer = lazy(() => import("@/components/BackgroundMusicPlayer").then(m => ({ default: m.BackgroundMusicPlayer })));
+const PWAInstallPrompt = lazy(() => import("@/components/PWAInstallPrompt").then(m => ({ default: m.PWAInstallPrompt })));
+const RoleSelectionModal = lazy(() => import("@/components/RoleSelectionModal").then(m => ({ default: m.RoleSelectionModal })));
+const FloatingChatButton = lazy(() => import("@/components/FloatingChatButton").then(m => ({ default: m.FloatingChatButton })));
+const WelcomeCreatorPopup = lazy(() => import("@/components/WelcomeCreatorPopup").then(m => ({ default: m.WelcomeCreatorPopup })));
+const GameCompleteClaimPopup = lazy(() => import("@/components/GameCompleteClaimPopup").then(m => ({ default: m.GameCompleteClaimPopup })));
+const DailyLoginRewardPopup = lazy(() => import("@/components/reward-galaxy/DailyLoginRewardPopup").then(m => ({ default: m.DailyLoginRewardPopup })));
+const MobileBottomNavEnhanced = lazy(() => import("@/components/MobileBottomNavEnhanced").then(m => ({ default: m.MobileBottomNavEnhanced })));
+
+// Lazy load private chat components
+const FloatingChatWindows = lazy(() => import("@/components/private-chat/FloatingChatWindows").then(m => ({ default: m.FloatingChatWindows })));
+const CallProvider = lazy(() => import("@/components/private-chat/CallProvider").then(m => ({ default: m.CallProvider })));
+
+// Import hooks
+import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
+import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
+import { useDailyLoginReward } from "@/hooks/useDailyLoginReward";
 
 const queryClient = new QueryClient();
 
@@ -71,81 +82,83 @@ const AnimatedRoutes = () => {
   
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        {/* Main Routes */}
-        <Route path="/" element={<Index />} />
-        <Route path="/home" element={<Index />} />
-        
-        {/* Games */}
-        <Route path="/games" element={<Games />} />
-        <Route path="/game/:gameId" element={<GamePlay />} />
-        <Route path="/game-details/:id" element={<GameDetails />} />
-        <Route path="/lovable-game/:id" element={<LovableGamePlay />} />
-        <Route path="/recently-played" element={<RecentlyPlayed />} />
-        <Route path="/my-games" element={<MyGames />} />
-        <Route path="/edit-game/:id" element={<EditGame />} />
-        <Route path="/sample-games" element={<SampleGames />} />
-        
-        {/* Upload & Creator */}
-        <Route path="/upload" element={<UploadGame />} />
-        <Route path="/upload-game" element={<UploadGame />} />
-        <Route path="/builder" element={<PlanetExplorer />} />
-        
-        {/* Auth & Profile */}
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/:userId" element={<PublicProfile />} />
-        <Route path="/dashboard" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/nft-gallery" element={<NFTGallery />} />
-        <Route path="/nft" element={<NFTGallery />} />
-        
-        {/* Wallet & Airdrop */}
-        <Route path="/wallet" element={<FunWallet />} />
-        <Route path="/wallet-guide" element={<WalletGuide />} />
-        <Route path="/airdrop" element={<GlobalAirdrop />} />
-        <Route path="/global-airdrop" element={<GlobalAirdrop />} />
-        <Route path="/rewards-history" element={<RewardsHistory />} />
-        <Route path="/reward-galaxy" element={<RewardGalaxy />} />
-        
-        {/* Social & Community */}
-        <Route path="/friends" element={<Friends />} />
-        <Route path="/find-friends" element={<FindFriends />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/community" element={<Chat />} />
-        <Route path="/messages" element={<PrivateMessages />} />
-        
-        {/* Leaderboards */}
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/nexus-leaderboard" element={<NexusLeaderboard />} />
-        <Route path="/combo-leaderboard" element={<ComboLeaderboard />} />
-        <Route path="/camly-leaderboard" element={<CamlyLeaderboard />} />
-        <Route path="/full-ranking" element={<FullRanking />} />
-        
-        {/* Music */}
-        <Route path="/music" element={<MusicLibrary />} />
-        <Route path="/public-music" element={<PublicMusic />} />
-        
-        {/* Parent & Education */}
-        <Route path="/parent-dashboard" element={<ParentDashboard />} />
-        <Route path="/education" element={<Education />} />
-        
-        {/* Admin - All routes redirect to Master Dashboard */}
-        <Route path="/admin/master" element={<AdminMasterDashboard />} />
-        <Route path="/admin/game-review" element={<AdminMasterDashboard />} />
-        <Route path="/admin-dashboard" element={<AdminMasterDashboard />} />
-        <Route path="/admin/rewards" element={<AdminMasterDashboard />} />
-        
-        {/* Other */}
-        <Route path="/about" element={<About />} />
-        <Route path="/planet-explorer" element={<PlanetExplorer />} />
-        <Route path="/angel-ai" element={<AngelAIHubPage />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/install" element={<Install />} />
-        
-        {/* Catch-all 404 */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes location={location} key={location.pathname}>
+          {/* Main Routes - Critical, not lazy */}
+          <Route path="/" element={<Index />} />
+          <Route path="/home" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          
+          {/* Games - Lazy */}
+          <Route path="/games" element={<Games />} />
+          <Route path="/game/:gameId" element={<GamePlay />} />
+          <Route path="/game-details/:id" element={<GameDetails />} />
+          <Route path="/lovable-game/:id" element={<LovableGamePlay />} />
+          <Route path="/recently-played" element={<RecentlyPlayed />} />
+          <Route path="/my-games" element={<MyGames />} />
+          <Route path="/edit-game/:id" element={<EditGame />} />
+          <Route path="/sample-games" element={<SampleGames />} />
+          
+          {/* Upload & Creator */}
+          <Route path="/upload" element={<UploadGame />} />
+          <Route path="/upload-game" element={<UploadGame />} />
+          <Route path="/builder" element={<PlanetExplorer />} />
+          
+          {/* Profile */}
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:userId" element={<PublicProfile />} />
+          <Route path="/dashboard" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/nft-gallery" element={<NFTGallery />} />
+          <Route path="/nft" element={<NFTGallery />} />
+          
+          {/* Wallet & Airdrop */}
+          <Route path="/wallet" element={<FunWallet />} />
+          <Route path="/wallet-guide" element={<WalletGuide />} />
+          <Route path="/airdrop" element={<GlobalAirdrop />} />
+          <Route path="/global-airdrop" element={<GlobalAirdrop />} />
+          <Route path="/rewards-history" element={<RewardsHistory />} />
+          <Route path="/reward-galaxy" element={<RewardGalaxy />} />
+          
+          {/* Social & Community */}
+          <Route path="/friends" element={<Friends />} />
+          <Route path="/find-friends" element={<FindFriends />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/community" element={<Chat />} />
+          <Route path="/messages" element={<PrivateMessages />} />
+          
+          {/* Leaderboards */}
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/nexus-leaderboard" element={<NexusLeaderboard />} />
+          <Route path="/combo-leaderboard" element={<ComboLeaderboard />} />
+          <Route path="/camly-leaderboard" element={<CamlyLeaderboard />} />
+          <Route path="/full-ranking" element={<FullRanking />} />
+          
+          {/* Music */}
+          <Route path="/music" element={<MusicLibrary />} />
+          <Route path="/public-music" element={<PublicMusic />} />
+          
+          {/* Parent & Education */}
+          <Route path="/parent-dashboard" element={<ParentDashboard />} />
+          <Route path="/education" element={<Education />} />
+          
+          {/* Admin */}
+          <Route path="/admin/master" element={<AdminMasterDashboard />} />
+          <Route path="/admin/game-review" element={<AdminMasterDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminMasterDashboard />} />
+          <Route path="/admin/rewards" element={<AdminMasterDashboard />} />
+          
+          {/* Other */}
+          <Route path="/about" element={<About />} />
+          <Route path="/planet-explorer" element={<PlanetExplorer />} />
+          <Route path="/angel-ai" element={<AngelAIHubPage />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/install" element={<Install />} />
+          
+          {/* Catch-all 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 };
@@ -158,12 +171,14 @@ const FloatingChats = () => {
   if (!user || windows.length === 0) return null;
   
   return (
-    <FloatingChatWindows
-      currentUserId={user.id}
-      windows={windows}
-      onClose={closeChat}
-      onToggleMinimize={toggleMinimize}
-    />
+    <Suspense fallback={null}>
+      <FloatingChatWindows
+        currentUserId={user.id}
+        windows={windows}
+        onClose={closeChat}
+        onToggleMinimize={toggleMinimize}
+      />
+    </Suspense>
   );
 };
 
@@ -184,7 +199,6 @@ const AppContent = () => {
   useEffect(() => {
     if (user && !hasAutoClaimedRef.current) {
       hasAutoClaimedRef.current = true;
-      // Small delay to ensure everything is loaded
       const timer = setTimeout(() => {
         autoClaimOnLogin();
       }, 1000);
@@ -200,46 +214,69 @@ const AppContent = () => {
       <Toaster />
       <Sonner />
       <CoinNotification />
-      <BackgroundMusicPlayer />
-      <PWAInstallPrompt />
+      
+      {/* Lazy loaded components with Suspense */}
+      <Suspense fallback={null}>
+        <BackgroundMusicPlayer />
+      </Suspense>
+      
+      <Suspense fallback={null}>
+        <PWAInstallPrompt />
+      </Suspense>
       
       {/* Role Selection Modal for new users */}
-      {user && !roleLoading && (
-        <RoleSelectionModal 
-          isOpen={needsRoleSelection} 
-          onClose={() => {}} 
-        />
+      {user && !roleLoading && needsRoleSelection && (
+        <Suspense fallback={null}>
+          <RoleSelectionModal 
+            isOpen={needsRoleSelection} 
+            onClose={() => {}} 
+          />
+        </Suspense>
       )}
       
       <BrowserRouter>
-        <MobileBottomNavEnhanced />
+        <Suspense fallback={null}>
+          <MobileBottomNavEnhanced />
+        </Suspense>
+        
         <AnimatedRoutes />
         
         {/* Floating Chat Windows for Desktop */}
         <FloatingChats />
         
-        
         {/* Floating Chat Button - Mobile only, draggable */}
-        <FloatingChatButton />
+        <Suspense fallback={null}>
+          <FloatingChatButton />
+        </Suspense>
         
         {/* Welcome Creator Popup - Shows for new users */}
-        <WelcomeCreatorPopup />
+        <Suspense fallback={null}>
+          <WelcomeCreatorPopup />
+        </Suspense>
         
         {/* Game Complete Claim Popup - Shows after games */}
-        <GameCompleteClaimPopup
-          isOpen={gameCompleteOpen}
-          onClose={hidePopup}
-          score={score}
-          gameName={gameName}
-          bonusAmount={bonusAmount}
-        />
+        {gameCompleteOpen && (
+          <Suspense fallback={null}>
+            <GameCompleteClaimPopup
+              isOpen={gameCompleteOpen}
+              onClose={hidePopup}
+              score={score}
+              gameName={gameName}
+              bonusAmount={bonusAmount}
+            />
+          </Suspense>
+        )}
         
         {/* Daily Login Reward Popup - Shows on login */}
-        <DailyLoginRewardPopup
-          isOpen={showRewardPopup}
-          amount={claimedAmount}
-          onClose={closeRewardPopup}
-        />
+        {showRewardPopup && (
+          <Suspense fallback={null}>
+            <DailyLoginRewardPopup
+              isOpen={showRewardPopup}
+              amount={claimedAmount}
+              onClose={closeRewardPopup}
+            />
+          </Suspense>
+        )}
         
       </BrowserRouter>
     </>
@@ -250,9 +287,11 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <Web3Provider>
       <TooltipProvider>
-        <CallProvider>
-          <AppContent />
-        </CallProvider>
+        <Suspense fallback={null}>
+          <CallProvider>
+            <AppContent />
+          </CallProvider>
+        </Suspense>
       </TooltipProvider>
     </Web3Provider>
   </QueryClientProvider>

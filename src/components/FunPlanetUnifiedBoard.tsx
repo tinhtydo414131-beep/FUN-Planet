@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, Gamepad2, Play, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,15 @@ import {
   HoverCardTrigger,
 } from "./ui/hover-card";
 import confetti from "canvas-confetti";
+
+// Debounce utility
+const debounce = <T extends (...args: any[]) => any>(fn: T, ms: number) => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), ms);
+  };
+};
 
 // =============== TYPES ===============
 interface Stats {
@@ -217,16 +226,12 @@ const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: num
   );
 };
 
-// Floating particles
+// Reduced floating particles for performance (from 8 to 4)
 const floatingParticles = [
-  { emoji: "👤", delay: 0, x: "5%", y: "10%", duration: 4 },
-  { emoji: "🎮", delay: 0.5, x: "92%", y: "15%", duration: 5 },
-  { emoji: "💎", delay: 1, x: "8%", y: "50%", duration: 4.5 },
-  { emoji: "👑", delay: 1.5, x: "90%", y: "55%", duration: 3.5 },
-  { emoji: "✨", delay: 2, x: "50%", y: "5%", duration: 4 },
-  { emoji: "⭐", delay: 2.3, x: "75%", y: "70%", duration: 5 },
-  { emoji: "🚀", delay: 2.6, x: "20%", y: "75%", duration: 4.2 },
-  { emoji: "🔥", delay: 2.9, x: "85%", y: "35%", duration: 5.5 },
+  { emoji: "🌍", delay: 0, x: "8%", y: "15%", duration: 5 },
+  { emoji: "🎮", delay: 1, x: "90%", y: "20%", duration: 6 },
+  { emoji: "💎", delay: 2, x: "85%", y: "60%", duration: 5 },
+  { emoji: "👑", delay: 3, x: "10%", y: "70%", duration: 6 },
 ];
 
 export const FunPlanetUnifiedBoard = () => {
@@ -337,38 +342,47 @@ export const FunPlanetUnifiedBoard = () => {
     }
   }, []);
 
-  // Fetch all data
-  const fetchAllData = useCallback(() => {
+  // Debounced fetch with 500ms delay
+  const debouncedFetchAllData = useMemo(
+    () => debounce(() => {
+      fetchStats();
+      fetchLegends();
+      fetchTopUsers();
+    }, 500),
+    [fetchStats, fetchLegends, fetchTopUsers]
+  );
+
+  // Single unified realtime subscription (merged from 5 channels)
+  useEffect(() => {
+    // Initial fetch
     fetchStats();
     fetchLegends();
     fetchTopUsers();
-  }, [fetchStats, fetchLegends, fetchTopUsers]);
 
-  // Real-time subscriptions
-  useEffect(() => {
-    fetchAllData();
-
-    const profilesChannel = supabase.channel('unified_profiles').on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchAllData()).subscribe((status) => { if (status === 'SUBSCRIBED') setIsLive(true); });
-    const gamesChannel = supabase.channel('unified_games').on('postgres_changes', { event: '*', schema: 'public', table: 'uploaded_games' }, () => fetchAllData()).subscribe();
-    const playsChannel = supabase.channel('unified_plays').on('postgres_changes', { event: '*', schema: 'public', table: 'game_plays' }, () => fetchAllData()).subscribe();
-    const lovableGamesChannel = supabase.channel('unified_lovable_games').on('postgres_changes', { event: '*', schema: 'public', table: 'lovable_games' }, () => fetchAllData()).subscribe();
-    const donationsChannel = supabase.channel('unified_donations').on('postgres_changes', { event: '*', schema: 'public', table: 'platform_donations' }, () => fetchAllData()).subscribe();
+    // Single channel for all tables
+    const unifiedChannel = supabase
+      .channel('unified_board_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => debouncedFetchAllData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'uploaded_games' }, () => debouncedFetchAllData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_plays' }, () => debouncedFetchAllData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lovable_games' }, () => debouncedFetchAllData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'platform_donations' }, () => debouncedFetchAllData())
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') setIsLive(true);
+      });
 
     return () => {
       setIsLive(false);
-      supabase.removeChannel(profilesChannel);
-      supabase.removeChannel(gamesChannel);
-      supabase.removeChannel(playsChannel);
-      supabase.removeChannel(lovableGamesChannel);
-      supabase.removeChannel(donationsChannel);
+      supabase.removeChannel(unifiedChannel);
     };
-  }, [fetchAllData]);
+  }, [fetchStats, fetchLegends, fetchTopUsers, debouncedFetchAllData]);
 
-  // Fire confetti
+  // Fire confetti once on initial load (disabled on mobile for performance)
   useEffect(() => {
-    if (!rankingLoading && topUsers.length > 0 && !confettiFired) {
+    const isMobile = window.innerWidth < 768;
+    if (!rankingLoading && topUsers.length > 0 && !confettiFired && !isMobile) {
       setConfettiFired(true);
-      confetti({ particleCount: 60, spread: 80, origin: { x: 0.5, y: 0.6 }, colors: ["#FFD700", "#FFA500", "#FFEC8B", "#FF6B35", "#FFE066"], ticks: 100, gravity: 1.2, scalar: 0.9 });
+      confetti({ particleCount: 40, spread: 60, origin: { x: 0.5, y: 0.6 }, colors: ["#FFD700", "#FFA500", "#FFEC8B"], ticks: 80, gravity: 1.4, scalar: 0.8 });
     }
   }, [rankingLoading, topUsers, confettiFired]);
 
