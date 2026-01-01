@@ -92,6 +92,59 @@ export const useReferral = () => {
     checkReferralCode();
   }, [user]);
 
+  // Check and claim tier rewards using secure RPC
+  const checkAndClaimTierRewards = useCallback(async (totalReferrals: number, claimedTiers: string[]) => {
+    if (!user) return;
+
+    const currentTier = getCurrentTier(totalReferrals);
+    if (currentTier.id === 'none') return;
+
+    // Find unclaimed tiers that user has achieved
+    const unclaimedTiers = REFERRAL_TIERS.filter(
+      tier => 
+        tier.id !== 'none' && 
+        totalReferrals >= tier.requiredReferrals && 
+        !claimedTiers.includes(tier.id)
+    );
+
+    if (unclaimedTiers.length === 0) return;
+
+    // Claim all unclaimed tiers using secure RPC
+    for (const tier of unclaimedTiers) {
+      try {
+        const { data, error } = await supabase.rpc('claim_referral_tier_safe', {
+          p_tier_id: tier.id,
+          p_tier_reward: tier.reward
+        });
+
+        if (error) {
+          console.error('Error claiming tier reward:', error);
+          continue;
+        }
+
+        const result = data as { success: boolean; error?: string } | null;
+
+        if (result?.success) {
+          // Update local claimed tiers
+          const newClaimedTiers = [...claimedTiers, tier.id];
+          claimedTiers.push(tier.id);
+
+          // Show achievement for the highest tier achieved
+          if (tier === unclaimedTiers[unclaimedTiers.length - 1]) {
+            setStats(prev => ({
+              ...prev,
+              claimedTiers: newClaimedTiers,
+              referralEarnings: prev.referralEarnings + tier.reward,
+              newTierAchieved: tier,
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error claiming tier reward:', error);
+      }
+    }
+  }, [user]);
+
   // Load user's referral stats
   const loadStats = useCallback(async () => {
     if (!user) {
@@ -114,9 +167,13 @@ export const useReferral = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // Get claimed tiers from localStorage
-      const claimedTiersStr = localStorage.getItem(`${CLAIMED_TIERS_KEY}_${user.id}`);
-      const claimedTiers = claimedTiersStr ? JSON.parse(claimedTiersStr) : [];
+      // Get claimed tiers from database (instead of localStorage)
+      const { data: claimedTiersData } = await supabase
+        .from('claimed_referral_tiers')
+        .select('tier_id')
+        .eq('user_id', user.id);
+
+      const claimedTiers = claimedTiersData?.map(t => t.tier_id) || [];
 
       const totalReferrals = rewards?.total_referrals || 0;
 
@@ -136,72 +193,7 @@ export const useReferral = () => {
       console.error('Error loading referral stats:', error);
       setStats(prev => ({ ...prev, isLoading: false }));
     }
-  }, [user]);
-
-  // Check and claim tier rewards
-  const checkAndClaimTierRewards = useCallback(async (totalReferrals: number, claimedTiers: string[]) => {
-    if (!user) return;
-
-    const currentTier = getCurrentTier(totalReferrals);
-    if (currentTier.id === 'none') return;
-
-    // Find unclaimed tiers that user has achieved
-    const unclaimedTiers = REFERRAL_TIERS.filter(
-      tier => 
-        tier.id !== 'none' && 
-        totalReferrals >= tier.requiredReferrals && 
-        !claimedTiers.includes(tier.id)
-    );
-
-    if (unclaimedTiers.length === 0) return;
-
-    // Claim all unclaimed tiers
-    for (const tier of unclaimedTiers) {
-      try {
-        // Add tier reward to user's balance
-        const { data: currentRewards } = await supabase
-          .from('web3_rewards')
-          .select('camly_balance, referral_earnings')
-          .eq('user_id', user.id)
-          .single();
-
-        if (currentRewards) {
-          await supabase
-            .from('web3_rewards')
-            .update({
-              camly_balance: Number(currentRewards.camly_balance) + tier.reward,
-              referral_earnings: Number(currentRewards.referral_earnings) + tier.reward,
-            })
-            .eq('user_id', user.id);
-
-          // Record the transaction
-          await supabase.from('web3_reward_transactions').insert({
-            user_id: user.id,
-            amount: tier.reward,
-            reward_type: 'referral_tier_bonus',
-            description: `Đạt cấp ${tier.name} - Thưởng ${tier.reward.toLocaleString()} Camly`,
-          });
-        }
-
-        // Update claimed tiers
-        const newClaimedTiers = [...claimedTiers, tier.id];
-        localStorage.setItem(`${CLAIMED_TIERS_KEY}_${user.id}`, JSON.stringify(newClaimedTiers));
-        claimedTiers.push(tier.id);
-
-        // Show achievement for the highest tier achieved
-        if (tier === unclaimedTiers[unclaimedTiers.length - 1]) {
-          setStats(prev => ({
-            ...prev,
-            claimedTiers: newClaimedTiers,
-            referralEarnings: prev.referralEarnings + tier.reward,
-            newTierAchieved: tier,
-          }));
-        }
-      } catch (error) {
-        console.error('Error claiming tier reward:', error);
-      }
-    }
-  }, [user]);
+  }, [user, checkAndClaimTierRewards]);
 
   const clearNewTierAchieved = useCallback(() => {
     setStats(prev => ({ ...prev, newTierAchieved: null }));

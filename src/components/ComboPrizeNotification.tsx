@@ -50,43 +50,30 @@ export const ComboPrizeNotification = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // 1. Cộng tiền vào ví
-      const { error: walletError } = await supabase.rpc('update_wallet_balance', {
-        p_user_id: user.id,
-        p_amount: amount,
-        p_operation: 'add'
-      });
-      
-      if (walletError) throw walletError;
-
-      // 2. Ghi log giao dịch
-      await supabase.from("camly_coin_transactions").insert({
-        user_id: user.id,
-        amount: amount,
-        transaction_type: "combo_prize",
-        description: `Nhận thưởng combo prize`
+      // Use secure RPC to claim combo prize
+      const { data, error } = await supabase.rpc('claim_combo_prize_safe', {
+        p_prize_id: prizeId
       });
 
-      // 3. Đánh dấu đã claim
-      const { error: claimError } = await supabase
-        .from("combo_period_winners")
-        .update({ claimed: true })
-        .eq("id", prizeId);
+      if (error) throw error;
 
-      if (claimError) throw claimError;
+      const result = data as { success: boolean; error?: string; reward?: number } | null;
 
-      toast({
-        title: "🎉 Đã nhận thưởng!",
-        description: `+${amount.toLocaleString()} CAMLY đã được cộng vào ví!`,
-      });
-
-      // Remove from list
-      setPrizes(prizes.filter((p) => p.id !== prizeId));
-    } catch (error) {
+      if (result?.success) {
+        toast({
+          title: "🎉 Đã nhận thưởng!",
+          description: `+${amount.toLocaleString()} CAMLY đã được cộng vào ví!`,
+        });
+        // Remove from list
+        setPrizes(prizes.filter((p) => p.id !== prizeId));
+      } else {
+        throw new Error(result?.error || "Unknown error");
+      }
+    } catch (error: any) {
       console.error("Error claiming prize:", error);
       toast({
         title: "Lỗi",
-        description: "Không thể nhận thưởng. Vui lòng thử lại.",
+        description: error.message || "Không thể nhận thưởng. Vui lòng thử lại.",
         variant: "destructive",
       });
     }

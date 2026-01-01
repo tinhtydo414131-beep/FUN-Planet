@@ -107,42 +107,30 @@ export const DailyChallengeCard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Update prize claimed status
-      const { error: updateError } = await supabase
-        .from("user_challenge_progress")
-        .update({ prize_claimed: true })
-        .eq("user_id", user.id)
-        .eq("daily_challenge_id", challenge.id);
-
-      if (updateError) throw updateError;
-
-      // Update user wallet
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("wallet_balance")
-        .eq("id", user.id)
-        .single();
-
-      if (profile) {
-        await supabase
-          .from("profiles")
-          .update({ 
-            wallet_balance: (profile.wallet_balance || 0) + challenge.combo_challenges.prize_amount 
-          })
-          .eq("id", user.id);
-      }
-
-      toast({
-        title: "🎉 Đã nhận thưởng!",
-        description: `Bạn đã nhận ${challenge.combo_challenges.prize_amount} tokens!`,
+      // Use secure RPC to claim challenge reward
+      const { data, error } = await supabase.rpc('claim_challenge_reward_safe', {
+        p_challenge_id: challenge.id,
+        p_reward_amount: challenge.combo_challenges.prize_amount
       });
 
-      setProgress({ ...progress, prize_claimed: true });
-    } catch (error) {
+      if (error) throw error;
+
+      const result = data as { success: boolean; error?: string; reward?: number } | null;
+
+      if (result?.success) {
+        toast({
+          title: "🎉 Đã nhận thưởng!",
+          description: `Bạn đã nhận ${challenge.combo_challenges.prize_amount} tokens!`,
+        });
+        setProgress({ ...progress, prize_claimed: true });
+      } else {
+        throw new Error(result?.error || "Unknown error");
+      }
+    } catch (error: any) {
       console.error("Error claiming prize:", error);
       toast({
         title: "Lỗi",
-        description: "Không thể nhận thưởng. Vui lòng thử lại.",
+        description: error.message || "Không thể nhận thưởng. Vui lòng thử lại.",
         variant: "destructive",
       });
     }
