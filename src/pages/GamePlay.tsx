@@ -467,8 +467,8 @@ const GamePlay = () => {
       // Maze Games
       case "MazeRunner":
       case "maze-runner":
-        return <MazeRunner3D {...gameProps} />;
-      case "MazeRunner2D": return <MazeRunner {...gameProps} />;
+        return <MazeRunner {...gameProps} />;
+      case "MazeRunner3D": return <MazeRunner3D {...gameProps} />;
       
       
       default:
