@@ -29,33 +29,18 @@ export function useGameTrash() {
 
       if (updateError) throw updateError;
 
-      // Award 10K CAMLY for cleanup
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('wallet_balance')
-        .eq('id', userId)
-        .single();
+      // Award cleanup reward using secure RPC (max 3/day, unique per game)
+      const { data, error: rpcError } = await supabase.rpc('claim_game_cleanup_safe', {
+        p_game_id: gameId
+      });
 
-      if (!profileError && profile) {
-        const newBalance = (profile.wallet_balance || 0) + DELETE_REWARD;
-        
-        await supabase
-          .from('profiles')
-          .update({ wallet_balance: newBalance })
-          .eq('id', userId);
-
-        // Record the transaction
-        await supabase
-          .from('camly_coin_transactions')
-          .insert({
-            user_id: userId,
-            amount: DELETE_REWARD,
-            transaction_type: 'game_cleanup',
-            description: 'Phần thưởng dọn dẹp kho game'
-          });
+      if (rpcError) {
+        console.error('RPC error:', rpcError);
       }
 
-      // Celebration effects
+      const result = data as { success: boolean; error?: string; reward?: number } | null;
+
+      // Celebration effects (even if reward limit reached)
       confetti({
         particleCount: 80,
         spread: 70,
@@ -63,7 +48,13 @@ export function useGameTrash() {
         colors: ['#FFD700', '#FFA500', '#FF6B6B', '#4CAF50']
       });
 
-      toast.success("🎉 Cảm ơn bạn đã dọn dẹp kho báu! +" + DELETE_REWARD.toLocaleString() + " CAMLY!", { duration: 5000 });
+      if (result?.success) {
+        toast.success("🎉 Cảm ơn bạn đã dọn dẹp kho báu! +" + DELETE_REWARD.toLocaleString() + " CAMLY!", { duration: 5000 });
+      } else if (result?.error?.includes('daily')) {
+        toast.success("🎉 Đã xóa game! (Đã đạt giới hạn thưởng hôm nay)", { duration: 3000 });
+      } else {
+        toast.success("🎉 Đã xóa game thành công!", { duration: 3000 });
+      }
 
       return true;
     } catch (error: any) {

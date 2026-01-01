@@ -373,25 +373,15 @@ export default function UploadGame() {
 
       const rewardAmount = 500000;
       
-      await supabase
-        .from('camly_coin_transactions')
-        .insert({
-          user_id: user.id,
-          amount: rewardAmount,
-          transaction_type: 'reward',
-          description: `🎮 Creator reward: ${formData.title}`,
-        });
+      // Use secure RPC to claim upload reward (prevents duplicates per game)
+      const { data: rewardResult, error: rewardError } = await supabase.rpc('claim_upload_reward_safe', {
+        p_game_id: insertedGame.id,
+        p_game_title: formData.title
+      });
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('wallet_balance')
-        .eq('id', user.id)
-        .single();
-
-      await supabase
-        .from('profiles')
-        .update({ wallet_balance: (profile?.wallet_balance || 0) + rewardAmount })
-        .eq('id', user.id);
+      if (rewardError) {
+        console.error('Reward claim error:', rewardError);
+      }
 
       setUploadProgress(100);
 

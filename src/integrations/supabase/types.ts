@@ -1007,6 +1007,59 @@ export type Database = {
         }
         Relationships: []
       }
+      claimed_referral_tiers: {
+        Row: {
+          claimed_at: string
+          id: string
+          reward_amount: number
+          tier_id: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          id?: string
+          reward_amount: number
+          tier_id: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          id?: string
+          reward_amount?: number
+          tier_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claimed_referral_tiers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "claimed_referral_tiers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claimed_referral_tiers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claimed_referral_tiers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       combo_active_periods: {
         Row: {
           created_at: string
@@ -1857,6 +1910,33 @@ export type Database = {
           soul_nft_name?: string | null
           user_id?: string
           wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      game_cleanup_rewards: {
+        Row: {
+          claim_date: string
+          claimed_at: string
+          game_id: string
+          id: string
+          reward_amount: number
+          user_id: string
+        }
+        Insert: {
+          claim_date?: string
+          claimed_at?: string
+          game_id: string
+          id?: string
+          reward_amount?: number
+          user_id: string
+        }
+        Update: {
+          claim_date?: string
+          claimed_at?: string
+          game_id?: string
+          id?: string
+          reward_amount?: number
+          user_id?: string
         }
         Relationships: []
       }
@@ -3520,6 +3600,30 @@ export type Database = {
           },
         ]
       }
+      upload_game_rewards: {
+        Row: {
+          claimed_at: string
+          game_id: string
+          id: string
+          reward_amount: number
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          game_id: string
+          id?: string
+          reward_amount?: number
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          game_id?: string
+          id?: string
+          reward_amount?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       uploaded_file_hashes: {
         Row: {
           bitrate: number | null
@@ -4685,6 +4789,11 @@ export type Database = {
           wallet_changes_count: number
         }[]
       }
+      claim_challenge_reward_safe: {
+        Args: { p_challenge_id: string; p_reward_amount: number }
+        Returns: Json
+      }
+      claim_combo_prize_safe: { Args: { p_prize_id: string }; Returns: Json }
       claim_daily_login_reward: {
         Args: { p_user_id: string; p_wallet_address?: string }
         Returns: {
@@ -4704,12 +4813,29 @@ export type Database = {
           success: boolean
         }[]
       }
+      claim_game_cleanup_safe: { Args: { p_game_id: string }; Returns: Json }
+      claim_game_complete_safe: {
+        Args: { p_game_id: string; p_game_title?: string; p_level: number }
+        Returns: Json
+      }
+      claim_game_win_safe: {
+        Args: { p_coins: number; p_game_id: string; p_game_title?: string }
+        Returns: Json
+      }
       claim_pending_rewards: {
         Args: { p_tx_hash: string; p_wallet_address: string }
         Returns: number
       }
       claim_ranking_reward_safe: {
         Args: { p_amount: number; p_score: number; p_user_id: string }
+        Returns: Json
+      }
+      claim_referral_tier_safe: {
+        Args: { p_tier_id: string; p_tier_reward: number }
+        Returns: Json
+      }
+      claim_upload_reward_safe: {
+        Args: { p_game_id: string; p_game_title?: string }
         Returns: Json
       }
       cleanup_duplicate_rewards: {

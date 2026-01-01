@@ -270,33 +270,26 @@ const GamePlay = () => {
     // Haptic feedback for success
     haptics.success();
 
-    // Award 10,000 Camly coins for completing the level
+    // Award 10,000 Camly coins for completing the level using secure RPC
     if (user && game) {
       try {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("wallet_balance")
-          .eq("id", user.id)
-          .single();
+        const { data, error } = await supabase.rpc('claim_game_complete_safe', {
+          p_game_id: game.id,
+          p_level: currentLevel,
+          p_game_title: game.title
+        });
 
-        if (profile) {
-          await supabase
-            .from("profiles")
-            .update({ 
-              wallet_balance: (profile.wallet_balance || 0) + 10000
-            })
-            .eq("id", user.id);
-          
-          // Log transaction
-          await supabase.from("camly_coin_transactions").insert({
-            user_id: user.id,
-            amount: 10000,
-            transaction_type: "game_complete",
-            description: `Completed level ${currentLevel} in ${game.title}`
-          });
-
-          // Claim first game reward bonus (only triggers once)
-          await claimFirstGameReward();
+        if (error) {
+          console.error("RPC error:", error);
+        } else {
+          const result = data as { success: boolean; error?: string; reward?: number } | null;
+          if (result && !result.success) {
+            // Silently handle duplicate claims (already claimed today)
+            console.log("Claim result:", result.error);
+          } else if (result?.success) {
+            // Claim first game reward bonus (only triggers once)
+            await claimFirstGameReward();
+          }
         }
       } catch (error) {
         console.error("Error awarding game completion reward:", error);
