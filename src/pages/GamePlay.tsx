@@ -69,6 +69,8 @@ import { RestaurantChef } from "@/components/games/RestaurantChef";
 import { ThemeParkBuilder } from "@/components/games/ThemeParkBuilder";
 import { RockPaperScissors } from "@/components/games/RockPaperScissors";
 import { FlappyBird } from "@/components/games/FlappyBird";
+import { MazeRunner } from "@/components/games/MazeRunner";
+import { MazeRunner3D } from "@/components/games/MazeRunner3D";
 
 import { SimonSays3D } from "@/components/games/SimonSays3D";
 import { GuessNumber3D } from "@/components/games/GuessNumber3D";
@@ -461,6 +463,12 @@ const GamePlay = () => {
       case "flappy-bird":
         return <FlappyBird3D {...gameProps} />;
       case "FlappyBird2D": return <FlappyBird {...gameProps} />;
+      
+      // Maze Games
+      case "MazeRunner":
+      case "maze-runner":
+        return <MazeRunner3D {...gameProps} />;
+      case "MazeRunner2D": return <MazeRunner {...gameProps} />;
       
       
       default:
