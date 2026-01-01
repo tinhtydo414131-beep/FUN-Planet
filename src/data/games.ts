@@ -4,9 +4,6 @@ import balloonPopImg from '@/assets/games/balloon-pop.jpg';
 import guessNumberImg from '@/assets/games/guess-number.jpg';
 import mathQuizImg from '@/assets/games/math-quiz.jpg';
 import triviaQuizImg from '@/assets/games/trivia-quiz.jpg';
-import mazeRunnerImg from '@/assets/games/maze-runner.jpg';
-import platformerImg from '@/assets/games/platformer.jpg';
-import racingImg from '@/assets/games/racing.jpg';
 
 export interface Game {
   id: string;
@@ -19,17 +16,6 @@ export interface Game {
 }
 
 export const games: Game[] = [
-  // Featured - New Games
-  {
-    id: 'harvest-haven',
-    title: 'Harvest Haven',
-    description: 'Build your farm empire from village to metropolis!',
-    category: 'casual',
-    difficulty: 'easy',
-    image: '/images/games/farm-builder.jpg',
-    playable: true,
-  },
-  
   // Casual & Happy Games
   {
     id: 'memory-cards',
@@ -88,23 +74,4 @@ export const games: Game[] = [
     playable: true,
   },
   
-  // Adventure Games
-  {
-    id: 'maze-runner',
-    title: 'Maze Runner',
-    description: 'Tìm đường thoát khỏi mê cung',
-    category: 'adventure',
-    difficulty: 'medium',
-    image: mazeRunnerImg,
-    playable: true,
-  },
-  {
-    id: 'platformer',
-    title: 'Platform Jump',
-    description: 'Nhảy qua các nền tảng vui nhộn',
-    category: 'adventure',
-    difficulty: 'medium',
-    image: platformerImg,
-    playable: true,
-  },
 ];
