@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Gamepad2, Play, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw } from "lucide-react";
+import { Users, Gamepad2, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw, Wallet, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ethers } from "ethers";
+import { CAMLY_CONTRACT_ADDRESS, CAMLY_ABI } from "@/lib/web3";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -14,6 +16,11 @@ import {
   HoverCardTrigger,
 } from "./ui/hover-card";
 import confetti from "canvas-confetti";
+
+// Treasury wallet address and BSC RPC
+const FUN_PLANET_TREASURY = "0xDb792AF6a426E1c2AbF4A2A1F8716775b7145C69";
+const BSC_RPC_URL = "https://bsc-dataseed.binance.org";
+const CAMLY_DECIMALS = 3;
 
 // Debounce utility
 const debounce = <T extends (...args: any[]) => any>(fn: T, ms: number) => {
@@ -28,7 +35,7 @@ const debounce = <T extends (...args: any[]) => any>(fn: T, ms: number) => {
 interface Stats {
   totalUsers: number;
   totalGames: number;
-  totalPlays: number;
+  treasuryBalance: number;
   totalUploads: number;
   totalCamly: number;
 }
@@ -239,7 +246,7 @@ export const FunPlanetUnifiedBoard = () => {
   const { user } = useAuth();
 
   // Honor Board State
-  const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalGames: 0, totalPlays: 0, totalUploads: 0, totalCamly: 0 });
+  const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalGames: 0, treasuryBalance: 0, totalUploads: 0, totalCamly: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
 
   // Legends Board State
@@ -259,20 +266,42 @@ export const FunPlanetUnifiedBoard = () => {
   const [isLive, setIsLive] = useState(false);
   const [hasUpdate, setHasUpdate] = useState(false);
 
+  // Fetch Treasury Balance from BSC
+  const fetchTreasuryBalance = useCallback(async (): Promise<number> => {
+    try {
+      const provider = new ethers.JsonRpcProvider(BSC_RPC_URL);
+      const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, provider);
+      const balance = await contract.balanceOf(FUN_PLANET_TREASURY);
+      const formattedBalance = ethers.formatUnits(balance, CAMLY_DECIMALS);
+      return Math.floor(parseFloat(formattedBalance));
+    } catch (error) {
+      console.error("Error fetching treasury balance:", error);
+      return 0;
+    }
+  }, []);
+
   // Fetch Honor Board Stats
   const fetchStats = useCallback(async () => {
     try {
-      const { count: usersCount } = await supabase.from("profiles").select("*", { count: "exact", head: true });
-      const { count: uploadedGamesCount } = await supabase.from("uploaded_games").select("*", { count: "exact", head: true }).eq("status", "approved");
-      const { count: lovableGamesCount } = await supabase.from("lovable_games").select("*", { count: "exact", head: true }).eq("approved", true);
-      const totalGames = (uploadedGamesCount || 0) + (lovableGamesCount || 0);
-      const { data: playersData } = await supabase.from("game_plays").select("user_id");
-      const uniquePlayers = new Set(playersData?.map(p => p.user_id) || []).size;
-      const { count: uploadsCount } = await supabase.from("uploaded_games").select("*", { count: "exact", head: true });
-      const { data: camlyData } = await supabase.from("profiles").select("wallet_balance");
-      const totalCamly = camlyData?.reduce((sum, profile) => sum + (profile.wallet_balance || 0), 0) || 0;
+      const [treasuryBalance, usersResult, uploadedGamesResult, lovableGamesResult, uploadsResult, camlyResult] = await Promise.all([
+        fetchTreasuryBalance(),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("uploaded_games").select("*", { count: "exact", head: true }).eq("status", "approved"),
+        supabase.from("lovable_games").select("*", { count: "exact", head: true }).eq("approved", true),
+        supabase.from("uploaded_games").select("*", { count: "exact", head: true }),
+        supabase.from("profiles").select("wallet_balance"),
+      ]);
 
-      setStats({ totalUsers: usersCount || 0, totalGames, totalPlays: uniquePlayers, totalUploads: uploadsCount || 0, totalCamly });
+      const totalGames = (uploadedGamesResult.count || 0) + (lovableGamesResult.count || 0);
+      const totalCamly = camlyResult.data?.reduce((sum, profile) => sum + (profile.wallet_balance || 0), 0) || 0;
+
+      setStats({
+        totalUsers: usersResult.count || 0,
+        totalGames,
+        treasuryBalance,
+        totalUploads: uploadsResult.count || 0,
+        totalCamly,
+      });
       setHasUpdate(true);
       setTimeout(() => setHasUpdate(false), 1000);
     } catch (error) {
@@ -280,7 +309,7 @@ export const FunPlanetUnifiedBoard = () => {
     } finally {
       setStatsLoading(false);
     }
-  }, []);
+  }, [fetchTreasuryBalance]);
 
   // Fetch Legends Data
   const fetchLegends = useCallback(async () => {
@@ -386,7 +415,7 @@ export const FunPlanetUnifiedBoard = () => {
     }
   }, [rankingLoading, topUsers, confettiFired]);
 
-  const maxStatValue = Math.max(stats.totalUsers, stats.totalGames, stats.totalPlays, stats.totalUploads, stats.totalCamly, 1);
+  const maxStatValue = Math.max(stats.totalUsers, stats.totalGames, stats.treasuryBalance, stats.totalUploads, stats.totalCamly, 1);
   const maxBalance = topUsers[0]?.wallet_balance || 1;
   const top3Users = topUsers.slice(0, 3);
   const remainingUsers = topUsers.slice(3);
@@ -394,7 +423,7 @@ export const FunPlanetUnifiedBoard = () => {
   const statItems = [
     { icon: Users, label: "Users", value: stats.totalUsers, bgColor: "bg-purple-500", accentColor: "#a855f7", suffix: "players" },
     { icon: Gamepad2, label: "Games", value: stats.totalGames, bgColor: "bg-teal-500", accentColor: "#14b8a6", suffix: "titles" },
-    { icon: Play, label: "Players", value: stats.totalPlays, bgColor: "bg-pink-500", accentColor: "#ec4899", suffix: "gamers" },
+    { icon: Wallet, label: "Quỹ FP", value: stats.treasuryBalance, bgColor: "bg-amber-500", accentColor: "#f59e0b", suffix: "💰" },
     { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500", accentColor: "#22c55e", suffix: "games" },
     { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500", accentColor: "#f43f5e", suffix: "💎" },
   ];
