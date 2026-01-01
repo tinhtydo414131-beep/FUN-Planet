@@ -1,7 +1,14 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Gamepad2, Play, Upload, Gem } from "lucide-react";
+import { Users, Gamepad2, Play, Upload, Gem, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ethers } from "ethers";
+import { CAMLY_CONTRACT_ADDRESS, CAMLY_ABI } from "@/lib/web3";
+
+// Fun Planet Treasury wallet address
+const FUN_PLANET_TREASURY = "0xDb792AF6a426E1c2AbF4A2A1F8716775b7145C69";
+const BSC_RPC_URL = "https://bsc-dataseed.binance.org";
+const CAMLY_DECIMALS = 3;
 
 interface Stats {
   totalUsers: number;
@@ -9,6 +16,7 @@ interface Stats {
   totalPlays: number;
   totalUploads: number;
   totalCamly: number;
+  treasuryBalance: number;
 }
 
 // Optimized AnimatedCounter - throttled updates for better performance
@@ -59,7 +67,22 @@ const floatingParticles = [
   { id: "p3", emoji: "▶️", delay: 1, x: "12%", y: "65%", duration: 4.5 },
   { id: "p4", emoji: "📤", delay: 1.5, x: "82%", y: "70%", duration: 3.5 },
   { id: "p5", emoji: "💎", delay: 2, x: "50%", y: "8%", duration: 4 },
+  { id: "p6", emoji: "💰", delay: 2.5, x: "25%", y: "85%", duration: 4.2 },
 ];
+
+// Fetch treasury balance from BSC blockchain
+const fetchTreasuryBalance = async (): Promise<number> => {
+  try {
+    const provider = new ethers.JsonRpcProvider(BSC_RPC_URL);
+    const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, CAMLY_ABI, provider);
+    const balance = await contract.balanceOf(FUN_PLANET_TREASURY);
+    const formatted = parseFloat(ethers.formatUnits(balance, CAMLY_DECIMALS));
+    return Math.floor(formatted);
+  } catch (error) {
+    console.error("Error fetching treasury balance:", error);
+    return 0;
+  }
+};
 
 export const FunPlanetHonorBoard = () => {
   const [stats, setStats] = useState<Stats>({
@@ -68,6 +91,7 @@ export const FunPlanetHonorBoard = () => {
     totalPlays: 0,
     totalUploads: 0,
     totalCamly: 0,
+    treasuryBalance: 0,
   });
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
@@ -111,12 +135,16 @@ export const FunPlanetHonorBoard = () => {
       
       const totalCamly = camlyData?.reduce((sum, profile) => sum + (profile.wallet_balance || 0), 0) || 0;
 
+      // Fetch treasury balance from blockchain
+      const treasuryBalance = await fetchTreasuryBalance();
+
       setStats({
         totalUsers: usersCount || 0,
         totalGames: totalGames,
         totalPlays: uniquePlayers,
         totalUploads: uploadsCount || 0,
         totalCamly: totalCamly,
+        treasuryBalance: treasuryBalance,
       });
       
       // Flash update indicator
@@ -184,6 +212,7 @@ export const FunPlanetHonorBoard = () => {
     { icon: Play, label: "Players", value: stats.totalPlays, bgColor: "bg-pink-500", accentColor: "#ec4899", suffix: "gamers" },
     { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500", accentColor: "#22c55e", suffix: "games" },
     { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500", accentColor: "#f43f5e", suffix: "💎" },
+    { icon: Wallet, label: "Quỹ FP", value: stats.treasuryBalance, bgColor: "bg-amber-500", accentColor: "#f59e0b", suffix: "💰" },
   ];
 
   return (
