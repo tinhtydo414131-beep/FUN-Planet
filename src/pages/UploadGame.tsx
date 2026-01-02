@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { 
   Upload, Loader2, Link, FileArchive, CheckCircle, XCircle, 
-  Sparkles, Play, Diamond, Wand2, Image as ImageIcon,
+  Sparkles, Play, Diamond, Wand2, Image,
   BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -32,12 +32,6 @@ interface ScanResult {
   confidence: number;
   needsReview?: boolean;
 }
-
-// Thumbnail validation constants
-const MIN_THUMBNAIL_WIDTH = 400;
-const MIN_THUMBNAIL_HEIGHT = 300;
-const MAX_THUMBNAIL_SIZE_MB = 5;
-const MAX_THUMBNAIL_SIZE = MAX_THUMBNAIL_SIZE_MB * 1024 * 1024; // 5MB
 
 const TOPIC_OPTIONS = [
   { id: "puzzle", label: "🧩 Puzzle & Logic", icon: Puzzle },
@@ -216,51 +210,17 @@ export default function UploadGame() {
     setIsDraggingThumb(false);
   }, []);
 
-  // Validate thumbnail dimensions and file size
-  const validateThumbnailDimensions = useCallback((file: File): Promise<boolean> => {
-    return new Promise((resolve) => {
-      // Check file size first
-      if (file.size > MAX_THUMBNAIL_SIZE) {
-        toast.error(`Ảnh quá lớn! Tối đa ${MAX_THUMBNAIL_SIZE_MB}MB (hiện tại: ${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-        resolve(false);
-        return;
-      }
-
-      const img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        if (img.width < MIN_THUMBNAIL_WIDTH || img.height < MIN_THUMBNAIL_HEIGHT) {
-          toast.error(
-            `Ảnh quá nhỏ! Tối thiểu ${MIN_THUMBNAIL_WIDTH}x${MIN_THUMBNAIL_HEIGHT} pixels (hiện tại: ${img.width}x${img.height})`
-          );
-          resolve(false);
-        } else {
-          resolve(true);
-        }
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(img.src);
-        toast.error("Không thể đọc file ảnh!");
-        resolve(false);
-      };
-      img.src = URL.createObjectURL(file);
-    });
-  }, []);
-
-  const handleThumbDrop = useCallback(async (e: React.DragEvent) => {
+  const handleThumbDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingThumb(false);
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
-      const isValid = await validateThumbnailDimensions(file);
-      if (isValid) {
-        setThumbnail(file);
-        toast.success(`🖼️ Thumbnail ready!`);
-      }
+      setThumbnail(file);
+      toast.success(`🖼️ Thumbnail ready!`);
     } else {
-      toast.error("Please drop an image file (PNG, JPG, WEBP)");
+      toast.error("Please drop an image file");
     }
-  }, [validateThumbnailDimensions]);
+  }, []);
 
   const toggleTopic = (topicId: string) => {
     setSelectedTopics(prev => 
@@ -348,24 +308,6 @@ export default function UploadGame() {
 
     if (uploadMethod === "zip" && !gameFile) {
       toast.error("Please upload your game ZIP file");
-      return;
-    }
-
-    // Validate thumbnail required
-    if (!thumbnail && !formData.thumbnailUrl) {
-      toast.error("🖼️ Vui lòng tải lên ảnh thumbnail cho game!");
-      return;
-    }
-
-    // Validate age rating required
-    if (!formData.ageAppropriate) {
-      toast.error("👶 Vui lòng chọn độ tuổi phù hợp!");
-      return;
-    }
-
-    // Validate at least 1 topic required
-    if (selectedTopics.length === 0) {
-      toast.error("🏷️ Vui lòng chọn ít nhất 1 chủ đề cho game!");
       return;
     }
 
@@ -875,9 +817,7 @@ export default function UploadGame() {
 
               {/* Age Rating - Cute bubbles */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">
-                  👶 Age Rating <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-lg font-bold text-purple-700">👶 Age Rating</Label>
                 <div className="grid grid-cols-4 gap-3">
                   {AGE_OPTIONS.map((age) => (
                     <button
@@ -899,9 +839,7 @@ export default function UploadGame() {
 
               {/* Topics */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">
-                  🏷️ Topics (select at least 1) <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-lg font-bold text-purple-700">🏷️ Topics (select multiple)</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {TOPIC_OPTIONS.map((topic) => {
                     const isSelected = selectedTopics.includes(topic.id);
@@ -926,9 +864,7 @@ export default function UploadGame() {
 
               {/* Thumbnail */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">
-                  🖼️ Thumbnail <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-lg font-bold text-purple-700">🖼️ Thumbnail</Label>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-sm text-purple-500">Paste image URL</Label>
@@ -957,25 +893,18 @@ export default function UploadGame() {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={async (e) => {
+                        onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const isValid = await validateThumbnailDimensions(file);
-                            if (isValid) {
-                              setThumbnail(file);
-                              setFormData({ ...formData, thumbnailUrl: "" });
-                              toast.success(`🖼️ Thumbnail ready!`);
-                            }
+                            setThumbnail(file);
+                            setFormData({ ...formData, thumbnailUrl: "" });
                           }
                         }}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
-                      <ImageIcon className="w-6 h-6 mx-auto text-pink-400" />
+                      <Image className="w-6 h-6 mx-auto text-pink-400" />
                       <p className="text-xs text-purple-500 mt-1">Drag or click</p>
                     </div>
-                    <p className="text-xs text-muted-foreground text-center">
-                      📏 Tối thiểu 400x300px • Tối đa 5MB
-                    </p>
                   </div>
                 </div>
 
