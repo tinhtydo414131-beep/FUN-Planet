@@ -19,7 +19,6 @@ interface RankedUser {
   wallet_balance: number | null;
   wallet_address: string | null;
   claimed_amount: number | null;
-  total_earned?: number | null;
 }
 
 const USERS_PER_PAGE = 20;
@@ -386,61 +385,35 @@ export default function FullRanking() {
     try {
       if (isRefresh && !isRealtime) setRefreshing(true);
 
-      // Sử dụng view leaderboard_stats để lấy dữ liệu đã sync chính xác
-      // View này tính: pending_balance = wallet_balance, total_claimed từ user_rewards
-      const { data: statsData, error: statsError } = await supabase
-        .from("leaderboard_stats")
-        .select("*");
+      // Fetch profiles with wallet_address
+      const { data: profilesData, error: profilesError, count } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url, wallet_balance, wallet_address", { count: "exact" })
+        .order("wallet_balance", { ascending: false, nullsFirst: false });
 
-      if (statsError) {
-        console.error("Error fetching leaderboard_stats:", statsError);
-        // Fallback to old method if view fails
-        const { data: profilesData, error: profilesError, count } = await supabase
-          .from("profiles")
-          .select("id, username, avatar_url, wallet_balance, wallet_address", { count: "exact" })
-          .order("wallet_balance", { ascending: false, nullsFirst: false });
+      if (profilesError) throw profilesError;
 
-        if (profilesError) throw profilesError;
+      // Fetch claimed_amount from user_rewards for all users
+      const userIds = (profilesData || []).map(p => p.id);
+      const { data: rewardsData } = await supabase
+        .from("user_rewards")
+        .select("user_id, claimed_amount")
+        .in("user_id", userIds);
 
-        const userIds = (profilesData || []).map(p => p.id);
-        const { data: rewardsData } = await supabase
-          .from("user_rewards")
-          .select("user_id, claimed_amount")
-          .in("user_id", userIds);
+      // Map rewards to users
+      const rewardsMap = new Map<string, number>();
+      (rewardsData || []).forEach(r => {
+        rewardsMap.set(r.user_id, r.claimed_amount || 0);
+      });
 
-        const rewardsMap = new Map<string, number>();
-        (rewardsData || []).forEach(r => {
-          rewardsMap.set(r.user_id, r.claimed_amount || 0);
-        });
+      const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => ({
+        ...p,
+        claimed_amount: rewardsMap.get(p.id) || 0
+      }));
 
-        const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => ({
-          ...p,
-          claimed_amount: rewardsMap.get(p.id) || 0,
-          total_earned: (p.wallet_balance || 0) + (rewardsMap.get(p.id) || 0)
-        }));
-
-        // Sort by total_earned descending
-        usersWithEarnings.sort((a, b) => (b.total_earned || 0) - (a.total_earned || 0));
-
-        setAllUsers(usersWithEarnings);
-        setFilteredUsers(usersWithEarnings);
-        setTotalUsers(count || 0);
-      } else {
-        // Use view data - already sorted by total_earned DESC
-        const usersFromView: RankedUser[] = (statsData || []).map(s => ({
-          id: s.user_id,
-          username: s.username,
-          avatar_url: s.avatar_url,
-          wallet_balance: s.pending_balance,
-          wallet_address: s.wallet_address,
-          claimed_amount: s.total_claimed,
-          total_earned: s.total_earned
-        }));
-
-        setAllUsers(usersFromView);
-        setFilteredUsers(usersFromView);
-        setTotalUsers(usersFromView.length);
-      }
+      setAllUsers(usersWithEarnings);
+      setFilteredUsers(usersWithEarnings);
+      setTotalUsers(count || 0);
       
       // Show update indicator for realtime updates
       if (isRealtime) {
