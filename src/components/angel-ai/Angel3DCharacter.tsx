@@ -1,215 +1,241 @@
-import { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Sparkles } from '@react-three/drei';
+import { useRef, useMemo } from 'react';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { Float, Sparkles, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
+import { TextureLoader } from 'three';
+import angelAvatarUrl from "@/assets/angel-ai-avatar.jpg";
 
-// Angel Wing Component
-function AngelWing({ side }: { side: 'left' | 'right' }) {
-  const wingRef = useRef<THREE.Group>(null);
-  const direction = side === 'left' ? 1 : -1;
-  
-  useFrame(({ clock }) => {
-    if (wingRef.current) {
-      // Gentle flapping animation
-      const flapAmount = Math.sin(clock.getElapsedTime() * 3) * 0.15;
-      wingRef.current.rotation.z = direction * (0.3 + flapAmount);
+// Glowing orb particle
+function GlowingOrb({ position, color, size = 0.05 }: { position: [number, number, number]; color: string; size?: number }) {
+  const ref = useRef<THREE.Mesh>(null);
+  const initialY = position[1];
+  const speed = useMemo(() => Math.random() * 0.5 + 0.5, []);
+  const amplitude = useMemo(() => Math.random() * 0.3 + 0.1, []);
+
+  useFrame((state) => {
+    if (ref.current) {
+      ref.current.position.y = initialY + Math.sin(state.clock.elapsedTime * speed) * amplitude;
+      ref.current.scale.setScalar(size * (1 + Math.sin(state.clock.elapsedTime * 2) * 0.3));
     }
   });
 
   return (
-    <group 
-      ref={wingRef} 
-      position={[direction * 0.35, 0.1, -0.1]}
-      rotation={[0, direction * 0.2, direction * 0.3]}
-    >
-      {/* Wing feathers - layered ellipsoids */}
-      <mesh position={[direction * 0.15, 0.15, 0]}>
-        <sphereGeometry args={[0.25, 16, 8]} />
-        <meshStandardMaterial 
-          color="#ffffff" 
-          emissive="#fffacd"
-          emissiveIntensity={0.2}
-          transparent
-          opacity={0.9}
-        />
-      </mesh>
-      <mesh position={[direction * 0.25, 0, 0]} scale={[0.8, 0.6, 0.3]}>
-        <sphereGeometry args={[0.3, 16, 8]} />
-        <meshStandardMaterial 
-          color="#fff8dc" 
-          emissive="#ffd700"
-          emissiveIntensity={0.1}
-          transparent
-          opacity={0.85}
-        />
-      </mesh>
-      <mesh position={[direction * 0.35, -0.1, 0]} scale={[0.6, 0.4, 0.2]}>
-        <sphereGeometry args={[0.25, 16, 8]} />
-        <meshStandardMaterial 
-          color="#ffffff" 
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-// Halo Component
-function Halo() {
-  const haloRef = useRef<THREE.Mesh>(null);
-  
-  useFrame(({ clock }) => {
-    if (haloRef.current) {
-      haloRef.current.rotation.z = clock.getElapsedTime() * 0.5;
-    }
-  });
-
-  return (
-    <mesh ref={haloRef} position={[0, 0.65, 0]} rotation={[Math.PI / 2 - 0.2, 0, 0]}>
-      <torusGeometry args={[0.25, 0.03, 16, 32]} />
-      <meshStandardMaterial 
-        color="#ffd700"
-        emissive="#ffa500"
-        emissiveIntensity={0.8}
-        metalness={0.8}
-        roughness={0.2}
-      />
+    <mesh ref={ref} position={position}>
+      <sphereGeometry args={[size, 8, 8]} />
+      <meshBasicMaterial color={color} transparent opacity={0.8} />
     </mesh>
   );
 }
 
-// Pigtail Component
-function Pigtail({ side }: { side: 'left' | 'right' }) {
-  const direction = side === 'left' ? 1 : -1;
-  
+// Halo with glow effect
+function Halo() {
+  const haloRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (haloRef.current) {
+      haloRef.current.rotation.z = state.clock.elapsedTime * 0.3;
+      const pulse = 1 + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+      haloRef.current.scale.set(pulse, pulse, 1);
+    }
+  });
+
   return (
-    <group position={[direction * 0.25, 0.35, 0]}>
-      {/* Hair tie */}
-      <mesh>
-        <sphereGeometry args={[0.08, 12, 8]} />
-        <meshStandardMaterial color="#ff69b4" />
+    <group position={[0, 0.9, 0]}>
+      {/* Main halo ring */}
+      <mesh ref={haloRef} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.35, 0.05, 8, 32]} />
+        <meshBasicMaterial color="#FFD700" transparent opacity={0.9} />
       </mesh>
-      {/* Pigtail */}
-      <mesh position={[direction * 0.08, -0.05, 0]} rotation={[0, 0, direction * 0.3]}>
-        <capsuleGeometry args={[0.06, 0.15, 8, 8]} />
-        <meshStandardMaterial color="#8b4513" />
+      {/* Halo glow */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.35, 0.15, 8, 32]} />
+        <meshBasicMaterial color="#FFD700" transparent opacity={0.3} />
       </mesh>
+      {/* Inner glow */}
+      <pointLight color="#FFD700" intensity={0.5} distance={1} />
     </group>
   );
 }
 
-// Main Angel Character
-function AngelCharacter() {
-  const groupRef = useRef<THREE.Group>(null);
+// Light rays emanating from character
+function LightRays() {
+  const raysRef = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (raysRef.current) {
+      raysRef.current.rotation.z = state.clock.elapsedTime * 0.1;
+    }
+  });
+
+  const rays = useMemo(() => {
+    return Array.from({ length: 8 }, (_, i) => ({
+      rotation: (i * Math.PI) / 4,
+      length: 1.5 + Math.random() * 0.5,
+    }));
+  }, []);
+
+  return (
+    <group ref={raysRef} position={[0, 0, -0.5]}>
+      {rays.map((ray, i) => (
+        <mesh key={i} rotation={[0, 0, ray.rotation]} position={[0, 0, 0]}>
+          <planeGeometry args={[0.02, ray.length]} />
+          <meshBasicMaterial
+            color="#FFD700"
+            transparent
+            opacity={0.3}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// Ellipse geometry helper for wings
+function EllipseGeometry({ radiusX, radiusY, segments = 32 }: { radiusX: number; radiusY: number; segments?: number }) {
+  const points = useMemo(() => {
+    const pts: THREE.Vector2[] = [];
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2;
+      pts.push(new THREE.Vector2(Math.cos(angle) * radiusX, Math.sin(angle) * radiusY));
+    }
+    return pts;
+  }, [radiusX, radiusY, segments]);
   
+  const shape = useMemo(() => {
+    const s = new THREE.Shape();
+    s.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      s.lineTo(points[i].x, points[i].y);
+    }
+    s.closePath();
+    return s;
+  }, [points]);
+
+  return <shapeGeometry args={[shape]} />;
+}
+
+// Main angel character with texture
+function AngelCharacter() {
+  const texture = useLoader(TextureLoader, angelAvatarUrl);
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  // Configure texture
+  useMemo(() => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+  }, [texture]);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      // Subtle breathing/pulsing effect
+      const pulse = 1 + Math.sin(state.clock.elapsedTime * 1.5) * 0.02;
+      meshRef.current.scale.set(pulse, pulse, 1);
+    }
+  });
+
+  // Sparkle colors for variety
+  const sparklePositions = useMemo(() => {
+    const colors = ["#FFD700", "#FF69B4", "#87CEEB", "#98FB98", "#DDA0DD", "#FFA500"];
+    return Array.from({ length: 15 }, () => ({
+      position: [
+        (Math.random() - 0.5) * 2.5,
+        (Math.random() - 0.5) * 2.5,
+        (Math.random() - 0.5) * 0.5,
+      ] as [number, number, number],
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: Math.random() * 0.06 + 0.03,
+    }));
+  }, []);
+
   return (
     <Float
       speed={2}
-      rotationIntensity={0.1}
+      rotationIntensity={0.3}
       floatIntensity={0.5}
       floatingRange={[-0.1, 0.1]}
     >
-      <group ref={groupRef} scale={1.2}>
-        {/* Head */}
-        <mesh position={[0, 0.35, 0]}>
-          <sphereGeometry args={[0.28, 32, 32]} />
-          <meshStandardMaterial 
-            color="#ffe4c4" 
-            roughness={0.8}
-          />
-        </mesh>
-        
-        {/* Hair (bangs) */}
-        <mesh position={[0, 0.52, 0.12]} scale={[1.1, 0.4, 0.6]}>
-          <sphereGeometry args={[0.22, 16, 16]} />
-          <meshStandardMaterial color="#8b4513" />
-        </mesh>
-        
-        {/* Pigtails */}
-        <Pigtail side="left" />
-        <Pigtail side="right" />
-        
-        {/* Eyes */}
-        <mesh position={[-0.08, 0.38, 0.22]}>
-          <sphereGeometry args={[0.05, 16, 16]} />
-          <meshStandardMaterial color="#000000" />
-        </mesh>
-        <mesh position={[0.08, 0.38, 0.22]}>
-          <sphereGeometry args={[0.05, 16, 16]} />
-          <meshStandardMaterial color="#000000" />
-        </mesh>
-        
-        {/* Eye sparkles */}
-        <mesh position={[-0.06, 0.40, 0.26]}>
-          <sphereGeometry args={[0.015, 8, 8]} />
-          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={1} />
-        </mesh>
-        <mesh position={[0.10, 0.40, 0.26]}>
-          <sphereGeometry args={[0.015, 8, 8]} />
-          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={1} />
-        </mesh>
-        
-        {/* Blush */}
-        <mesh position={[-0.15, 0.32, 0.18]}>
-          <sphereGeometry args={[0.04, 12, 12]} />
-          <meshStandardMaterial color="#ffb6c1" transparent opacity={0.6} />
-        </mesh>
-        <mesh position={[0.15, 0.32, 0.18]}>
-          <sphereGeometry args={[0.04, 12, 12]} />
-          <meshStandardMaterial color="#ffb6c1" transparent opacity={0.6} />
-        </mesh>
-        
-        {/* Smile */}
-        <mesh position={[0, 0.28, 0.24]} rotation={[0, 0, 0]}>
-          <torusGeometry args={[0.05, 0.015, 8, 16, Math.PI]} />
-          <meshStandardMaterial color="#ff6b6b" />
-        </mesh>
-        
-        {/* Body/Dress */}
-        <mesh position={[0, -0.1, 0]}>
-          <coneGeometry args={[0.35, 0.6, 16]} />
-          <meshStandardMaterial 
-            color="#ffb6c1"
-            emissive="#ff69b4"
-            emissiveIntensity={0.1}
-          />
-        </mesh>
-        
-        {/* Dress gradient layer */}
-        <mesh position={[0, -0.2, 0]}>
-          <coneGeometry args={[0.38, 0.45, 16]} />
-          <meshStandardMaterial 
-            color="#dda0dd"
-            emissive="#9370db"
-            emissiveIntensity={0.1}
+      <group>
+        {/* Background glow */}
+        <mesh position={[0, 0, -0.3]}>
+          <circleGeometry args={[1.2, 32]} />
+          <meshBasicMaterial
+            color="#FFD700"
             transparent
-            opacity={0.8}
+            opacity={0.15}
           />
         </mesh>
-        
-        {/* Collar/ribbon */}
-        <mesh position={[0, 0.08, 0.1]}>
-          <boxGeometry args={[0.12, 0.06, 0.05]} />
-          <meshStandardMaterial color="#ffd700" />
-        </mesh>
-        
-        {/* Wings */}
-        <AngelWing side="left" />
-        <AngelWing side="right" />
-        
-        {/* Halo */}
+
+        {/* Light rays behind */}
+        <LightRays />
+
+        {/* Halo above */}
         <Halo />
-        
-        {/* Sparkles around angel */}
+
+        {/* Main character image on circular plane */}
+        <Billboard follow lockX={false} lockY={false} lockZ={false}>
+          <mesh ref={meshRef}>
+            <circleGeometry args={[0.8, 64]} />
+            <meshBasicMaterial map={texture} transparent side={THREE.DoubleSide} />
+          </mesh>
+        </Billboard>
+
+        {/* Glowing border */}
+        <mesh position={[0, 0, -0.01]}>
+          <ringGeometry args={[0.78, 0.85, 64]} />
+          <meshBasicMaterial color="#FFD700" transparent opacity={0.6} />
+        </mesh>
+
+        {/* Wing glow - left */}
+        <mesh position={[-0.9, 0, -0.2]} rotation={[0, 0, 0.3]}>
+          <EllipseGeometry radiusX={0.3} radiusY={0.5} />
+          <meshBasicMaterial color="#FFFFFF" transparent opacity={0.4} side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* Wing glow - right */}
+        <mesh position={[0.9, 0, -0.2]} rotation={[0, 0, -0.3]}>
+          <EllipseGeometry radiusX={0.3} radiusY={0.5} />
+          <meshBasicMaterial color="#FFFFFF" transparent opacity={0.4} side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* Colored glowing orbs */}
+        {sparklePositions.map((sp, i) => (
+          <GlowingOrb key={i} position={sp.position} color={sp.color} size={sp.size} />
+        ))}
+
+        {/* Main sparkles effect */}
         <Sparkles
-          count={30}
-          scale={1.5}
-          size={3}
+          count={60}
+          scale={3}
+          size={4}
           speed={0.4}
           opacity={0.8}
-          color="#ffd700"
+          color="#FFD700"
         />
+
+        {/* Pink sparkles */}
+        <Sparkles
+          count={30}
+          scale={2.5}
+          size={3}
+          speed={0.3}
+          opacity={0.6}
+          color="#FF69B4"
+        />
+
+        {/* Blue sparkles */}
+        <Sparkles
+          count={20}
+          scale={2}
+          size={2}
+          speed={0.5}
+          opacity={0.5}
+          color="#87CEEB"
+        />
+
+        {/* Ambient point lights for magical glow */}
+        <pointLight position={[0, 0, 1]} color="#FFD700" intensity={0.3} distance={3} />
+        <pointLight position={[-1, 0.5, 0.5]} color="#FF69B4" intensity={0.2} distance={2} />
+        <pointLight position={[1, 0.5, 0.5]} color="#87CEEB" intensity={0.2} distance={2} />
       </group>
     </Float>
   );
@@ -219,18 +245,16 @@ function AngelCharacter() {
 export function Angel3DButton({ onClick }: { onClick?: () => void }) {
   return (
     <div 
-      className="w-20 h-24 cursor-pointer"
+      className="w-20 h-20 cursor-pointer"
       onClick={onClick}
     >
       <Canvas
-        camera={{ position: [0, 0, 2.5], fov: 50 }}
+        camera={{ position: [0, 0, 3], fov: 50 }}
         style={{ background: 'transparent' }}
         gl={{ alpha: true, antialias: true }}
       >
         <ambientLight intensity={0.6} />
         <directionalLight position={[2, 2, 2]} intensity={0.8} />
-        <pointLight position={[-2, 1, 1]} intensity={0.4} color="#ffb6c1" />
-        <pointLight position={[0, 2, 0]} intensity={0.5} color="#ffd700" />
         <AngelCharacter />
       </Canvas>
     </div>

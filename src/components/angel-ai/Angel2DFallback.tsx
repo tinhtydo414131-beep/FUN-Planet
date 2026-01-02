@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, Star } from "lucide-react";
+import angelAvatar from "@/assets/angel-ai-avatar.jpg";
 
 interface Angel2DFallbackProps {
   onClick?: () => void;
@@ -7,120 +7,257 @@ interface Angel2DFallbackProps {
 
 /**
  * 2D Fallback for AngelAI character
- * Used when 3D WebGL context needs to be conserved (e.g., during 3D games)
+ * Uses beautiful chibi angel image with sparkle effects
  */
 export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
+  // Generate sparkles with different colors
+  const sparkleColors = [
+    "#FFD700", // Gold
+    "#FF69B4", // Hot Pink
+    "#87CEEB", // Sky Blue
+    "#98FB98", // Pale Green
+    "#DDA0DD", // Plum
+    "#FFA500", // Orange
+    "#E6E6FA", // Lavender
+  ];
+
+  const sparkles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100 - 50,
+    y: Math.random() * 100 - 50,
+    scale: Math.random() * 0.5 + 0.3,
+    duration: Math.random() * 2 + 1.5,
+    delay: Math.random() * 2,
+    color: sparkleColors[Math.floor(Math.random() * sparkleColors.length)],
+  }));
+
+  // Light rays
+  const rays = Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    rotation: i * 45,
+    delay: i * 0.1,
+  }));
+
   return (
     <motion.div
-      className="w-20 h-24 cursor-pointer relative flex items-center justify-center"
+      className="relative w-20 h-20 cursor-pointer select-none"
       onClick={onClick}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
-      {/* Glow effect */}
+      {/* Outer glow ring */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-yellow-300/40 via-pink-300/40 to-purple-300/40 rounded-full blur-lg"
-        animate={{ 
-          scale: [1, 1.1, 1],
-          opacity: [0.5, 0.8, 0.5]
+        className="absolute inset-[-20px] rounded-full"
+        style={{
+          background: "radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,182,193,0.2) 40%, transparent 70%)",
+          filter: "blur(8px)",
         }}
-        transition={{ duration: 2, repeat: Infinity }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.6, 0.9, 0.6],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
       />
-      
-      {/* Main angel circle */}
-      <motion.div
-        className="relative w-16 h-16 rounded-full bg-gradient-to-br from-pink-200 via-yellow-100 to-purple-200 shadow-lg border-2 border-yellow-300/50 flex items-center justify-center"
-        animate={{ y: [0, -3, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        {/* Halo */}
+
+      {/* Light rays */}
+      {rays.map((ray) => (
         <motion.div
-          className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-3 rounded-full border-2 border-yellow-400"
-          animate={{ opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          key={ray.id}
+          className="absolute left-1/2 top-1/2 w-1 h-16 origin-bottom"
           style={{
-            background: "linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent)"
+            background: "linear-gradient(to top, rgba(255,215,0,0.6), transparent)",
+            transform: `translateX(-50%) rotate(${ray.rotation}deg)`,
+            filter: "blur(2px)",
+          }}
+          animate={{
+            opacity: [0.3, 0.7, 0.3],
+            scaleY: [0.8, 1.1, 0.8],
+          }}
+          transition={{
+            duration: 2,
+            delay: ray.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
           }}
         />
-        
-        {/* Face */}
-        <div className="relative">
-          {/* Eyes */}
-          <div className="flex gap-3 mb-1">
-            <motion.div 
-              className="w-2.5 h-2.5 bg-slate-800 rounded-full"
-              animate={{ scaleY: [1, 0.2, 1] }}
-              transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-            />
-            <motion.div 
-              className="w-2.5 h-2.5 bg-slate-800 rounded-full"
-              animate={{ scaleY: [1, 0.2, 1] }}
-              transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-            />
-          </div>
-          
-          {/* Smile */}
-          <motion.div
-            className="w-4 h-2 border-b-2 border-pink-400 rounded-b-full mx-auto"
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+      ))}
+
+      {/* Main floating animation container */}
+      <motion.div
+        className="relative w-full h-full"
+        animate={{
+          y: [-3, 3, -3],
+          rotate: [-2, 2, -2],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        {/* Halo glow behind */}
+        <motion.div
+          className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-4 rounded-full"
+          style={{
+            background: "radial-gradient(ellipse, rgba(255,215,0,0.9) 0%, rgba(255,215,0,0.4) 50%, transparent 70%)",
+            filter: "blur(3px)",
+          }}
+          animate={{
+            opacity: [0.7, 1, 0.7],
+            scaleX: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+
+        {/* Main angel image */}
+        <motion.div
+          className="relative w-full h-full rounded-full overflow-hidden"
+          style={{
+            boxShadow: `
+              0 0 20px rgba(255,215,0,0.5),
+              0 0 40px rgba(255,182,193,0.3),
+              0 0 60px rgba(135,206,235,0.2),
+              inset 0 0 20px rgba(255,255,255,0.3)
+            `,
+          }}
+        >
+          <img
+            src={angelAvatar}
+            alt="Angel AI"
+            className="w-full h-full object-cover"
+            style={{
+              filter: "brightness(1.1) contrast(1.05) saturate(1.1)",
+            }}
           />
           
-          {/* Blush */}
-          <div className="absolute top-2 -left-3 w-2 h-1.5 bg-pink-300/60 rounded-full" />
-          <div className="absolute top-2 -right-3 w-2 h-1.5 bg-pink-300/60 rounded-full" />
-        </div>
-        
-        {/* Wings */}
-        <motion.div
-          className="absolute -left-4 top-3"
-          animate={{ rotate: [-5, 5, -5] }}
-          transition={{ duration: 0.5, repeat: Infinity }}
-        >
-          <div className="w-5 h-8 bg-gradient-to-r from-white to-yellow-100 rounded-full opacity-80 shadow-sm" 
-               style={{ transform: "rotate(-15deg)" }} />
+          {/* Shimmer overlay */}
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%)",
+              backgroundSize: "200% 200%",
+            }}
+            animate={{
+              backgroundPosition: ["0% 0%", "200% 200%"],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
         </motion.div>
+
+        {/* Wing shimmer effects - left */}
         <motion.div
-          className="absolute -right-4 top-3"
-          animate={{ rotate: [5, -5, 5] }}
-          transition={{ duration: 0.5, repeat: Infinity }}
+          className="absolute -left-4 top-1/2 -translate-y-1/2 w-6 h-12"
+          style={{
+            background: "radial-gradient(ellipse at right, rgba(255,255,255,0.6) 0%, rgba(255,215,0,0.3) 40%, transparent 70%)",
+            filter: "blur(4px)",
+          }}
+          animate={{
+            opacity: [0.5, 0.9, 0.5],
+            scaleX: [0.8, 1.2, 0.8],
+            x: [-2, 2, -2],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+
+        {/* Wing shimmer effects - right */}
+        <motion.div
+          className="absolute -right-4 top-1/2 -translate-y-1/2 w-6 h-12"
+          style={{
+            background: "radial-gradient(ellipse at left, rgba(255,255,255,0.6) 0%, rgba(255,215,0,0.3) 40%, transparent 70%)",
+            filter: "blur(4px)",
+          }}
+          animate={{
+            opacity: [0.5, 0.9, 0.5],
+            scaleX: [0.8, 1.2, 0.8],
+            x: [2, -2, 2],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </motion.div>
+
+      {/* Multi-colored sparkles */}
+      {sparkles.map((sparkle) => (
+        <motion.div
+          key={sparkle.id}
+          className="absolute left-1/2 top-1/2 pointer-events-none"
+          style={{
+            width: 6,
+            height: 6,
+            x: sparkle.x,
+            y: sparkle.y,
+          }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale: [0, sparkle.scale, 0],
+            y: [sparkle.y, sparkle.y - 20, sparkle.y - 40],
+          }}
+          transition={{
+            duration: sparkle.duration,
+            delay: sparkle.delay,
+            repeat: Infinity,
+            ease: "easeOut",
+          }}
         >
-          <div className="w-5 h-8 bg-gradient-to-l from-white to-yellow-100 rounded-full opacity-80 shadow-sm"
-               style={{ transform: "rotate(15deg)" }} />
+          {/* Star shape */}
+          <svg viewBox="0 0 24 24" className="w-full h-full">
+            <path
+              d="M12 0L14.59 8.41L23 12L14.59 15.59L12 24L9.41 15.59L1 12L9.41 8.41Z"
+              fill={sparkle.color}
+              style={{
+                filter: `drop-shadow(0 0 3px ${sparkle.color})`,
+              }}
+            />
+          </svg>
         </motion.div>
-      </motion.div>
-      
-      {/* Sparkles */}
-      <motion.div
-        className="absolute top-1 right-2"
-        animate={{ 
-          opacity: [0, 1, 0],
-          scale: [0.5, 1, 0.5]
-        }}
-        transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
-      >
-        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-2 left-2"
-        animate={{ 
-          opacity: [0, 1, 0],
-          scale: [0.5, 1, 0.5]
-        }}
-        transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-      >
-        <Sparkles className="w-3 h-3 text-pink-400" />
-      </motion.div>
-      <motion.div
-        className="absolute top-3 left-0"
-        animate={{ 
-          opacity: [0, 1, 0],
-          scale: [0.5, 1, 0.5]
-        }}
-        transition={{ duration: 1.5, repeat: Infinity, delay: 1 }}
-      >
-        <Star className="w-2 h-2 text-purple-400 fill-purple-400" />
-      </motion.div>
+      ))}
+
+      {/* Floating hearts/stars around */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={`heart-${i}`}
+          className="absolute pointer-events-none text-lg"
+          style={{
+            left: `${20 + i * 30}%`,
+            top: "-10px",
+          }}
+          animate={{
+            y: [-5, -15, -5],
+            opacity: [0.6, 1, 0.6],
+            scale: [0.8, 1, 0.8],
+          }}
+          transition={{
+            duration: 2,
+            delay: i * 0.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          {i === 1 ? "⭐" : "✨"}
+        </motion.div>
+      ))}
     </motion.div>
   );
 }
