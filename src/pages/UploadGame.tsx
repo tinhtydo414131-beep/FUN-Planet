@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import confetti from "canvas-confetti";
+import JSZip from "jszip";
 import {
   Dialog,
   DialogContent,
@@ -268,7 +269,43 @@ export default function UploadGame() {
     return { valid: true };
   };
 
-  const handleGameDrop = useCallback((e: React.DragEvent) => {
+  // Validate ZIP content - must contain HTML file
+  const validateZipContent = async (file: File): Promise<{ valid: boolean; error?: string; htmlFile?: string }> => {
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const fileNames = Object.keys(zip.files);
+      
+      // Find HTML files
+      const htmlFiles = fileNames.filter(name => 
+        !zip.files[name].dir && 
+        (name.toLowerCase().endsWith('.html') || name.toLowerCase().endsWith('.htm'))
+      );
+      
+      if (htmlFiles.length === 0) {
+        return { 
+          valid: false, 
+          error: '❌ File ZIP không chứa file HTML! Game phải có ít nhất 1 file .html (ví dụ: index.html) để chạy trên trình duyệt.'
+        };
+      }
+      
+      // Check for index.html
+      const indexHtml = htmlFiles.find(name => 
+        name.toLowerCase() === 'index.html' || 
+        name.toLowerCase().endsWith('/index.html')
+      );
+      
+      if (!indexHtml) {
+        toast.warning(`⚠️ Không tìm thấy index.html, sẽ sử dụng: ${htmlFiles[0]}`, { duration: 4000 });
+      }
+      
+      return { valid: true, htmlFile: indexHtml || htmlFiles[0] };
+    } catch (err) {
+      console.error('ZIP validation error:', err);
+      return { valid: false, error: '❌ Không thể đọc file ZIP. Vui lòng kiểm tra lại file.' };
+    }
+  };
+
+  const handleGameDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingGame(false);
     const file = e.dataTransfer.files[0];
@@ -281,9 +318,19 @@ export default function UploadGame() {
       return;
     }
     
+    // Validate ZIP content
+    toast.loading("🔍 Đang kiểm tra nội dung ZIP...", { id: "zip-check" });
+    const zipValidation = await validateZipContent(file);
+    toast.dismiss("zip-check");
+    
+    if (!zipValidation.valid) {
+      toast.error(zipValidation.error, { duration: 6000 });
+      return;
+    }
+    
     setGameFile(file);
     setUploadMethod("zip");
-    toast.success(`🎮 "${file.name}" ready for upload!`);
+    toast.success(`🎮 "${file.name}" hợp lệ! Tìm thấy: ${zipValidation.htmlFile}`, { duration: 3000 });
   }, []);
 
   const handleThumbDragOver = useCallback((e: React.DragEvent) => {
@@ -1049,18 +1096,30 @@ export default function UploadGame() {
                     <input
                       type="file"
                       accept=".zip"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           const validation = validateGameFile(file);
                           if (!validation.valid) {
                             toast.error(validation.error, { duration: 5000 });
-                            e.target.value = ''; // Reset input
+                            e.target.value = '';
                             return;
                           }
+                          
+                          // Validate ZIP content
+                          toast.loading("🔍 Đang kiểm tra nội dung ZIP...", { id: "zip-check" });
+                          const zipValidation = await validateZipContent(file);
+                          toast.dismiss("zip-check");
+                          
+                          if (!zipValidation.valid) {
+                            toast.error(zipValidation.error, { duration: 6000 });
+                            e.target.value = '';
+                            return;
+                          }
+                          
                           setGameFile(file);
                           setUploadMethod("zip");
-                          toast.success(`🎮 "${file.name}" ready!`);
+                          toast.success(`🎮 "${file.name}" hợp lệ! Tìm thấy: ${zipValidation.htmlFile}`, { duration: 3000 });
                         }
                       }}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
