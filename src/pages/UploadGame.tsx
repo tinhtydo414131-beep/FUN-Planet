@@ -27,6 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { GameTestModal } from "@/components/game-upload/GameTestModal";
 
 interface ScanResult {
   safe: boolean;
@@ -106,6 +107,15 @@ export default function UploadGame() {
   const [urlValidated, setUrlValidated] = useState(false);
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  
+  // Game Test Modal state
+  const [showTestModal, setShowTestModal] = useState(false);
+  const [testGameUrl, setTestGameUrl] = useState<string | null>(null);
+  const [pendingGameData, setPendingGameData] = useState<{
+    gameId: string;
+    gameFilePath: string;
+    thumbnailPath: string;
+  } | null>(null);
   
   // Itch.io import state
   const [itchioUrl, setItchioUrl] = useState("");
@@ -575,6 +585,9 @@ export default function UploadGame() {
       setUploadProgress(70);
 
       const category = selectedTopics[0] || 'casual';
+      
+      // CHANGE: Save with status 'pending_test' instead of 'approved'
+      // User must test the game before receiving reward
       const { data: insertedGame, error: insertError } = await supabase
         .from('uploaded_games')
         .insert({
@@ -585,8 +598,7 @@ export default function UploadGame() {
           game_file_path: gameFilePath,
           thumbnail_path: thumbnailPath || formData.thumbnailUrl || '',
           tags: [formData.ageAppropriate || '3+', ...selectedTopics],
-          status: 'approved',
-          approved_at: new Date().toISOString(),
+          status: 'pending', // Pending until test passes!
           external_url: uploadMethod === "link" ? formData.deployUrl : null,
         })
         .select()
@@ -594,51 +606,232 @@ export default function UploadGame() {
 
       if (insertError) throw insertError;
       setUploadProgress(85);
-
-      const rewardAmount = 500000;
       
-      // Use secure RPC to claim upload reward (prevents duplicates per game)
+      // Store pending game data for after test
+      setPendingGameData({
+        gameId: insertedGame.id,
+        gameFilePath: gameFilePath,
+        thumbnailPath: thumbnailPath || formData.thumbnailUrl || '',
+      });
+
+      // Determine test URL based on upload method
+      let gameTestUrl: string;
+      if (uploadMethod === "link") {
+        gameTestUrl = formData.deployUrl;
+      } else if (uploadMethod === "itchio" && itchioData?.embedUrl) {
+        gameTestUrl = itchioData.embedUrl;
+      } else if (uploadMethod === "zip" && gameFilePath.startsWith('https://')) {
+        // For ZIP files, we need to prepare the game for testing
+        // Create a test URL by extracting and serving the ZIP
+        gameTestUrl = await prepareZipForTest(gameFilePath);
+      } else {
+        throw new Error("Could not determine game URL for testing");
+      }
+      
+      setTestGameUrl(gameTestUrl);
+      setUploadProgress(100);
+      setLoading(false);
+      
+      // Open test modal
+      toast.info("🎮 Hãy test game để xác nhận nó hoạt động!", { duration: 4000 });
+      setShowTestModal(true);
+
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error(error.message || "Failed to upload game");
+      setLoading(false);
+      setUploadProgress(0);
+    }
+  };
+  
+  // Prepare ZIP file for testing by extracting to blob URL
+  const prepareZipForTest = async (zipUrl: string): Promise<string> => {
+    try {
+      const response = await fetch(zipUrl);
+      if (!response.ok) throw new Error("Failed to download ZIP for testing");
+      
+      const zipData = await response.blob();
+      const zip = await JSZip.loadAsync(zipData);
+      const allFiles = Object.keys(zip.files);
+      
+      // Find index.html
+      const htmlFiles = allFiles.filter(f => 
+        f.toLowerCase().endsWith('.html') || f.toLowerCase().endsWith('.htm')
+      );
+      
+      if (htmlFiles.length === 0) {
+        throw new Error("No HTML file found in ZIP");
+      }
+      
+      // Find index.html or first HTML file
+      let indexPath = htmlFiles.find(f => 
+        f.toLowerCase() === 'index.html' || f.toLowerCase().endsWith('/index.html')
+      ) || htmlFiles[0];
+      
+      const basePath = indexPath.includes('/') 
+        ? indexPath.slice(0, indexPath.lastIndexOf('/') + 1)
+        : '';
+      
+      // Extract and create blob URLs
+      const blobUrls: Record<string, string> = {};
+      const mimeTypes: Record<string, string> = {
+        'js': 'application/javascript',
+        'css': 'text/css',
+        'html': 'text/html',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'svg': 'image/svg+xml',
+        'json': 'application/json',
+        'mp3': 'audio/mpeg',
+        'wav': 'audio/wav',
+        'ogg': 'audio/ogg',
+        'webp': 'image/webp',
+      };
+      
+      // Extract all files
+      for (const [path, file] of Object.entries(zip.files)) {
+        if (!file.dir && path.startsWith(basePath)) {
+          const content = await file.async('arraybuffer');
+          const relativePath = path.slice(basePath.length);
+          const ext = relativePath.split('.').pop()?.toLowerCase() || '';
+          const mimeType = mimeTypes[ext] || 'application/octet-stream';
+          const blob = new Blob([content], { type: mimeType });
+          const blobUrl = URL.createObjectURL(blob);
+          blobUrls[relativePath] = blobUrl;
+          blobUrls['./' + relativePath] = blobUrl;
+          blobUrls['/' + relativePath] = blobUrl;
+        }
+      }
+      
+      // Get index.html content and replace paths
+      const indexFile = zip.files[indexPath];
+      let indexContent = await indexFile.async('string');
+      
+      // Replace all asset paths with blob URLs
+      const sortedPaths = Object.entries(blobUrls).sort((a, b) => b[0].length - a[0].length);
+      for (const [path, blobUrl] of sortedPaths) {
+        const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        indexContent = indexContent.replace(
+          new RegExp(`(src|href)=(["'])${escapedPath}\\2`, 'gi'),
+          `$1=$2${blobUrl}$2`
+        );
+      }
+      
+      // Create blob URL for the HTML
+      const htmlBlob = new Blob([indexContent], { type: 'text/html' });
+      return URL.createObjectURL(htmlBlob);
+    } catch (error) {
+      console.error('Error preparing ZIP for test:', error);
+      throw error;
+    }
+  };
+  
+  // Handle successful game test
+  const handleTestSuccess = async () => {
+    if (!pendingGameData || !user) return;
+    
+    try {
+      // Update game status to approved
+      const { error: updateError } = await supabase
+        .from('uploaded_games')
+        .update({ 
+          status: 'approved',
+          approved_at: new Date().toISOString()
+        })
+        .eq('id', pendingGameData.gameId);
+      
+      if (updateError) throw updateError;
+      
+      // Now claim the reward
       const { data: rewardResult, error: rewardError } = await supabase.rpc('claim_upload_reward_safe', {
-        p_game_id: insertedGame.id,
+        p_game_id: pendingGameData.gameId,
         p_game_title: formData.title
       });
 
       if (rewardError) {
         console.error('Reward claim error:', rewardError);
       }
-
-      setUploadProgress(100);
-
+      
+      setShowTestModal(false);
       fireDiamondConfetti();
       
+      const rewardAmount = 500000;
       toast.success(
         <div className="flex flex-col gap-1">
           <span className="font-bold text-lg">🎉 CONGRATULATIONS!</span>
-          <span>You earned {rewardAmount.toLocaleString()} CAMLY!</span>
-          <span className="text-sm opacity-80">Your game is now LIVE!</span>
+          <span>Game đã được xác nhận hoạt động!</span>
+          <span>Bạn nhận được {rewardAmount.toLocaleString()} CAMLY!</span>
+          <span className="text-sm opacity-80">Game của bạn đã LIVE!</span>
         </div>,
-        { duration: 5000 }
+        { duration: 6000 }
       );
 
       setTimeout(() => {
-        if (insertedGame?.id) {
-          navigate(`/game/${insertedGame.id}`);
-        } else {
-          navigate('/games');
-        }
+        navigate(`/game/${pendingGameData.gameId}`);
       }, 2000);
-
+      
     } catch (error: any) {
-      console.error('Upload error:', error);
-      toast.error(error.message || "Failed to upload game");
+      console.error('Error approving game:', error);
+      toast.error("Lỗi khi phê duyệt game: " + error.message);
     } finally {
-      setLoading(false);
-      setUploadProgress(0);
+      // Cleanup blob URLs
+      if (testGameUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(testGameUrl);
+      }
+      setTestGameUrl(null);
+      setPendingGameData(null);
+    }
+  };
+  
+  // Handle failed game test
+  const handleTestFail = async (reason: string) => {
+    if (!pendingGameData) return;
+    
+    try {
+      // Update game status to rejected with reason
+      await supabase
+        .from('uploaded_games')
+        .update({ 
+          status: 'rejected',
+          rejection_note: `Test thất bại: ${reason}`
+        })
+        .eq('id', pendingGameData.gameId);
+      
+      toast.error(
+        <div className="flex flex-col gap-1">
+          <span className="font-bold">❌ Game không hoạt động!</span>
+          <span className="text-sm">Vui lòng kiểm tra và upload lại.</span>
+          <span className="text-xs opacity-70">Lý do: {reason}</span>
+        </div>,
+        { duration: 6000 }
+      );
+      
+    } catch (error) {
+      console.error('Error rejecting game:', error);
+    } finally {
+      setShowTestModal(false);
+      if (testGameUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(testGameUrl);
+      }
+      setTestGameUrl(null);
+      setPendingGameData(null);
     }
   };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* Game Test Modal */}
+      <GameTestModal
+        open={showTestModal}
+        onOpenChange={setShowTestModal}
+        gameUrl={testGameUrl}
+        gameTitle={formData.title}
+        onTestSuccess={handleTestSuccess}
+        onTestFail={handleTestFail}
+      />
+      
       {/* Dreamy pastel gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-pink-100 via-purple-100 via-blue-50 to-pink-50" />
       
