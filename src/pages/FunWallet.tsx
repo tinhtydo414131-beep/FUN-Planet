@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import bnbLogo from "@/assets/tokens/bnb-logo.png";
 import ethLogo from "@/assets/tokens/eth-logo.png";
 import usdtLogo from "@/assets/tokens/usdt-logo.png";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useWalletLinking } from "@/hooks/useWalletLinking";
 
 const networks = [{
   id: "1",
@@ -130,6 +131,7 @@ export default function FunWallet() {
     user
   } = useAuth();
   const navigate = useNavigate();
+  const { linkWallet, isLinking } = useWalletLinking();
   const [account, setAccount] = useState<string | null>(null);
   const [balance, setBalance] = useState("0");
   const [networkName, setNetworkName] = useState("BNB Chain");
@@ -138,6 +140,12 @@ export default function FunWallet() {
   const [processedCoinImage, setProcessedCoinImage] = useState<string | null>(null);
   const [selectedChartCoin, setSelectedChartCoin] = useState<string | null>(null);
   const [chartTimeframe, setChartTimeframe] = useState<'1H' | '4H' | '1D' | '1W' | '1M'>('1D');
+  
+  // Refs for debouncing and deduplication
+  const lastSyncedAddressRef = useRef<string | null>(null);
+  const accountChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const priceRetryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastPriceFetchRef = useRef<number>(0);
 
   // Check for processed coin image on mount
   useEffect(() => {
@@ -198,19 +206,53 @@ export default function FunWallet() {
       fetchTransactionHistory();
     }
   });
+  
+  // Debounced wallet sync function
+  const handleWalletSync = useCallback(async (address: string) => {
+    if (!user) return;
+    
+    const normalizedAddress = address.toLowerCase();
+    
+    // Skip if already synced this address
+    if (lastSyncedAddressRef.current === normalizedAddress) {
+      return;
+    }
+    
+    const result = await linkWallet(user.id, normalizedAddress, {
+      showToasts: false, // Silent sync in FunWallet
+      source: 'metamask'
+    });
+    
+    if (result.success) {
+      lastSyncedAddressRef.current = normalizedAddress;
+    }
+  }, [user, linkWallet]);
+  
   useEffect(() => {
     checkConnection();
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts: string[]) => {
-        if (accounts.length > 0) {
-          setAccount(accounts[0]);
-          getBalance(accounts[0]);
-          updateProfileWallet(accounts[0]);
-        } else {
-          setAccount(null);
-          setBalance("0");
+      // Debounced accountsChanged handler
+      const handleAccountsChanged = (accounts: string[]) => {
+        // Clear any pending timeout
+        if (accountChangeTimeoutRef.current) {
+          clearTimeout(accountChangeTimeoutRef.current);
         }
-      });
+        
+        // Debounce: wait 500ms before processing
+        accountChangeTimeoutRef.current = setTimeout(() => {
+          if (accounts.length > 0) {
+            setAccount(accounts[0]);
+            getBalance(accounts[0]);
+            handleWalletSync(accounts[0]);
+          } else {
+            setAccount(null);
+            setBalance("0");
+            lastSyncedAddressRef.current = null;
+          }
+        }, 500);
+      };
+      
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
       window.ethereum.on('chainChanged', () => {
         window.location.reload();
       });
@@ -220,8 +262,15 @@ export default function FunWallet() {
         window.ethereum.removeAllListeners('accountsChanged');
         window.ethereum.removeAllListeners('chainChanged');
       }
+      // Cleanup timeout on unmount
+      if (accountChangeTimeoutRef.current) {
+        clearTimeout(accountChangeTimeoutRef.current);
+      }
+      if (priceRetryTimeoutRef.current) {
+        clearTimeout(priceRetryTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [handleWalletSync]);
   useEffect(() => {
     if (account) {
       fetchTransactionHistory();
@@ -269,7 +318,8 @@ export default function FunWallet() {
           setAccount(accounts[0]);
           await getBalance(accounts[0]);
           await getNetworkName();
-          updateProfileWallet(accounts[0]);
+          // Use centralized wallet linking
+          handleWalletSync(accounts[0]);
         }
       } catch (error) {
         console.error("Error checking connection:", error);
@@ -289,7 +339,8 @@ export default function FunWallet() {
       setAccount(accounts[0]);
       await getBalance(accounts[0]);
       await getNetworkName();
-      updateProfileWallet(accounts[0]);
+      // Use centralized wallet linking
+      handleWalletSync(accounts[0]);
       toast.success("Wallet connected! Welcome to FUN Planet! 🎉");
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
@@ -428,9 +479,18 @@ export default function FunWallet() {
     } catch (error) {
       console.error('Error fetching token prices:', error);
       setTokenPrices(fallbackPrices);
-      // Retry after 10 seconds
-      setTimeout(fetchTokenPrices, 10000);
+      // Use exponential backoff instead of fixed 10s retry
+      // Clear any existing retry timeout
+      if (priceRetryTimeoutRef.current) {
+        clearTimeout(priceRetryTimeoutRef.current);
+      }
+      // Only retry if we haven't fetched recently (avoid infinite loops)
+      const timeSinceLastFetch = Date.now() - lastPriceFetchRef.current;
+      if (timeSinceLastFetch > 30000) { // At least 30s between retries
+        priceRetryTimeoutRef.current = setTimeout(fetchTokenPrices, 30000);
+      }
     }
+    lastPriceFetchRef.current = Date.now();
   };
   const fetchChartData = async (tokenSymbol: string, timeframe: string) => {
     const coinIds: {
@@ -486,65 +546,8 @@ export default function FunWallet() {
       setSelectedChartCoin(tokenSymbol);
     }
   };
-  const updateProfileWallet = async (address: string) => {
-    if (!user) return;
-    try {
-      const normalized = address.toLowerCase();
-      
-      // First check if wallet is eligible (not already used by another account)
-      const { data: eligibility, error: eligError } = await supabase
-        .rpc('check_wallet_eligibility', {
-          p_user_id: user.id,
-          p_wallet_address: normalized
-        });
-      
-      if (eligError) {
-        console.error('Error checking wallet eligibility:', eligError);
-        return;
-      }
-
-      // If wallet is not eligible (used by another user), show error and skip
-      if (eligibility && eligibility.length > 0 && !eligibility[0].can_connect) {
-        console.warn('Wallet not eligible:', eligibility[0].reason);
-        toast.error('Ví này đã được liên kết với tài khoản khác');
-        return;
-      }
-
-      // Update profiles table with error handling
-      const { error: profileError } = await supabase.from("profiles").update({
-        wallet_address: normalized
-      }).eq("id", user.id);
-
-      if (profileError) {
-        // If it's a unique constraint violation, show user-friendly message
-        if (profileError.code === '23505') {
-          toast.error('Ví này đã được liên kết với tài khoản khác');
-          return;
-        }
-        throw profileError;
-      }
-
-      // Also update fun_id table
-      await supabase.from("fun_id").update({
-        wallet_address: normalized
-      }).eq("user_id", user.id);
-
-      // Also update user_rewards if exists
-      await supabase.from("user_rewards").update({
-        wallet_address: normalized
-      }).eq("user_id", user.id);
-
-      // Also update web3_rewards table
-      await supabase.from("web3_rewards").upsert({
-        user_id: user.id,
-        wallet_address: normalized,
-      }, { onConflict: 'user_id' });
-      
-    } catch (error) {
-      console.error("Error updating wallet:", error);
-      toast.error('Lỗi khi cập nhật ví');
-    }
-  };
+  // Old updateProfileWallet is now replaced by handleWalletSync using useWalletLinking hook
+  // This comment is left for documentation purposes - the centralized hook handles all wallet sync logic
   const fetchTransactionHistory = async () => {
     if (!user) return;
     try {
