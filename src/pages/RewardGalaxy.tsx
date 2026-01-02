@@ -114,7 +114,7 @@ export default function RewardGalaxy() {
     }
   }, [user, authLoading, navigate]);
 
-  // Sync AppKit wallet to database when connected
+  // Sync AppKit wallet to database when connected - with eligibility check
   useEffect(() => {
     const syncWalletToDb = async () => {
       if (!user || !appKitWalletAddress) return;
@@ -122,11 +122,38 @@ export default function RewardGalaxy() {
       const normalizedAddress = appKitWalletAddress.toLowerCase();
       
       try {
-        // Update profiles table
-        await supabase
+        // First check if wallet is eligible (not already used by another account)
+        const { data: eligibility, error: eligError } = await supabase
+          .rpc('check_wallet_eligibility', {
+            p_user_id: user.id,
+            p_wallet_address: normalizedAddress
+          });
+        
+        if (eligError) {
+          console.error('Error checking wallet eligibility:', eligError);
+          return;
+        }
+
+        // If wallet is not eligible (used by another user), skip update
+        if (eligibility && eligibility.length > 0 && !eligibility[0].can_connect) {
+          console.warn('Wallet not eligible:', eligibility[0].reason);
+          return;
+        }
+
+        // Update profiles table with error handling for constraint violations
+        const { error: profileError } = await supabase
           .from('profiles')
           .update({ wallet_address: normalizedAddress })
           .eq('id', user.id);
+
+        if (profileError) {
+          // If it's a unique constraint violation, just log and skip
+          if (profileError.code === '23505') {
+            console.warn('Wallet already linked to another account');
+            return;
+          }
+          throw profileError;
+        }
 
         // Update web3_rewards table
         await supabase
