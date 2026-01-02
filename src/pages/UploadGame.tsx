@@ -12,7 +12,8 @@ import { toast } from "sonner";
 import { 
   Upload, Loader2, Link, FileArchive, CheckCircle, XCircle, 
   Sparkles, Play, Diamond, Wand2, Image,
-  BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette, Star
+  BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette, Star,
+  Globe, ExternalLink
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,7 +95,7 @@ export default function UploadGame() {
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadMethod, setUploadMethod] = useState<"link" | "zip" | null>(null);
+  const [uploadMethod, setUploadMethod] = useState<"link" | "zip" | "itchio" | null>(null);
   const [gameFile, setGameFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
@@ -104,6 +105,19 @@ export default function UploadGame() {
   const [urlValidated, setUrlValidated] = useState(false);
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  
+  // Itch.io import state
+  const [itchioUrl, setItchioUrl] = useState("");
+  const [fetchingItchio, setFetchingItchio] = useState(false);
+  const [itchioData, setItchioData] = useState<{
+    title: string;
+    description: string;
+    thumbnail: string | null;
+    embedUrl: string;
+    author: string;
+    tags: string[];
+  } | null>(null);
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -262,6 +276,82 @@ export default function UploadGame() {
     );
   };
 
+  // Fetch game info from Itch.io
+  const fetchItchioGame = async () => {
+    if (!itchioUrl) {
+      toast.error("Please enter an Itch.io URL");
+      return;
+    }
+
+    // Validate Itch.io URL
+    try {
+      const urlObj = new URL(itchioUrl);
+      const hostname = urlObj.hostname.toLowerCase();
+      if (!hostname.endsWith('itch.io') && hostname !== 'itch.io') {
+        toast.error("URL must be from itch.io domain");
+        return;
+      }
+    } catch {
+      toast.error("Invalid URL format");
+      return;
+    }
+
+    setFetchingItchio(true);
+    setItchioData(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-itchio-game', {
+        body: { url: itchioUrl }
+      });
+
+      if (error) throw error;
+
+      if (!data.success) {
+        toast.error(data.error || "Failed to fetch game info");
+        return;
+      }
+
+      const gameData = data.data;
+      setItchioData(gameData);
+      
+      // Auto-fill form data
+      setFormData(prev => ({
+        ...prev,
+        title: gameData.title,
+        description: gameData.description,
+        thumbnailUrl: gameData.thumbnail || "",
+        deployUrl: gameData.embedUrl,
+      }));
+
+      // Map Itch.io tags to our topics
+      const tagToTopic: Record<string, string> = {
+        'puzzle': 'puzzle',
+        'adventure': 'adventure',
+        'art': 'creative',
+        'educational': 'educational',
+        'music': 'music',
+        'brain': 'brain',
+        'casual': 'casual',
+        'kids': 'kindness',
+      };
+      
+      const mappedTopics = gameData.tags
+        .map((tag: string) => tagToTopic[tag.toLowerCase()])
+        .filter(Boolean);
+      
+      if (mappedTopics.length > 0) {
+        setSelectedTopics(mappedTopics);
+      }
+
+      toast.success(`✨ Found "${gameData.title}" by ${gameData.author}!`);
+    } catch (error: any) {
+      console.error('Itch.io fetch error:', error);
+      toast.error(error.message || "Failed to fetch game info");
+    } finally {
+      setFetchingItchio(false);
+    }
+  };
+
   // AI Safety Scan
   const runSafetyScan = async (): Promise<boolean> => {
     if (!formData.title || !formData.description) return false;
@@ -342,6 +432,13 @@ export default function UploadGame() {
       const urlValidation = validateDeployUrl(formData.deployUrl);
       if (!urlValidation.valid) {
         toast.error(urlValidation.error || "Invalid deploy URL");
+        return;
+      }
+    }
+
+    if (uploadMethod === "itchio") {
+      if (!itchioData) {
+        toast.error("Please fetch game info from Itch.io first");
         return;
       }
     }
@@ -606,14 +703,14 @@ export default function UploadGame() {
         </motion.div>
 
         {/* Upload Methods - Cute card boxes */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
           {/* Deploy Link Box */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.7 }}
-            onClick={() => setUploadMethod("link")}
-            className={`relative cursor-pointer rounded-3xl p-6 transition-all duration-300 ${
+            onClick={() => { setUploadMethod("link"); setItchioData(null); }}
+            className={`relative cursor-pointer rounded-3xl p-5 transition-all duration-300 ${
               uploadMethod === "link" 
                 ? "bg-white/90 shadow-2xl shadow-pink-200/50 border-2 border-pink-300 scale-[1.02]" 
                 : "bg-white/60 backdrop-blur-sm border-2 border-white/50 hover:bg-white/80 hover:shadow-xl"
@@ -621,19 +718,19 @@ export default function UploadGame() {
           >
             {/* Fastest badge */}
             <div className="absolute -top-3 right-4">
-              <Badge className="bg-gradient-to-r from-green-400 to-emerald-400 text-white font-bold shadow-lg px-3 py-1 rounded-full">
+              <Badge className="bg-gradient-to-r from-green-400 to-emerald-400 text-white font-bold shadow-lg px-2 py-1 rounded-full text-xs">
                 ⚡ FASTEST
               </Badge>
             </div>
             
-            <div className="flex flex-col items-center text-center gap-4 pt-2">
+            <div className="flex flex-col items-center text-center gap-3 pt-2">
               {/* Cute blob character */}
               <CuteBlob color="bg-gradient-to-br from-amber-300 to-orange-300" emoji="🌟" />
               
               <div>
-                <h3 className="text-xl font-bold text-purple-700 mb-1">Paste Deploy Link</h3>
-                <p className="text-sm text-purple-500/70">
-                  Lovable, Vercel, Netlify, Glitch...
+                <h3 className="text-lg font-bold text-purple-700 mb-1">Deploy Link</h3>
+                <p className="text-xs text-purple-500/70">
+                  Lovable, Vercel, Netlify...
                 </p>
               </div>
               
@@ -643,7 +740,49 @@ export default function UploadGame() {
                   animate={{ scale: 1 }}
                   className="absolute top-4 left-4"
                 >
-                  <CheckCircle className="w-6 h-6 text-pink-500" />
+                  <CheckCircle className="w-5 h-5 text-pink-500" />
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Itch.io Import Box */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75 }}
+            onClick={() => { setUploadMethod("itchio"); }}
+            className={`relative cursor-pointer rounded-3xl p-5 transition-all duration-300 ${
+              uploadMethod === "itchio" 
+                ? "bg-white/90 shadow-2xl shadow-rose-200/50 border-2 border-rose-400 scale-[1.02]" 
+                : "bg-white/60 backdrop-blur-sm border-2 border-white/50 hover:bg-white/80 hover:shadow-xl"
+            }`}
+          >
+            {/* New badge */}
+            <div className="absolute -top-3 right-4">
+              <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold shadow-lg px-2 py-1 rounded-full text-xs">
+                🎮 ITCH.IO
+              </Badge>
+            </div>
+            
+            <div className="flex flex-col items-center text-center gap-3 pt-2">
+              {/* Cute blob character */}
+              <CuteBlob color="bg-gradient-to-br from-rose-400 to-pink-400" emoji="🕹️" />
+              
+              <div>
+                <h3 className="text-lg font-bold text-purple-700 mb-1">Import Itch.io</h3>
+                <p className="text-xs text-purple-500/70">
+                  Paste itch.io game URL
+                </p>
+              </div>
+              
+              {uploadMethod === "itchio" && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-4 left-4"
+                >
+                  <CheckCircle className="w-5 h-5 text-rose-500" />
                 </motion.div>
               )}
             </div>
@@ -654,8 +793,8 @@ export default function UploadGame() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8 }}
-            onClick={() => setUploadMethod("zip")}
-            className={`relative cursor-pointer rounded-3xl p-6 transition-all duration-300 ${
+            onClick={() => { setUploadMethod("zip"); setItchioData(null); }}
+            className={`relative cursor-pointer rounded-3xl p-5 transition-all duration-300 ${
               uploadMethod === "zip" 
                 ? "bg-white/90 shadow-2xl shadow-purple-200/50 border-2 border-purple-300 scale-[1.02]" 
                 : "bg-white/60 backdrop-blur-sm border-2 border-white/50 hover:bg-white/80 hover:shadow-xl"
@@ -663,19 +802,19 @@ export default function UploadGame() {
           >
             {/* Classic badge */}
             <div className="absolute -top-3 right-4">
-              <Badge className="bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold shadow-lg px-3 py-1 rounded-full">
+              <Badge className="bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold shadow-lg px-2 py-1 rounded-full text-xs">
                 📦 CLASSIC
               </Badge>
             </div>
             
-            <div className="flex flex-col items-center text-center gap-4 pt-2">
+            <div className="flex flex-col items-center text-center gap-3 pt-2">
               {/* Cute blob character */}
               <CuteBlob color="bg-gradient-to-br from-purple-400 to-pink-400" emoji="🎁" />
               
               <div>
-                <h3 className="text-xl font-bold text-purple-700 mb-1">Drag & Drop ZIP</h3>
-                <p className="text-sm text-purple-500/70">
-                  Upload your dist/build folder
+                <h3 className="text-lg font-bold text-purple-700 mb-1">ZIP Upload</h3>
+                <p className="text-xs text-purple-500/70">
+                  Upload dist/build folder
                 </p>
               </div>
               
@@ -685,7 +824,7 @@ export default function UploadGame() {
                   animate={{ scale: 1 }}
                   className="absolute top-4 left-4"
                 >
-                  <CheckCircle className="w-6 h-6 text-purple-500" />
+                  <CheckCircle className="w-5 h-5 text-purple-500" />
                 </motion.div>
               )}
             </div>
@@ -759,6 +898,89 @@ export default function UploadGame() {
                           title="Game Preview"
                           sandbox="allow-scripts allow-same-origin"
                         />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {/* Itch.io Import Section */}
+              {uploadMethod === "itchio" && (
+                <div className="space-y-4">
+                  <Label className="text-lg font-bold text-purple-700 flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-rose-500" />
+                    Itch.io Game URL
+                  </Label>
+                  <div className="flex gap-3">
+                    <Input
+                      type="url"
+                      placeholder="https://username.itch.io/game-name"
+                      value={itchioUrl}
+                      onChange={(e) => setItchioUrl(e.target.value)}
+                      className="flex-1 text-lg py-6 rounded-2xl border-2 border-rose-200 bg-white/70"
+                    />
+                    <Button
+                      type="button"
+                      onClick={fetchItchioGame}
+                      disabled={fetchingItchio || !itchioUrl}
+                      className="px-6 py-6 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold"
+                    >
+                      {fetchingItchio ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <ExternalLink className="w-5 h-5 mr-2" />
+                          Fetch Info
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  
+                  {/* Itch.io Preview */}
+                  {itchioData && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 border-2 border-rose-200"
+                    >
+                      <div className="flex gap-4">
+                        {itchioData.thumbnail && (
+                          <img 
+                            src={itchioData.thumbnail} 
+                            alt={itchioData.title}
+                            className="w-32 h-24 object-cover rounded-xl border-2 border-white shadow-md"
+                          />
+                        )}
+                        <div className="flex-1">
+                          <h4 className="font-bold text-lg text-purple-700">{itchioData.title}</h4>
+                          <p className="text-sm text-purple-500">by {itchioData.author}</p>
+                          {itchioData.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {itchioData.tags.slice(0, 5).map((tag: string, i: number) => (
+                                <Badge key={i} variant="secondary" className="text-xs bg-white/70">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <CheckCircle className="w-8 h-8 text-green-500 flex-shrink-0" />
+                      </div>
+                      
+                      {/* Game preview iframe */}
+                      <div className="mt-4">
+                        <Label className="text-sm text-purple-500 mb-2 flex items-center gap-2">
+                          <Play className="w-4 h-4" /> Game Preview
+                        </Label>
+                        <div className="aspect-video rounded-2xl overflow-hidden border-2 border-white bg-white/50 shadow-inner">
+                          <iframe
+                            src={itchioData.embedUrl}
+                            className="w-full h-full"
+                            title={itchioData.title}
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                            allowFullScreen
+                          />
+                        </div>
                       </div>
                     </motion.div>
                   )}
