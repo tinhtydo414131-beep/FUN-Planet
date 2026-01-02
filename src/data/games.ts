@@ -1,5 +1,4 @@
 import colorMatchImg from '@/assets/games/color-match.jpg';
-import balloonPopImg from '@/assets/games/balloon-pop.jpg';
 import guessNumberImg from '@/assets/games/guess-number.jpg';
 import mathQuizImg from '@/assets/games/math-quiz.jpg';
 import triviaQuizImg from '@/assets/games/trivia-quiz.jpg';
@@ -23,15 +22,6 @@ export const games: Game[] = [
     category: 'casual',
     difficulty: 'easy',
     image: colorMatchImg,
-    playable: true,
-  },
-  {
-    id: 'balloon-pop',
-    title: 'Balloon Pop',
-    description: 'Bắn vỡ bóng bay',
-    category: 'casual',
-    difficulty: 'easy',
-    image: balloonPopImg,
     playable: true,
   },
   
