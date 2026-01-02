@@ -491,10 +491,38 @@ export default function FunWallet() {
     try {
       const normalized = address.toLowerCase();
       
-      // Update profiles table
-      await supabase.from("profiles").update({
+      // First check if wallet is eligible (not already used by another account)
+      const { data: eligibility, error: eligError } = await supabase
+        .rpc('check_wallet_eligibility', {
+          p_user_id: user.id,
+          p_wallet_address: normalized
+        });
+      
+      if (eligError) {
+        console.error('Error checking wallet eligibility:', eligError);
+        return;
+      }
+
+      // If wallet is not eligible (used by another user), show error and skip
+      if (eligibility && eligibility.length > 0 && !eligibility[0].can_connect) {
+        console.warn('Wallet not eligible:', eligibility[0].reason);
+        toast.error('Ví này đã được liên kết với tài khoản khác');
+        return;
+      }
+
+      // Update profiles table with error handling
+      const { error: profileError } = await supabase.from("profiles").update({
         wallet_address: normalized
       }).eq("id", user.id);
+
+      if (profileError) {
+        // If it's a unique constraint violation, show user-friendly message
+        if (profileError.code === '23505') {
+          toast.error('Ví này đã được liên kết với tài khoản khác');
+          return;
+        }
+        throw profileError;
+      }
 
       // Also update fun_id table
       await supabase.from("fun_id").update({
@@ -505,9 +533,16 @@ export default function FunWallet() {
       await supabase.from("user_rewards").update({
         wallet_address: normalized
       }).eq("user_id", user.id);
+
+      // Also update web3_rewards table
+      await supabase.from("web3_rewards").upsert({
+        user_id: user.id,
+        wallet_address: normalized,
+      }, { onConflict: 'user_id' });
       
     } catch (error) {
       console.error("Error updating wallet:", error);
+      toast.error('Lỗi khi cập nhật ví');
     }
   };
   const fetchTransactionHistory = async () => {
