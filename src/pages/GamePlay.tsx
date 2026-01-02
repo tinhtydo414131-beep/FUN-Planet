@@ -25,14 +25,14 @@ import { toast } from "sonner";
 // Import all game components
 import { GuessNumber } from "@/components/games/GuessNumber";
 import { ColorMatch } from "@/components/games/ColorMatch";
-import { BalloonPop } from "@/components/games/BalloonPop";
+
 import { WordScramble } from "@/components/games/WordScramble";
 import { MathQuiz } from "@/components/games/MathQuiz";
 import { SimonSays } from "@/components/games/SimonSays";
 import { TriviaQuiz } from "@/components/games/TriviaQuiz";
 import { TreasureHunt } from "@/components/games/TreasureHunt";
 import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
-import { BalloonPop3D } from "@/components/games/BalloonPop3D";
+
 import { ColorMatch3D } from "@/components/games/ColorMatch3D";
 import PlanetBuilder from "@/components/games/PlanetBuilder";
 import HappinessGarden from "@/components/games/HappinessGarden";
@@ -69,8 +69,6 @@ import { RestaurantChef } from "@/components/games/RestaurantChef";
 import { ThemeParkBuilder } from "@/components/games/ThemeParkBuilder";
 import { RockPaperScissors } from "@/components/games/RockPaperScissors";
 import { FlappyBird } from "@/components/games/FlappyBird";
-import { MazeRunner } from "@/components/games/MazeRunner";
-import { MazeRunner3D } from "@/components/games/MazeRunner3D";
 
 import { SimonSays3D } from "@/components/games/SimonSays3D";
 import { GuessNumber3D } from "@/components/games/GuessNumber3D";
@@ -329,8 +327,6 @@ const GamePlay = () => {
       case "color-match":
         return <ColorMatch {...gameProps} />;
       case "ColorMatch3D": return <ColorMatch3D {...gameProps} />;
-      case "BalloonPop": return <BalloonPop3D {...gameProps} />;
-      case "BalloonPop2D": return <BalloonPop {...gameProps} />;
       case "StarCollector": return <StarCollector3D {...gameProps} />;
       case "StarCollector2D": return <StarCollector {...gameProps} />;
       case "HappinessGarden": return <HappinessGarden3D {...gameProps} />;
@@ -464,11 +460,6 @@ const GamePlay = () => {
         return <FlappyBird3D {...gameProps} />;
       case "FlappyBird2D": return <FlappyBird {...gameProps} />;
       
-      // Maze Games
-      case "MazeRunner":
-      case "maze-runner":
-        return <MazeRunner {...gameProps} />;
-      case "MazeRunner3D": return <MazeRunner3D {...gameProps} />;
       
       
       default:
