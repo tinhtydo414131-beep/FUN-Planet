@@ -18,7 +18,8 @@ interface RankedUser {
   avatar_url: string | null;
   wallet_balance: number | null;
   wallet_address: string | null;
-  claimed_amount: number | null;
+  pending_amount: number | null;  // CAMLY chờ claim
+  claimed_amount: number | null;  // CAMLY đã claim về ví
 }
 
 const USERS_PER_PAGE = 20;
@@ -184,18 +185,19 @@ const PodiumCard = ({
         {user.username}
       </p>
 
-      {/* Balance */}
+      {/* Pending Amount - CAMLY chờ claim */}
       <div className="flex items-center gap-1.5 mt-2">
         <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,255,0,0.9)]" />
         <span 
           className="text-lg font-extrabold bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
           style={{ textShadow: "0 0 15px rgba(255,255,255,0.9)" }}
         >
-          <AnimatedCounter value={user.wallet_balance || 0} duration={1500} />
+          <AnimatedCounter value={user.pending_amount || 0} duration={1500} />
         </span>
+        <span className="text-xs text-yellow-300/70">chờ claim</span>
       </div>
 
-      {/* Claimed Amount */}
+      {/* Claimed Amount - CAMLY đã nhận */}
       <div className="flex items-center gap-1 mt-1">
         <Gift className="h-3 w-3 text-green-400" />
         <span className="text-xs text-green-300">
@@ -318,7 +320,7 @@ const UserRow = ({
         </p>
       </div>
 
-      {/* Claimed Amount */}
+      {/* Claimed Amount - đã nhận */}
       <div className="flex items-center gap-1 shrink-0">
         <Gift className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
         <span className="text-xs sm:text-sm text-green-300 font-medium">
@@ -326,14 +328,14 @@ const UserRow = ({
         </span>
       </div>
 
-      {/* Balance */}
+      {/* Pending Amount - chờ claim */}
       <div className="flex items-center gap-1.5 shrink-0">
         <Gem className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,255,0,0.8)]" />
         <span 
           className="font-extrabold text-sm sm:text-base bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
           style={{ textShadow: "0 0 10px rgba(255,255,255,0.7)" }}
         >
-          {(user.wallet_balance || 0).toLocaleString()}
+          {(user.pending_amount || 0).toLocaleString()}
         </span>
       </div>
 
@@ -393,23 +395,30 @@ export default function FullRanking() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch claimed_amount from user_rewards for all users
+      // Fetch pending_amount and claimed_amount from user_rewards for all users
       const userIds = (profilesData || []).map(p => p.id);
       const { data: rewardsData } = await supabase
         .from("user_rewards")
-        .select("user_id, claimed_amount")
+        .select("user_id, pending_amount, claimed_amount")
         .in("user_id", userIds);
 
       // Map rewards to users
-      const rewardsMap = new Map<string, number>();
+      const rewardsMap = new Map<string, { pending: number; claimed: number }>();
       (rewardsData || []).forEach(r => {
-        rewardsMap.set(r.user_id, r.claimed_amount || 0);
+        rewardsMap.set(r.user_id, {
+          pending: r.pending_amount || 0,
+          claimed: r.claimed_amount || 0
+        });
       });
 
       const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => ({
         ...p,
-        claimed_amount: rewardsMap.get(p.id) || 0
+        pending_amount: rewardsMap.get(p.id)?.pending || 0,
+        claimed_amount: rewardsMap.get(p.id)?.claimed || 0
       }));
+
+      // Sort by pending_amount (CAMLY chờ claim) instead of wallet_balance
+      usersWithEarnings.sort((a, b) => (b.pending_amount || 0) - (a.pending_amount || 0));
 
       setAllUsers(usersWithEarnings);
       setFilteredUsers(usersWithEarnings);
