@@ -112,26 +112,58 @@ export default function UploadGame() {
     thumbnailUrl: "",
   });
 
-  // Validate deploy URL
-  const validateDeployUrl = useCallback((url: string) => {
+  // Blocked domains - AI chat, social media, etc. that cannot host games
+  const BLOCKED_DOMAINS = [
+    'google.com',
+    'gemini.google.com',
+    'chat.openai.com',
+    'chatgpt.com',
+    'claude.ai',
+    'bard.google.com',
+    'facebook.com',
+    'youtube.com',
+    'tiktok.com',
+    'instagram.com',
+    'twitter.com',
+    'x.com',
+    'docs.google.com',
+    'drive.google.com',
+  ];
+
+  // Validate deploy URL with blocked domain check
+  const validateDeployUrl = useCallback((url: string): { valid: boolean; error?: string } => {
     if (!url) {
       setUrlValidated(false);
-      return;
+      return { valid: false };
     }
-    const validPatterns = [
-      /^https?:\/\/[a-zA-Z0-9-]+\.vercel\.app/,
-      /^https?:\/\/[a-zA-Z0-9-]+\.netlify\.app/,
-      /^https?:\/\/[a-zA-Z0-9-]+\.lovable\.(app|dev)/,
-      /^https?:\/\/[a-zA-Z0-9-]+\.replit\.dev/,
-      /^https?:\/\/[a-zA-Z0-9-]+\.glitch\.me/,
-      /^https?:\/\/[a-zA-Z0-9-]+\.pages\.dev/,
-      /^https?:\/\/[a-zA-Z0-9-]+\.github\.io/,
-      /^https?:\/\/.+/,
-    ];
-    const isValid = validPatterns.some(pattern => pattern.test(url));
-    setUrlValidated(isValid);
-    if (isValid) {
+    
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname.toLowerCase();
+      
+      // Check blocked domains
+      for (const blocked of BLOCKED_DOMAINS) {
+        if (hostname.includes(blocked)) {
+          setUrlValidated(false);
+          return { 
+            valid: false, 
+            error: `❌ URL không hợp lệ! ${blocked} không phải là platform host game. Vui lòng nhập URL từ Lovable, Vercel, Netlify, hoặc hosting game khác.` 
+          };
+        }
+      }
+      
+      // Must be https
+      if (urlObj.protocol !== 'https:') {
+        setUrlValidated(false);
+        return { valid: false, error: '❌ URL phải sử dụng HTTPS!' };
+      }
+      
+      setUrlValidated(true);
       toast.success("✨ Deploy link detected!", { duration: 2000 });
+      return { valid: true };
+    } catch {
+      setUrlValidated(false);
+      return { valid: false, error: '❌ URL không hợp lệ!' };
     }
   }, []);
 
@@ -301,9 +333,17 @@ export default function UploadGame() {
       return;
     }
 
-    if (uploadMethod === "link" && !formData.deployUrl) {
-      toast.error("Please paste your deploy link");
-      return;
+    if (uploadMethod === "link") {
+      if (!formData.deployUrl) {
+        toast.error("Please paste your deploy link");
+        return;
+      }
+      // Validate deploy URL before proceeding
+      const urlValidation = validateDeployUrl(formData.deployUrl);
+      if (!urlValidation.valid) {
+        toast.error(urlValidation.error || "Invalid deploy URL");
+        return;
+      }
     }
 
     if (uploadMethod === "zip" && !gameFile) {
