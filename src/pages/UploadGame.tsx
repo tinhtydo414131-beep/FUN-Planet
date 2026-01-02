@@ -116,6 +116,8 @@ export default function UploadGame() {
     gameFilePath: string;
     thumbnailPath: string;
   } | null>(null);
+  const [isClaimingReward, setIsClaimingReward] = useState(false);
+  const [createdBlobUrls, setCreatedBlobUrls] = useState<string[]>([]);
   
   // Itch.io import state
   const [itchioUrl, setItchioUrl] = useState("");
@@ -646,6 +648,8 @@ export default function UploadGame() {
   
   // Prepare ZIP file for testing by extracting to blob URL
   const prepareZipForTest = async (zipUrl: string): Promise<string> => {
+    const blobUrlsCreated: string[] = [];
+    
     try {
       const response = await fetch(zipUrl);
       if (!response.ok) throw new Error("Failed to download ZIP for testing");
@@ -654,9 +658,10 @@ export default function UploadGame() {
       const zip = await JSZip.loadAsync(zipData);
       const allFiles = Object.keys(zip.files);
       
-      // Find index.html
+      // Find HTML files
       const htmlFiles = allFiles.filter(f => 
-        f.toLowerCase().endsWith('.html') || f.toLowerCase().endsWith('.htm')
+        !zip.files[f].dir &&
+        (f.toLowerCase().endsWith('.html') || f.toLowerCase().endsWith('.htm'))
       );
       
       if (htmlFiles.length === 0) {
@@ -668,6 +673,7 @@ export default function UploadGame() {
         f.toLowerCase() === 'index.html' || f.toLowerCase().endsWith('/index.html')
       ) || htmlFiles[0];
       
+      // Detect base path (handles nested folder structures)
       const basePath = indexPath.includes('/') 
         ? indexPath.slice(0, indexPath.lastIndexOf('/') + 1)
         : '';
@@ -676,8 +682,10 @@ export default function UploadGame() {
       const blobUrls: Record<string, string> = {};
       const mimeTypes: Record<string, string> = {
         'js': 'application/javascript',
+        'mjs': 'application/javascript',
         'css': 'text/css',
         'html': 'text/html',
+        'htm': 'text/html',
         'png': 'image/png',
         'jpg': 'image/jpeg',
         'jpeg': 'image/jpeg',
@@ -688,51 +696,128 @@ export default function UploadGame() {
         'wav': 'audio/wav',
         'ogg': 'audio/ogg',
         'webp': 'image/webp',
+        'woff': 'font/woff',
+        'woff2': 'font/woff2',
+        'ttf': 'font/ttf',
+        'eot': 'application/vnd.ms-fontobject',
+        'ico': 'image/x-icon',
+        'wasm': 'application/wasm',
       };
       
-      // Extract all files
+      // Extract all files from base path
       for (const [path, file] of Object.entries(zip.files)) {
-        if (!file.dir && path.startsWith(basePath)) {
+        if (!file.dir) {
           const content = await file.async('arraybuffer');
-          const relativePath = path.slice(basePath.length);
+          const relativePath = path.startsWith(basePath) 
+            ? path.slice(basePath.length) 
+            : path;
           const ext = relativePath.split('.').pop()?.toLowerCase() || '';
           const mimeType = mimeTypes[ext] || 'application/octet-stream';
           const blob = new Blob([content], { type: mimeType });
           const blobUrl = URL.createObjectURL(blob);
+          blobUrlsCreated.push(blobUrl);
+          
+          // Multiple path variants for matching
           blobUrls[relativePath] = blobUrl;
           blobUrls['./' + relativePath] = blobUrl;
           blobUrls['/' + relativePath] = blobUrl;
+          // Also store full path for some edge cases
+          blobUrls[path] = blobUrl;
         }
       }
       
-      // Get index.html content and replace paths
+      // Get index.html content
       const indexFile = zip.files[indexPath];
       let indexContent = await indexFile.async('string');
       
-      // Replace all asset paths with blob URLs
+      // First pass: Replace src/href attributes
       const sortedPaths = Object.entries(blobUrls).sort((a, b) => b[0].length - a[0].length);
       for (const [path, blobUrl] of sortedPaths) {
         const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Match src="path", href="path", src='path', href='path'
         indexContent = indexContent.replace(
           new RegExp(`(src|href)=(["'])${escapedPath}\\2`, 'gi'),
           `$1=$2${blobUrl}$2`
         );
       }
       
+      // Second pass: Handle JS imports and CSS url()
+      for (const [path, blobUrl] of sortedPaths) {
+        const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // CSS url(path) and url("path")
+        indexContent = indexContent.replace(
+          new RegExp(`url\\(["']?${escapedPath}["']?\\)`, 'gi'),
+          `url("${blobUrl}")`
+        );
+      }
+      
       // Create blob URL for the HTML
       const htmlBlob = new Blob([indexContent], { type: 'text/html' });
-      return URL.createObjectURL(htmlBlob);
+      const htmlBlobUrl = URL.createObjectURL(htmlBlob);
+      blobUrlsCreated.push(htmlBlobUrl);
+      
+      // Store all created blob URLs for cleanup
+      setCreatedBlobUrls(prev => [...prev, ...blobUrlsCreated]);
+      
+      return htmlBlobUrl;
     } catch (error) {
+      // Cleanup on error
+      blobUrlsCreated.forEach(url => URL.revokeObjectURL(url));
       console.error('Error preparing ZIP for test:', error);
       throw error;
     }
   };
   
+  // Cleanup all blob URLs
+  const cleanupBlobUrls = useCallback(() => {
+    createdBlobUrls.forEach(url => {
+      try {
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        console.warn('Failed to revoke blob URL:', e);
+      }
+    });
+    setCreatedBlobUrls([]);
+    
+    if (testGameUrl?.startsWith('blob:')) {
+      try {
+        URL.revokeObjectURL(testGameUrl);
+      } catch (e) {
+        console.warn('Failed to revoke test game URL:', e);
+      }
+    }
+  }, [createdBlobUrls, testGameUrl]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanupBlobUrls();
+    };
+  }, []);
+
   // Handle successful game test
   const handleTestSuccess = async () => {
     if (!pendingGameData || !user) return;
+    if (isClaimingReward) return; // Prevent double-click race condition
+    
+    setIsClaimingReward(true);
     
     try {
+      // Verify game ownership before approving (extra security check)
+      const { data: gameCheck, error: checkError } = await supabase
+        .from('uploaded_games')
+        .select('user_id')
+        .eq('id', pendingGameData.gameId)
+        .single();
+      
+      if (checkError || !gameCheck) {
+        throw new Error("Game không tồn tại");
+      }
+      
+      if (gameCheck.user_id !== user.id) {
+        throw new Error("Bạn không có quyền phê duyệt game này");
+      }
+      
       // Update game status to approved
       const { error: updateError } = await supabase
         .from('uploaded_games')
@@ -740,7 +825,8 @@ export default function UploadGame() {
           status: 'approved',
           approved_at: new Date().toISOString()
         })
-        .eq('id', pendingGameData.gameId);
+        .eq('id', pendingGameData.gameId)
+        .eq('user_id', user.id); // Extra safety: only update own game
       
       if (updateError) throw updateError;
       
@@ -752,6 +838,7 @@ export default function UploadGame() {
 
       if (rewardError) {
         console.error('Reward claim error:', rewardError);
+        // Don't throw - game is already approved, just log the error
       }
       
       setShowTestModal(false);
@@ -777,11 +864,10 @@ export default function UploadGame() {
       toast.error("Lỗi khi phê duyệt game: " + error.message);
     } finally {
       // Cleanup blob URLs
-      if (testGameUrl?.startsWith('blob:')) {
-        URL.revokeObjectURL(testGameUrl);
-      }
+      cleanupBlobUrls();
       setTestGameUrl(null);
       setPendingGameData(null);
+      setIsClaimingReward(false);
     }
   };
   
@@ -812,9 +898,8 @@ export default function UploadGame() {
       console.error('Error rejecting game:', error);
     } finally {
       setShowTestModal(false);
-      if (testGameUrl?.startsWith('blob:')) {
-        URL.revokeObjectURL(testGameUrl);
-      }
+      // Cleanup all blob URLs
+      cleanupBlobUrls();
       setTestGameUrl(null);
       setPendingGameData(null);
     }
