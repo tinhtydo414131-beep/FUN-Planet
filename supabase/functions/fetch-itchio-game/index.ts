@@ -229,11 +229,6 @@ function parseItchioHtml(html: string, originalUrl: string): ItchioGameInfo {
       }
     }
     
-    // Fallback: use the original URL with embed parameter
-    if (!embedUrl) {
-      embedUrl = originalUrl;
-    }
-
     // Check if it's a playable HTML5 game
     const isHtml5 = html.includes('html_embed') || 
                     html.includes('html-classic.itch.zone') ||
@@ -241,7 +236,26 @@ function parseItchioHtml(html: string, originalUrl: string): ItchioGameInfo {
                     html.includes('Run game') ||
                     html.includes('game_frame');
 
-    if (!isHtml5 && !embedUrl.includes('itch.zone')) {
+    // DO NOT fallback to original URL - it's not playable!
+    // Return error if no valid embed URL found
+    if (!embedUrl || embedUrl === originalUrl) {
+      if (!isHtml5) {
+        console.log('❌ Game is not HTML5 playable - no embed URL found');
+        return { 
+          success: false, 
+          error: 'Game này không thể chơi trực tiếp trên web. Chỉ hỗ trợ game HTML5/WebGL có thể embed.' 
+        };
+      }
+      // If isHtml5 but no embedUrl, try constructing from original URL
+      // Some games need /embed-upload path
+      const pathMatch = originalUrl.match(/itch\.io\/([^\/]+)/);
+      if (pathMatch) {
+        embedUrl = originalUrl;
+        console.log('⚠️ Using original URL as embed (may require iframe adjustment)');
+      }
+    }
+
+    if (!embedUrl.includes('itch.zone') && !isHtml5) {
       console.log('⚠️ Game may not be HTML5 playable');
     }
 
