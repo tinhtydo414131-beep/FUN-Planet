@@ -5046,24 +5046,6 @@ export type Database = {
           username: string | null
           wallet_address: string | null
         }
-        Insert: {
-          avatar_url?: string | null
-          pending_balance?: never
-          total_claimed?: never
-          total_earned?: never
-          user_id?: string | null
-          username?: string | null
-          wallet_address?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          pending_balance?: never
-          total_claimed?: never
-          total_earned?: never
-          user_id?: string | null
-          username?: string | null
-          wallet_address?: string | null
-        }
         Relationships: []
       }
       public_leaderboard: {
