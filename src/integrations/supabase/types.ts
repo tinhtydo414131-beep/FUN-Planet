@@ -3726,41 +3726,6 @@ export type Database = {
           },
         ]
       }
-      uploaded_game_hashes: {
-        Row: {
-          created_at: string | null
-          file_hash: string
-          file_size: number | null
-          game_id: string | null
-          id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          file_hash: string
-          file_size?: number | null
-          game_id?: string | null
-          id?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          file_hash?: string
-          file_size?: number | null
-          game_id?: string | null
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "uploaded_game_hashes_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "uploaded_games"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       uploaded_game_ratings: {
         Row: {
           created_at: string

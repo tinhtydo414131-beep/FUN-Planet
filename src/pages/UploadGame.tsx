@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useUploadReward } from "@/hooks/useUploadReward";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadImageToR2, uploadToR2 } from "@/utils/r2Upload";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { 
   Upload, Loader2, Link, FileArchive, CheckCircle, XCircle, 
-  Sparkles, Play, Diamond, Wand2, Image, AlertTriangle,
+  Sparkles, Play, Diamond, Wand2, Image,
   BookOpen, Gamepad2, Brain, Heart, Puzzle, Rocket, Music, Palette, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 
 interface ScanResult {
@@ -34,14 +32,6 @@ interface ScanResult {
   confidence: number;
   needsReview?: boolean;
 }
-
-// Constants for validation
-const MAX_ZIP_SIZE_MB = 50;
-const MAX_ZIP_SIZE = MAX_ZIP_SIZE_MB * 1024 * 1024;
-const MAX_THUMBNAIL_SIZE_MB = 5;
-const MAX_THUMBNAIL_SIZE = MAX_THUMBNAIL_SIZE_MB * 1024 * 1024;
-const MIN_THUMBNAIL_WIDTH = 400;
-const MIN_THUMBNAIL_HEIGHT = 300;
 
 const TOPIC_OPTIONS = [
   { id: "puzzle", label: "🧩 Puzzle & Logic", icon: Puzzle },
@@ -97,52 +87,20 @@ const CuteBlob = ({ color, emoji, className = "" }: { color: string; emoji: stri
   </div>
 );
 
-// Calculate SHA-256 hash of file
-const calculateFileHash = async (file: File): Promise<string> => {
-  const buffer = await file.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-};
-
-// Validate thumbnail dimensions
-const validateThumbnailDimensions = (file: File): Promise<{ valid: boolean; width: number; height: number }> => {
-  return new Promise((resolve) => {
-    const img = new window.Image();
-    img.onload = () => {
-      URL.revokeObjectURL(img.src);
-      resolve({
-        valid: img.width >= MIN_THUMBNAIL_WIDTH && img.height >= MIN_THUMBNAIL_HEIGHT,
-        width: img.width,
-        height: img.height
-      });
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(img.src);
-      resolve({ valid: false, width: 0, height: 0 });
-    };
-    img.src = URL.createObjectURL(file);
-  });
-};
-
 export default function UploadGame() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { dailyRewardsRemaining, checkDailyRewards } = useUploadReward();
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadMethod, setUploadMethod] = useState<"link" | "zip" | null>(null);
   const [gameFile, setGameFile] = useState<File | null>(null);
-  const [gameFileHash, setGameFileHash] = useState<string>("");
-  const [isDuplicateGame, setIsDuplicateGame] = useState(false);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [isDraggingGame, setIsDraggingGame] = useState(false);
   const [isDraggingThumb, setIsDraggingThumb] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [urlValidated, setUrlValidated] = useState(false);
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
@@ -153,13 +111,6 @@ export default function UploadGame() {
     deployUrl: "",
     thumbnailUrl: "",
   });
-
-  // Check daily rewards on mount
-  useEffect(() => {
-    if (user) {
-      checkDailyRewards();
-    }
-  }, [user, checkDailyRewards]);
 
   // Validate deploy URL
   const validateDeployUrl = useCallback((url: string) => {
@@ -225,63 +176,6 @@ export default function UploadGame() {
     }
   };
 
-  // Validate and process ZIP file
-  const processZipFile = async (file: File): Promise<boolean> => {
-    // Check file size
-    if (file.size > MAX_ZIP_SIZE) {
-      toast.error(`File quá lớn! Tối đa ${MAX_ZIP_SIZE_MB}MB (hiện tại: ${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-      return false;
-    }
-
-    // Calculate hash for duplicate detection
-    try {
-      toast.info("🔍 Đang kiểm tra file...");
-      const hash = await calculateFileHash(file);
-      setGameFileHash(hash);
-
-      // Check if hash exists in database
-      if (user) {
-        const { data: hashCheck } = await supabase.rpc('check_file_hash_exists', {
-          p_user_id: user.id,
-          p_file_hash: hash
-        });
-
-        if (hashCheck?.[0]?.exists_for_user) {
-          setIsDuplicateGame(true);
-          toast.warning("⚠️ Bạn đã upload game này trước đó! Bạn vẫn có thể upload lại nhưng sẽ không nhận được thưởng CAMLY.", { duration: 5000 });
-        } else if (hashCheck?.[0]?.exists_for_others) {
-          setIsDuplicateGame(true);
-          toast.warning("⚠️ Game này đã được upload bởi người khác! Bạn vẫn có thể upload nhưng sẽ không nhận được thưởng.", { duration: 5000 });
-        } else {
-          setIsDuplicateGame(false);
-        }
-      }
-    } catch (error) {
-      console.error('Hash check error:', error);
-      // Continue without hash check if it fails
-    }
-
-    return true;
-  };
-
-  // Validate thumbnail file
-  const validateThumbnail = async (file: File): Promise<boolean> => {
-    // Check file size
-    if (file.size > MAX_THUMBNAIL_SIZE) {
-      toast.error(`Ảnh quá lớn! Tối đa ${MAX_THUMBNAIL_SIZE_MB}MB`);
-      return false;
-    }
-
-    // Check dimensions
-    const { valid, width, height } = await validateThumbnailDimensions(file);
-    if (!valid) {
-      toast.error(`Ảnh quá nhỏ! Tối thiểu ${MIN_THUMBNAIL_WIDTH}x${MIN_THUMBNAIL_HEIGHT} pixels (hiện tại: ${width}x${height})`);
-      return false;
-    }
-
-    return true;
-  };
-
   // Drag & drop handlers
   const handleGameDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -293,21 +187,18 @@ export default function UploadGame() {
     setIsDraggingGame(false);
   }, []);
 
-  const handleGameDrop = useCallback(async (e: React.DragEvent) => {
+  const handleGameDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingGame(false);
     const file = e.dataTransfer.files[0];
     if (file && file.name.endsWith('.zip')) {
-      const isValid = await processZipFile(file);
-      if (isValid) {
-        setGameFile(file);
-        setUploadMethod("zip");
-        toast.success(`🎮 "${file.name}" ready for upload!`);
-      }
+      setGameFile(file);
+      setUploadMethod("zip");
+      toast.success(`🎮 "${file.name}" ready for upload!`);
     } else {
       toast.error("Please drop a .zip file");
     }
-  }, [user]);
+  }, []);
 
   const handleThumbDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -319,16 +210,13 @@ export default function UploadGame() {
     setIsDraggingThumb(false);
   }, []);
 
-  const handleThumbDrop = useCallback(async (e: React.DragEvent) => {
+  const handleThumbDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingThumb(false);
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
-      const isValid = await validateThumbnail(file);
-      if (isValid) {
-        setThumbnail(file);
-        toast.success(`🖼️ Thumbnail ready!`);
-      }
+      setThumbnail(file);
+      toast.success(`🖼️ Thumbnail ready!`);
     } else {
       toast.error("Please drop an image file");
     }
@@ -399,8 +287,7 @@ export default function UploadGame() {
     });
   };
 
-  // Validate form before showing confirmation
-  const validateAndShowConfirm = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!user) {
@@ -409,46 +296,20 @@ export default function UploadGame() {
       return;
     }
 
-    // Basic validation
     if (!formData.title || !formData.description) {
-      toast.error("Vui lòng điền tên game và mô tả! 📝");
+      toast.error("Please fill in the game name and description");
       return;
     }
 
     if (uploadMethod === "link" && !formData.deployUrl) {
-      toast.error("Vui lòng dán deploy link! 🔗");
+      toast.error("Please paste your deploy link");
       return;
     }
 
     if (uploadMethod === "zip" && !gameFile) {
-      toast.error("Vui lòng tải lên file ZIP game! 📦");
+      toast.error("Please upload your game ZIP file");
       return;
     }
-
-    // Mandatory thumbnail validation
-    if (!thumbnail && !formData.thumbnailUrl) {
-      toast.error("Vui lòng tải lên ảnh thumbnail cho game! 🖼️");
-      return;
-    }
-
-    // Mandatory age rating
-    if (!formData.ageAppropriate) {
-      toast.error("Vui lòng chọn độ tuổi phù hợp! 👶");
-      return;
-    }
-
-    // Mandatory at least 1 topic
-    if (selectedTopics.length === 0) {
-      toast.error("Vui lòng chọn ít nhất 1 topic! 🏷️");
-      return;
-    }
-
-    // Show confirmation dialog
-    setShowConfirmDialog(true);
-  };
-
-  const handleSubmit = async () => {
-    setShowConfirmDialog(false);
 
     const isSafe = await runSafetyScan();
     if (!isSafe) {
@@ -493,7 +354,7 @@ export default function UploadGame() {
       const { data: insertedGame, error: insertError } = await supabase
         .from('uploaded_games')
         .insert({
-          user_id: user!.id,
+          user_id: user.id,
           title: formData.title,
           description: formData.description,
           category: category as any,
@@ -510,59 +371,30 @@ export default function UploadGame() {
       if (insertError) throw insertError;
       setUploadProgress(85);
 
-      // Store file hash if it's a ZIP file
-      if (uploadMethod === "zip" && gameFileHash && insertedGame) {
-        try {
-          await supabase.from('uploaded_game_hashes').insert({
-            user_id: user!.id,
-            file_hash: gameFileHash,
-            game_id: insertedGame.id,
-            file_size: gameFile!.size
-          });
-        } catch (err) {
-          console.error('Hash storage error:', err);
-        }
-      }
-
       const rewardAmount = 500000;
-      let rewardClaimed = false;
       
-      // Only claim reward if not a duplicate game
-      if (!isDuplicateGame) {
-        const { data: rewardResult, error: rewardError } = await supabase.rpc('claim_upload_reward_safe', {
-          p_game_id: insertedGame.id,
-          p_game_title: formData.title
-        });
+      // Use secure RPC to claim upload reward (prevents duplicates per game)
+      const { data: rewardResult, error: rewardError } = await supabase.rpc('claim_upload_reward_safe', {
+        p_game_id: insertedGame.id,
+        p_game_title: formData.title
+      });
 
-        if (rewardError) {
-          console.error('Reward claim error:', rewardError);
-        } else if (rewardResult && typeof rewardResult === 'object' && 'success' in rewardResult && rewardResult.success) {
-          rewardClaimed = true;
-        }
+      if (rewardError) {
+        console.error('Reward claim error:', rewardError);
       }
 
       setUploadProgress(100);
 
       fireDiamondConfetti();
       
-      if (rewardClaimed) {
-        toast.success(
-          <div className="flex flex-col gap-1">
-            <span className="font-bold text-lg">🎉 CONGRATULATIONS!</span>
-            <span>You earned {rewardAmount.toLocaleString()} CAMLY!</span>
-            <span className="text-sm opacity-80">Your game is now LIVE!</span>
-          </div>,
-          { duration: 5000 }
-        );
-      } else {
-        toast.success(
-          <div className="flex flex-col gap-1">
-            <span className="font-bold text-lg">✅ Game uploaded successfully!</span>
-            <span className="text-sm opacity-80">Your game is now LIVE!</span>
-          </div>,
-          { duration: 5000 }
-        );
-      }
+      toast.success(
+        <div className="flex flex-col gap-1">
+          <span className="font-bold text-lg">🎉 CONGRATULATIONS!</span>
+          <span>You earned {rewardAmount.toLocaleString()} CAMLY!</span>
+          <span className="text-sm opacity-80">Your game is now LIVE!</span>
+        </div>,
+        { duration: 5000 }
+      );
 
       setTimeout(() => {
         if (insertedGame?.id) {
@@ -672,29 +504,6 @@ export default function UploadGame() {
             instantly! 🎁
           </motion.p>
 
-          {/* Daily rewards remaining badge */}
-          {user && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.45 }}
-              className="mb-4"
-            >
-              <Badge 
-                variant={dailyRewardsRemaining > 0 ? "default" : "destructive"}
-                className={`text-sm px-4 py-2 ${
-                  dailyRewardsRemaining > 0 
-                    ? "bg-gradient-to-r from-green-400 to-emerald-400 text-white" 
-                    : "bg-gradient-to-r from-red-400 to-pink-400 text-white"
-                }`}
-              >
-                {dailyRewardsRemaining > 0 
-                  ? `🎁 Còn ${dailyRewardsRemaining}/4 lượt nhận thưởng hôm nay`
-                  : "⚠️ Đã hết lượt thưởng hôm nay!"}
-              </Badge>
-            </motion.div>
-          )}
-
           {/* Floating reward badge - cute pill style */}
           <motion.div
             initial={{ scale: 0, rotate: -10 }}
@@ -728,14 +537,12 @@ export default function UploadGame() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200">
-              <div>
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-black flex items-center gap-2 text-purple-600">
-                    <Sparkles className="w-6 h-6 text-pink-400" />
-                    How to Publish Your Game on Lovable ✨
-                  </DialogTitle>
-                </DialogHeader>
-              </div>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-black flex items-center gap-2 text-purple-600">
+                  <Sparkles className="w-6 h-6 text-pink-400" />
+                  How to Publish Your Game on Lovable ✨
+                </DialogTitle>
+              </DialogHeader>
               <div className="space-y-4 py-4">
                 {[
                   { step: 1, title: "📝 Create Your Game", desc: "Go to lovable.dev and tell the AI what game you want to build!", color: "pink" },
@@ -828,7 +635,7 @@ export default function UploadGame() {
               <div>
                 <h3 className="text-xl font-bold text-purple-700 mb-1">Drag & Drop ZIP</h3>
                 <p className="text-sm text-purple-500/70">
-                  Upload your dist/build folder (max {MAX_ZIP_SIZE_MB}MB)
+                  Upload your dist/build folder
                 </p>
               </div>
               
@@ -870,7 +677,7 @@ export default function UploadGame() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              onSubmit={validateAndShowConfirm}
+              onSubmit={handleSubmit}
               className="space-y-6 bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 border-2 border-pink-100 shadow-xl"
             >
               {/* Deploy Link Input */}
@@ -878,7 +685,7 @@ export default function UploadGame() {
                 <div className="space-y-3">
                   <Label className="text-lg font-bold text-purple-700 flex items-center gap-2">
                     <Link className="w-5 h-5 text-pink-500" />
-                    Deploy Link <span className="text-red-500">*</span>
+                    Deploy Link
                   </Label>
                   <div className="relative">
                     <Input
@@ -923,8 +730,7 @@ export default function UploadGame() {
                 <div className="space-y-3">
                   <Label className="text-lg font-bold text-purple-700 flex items-center gap-2">
                     <FileArchive className="w-5 h-5 text-purple-500" />
-                    Game ZIP File <span className="text-red-500">*</span>
-                    <span className="text-sm font-normal text-purple-400">(max {MAX_ZIP_SIZE_MB}MB)</span>
+                    Game ZIP File
                   </Label>
                   <div
                     onDragOver={handleGameDragOver}
@@ -934,47 +740,33 @@ export default function UploadGame() {
                       isDraggingGame 
                         ? 'border-purple-400 bg-purple-100/50 scale-[1.02]' 
                         : gameFile 
-                          ? isDuplicateGame 
-                            ? 'border-amber-400 bg-amber-50/50'
-                            : 'border-green-400 bg-green-50/50' 
+                          ? 'border-green-400 bg-green-50/50' 
                           : 'border-pink-300 hover:border-purple-400 bg-pink-50/30'
                     }`}
                   >
                     <input
                       type="file"
                       accept=".zip"
-                      onChange={async (e) => {
+                      onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const isValid = await processZipFile(file);
-                          if (isValid) {
-                            setGameFile(file);
-                            toast.success(`🎮 "${file.name}" ready!`);
-                          }
+                          setGameFile(file);
+                          toast.success(`🎮 "${file.name}" ready!`);
                         }
                       }}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
                     {gameFile ? (
                       <div className="flex flex-col items-center gap-3">
-                        {isDuplicateGame ? (
-                          <AlertTriangle className="w-12 h-12 text-amber-500" />
-                        ) : (
-                          <CheckCircle className="w-12 h-12 text-green-500" />
-                        )}
-                        <p className={`font-bold ${isDuplicateGame ? 'text-amber-600' : 'text-green-600'}`}>
-                          {gameFile.name}
-                        </p>
-                        <p className="text-sm text-purple-500">
-                          {(gameFile.size / 1024 / 1024).toFixed(1)}MB
-                          {isDuplicateGame && " - ⚠️ Game trùng, không nhận thưởng"}
-                        </p>
+                        <CheckCircle className="w-12 h-12 text-green-500" />
+                        <p className="font-bold text-green-600">{gameFile.name}</p>
+                        <p className="text-sm text-purple-500">Ready to upload!</p>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-3">
                         <FileArchive className="w-12 h-12 text-purple-400" />
                         <p className="font-medium text-purple-600">Drag & drop your game ZIP here</p>
-                        <p className="text-sm text-purple-400">or click to browse (max {MAX_ZIP_SIZE_MB}MB)</p>
+                        <p className="text-sm text-purple-400">or click to browse</p>
                       </div>
                     )}
                   </div>
@@ -983,9 +775,7 @@ export default function UploadGame() {
 
               {/* Game Name */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">
-                  🎮 Game Name <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-lg font-bold text-purple-700">🎮 Game Name</Label>
                 <Input
                   placeholder="My Awesome Game"
                   value={formData.title}
@@ -998,9 +788,7 @@ export default function UploadGame() {
               {/* Description with AI */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-lg font-bold text-purple-700">
-                    📝 Description <span className="text-red-500">*</span>
-                  </Label>
+                  <Label className="text-lg font-bold text-purple-700">📝 Description</Label>
                   <Button
                     type="button"
                     variant="ghost"
@@ -1029,9 +817,7 @@ export default function UploadGame() {
 
               {/* Age Rating - Cute bubbles */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">
-                  👶 Age Rating <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-lg font-bold text-purple-700">👶 Age Rating</Label>
                 <div className="grid grid-cols-4 gap-3">
                   {AGE_OPTIONS.map((age) => (
                     <button
@@ -1053,10 +839,7 @@ export default function UploadGame() {
 
               {/* Topics */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">
-                  🏷️ Topics <span className="text-red-500">*</span>
-                  <span className="text-sm font-normal text-purple-400 ml-2">(chọn ít nhất 1)</span>
-                </Label>
+                <Label className="text-lg font-bold text-purple-700">🏷️ Topics (select multiple)</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {TOPIC_OPTIONS.map((topic) => {
                     const isSelected = selectedTopics.includes(topic.id);
@@ -1081,10 +864,7 @@ export default function UploadGame() {
 
               {/* Thumbnail */}
               <div className="space-y-3">
-                <Label className="text-lg font-bold text-purple-700">
-                  🖼️ Thumbnail <span className="text-red-500">*</span>
-                  <span className="text-sm font-normal text-purple-400 ml-2">(min {MIN_THUMBNAIL_WIDTH}x{MIN_THUMBNAIL_HEIGHT}px, max {MAX_THUMBNAIL_SIZE_MB}MB)</span>
-                </Label>
+                <Label className="text-lg font-bold text-purple-700">🖼️ Thumbnail</Label>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-sm text-purple-500">Paste image URL</Label>
@@ -1113,14 +893,11 @@ export default function UploadGame() {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={async (e) => {
+                        onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const isValid = await validateThumbnail(file);
-                            if (isValid) {
-                              setThumbnail(file);
-                              setFormData({ ...formData, thumbnailUrl: "" });
-                            }
+                            setThumbnail(file);
+                            setFormData({ ...formData, thumbnailUrl: "" });
                           }
                         }}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -1193,7 +970,7 @@ export default function UploadGame() {
                   ) : (
                     <span className="flex items-center gap-3">
                       <Diamond className="w-8 h-8" />
-                      {isDuplicateGame ? "Upload Game" : "Upload & Claim 500K CAMLY Now!"}
+                      Upload & Claim 500K CAMLY Now!
                       <Sparkles className="w-6 h-6" />
                     </span>
                   )}
@@ -1237,100 +1014,6 @@ export default function UploadGame() {
             </motion.form>
           )}
         </AnimatePresence>
-
-        {/* Confirmation Dialog */}
-        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-          <DialogContent className="max-w-lg bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200">
-            <div>
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-black flex items-center gap-2 text-purple-600">
-                  <CheckCircle className="w-6 h-6 text-green-500" />
-                  Xác nhận upload game ✨
-                </DialogTitle>
-              </DialogHeader>
-            </div>
-            
-            <div className="space-y-4 py-4">
-              {/* Preview thumbnail */}
-              {thumbnailPreview && (
-                <div className="flex justify-center">
-                  <img 
-                    src={thumbnailPreview} 
-                    alt="Game Thumbnail" 
-                    className="w-48 h-32 object-cover rounded-xl border-2 border-pink-200 shadow-lg"
-                  />
-                </div>
-              )}
-              
-              {/* Game info */}
-              <div className="space-y-2 bg-white/60 rounded-xl p-4">
-                <div>
-                  <span className="text-sm text-purple-500">Tên game:</span>
-                  <p className="font-bold text-purple-700">{formData.title}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-purple-500">Mô tả:</span>
-                  <p className="text-sm text-purple-600 line-clamp-2">{formData.description}</p>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline" className="border-pink-300">{formData.ageAppropriate}</Badge>
-                  {selectedTopics.map(t => (
-                    <Badge key={t} variant="outline" className="border-purple-300">
-                      {TOPIC_OPTIONS.find(o => o.id === t)?.label}
-                    </Badge>
-                  ))}
-                </div>
-                {uploadMethod === "link" && (
-                  <div>
-                    <span className="text-sm text-purple-500">Deploy link:</span>
-                    <p className="text-xs text-purple-600 truncate">{formData.deployUrl}</p>
-                  </div>
-                )}
-                {uploadMethod === "zip" && gameFile && (
-                  <div>
-                    <span className="text-sm text-purple-500">File:</span>
-                    <p className="text-sm text-purple-600">{gameFile.name} ({(gameFile.size / 1024 / 1024).toFixed(1)}MB)</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Reward info */}
-              {!isDuplicateGame && dailyRewardsRemaining > 0 ? (
-                <div className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl border border-amber-200">
-                  <Diamond className="w-5 h-5 text-amber-600" />
-                  <span className="font-bold text-amber-700">Bạn sẽ nhận được 500,000 CAMLY!</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200">
-                  <AlertTriangle className="w-5 h-5 text-amber-500" />
-                  <span className="text-sm text-amber-600">
-                    {isDuplicateGame 
-                      ? "Game trùng lặp - không nhận thưởng" 
-                      : "Đã hết lượt thưởng hôm nay"}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <DialogFooter className="gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowConfirmDialog(false)}
-                className="border-pink-200 text-purple-600"
-              >
-                ← Quay lại chỉnh sửa
-              </Button>
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                className="bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-bold"
-              >
-                Xác nhận Upload 🚀
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
         {/* Not selected state */}
         {!uploadMethod && (
