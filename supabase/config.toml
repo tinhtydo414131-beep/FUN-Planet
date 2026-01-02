@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.generate-daily-quiz]
 verify_jwt = true
+
+[functions.fetch-itchio-game]
+verify_jwt = true
