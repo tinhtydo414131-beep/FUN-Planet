@@ -8,12 +8,11 @@ import { ethers } from "ethers";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { CamlyCoinReward } from "./CamlyCoinReward";
-import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
-
-
+import { useWalletLinking } from "@/hooks/useWalletLinking";
 
 export const WalletConnect = () => {
   const { user } = useAuth();
+  const { linkWallet, isLinking } = useWalletLinking();
   const [account, setAccount] = useState<string | null>(null);
   const [balance, setBalance] = useState<string>("0");
   const [recipient, setRecipient] = useState("");
@@ -27,6 +26,8 @@ export const WalletConnect = () => {
   // Prevent double submit on mobile
   const isSubmittingRef = useRef(false);
   const lastSubmitTimeRef = useRef(0);
+  // Track last synced address to prevent duplicate syncs
+  const lastSyncedAddressRef = useRef<string | null>(null);
 
   useEffect(() => {
     checkConnection();
@@ -39,7 +40,10 @@ export const WalletConnect = () => {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
           getBalance(accounts[0]);
-          updateProfileWallet(accounts[0]);
+          // Only sync if address changed
+          if (user && accounts[0].toLowerCase() !== lastSyncedAddressRef.current) {
+            await handleWalletLink(accounts[0]);
+          }
         }
       } catch (error) {
         console.error("Error checking connection:", error);
@@ -47,45 +51,29 @@ export const WalletConnect = () => {
     }
   };
 
-  const checkWalletEligibility = async (walletAddress: string): Promise<{ canConnect: boolean; reason: string }> => {
-    if (!user) return { canConnect: false, reason: "User not authenticated" };
-
-    try {
-      const { data, error } = await supabase.rpc('check_wallet_eligibility', {
-        p_user_id: user.id,
-        p_wallet_address: walletAddress.toLowerCase()
-      });
-
-      if (error) {
-        console.error("Error checking wallet eligibility:", error);
-        return { canConnect: true, reason: "" }; // Allow if check fails
-      }
-
-      if (data && data.length > 0) {
-        return {
-          canConnect: data[0].can_connect,
-          reason: data[0].reason
-        };
-      }
-
-      return { canConnect: true, reason: "" };
-    } catch (error) {
-      console.error("Error in eligibility check:", error);
-      return { canConnect: true, reason: "" };
-    }
-  };
-
-  const logWalletConnection = async (walletAddress: string, previousWallet: string | null) => {
+  const handleWalletLink = async (walletAddress: string) => {
     if (!user) return;
+    
+    const normalizedAddress = walletAddress.toLowerCase();
+    
+    // Skip if already synced this address
+    if (lastSyncedAddressRef.current === normalizedAddress) {
+      return;
+    }
 
-    try {
-      await supabase.rpc('log_wallet_connection', {
-        p_user_id: user.id,
-        p_wallet_address: walletAddress.toLowerCase(),
-        p_previous_wallet: previousWallet
-      });
-    } catch (error) {
-      console.error("Error logging wallet connection:", error);
+    const result = await linkWallet(user.id, normalizedAddress, {
+      showToasts: true,
+      source: 'metamask'
+    });
+
+    if (result.success) {
+      lastSyncedAddressRef.current = normalizedAddress;
+      
+      // Show reward animation for first connection
+      if (result.isFirstConnection) {
+        setRewardAmount(50000);
+        setShowReward(true);
+      }
     }
   };
 
@@ -113,19 +101,9 @@ export const WalletConnect = () => {
       if (accounts && accounts.length > 0) {
         const walletAddress = accounts[0];
         
-        // Check wallet eligibility before connecting
-        const { canConnect, reason } = await checkWalletEligibility(walletAddress);
-        
-        if (!canConnect) {
-          toast.error(reason || "This wallet cannot be connected to your account.");
-          setConnecting(false);
-          isSubmittingRef.current = false;
-          return;
-        }
-
         setAccount(walletAddress);
         await getBalance(walletAddress);
-        await updateProfileWallet(walletAddress);
+        await handleWalletLink(walletAddress);
         toast.success("Wallet connected! 🎉");
       }
     } catch (error: any) {
@@ -149,98 +127,6 @@ export const WalletConnect = () => {
       setBalance(parseFloat(balanceEth).toFixed(4));
     } catch (error) {
       console.error("Error getting balance:", error);
-    }
-  };
-
-  const updateProfileWallet = async (address: string) => {
-    if (!user) return;
-
-    try {
-      // Check if this is first time connecting wallet
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("wallet_address, wallet_balance")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error("Error fetching profile:", profileError);
-      }
-
-      // Check if user already received wallet connection bonus
-      const { data: existingBonus } = await supabase
-        .from("camly_coin_transactions")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("transaction_type", "wallet_connection")
-        .maybeSingle();
-
-      const isFirstConnection = !profile?.wallet_address && !existingBonus;
-
-      // Prepare update data
-      let walletBalance = profile?.wallet_balance || 0;
-      const previousWallet = profile?.wallet_address || null;
-      
-      if (isFirstConnection) {
-        walletBalance = walletBalance + 50000;
-        setRewardAmount(50000);
-        setShowReward(true);
-        
-        // Log transaction
-        const { error: txError } = await supabase.from("camly_coin_transactions").insert({
-          user_id: user.id,
-          amount: 50000,
-          transaction_type: "wallet_connection",
-          description: "First wallet connection bonus"
-        });
-        
-        if (txError) {
-          console.error("Error saving bonus:", txError);
-        }
-      }
-
-      // Use UPDATE with retry for mobile reliability
-      const normalizedAddress = address.toLowerCase();
-      
-      const updateFn = async () => {
-        return await supabase
-          .from("profiles")
-          .update({ 
-            wallet_address: normalizedAddress,
-            wallet_balance: walletBalance
-          })
-          .eq("id", user.id);
-      };
-
-      const { error } = await withRetry(updateFn, { 
-        operationName: "Saving wallet", 
-        maxRetries: 3 
-      });
-
-      if (error) {
-        console.error("Error updating wallet:", error);
-        toast.error(formatErrorMessage(error));
-        return;
-      }
-
-      // Log wallet connection for fraud prevention
-      await logWalletConnection(normalizedAddress, previousWallet);
-
-      // Also update fun_id table
-      await supabase
-        .from("fun_id")
-        .update({ wallet_address: normalizedAddress })
-        .eq("user_id", user.id);
-
-      // Also update user_rewards if exists
-      await supabase
-        .from("user_rewards")
-        .update({ wallet_address: normalizedAddress })
-        .eq("user_id", user.id);
-
-    } catch (error: any) {
-      console.error("Error updating wallet:", error);
-      toast.error(formatErrorMessage(error));
     }
   };
 
@@ -303,6 +189,7 @@ export const WalletConnect = () => {
   const disconnectWallet = () => {
     setAccount(null);
     setBalance("0");
+    lastSyncedAddressRef.current = null;
     toast.success("Wallet disconnected! 👋");
   };
 
@@ -334,11 +221,11 @@ export const WalletConnect = () => {
             </p>
             <Button
               onClick={connectWallet}
-              disabled={connecting}
+              disabled={connecting || isLinking}
               size="lg"
               className="font-fredoka font-bold text-xl px-12 py-8 bg-gradient-to-r from-accent to-secondary hover:shadow-xl transform hover:scale-110 transition-all min-h-[56px] touch-manipulation"
             >
-              {connecting ? (
+              {connecting || isLinking ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Connecting...
