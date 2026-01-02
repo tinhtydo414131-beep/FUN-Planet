@@ -407,6 +407,14 @@ export default function GameDetails() {
 
   const getDownloadUrl = async () => {
     if (!game) return;
+    
+    // Check if it's an R2 URL - open directly
+    if (game.game_file_path.startsWith('https://')) {
+      window.open(game.game_file_path, '_blank');
+      return;
+    }
+    
+    // Legacy Supabase Storage - get signed URL
     const { data } = await supabase.storage
       .from('uploaded-games')
       .createSignedUrl(game.game_file_path, 3600);
@@ -439,6 +447,14 @@ export default function GameDetails() {
       
       // Check for unsupported file formats
       const filePath = game.game_file_path.toLowerCase();
+      
+      // Block executable files - cannot run in browser
+      if (filePath.endsWith('.exe') || filePath.endsWith('.msi')) {
+        toast.error("⚠️ Game này là file cài đặt (.exe/.msi), không thể chạy trên trình duyệt. Vui lòng download và cài đặt trên máy tính.", { duration: 8000 });
+        setLoadingGame(false);
+        return;
+      }
+      
       if (filePath.endsWith('.rar')) {
         toast.error("RAR format is not supported. Please ask the developer to re-upload as ZIP file.", { duration: 6000 });
         setLoadingGame(false);
@@ -451,14 +467,31 @@ export default function GameDetails() {
         return;
       }
       
-      // Download the ZIP file directly using Supabase storage
-      const { data: zipData, error: downloadError } = await supabase.storage
-        .from('uploaded-games')
-        .download(game.game_file_path);
+      // Download game file - detect if it's an R2 URL or Supabase Storage path
+      const isR2Url = game.game_file_path.startsWith('https://');
+      let zipData: Blob;
       
-      if (downloadError || !zipData) {
-        console.error('Download error:', downloadError);
-        throw new Error("Could not download game file");
+      if (isR2Url) {
+        // Download from R2 URL directly
+        console.log('Downloading from R2 URL:', game.game_file_path);
+        const response = await fetch(game.game_file_path);
+        if (!response.ok) {
+          console.error('R2 download failed:', response.status, response.statusText);
+          throw new Error("Could not download game file from R2");
+        }
+        zipData = await response.blob();
+      } else {
+        // Download from Supabase Storage (legacy games)
+        console.log('Downloading from Supabase Storage:', game.game_file_path);
+        const { data, error: downloadError } = await supabase.storage
+          .from('uploaded-games')
+          .download(game.game_file_path);
+        
+        if (downloadError || !data) {
+          console.error('Supabase download error:', downloadError);
+          throw new Error("Could not download game file from storage");
+        }
+        zipData = data;
       }
 
       console.log('ZIP downloaded, size:', zipData.size);

@@ -233,17 +233,57 @@ export default function UploadGame() {
     setIsDraggingGame(false);
   }, []);
 
+  // Blocked file extensions - cannot be played in browser
+  const BLOCKED_EXTENSIONS = ['.exe', '.msi', '.bat', '.cmd', '.ps1', '.sh', '.rar', '.7z'];
+  
+  const validateGameFile = (file: File): { valid: boolean; error?: string } => {
+    const fileName = file.name.toLowerCase();
+    const ext = fileName.slice(fileName.lastIndexOf('.'));
+    
+    // Block dangerous/unsupported extensions
+    if (BLOCKED_EXTENSIONS.includes(ext)) {
+      return { 
+        valid: false, 
+        error: `❌ File ${ext.toUpperCase()} không được hỗ trợ! Chỉ chấp nhận file .ZIP chứa game HTML5/web.`
+      };
+    }
+    
+    // Only accept .zip files
+    if (!fileName.endsWith('.zip')) {
+      return { 
+        valid: false, 
+        error: '❌ Chỉ chấp nhận file .ZIP! Vui lòng nén game của bạn thành file ZIP.'
+      };
+    }
+    
+    // Check file size (max 50MB)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return { 
+        valid: false, 
+        error: '❌ File quá lớn! Kích thước tối đa là 50MB.'
+      };
+    }
+    
+    return { valid: true };
+  };
+
   const handleGameDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingGame(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.name.endsWith('.zip')) {
-      setGameFile(file);
-      setUploadMethod("zip");
-      toast.success(`🎮 "${file.name}" ready for upload!`);
-    } else {
-      toast.error("Please drop a .zip file");
+    
+    if (!file) return;
+    
+    const validation = validateGameFile(file);
+    if (!validation.valid) {
+      toast.error(validation.error, { duration: 5000 });
+      return;
     }
+    
+    setGameFile(file);
+    setUploadMethod("zip");
+    toast.success(`🎮 "${file.name}" ready for upload!`);
   }, []);
 
   const handleThumbDragOver = useCallback((e: React.DragEvent) => {
@@ -1012,7 +1052,14 @@ export default function UploadGame() {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
+                          const validation = validateGameFile(file);
+                          if (!validation.valid) {
+                            toast.error(validation.error, { duration: 5000 });
+                            e.target.value = ''; // Reset input
+                            return;
+                          }
                           setGameFile(file);
+                          setUploadMethod("zip");
                           toast.success(`🎮 "${file.name}" ready!`);
                         }
                       }}
