@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -18,6 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -32,6 +41,7 @@ import {
   Clock,
   Users,
   ThumbsUp,
+  Gift,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -58,6 +68,11 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
+  
+  // Rejection modal state
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectingGame, setRejectingGame] = useState<Game | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
     loadGames();
@@ -108,41 +123,161 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     }
   };
 
-  const updateGameStatus = async (gameId: string, newStatus: "approved" | "pending" | "rejected") => {
-    setProcessingId(gameId);
+  // Open reject modal
+  const openRejectModal = (game: Game) => {
+    setRejectingGame(game);
+    setRejectionReason("");
+    setRejectModalOpen(true);
+  };
+
+  // Handle approve game with reward
+  const approveGame = async (game: Game) => {
+    setProcessingId(game.id);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      await supabase
+      // Update game status to approved
+      const { error: updateError } = await supabase
         .from("uploaded_games")
-        .update({ status: newStatus })
-        .eq("id", gameId);
+        .update({ 
+          status: 'approved',
+          approved_at: new Date().toISOString()
+        })
+        .eq("id", game.id);
+
+      if (updateError) throw updateError;
+
+      // Claim reward for creator (500K CAMLY)
+      const { data: rewardResult, error: rewardError } = await supabase.rpc('claim_upload_reward_safe', {
+        p_game_id: game.id,
+        p_game_title: game.title
+      });
+
+      if (rewardError) {
+        console.error('Reward claim error:', rewardError);
+        // Don't throw - continue with notification even if reward fails
+      }
+
+      // Send notification to creator
+      await supabase.from('user_notifications').insert({
+        user_id: game.user_id,
+        notification_type: 'game_approved',
+        title: '🎉 Game của bạn đã được duyệt!',
+        message: `"${game.title}" đã được approve! +500.000 CAMLY đã được cộng vào tài khoản của bạn.`,
+        data: { 
+          game_id: game.id, 
+          game_title: game.title, 
+          reward_amount: 500000 
+        }
+      });
 
       // Log the review action
       if (user?.id) {
         await supabase.from("game_reviews").insert({
-          game_id: gameId,
+          game_id: game.id,
           reviewer_id: user.id,
-          status: newStatus,
-          notes: `Status changed to ${newStatus}`,
+          status: 'approved',
+          notes: 'Game approved by admin',
         });
       }
 
       // Log admin action
       await supabase.from("admin_audit_logs").insert({
         admin_id: user?.id,
-        action: `game_${newStatus}`,
+        action: 'game_approved',
         target_type: "game",
-        target_id: gameId,
-        details: { new_status: newStatus },
+        target_id: game.id,
+        details: { 
+          new_status: 'approved',
+          reward_sent: true,
+          reward_amount: 500000
+        },
       });
 
-      toast.success(`Game ${newStatus} successfully`);
+      toast.success(
+        <div className="flex flex-col gap-1">
+          <span className="font-bold">✅ Game đã được duyệt!</span>
+          <span className="text-sm">+500.000 CAMLY đã gửi cho {game.username}</span>
+        </div>
+      );
+      
       loadGames();
       onStatsUpdate();
     } catch (error) {
-      console.error("Update game status error:", error);
-      toast.error("Failed to update game status");
+      console.error("Approve game error:", error);
+      toast.error("Failed to approve game");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  // Handle reject game with reason
+  const rejectGame = async () => {
+    if (!rejectingGame) return;
+    if (!rejectionReason.trim()) {
+      toast.error("Vui lòng nhập lý do từ chối");
+      return;
+    }
+
+    setProcessingId(rejectingGame.id);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Update game status to rejected with reason
+      const { error: updateError } = await supabase
+        .from("uploaded_games")
+        .update({ 
+          status: 'rejected',
+          rejection_note: rejectionReason.trim()
+        })
+        .eq("id", rejectingGame.id);
+
+      if (updateError) throw updateError;
+
+      // Send notification to creator
+      await supabase.from('user_notifications').insert({
+        user_id: rejectingGame.user_id,
+        notification_type: 'game_rejected',
+        title: '❌ Game không được duyệt',
+        message: `"${rejectingGame.title}" đã bị từ chối: ${rejectionReason.trim()}`,
+        data: { 
+          game_id: rejectingGame.id, 
+          game_title: rejectingGame.title,
+          rejection_reason: rejectionReason.trim()
+        }
+      });
+
+      // Log the review action
+      if (user?.id) {
+        await supabase.from("game_reviews").insert({
+          game_id: rejectingGame.id,
+          reviewer_id: user.id,
+          status: 'rejected',
+          notes: rejectionReason.trim(),
+        });
+      }
+
+      // Log admin action
+      await supabase.from("admin_audit_logs").insert({
+        admin_id: user?.id,
+        action: 'game_rejected',
+        target_type: "game",
+        target_id: rejectingGame.id,
+        details: { 
+          new_status: 'rejected',
+          rejection_reason: rejectionReason.trim()
+        },
+      });
+
+      toast.success("Game đã bị từ chối");
+      setRejectModalOpen(false);
+      setRejectingGame(null);
+      setRejectionReason("");
+      loadGames();
+      onStatsUpdate();
+    } catch (error) {
+      console.error("Reject game error:", error);
+      toast.error("Failed to reject game");
     } finally {
       setProcessingId(null);
     }
@@ -364,26 +499,27 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() =>
-                                  updateGameStatus(game.id, "approved")
-                                }
+                                onClick={() => approveGame(game)}
                                 disabled={processingId === game.id}
                                 className="text-green-500 hover:text-green-600"
+                                title="Duyệt game & gửi 500K CAMLY"
                               >
                                 {processingId === game.id ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
-                                  <CheckCircle className="h-4 w-4" />
+                                  <>
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    <Gift className="h-3 w-3" />
+                                  </>
                                 )}
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() =>
-                                  updateGameStatus(game.id, "rejected")
-                                }
+                                onClick={() => openRejectModal(game)}
                                 disabled={processingId === game.id}
                                 className="text-red-500 hover:text-red-600"
+                                title="Từ chối game"
                               >
                                 <XCircle className="h-4 w-4" />
                               </Button>
@@ -408,6 +544,38 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
           )}
         </CardContent>
       </Card>
+      {/* Rejection Modal */}
+      <Dialog open={rejectModalOpen} onOpenChange={setRejectModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Từ chối game</DialogTitle>
+            <DialogDescription>
+              Nhập lý do từ chối game "{rejectingGame?.title}". Lý do này sẽ được gửi đến người tạo game.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            placeholder="Nhập lý do từ chối game..."
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
+            className="min-h-[100px]"
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectModalOpen(false)}>
+              Hủy
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={rejectGame}
+              disabled={!rejectionReason.trim() || processingId === rejectingGame?.id}
+            >
+              {processingId === rejectingGame?.id ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              Từ chối game
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

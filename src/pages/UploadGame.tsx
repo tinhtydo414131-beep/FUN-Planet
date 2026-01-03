@@ -818,45 +818,23 @@ export default function UploadGame() {
         throw new Error("Bạn không có quyền phê duyệt game này");
       }
       
-      // Update game status to approved
-      const { error: updateError } = await supabase
-        .from('uploaded_games')
-        .update({ 
-          status: 'approved',
-          approved_at: new Date().toISOString()
-        })
-        .eq('id', pendingGameData.gameId)
-        .eq('user_id', user.id); // Extra safety: only update own game
-      
-      if (updateError) throw updateError;
-      
-      // Now claim the reward
-      const { data: rewardResult, error: rewardError } = await supabase.rpc('claim_upload_reward_safe', {
-        p_game_id: pendingGameData.gameId,
-        p_game_title: formData.title
-      });
-
-      if (rewardError) {
-        console.error('Reward claim error:', rewardError);
-        // Don't throw - game is already approved, just log the error
-      }
-      
+      // Game tested successfully - keep status as 'pending' for admin review
+      // Admin will approve and trigger reward
       setShowTestModal(false);
       fireDiamondConfetti();
       
-      const rewardAmount = 500000;
       toast.success(
         <div className="flex flex-col gap-1">
-          <span className="font-bold text-lg">🎉 CONGRATULATIONS!</span>
-          <span>Game đã được xác nhận hoạt động!</span>
-          <span>Bạn nhận được {rewardAmount.toLocaleString()} CAMLY!</span>
-          <span className="text-sm opacity-80">Game của bạn đã LIVE!</span>
+          <span className="font-bold text-lg">✅ Game hoạt động tốt!</span>
+          <span>Game đã được gửi để Admin duyệt.</span>
+          <span className="text-sm text-yellow-400">Khi được duyệt, bạn sẽ nhận 500.000 CAMLY!</span>
+          <span className="text-xs opacity-80">Bạn có thể chơi thử game trong "Game của tôi"</span>
         </div>,
         { duration: 6000 }
       );
 
       setTimeout(() => {
-        navigate(`/game/${pendingGameData.gameId}`);
+        navigate('/my-games');
       }, 2000);
       
     } catch (error: any) {
