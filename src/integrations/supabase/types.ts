@@ -5676,6 +5676,10 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_retry_withdrawal: {
+        Args: { p_admin_id: string; p_withdrawal_id: string }
+        Returns: Json
+      }
       admin_sync_all_rewards: {
         Args: never
         Returns: {
