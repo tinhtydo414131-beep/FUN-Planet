@@ -187,6 +187,10 @@ export const useWeb3Rewards = () => {
           .update({ first_wallet_claimed: true })
           .eq('user_id', user.id);
 
+        // IMPORTANT: Clear referral code from localStorage immediately after claiming
+        // This prevents the welcome banner from showing again
+        localStorage.removeItem('fun_planet_referral_code');
+
         setPendingReward({
           amount: REWARDS.FIRST_WALLET_CONNECT,
           type: 'first_wallet_connect',
