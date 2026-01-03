@@ -226,14 +226,12 @@ export function useRankingRealtime(
         }
       })
       .on('postgres_changes', {
-        event: 'UPDATE',
+        event: '*',
         schema: 'public', 
-        table: 'web3_rewards'
+        table: 'user_rewards'
       }, (payload: any) => {
-        if (payload.old?.total_claimed_to_wallet !== payload.new?.total_claimed_to_wallet) {
-          console.log('[Ranking] total_claimed_to_wallet changed:', payload.new?.total_claimed_to_wallet);
-          triggerRefresh();
-        }
+        console.log('[Ranking] user_rewards changed:', payload.eventType);
+        triggerRefresh();
       })
       .subscribe((status) => {
         setIsConnected(status === 'SUBSCRIBED');
