@@ -185,7 +185,7 @@ export function usePostsRealtime(
 
 /**
  * Hook for ranking real-time updates
- * Auto-refresh when wallet_balance changes
+ * Auto-refresh when wallet_balance OR claimed_amount changes
  */
 export function useRankingRealtime(
   onRankingChange: () => void,
@@ -193,29 +193,55 @@ export function useRankingRealtime(
 ) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
-  const handleChange = useCallback((payload: any) => {
-    // Check if wallet_balance changed
+  const triggerRefresh = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      onRankingChange();
+    }, 500);
+  }, [onRankingChange]);
+  
+  const handleProfileChange = useCallback((payload: any) => {
     const oldBalance = payload.old?.wallet_balance;
     const newBalance = payload.new?.wallet_balance;
     
     if (oldBalance !== newBalance) {
       console.log('[Ranking Realtime] wallet_balance changed:', { oldBalance, newBalance });
-      
-      // Debounce to avoid too many refreshes
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-      debounceRef.current = setTimeout(() => {
-        onRankingChange();
-      }, 500);
+      triggerRefresh();
     }
-  }, [onRankingChange]);
+  }, [triggerRefresh]);
   
-  return useRealtimeConnection({
-    channelName: 'ranking-updates',
+  const handleRewardsChange = useCallback((payload: any) => {
+    console.log('[Ranking Realtime] user_rewards changed:', payload.eventType);
+    triggerRefresh();
+  }, [triggerRefresh]);
+  
+  // Listen to profiles.wallet_balance changes
+  const { isConnected: profilesConnected, forceReconnect: forceReconnectProfiles } = useRealtimeConnection({
+    channelName: 'ranking-profiles',
     table: 'profiles',
     event: 'UPDATE',
-    onMessage: handleChange,
+    onMessage: handleProfileChange,
     enabled
   });
+  
+  // Listen to user_rewards changes (for claimed_amount)
+  const { isConnected: rewardsConnected, forceReconnect: forceReconnectRewards } = useRealtimeConnection({
+    channelName: 'ranking-rewards',
+    table: 'user_rewards',
+    event: '*',
+    onMessage: handleRewardsChange,
+    enabled
+  });
+  
+  const forceReconnect = useCallback(() => {
+    forceReconnectProfiles();
+    forceReconnectRewards();
+  }, [forceReconnectProfiles, forceReconnectRewards]);
+  
+  return { 
+    isConnected: profilesConnected || rewardsConnected,
+    forceReconnect
+  };
 }
