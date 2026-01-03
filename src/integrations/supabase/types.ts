@@ -3318,6 +3318,7 @@ export type Database = {
           education: string | null
           email: string
           id: string
+          last_withdrawal_at: string | null
           leaderboard_score: number | null
           location: string | null
           referral_code: string | null
@@ -3341,6 +3342,7 @@ export type Database = {
           education?: string | null
           email: string
           id: string
+          last_withdrawal_at?: string | null
           leaderboard_score?: number | null
           location?: string | null
           referral_code?: string | null
@@ -3364,6 +3366,7 @@ export type Database = {
           education?: string | null
           email?: string
           id?: string
+          last_withdrawal_at?: string | null
           leaderboard_score?: number | null
           location?: string | null
           referral_code?: string | null
@@ -5877,6 +5880,7 @@ export type Database = {
           user_agent: string
         }[]
       }
+      get_user_trust_info: { Args: { p_user_id: string }; Returns: Json }
       get_wallet_fraud_stats: {
         Args: never
         Returns: {
