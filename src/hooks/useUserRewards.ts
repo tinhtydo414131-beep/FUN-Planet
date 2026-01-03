@@ -25,7 +25,7 @@ export interface RewardHistoryItem {
   claimed_to_wallet: boolean;
 }
 
-const DAILY_LIMIT = 5000000; // 5 million CAMLY per day
+const DAILY_LIMIT = 500000; // 500,000 CAMLY per day (synced with backend)
 
 export function useUserRewards() {
   const { user } = useAuth();
