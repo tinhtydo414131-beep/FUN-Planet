@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import JSZip from "jszip";
 import { z } from "zod";
 import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CommentVoteButtons } from "@/components/game/CommentVoteButtons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -91,6 +92,8 @@ interface GameComment {
   user_id: string;
   created_at: string;
   parent_id: string | null;
+  likes_count: number;
+  dislikes_count: number;
   profiles: {
     username: string;
     avatar_url: string | null;
@@ -154,13 +157,81 @@ export default function GameDetails() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  // Memoize loadComments for realtime subscription
+  const loadComments = useCallback(async () => {
+    if (!id) return;
+
+    const { data, error } = await supabase
+      .from('uploaded_game_comments')
+      .select('*, profiles(username, avatar_url)')
+      .eq('game_id', id)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      // Organize comments into threads
+      const commentsMap = new Map<string, GameComment>();
+      const topLevelComments: GameComment[] = [];
+      
+      // First pass: create map of all comments
+      data.forEach((comment: any) => {
+        commentsMap.set(comment.id, { 
+          ...comment, 
+          likes_count: comment.likes_count || 0,
+          dislikes_count: comment.dislikes_count || 0,
+          replies: [] 
+        });
+      });
+      
+      // Second pass: organize into threads
+      data.forEach((comment: any) => {
+        const commentObj = commentsMap.get(comment.id)!;
+        if (comment.parent_id) {
+          const parent = commentsMap.get(comment.parent_id);
+          if (parent) {
+            parent.replies!.push(commentObj);
+          }
+        } else {
+          topLevelComments.push(commentObj);
+        }
+      });
+      
+      setComments(topLevelComments);
+    }
+  }, [id]);
+
   useEffect(() => {
     if (id) {
       loadGameDetails();
       loadRatings();
       loadComments();
     }
-  }, [id]);
+  }, [id, loadComments]);
+
+  // Realtime subscription for comments
+  useEffect(() => {
+    if (!id) return;
+
+    const channel = supabase
+      .channel(`game-comments-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'uploaded_game_comments',
+          filter: `game_id=eq.${id}`,
+        },
+        () => {
+          // Reload comments on any change
+          loadComments();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, loadComments]);
 
   const loadGameDetails = async () => {
     if (!id) return;
@@ -213,42 +284,6 @@ export default function GameDetails() {
       setRatings(data as any);
       const myRating = data.find(r => r.user_id === user?.id);
       if (myRating) setUserRating(myRating.rating);
-    }
-  };
-
-  const loadComments = async () => {
-    if (!id) return;
-
-    const { data, error } = await supabase
-      .from('uploaded_game_comments')
-      .select('*, profiles(username, avatar_url)')
-      .eq('game_id', id)
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
-      // Organize comments into threads
-      const commentsMap = new Map<string, GameComment>();
-      const topLevelComments: GameComment[] = [];
-      
-      // First pass: create map of all comments
-      data.forEach((comment: any) => {
-        commentsMap.set(comment.id, { ...comment, replies: [] });
-      });
-      
-      // Second pass: organize into threads
-      data.forEach((comment: any) => {
-        const commentObj = commentsMap.get(comment.id)!;
-        if (comment.parent_id) {
-          const parent = commentsMap.get(comment.parent_id);
-          if (parent) {
-            parent.replies!.push(commentObj);
-          }
-        } else {
-          topLevelComments.push(commentObj);
-        }
-      });
-      
-      setComments(topLevelComments);
     }
   };
 
@@ -1043,7 +1078,12 @@ export default function GameDetails() {
                               </span>
                             </div>
                             <p className="text-sm mb-3">{comment.comment}</p>
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-4">
+                              <CommentVoteButtons
+                                commentId={comment.id}
+                                likesCount={comment.likes_count}
+                                dislikesCount={comment.dislikes_count}
+                              />
                               {user && !comment.parent_id && (
                                 <Button
                                   size="sm"
@@ -1116,17 +1156,24 @@ export default function GameDetails() {
                                     </span>
                                   </div>
                                   <p className="text-sm mb-2">{reply.comment}</p>
-                                  {user && user.id !== reply.user_id && (
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      onClick={() => setReportingComment(reply.id)}
-                                      className="text-xs h-auto py-1 px-2 text-muted-foreground hover:text-destructive"
-                                    >
-                                      <Flag className="h-3 w-3 mr-1" />
-                                      Report
-                                    </Button>
-                                  )}
+                                  <div className="flex items-center gap-3">
+                                    <CommentVoteButtons
+                                      commentId={reply.id}
+                                      likesCount={reply.likes_count}
+                                      dislikesCount={reply.dislikes_count}
+                                    />
+                                    {user && user.id !== reply.user_id && (
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setReportingComment(reply.id)}
+                                        className="text-xs h-auto py-1 px-2 text-muted-foreground hover:text-destructive"
+                                      >
+                                        <Flag className="h-3 w-3 mr-1" />
+                                        Report
+                                      </Button>
+                                    )}
+                                  </div>
                                 </div>
                                 {user?.id === reply.user_id && (
                                   <div className="flex gap-2">
