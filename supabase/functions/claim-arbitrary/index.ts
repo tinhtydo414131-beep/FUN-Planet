@@ -127,7 +127,8 @@ async function sendTransactionWithRetry(
 }
 
 serve(async (req) => {
-  console.log('🚀 claim-arbitrary function called');
+  const timestamp = new Date().toISOString();
+  console.log(`🚀 [${timestamp}] claim-arbitrary function called`);
   
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -174,9 +175,19 @@ serve(async (req) => {
     const body = await req.json();
     const { walletAddress, amount, parentSignature } = body;
 
-    console.log(`👤 User: ${user.id}`);
+    // Get user profile for better logging
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('username, wallet_address')
+      .eq('id', user.id)
+      .single();
+
+    console.log(`📋 [${timestamp}] ========== WITHDRAWAL REQUEST ==========`);
+    console.log(`👤 User ID: ${user.id}`);
+    console.log(`📛 Username: ${profile?.username || 'N/A'}`);
     console.log(`💰 Amount: ${amount} CAMLY`);
-    console.log(`📬 Wallet: ${walletAddress}`);
+    console.log(`📬 Target Wallet: ${walletAddress}`);
+    console.log(`🔗 Profile Wallet: ${profile?.wallet_address || 'NOT CONNECTED'}`);
 
     // Validate inputs
     if (!walletAddress || !amount || amount <= 0) {
@@ -224,10 +235,10 @@ serve(async (req) => {
       });
     }
 
-    console.log('📋 Withdrawal result:', JSON.stringify(withdrawalResult));
+    console.log(`📋 [${timestamp}] Withdrawal result:`, JSON.stringify(withdrawalResult));
 
     if (!withdrawalResult.success) {
-      console.log('❌ Withdrawal not successful:', withdrawalResult.error);
+      console.log(`❌ [${timestamp}] Withdrawal REJECTED for ${profile?.username}: ${withdrawalResult.error}`);
       return new Response(JSON.stringify({ 
         error: withdrawalResult.error,
       }), {
@@ -236,12 +247,13 @@ serve(async (req) => {
       });
     }
 
-    console.log(`✅ Withdrawal request created: ${withdrawalResult.withdrawal_id}`);
-    console.log(`🔐 Auto-approved: ${withdrawalResult.auto_approved}, Trust score: ${withdrawalResult.trust_score}`);
+    console.log(`✅ [${timestamp}] Withdrawal request created: ${withdrawalResult.withdrawal_id}`);
+    console.log(`🔐 [${timestamp}] User: ${profile?.username}, Trust: ${withdrawalResult.trust_score}, Auto-approved: ${withdrawalResult.auto_approved}`);
 
     // If not auto-approved, return pending status
     if (!withdrawalResult.auto_approved) {
-      console.log('⏳ Request pending admin review');
+      console.log(`⏳ [${timestamp}] PENDING REVIEW: User ${profile?.username} (Trust: ${withdrawalResult.trust_score}) requesting ${amount} CAMLY`);
+      console.log(`📋 [${timestamp}] ========== END (PENDING) ==========`);
       return new Response(JSON.stringify({ 
         success: true,
         status: 'pending_review',
@@ -306,7 +318,7 @@ serve(async (req) => {
         amountWithDecimals
       );
 
-      console.log(`🎉 Transaction successful! Hash: ${receipt.hash}`);
+      console.log(`🎉 [${timestamp}] TX SUCCESS for ${profile?.username}: ${receipt.hash}`);
 
       // Update withdrawal request status to completed
       const { error: updateError } = await supabase
@@ -344,7 +356,8 @@ serve(async (req) => {
           claimed_at: new Date().toISOString(),
         });
 
-      console.log('✅ All database updates completed');
+      console.log(`✅ [${timestamp}] All database updates completed for ${profile?.username}`);
+      console.log(`📋 [${timestamp}] ========== END (COMPLETED) ==========`);
 
       return new Response(JSON.stringify({ 
         success: true, 

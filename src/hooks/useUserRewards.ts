@@ -122,7 +122,7 @@ export function useUserRewards() {
     amount: number, 
     walletAddress: string,
     parentSignature?: string
-  ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
+  ): Promise<{ success: boolean; txHash?: string; error?: string; status?: 'completed' | 'pending_review' }> => {
     if (!user) {
       return { success: false, error: 'Not authenticated' };
     }
@@ -172,9 +172,11 @@ export function useUserRewards() {
       await loadRewards();
       await loadRewardHistory();
 
+      // Return with status from backend
       return { 
         success: true, 
-        txHash: result.txHash 
+        txHash: result.txHash,
+        status: result.status === 'pending_review' ? 'pending_review' : 'completed'
       };
     } catch (error: any) {
       console.error('Claim error:', error);

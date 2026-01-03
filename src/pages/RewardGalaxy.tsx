@@ -301,6 +301,9 @@ export default function RewardGalaxy() {
               hourlyRequestsRemaining={trustInfo.hourly_requests_remaining}
               accountAgeDays={trustInfo.account_age_days}
               successfulClaims={trustInfo.successful_claims}
+              hasWallet={!!actualWalletAddress}
+              pendingAmount={rewards?.pending_amount || 0}
+              onConnectWallet={() => open()}
             />
           )}
 

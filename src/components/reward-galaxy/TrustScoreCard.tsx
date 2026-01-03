@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { 
   Shield, 
   Clock, 
@@ -9,7 +10,9 @@ import {
   TrendingUp,
   Star,
   Crown,
-  Award
+  Award,
+  Wallet,
+  AlertTriangle
 } from 'lucide-react';
 
 interface TrustScoreCardProps {
@@ -19,6 +22,9 @@ interface TrustScoreCardProps {
   hourlyRequestsRemaining: number;
   accountAgeDays: number;
   successfulClaims: number;
+  hasWallet?: boolean;
+  pendingAmount?: number;
+  onConnectWallet?: () => void;
 }
 
 export function TrustScoreCard({
@@ -27,7 +33,10 @@ export function TrustScoreCard({
   cooldownRemaining,
   hourlyRequestsRemaining,
   accountAgeDays,
-  successfulClaims
+  successfulClaims,
+  hasWallet = true,
+  pendingAmount = 0,
+  onConnectWallet
 }: TrustScoreCardProps) {
   const getTierColor = () => {
     if (trustScore >= 50) return 'from-purple-500 to-pink-500';
@@ -145,13 +154,45 @@ export function TrustScoreCard({
             </div>
           </div>
 
+          {/* Warning: No wallet connected but has pending amount */}
+          {!hasWallet && pendingAmount > 0 && (
+            <motion.div 
+              className="mt-4 p-4 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl border border-orange-500/30"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-orange-300 mb-1">
+                    ⚠️ Cần kết nối ví để rút CAMLY!
+                  </p>
+                  <p className="text-xs text-white/70 mb-3">
+                    Bạn có {pendingAmount.toLocaleString()} CAMLY đang chờ rút nhưng chưa kết nối ví. 
+                    Kết nối ví để tăng Trust Score +20 điểm và có thể rút tiền!
+                  </p>
+                  {onConnectWallet && (
+                    <Button
+                      onClick={onConnectWallet}
+                      size="sm"
+                      className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold"
+                    >
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Kết nối ví ngay
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Tips for increasing trust */}
           {trustScore < 50 && (
             <div className="mt-4 p-3 bg-white/5 rounded-xl">
               <p className="text-xs text-white/60 mb-2">💡 Cách tăng Trust Score:</p>
               <ul className="text-xs text-white/80 space-y-1">
-                {!trustScore || trustScore < 20 && (
-                  <li>• Kết nối ví để được +20 điểm</li>
+                {!hasWallet && (
+                  <li className="text-yellow-300 font-semibold">• Kết nối ví để được +20 điểm ⭐</li>
                 )}
                 <li>• Rút tiền thành công nhiều lần (+7-20 điểm)</li>
                 <li>• Upload game được duyệt (+7-15 điểm)</li>
