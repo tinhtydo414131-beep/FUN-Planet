@@ -2,8 +2,8 @@
 // Launch Phase - Attractive rewards for early adoption
 
 export const PLAY_REWARDS = {
-  NEW_GAME_BONUS: 10000,        // 10,000 CAMLY for first 2 new games
-  MAX_NEW_GAME_BONUSES: 2,      // Only first 2 games per day
+  NEW_GAME_BONUS: 10000,        // 10,000 CAMLY for first time playing each game
+  MAX_NEW_GAME_BONUSES: 999,    // Unlimited new games (each game only once)
   CAMLY_PER_MINUTE: 500,        // 500 CAMLY per minute of play
   MIN_SESSION_SECONDS: 60,      // Minimum 60 seconds to earn rewards
   AFK_TIMEOUT_SECONDS: 120,     // 2 minutes without activity = AFK

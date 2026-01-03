@@ -287,31 +287,9 @@ const GamePlay = () => {
     // Haptic feedback for success
     haptics.success();
 
-    // Award 10,000 Camly coins for completing the level using secure RPC
-    if (user && game) {
-      try {
-        const { data, error } = await supabase.rpc('claim_game_complete_safe', {
-          p_game_id: game.id,
-          p_level: currentLevel,
-          p_game_title: game.title
-        });
-
-        if (error) {
-          console.error("RPC error:", error);
-        } else {
-          const result = data as { success: boolean; error?: string; reward?: number } | null;
-          if (result && !result.success) {
-            // Silently handle duplicate claims (already claimed today)
-            console.log("Claim result:", result.error);
-          } else if (result?.success) {
-            // Claim first game reward bonus (only triggers once)
-            await claimFirstGameReward();
-          }
-        }
-      } catch (error) {
-        console.error("Error awarding game completion reward:", error);
-      }
-    }
+    // NOTE: Level complete reward removed - rewards now based on:
+    // 1. First play bonus (10,000 CAMLY per new game - handled by usePlayTimeRewards)
+    // 2. Playtime rewards (500 CAMLY per minute - handled by usePlayTimeRewards)
     
     // Fire confetti 5 times
     const fireConfetti = () => {

@@ -9,6 +9,9 @@ interface GameCompleteState {
   hidePopup: () => void;
 }
 
+// NOTE: This popup is now used for first-play bonus only
+// Level completion no longer awards 10,000 CAMLY
+// Rewards are based on: first play (10,000 CAMLY) + playtime (500 CAMLY/min)
 export const useGameCompletePopup = create<GameCompleteState>((set) => ({
   isOpen: false,
   score: 0,
