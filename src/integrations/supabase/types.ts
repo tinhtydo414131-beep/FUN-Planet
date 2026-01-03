@@ -5479,6 +5479,7 @@ export type Database = {
       }
       withdrawal_requests: {
         Row: {
+          admin_notes: string | null
           amount: number
           auto_approved: boolean | null
           completed_at: string | null
@@ -5489,11 +5490,14 @@ export type Database = {
           reviewed_by: string | null
           status: string
           trust_score: number | null
+          trust_score_at_request: number | null
           tx_hash: string | null
+          updated_at: string | null
           user_id: string
           wallet_address: string
         }
         Insert: {
+          admin_notes?: string | null
           amount: number
           auto_approved?: boolean | null
           completed_at?: string | null
@@ -5504,11 +5508,14 @@ export type Database = {
           reviewed_by?: string | null
           status?: string
           trust_score?: number | null
+          trust_score_at_request?: number | null
           tx_hash?: string | null
+          updated_at?: string | null
           user_id: string
           wallet_address: string
         }
         Update: {
+          admin_notes?: string | null
           amount?: number
           auto_approved?: boolean | null
           completed_at?: string | null
@@ -5519,7 +5526,9 @@ export type Database = {
           reviewed_by?: string | null
           status?: string
           trust_score?: number | null
+          trust_score_at_request?: number | null
           tx_hash?: string | null
+          updated_at?: string | null
           user_id?: string
           wallet_address?: string
         }
