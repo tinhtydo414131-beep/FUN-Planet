@@ -16,7 +16,7 @@ export const DONATION_WALLET_ADDRESS = '0xabeb558cc6d34e56eadb53d248872bed1e7b77
 // Reward amounts
 export const REWARDS = {
   FIRST_WALLET_CONNECT: 50000,
-  GAME_COMPLETE: 10000,
+  FIRST_GAME_PLAY: 10000,      // First time playing each game
   DAILY_CHECKIN: 5000,
   UPLOAD_GAME: 500000,
   NFT_MINT_COST: 1000,
