@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/sheet";
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { MessengerButton } from "./MessengerButton";
+import { NotificationBell } from "./notifications/NotificationBell";
 
 export const Navigation = () => {
   const { user, signOut } = useAuth();
@@ -156,7 +157,10 @@ export const Navigation = () => {
 
 
               {user && (
-                <MessengerButton />
+                <>
+                  <NotificationBell />
+                  <MessengerButton />
+                </>
               )}
 
               {user ? (
@@ -273,7 +277,10 @@ export const Navigation = () => {
           
           <div className="flex items-center gap-2">
             {user && (
-              <MessengerButton />
+              <>
+                <NotificationBell />
+                <MessengerButton />
+              </>
             )}
             
             {/* Mobile Menu Button */}
