@@ -7,6 +7,7 @@ import { useReferral } from '@/hooks/useReferral';
 import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import { useUserRewards } from '@/hooks/useUserRewards';
 import { useDailyLoginReward } from '@/hooks/useDailyLoginReward';
+import { useTrustScore } from '@/hooks/useTrustScore';
 import { useAppKitSafe } from '@/hooks/useAppKitSafe';
 import { useAccount } from 'wagmi';
 import { supabase } from '@/integrations/supabase/client';
@@ -48,6 +49,7 @@ import { WalletStatusCard } from '@/components/reward-galaxy/WalletStatusCard';
 import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCard';
 import { DailyLoginRewardCard } from '@/components/reward-galaxy/DailyLoginRewardCard';
 import { DailyLoginRewardPopup } from '@/components/reward-galaxy/DailyLoginRewardPopup';
+import { TrustScoreCard } from '@/components/reward-galaxy/TrustScoreCard';
 
 interface ClaimHistory {
   id: string;
@@ -103,6 +105,8 @@ export default function RewardGalaxy() {
     claimDailyReward,
     closeRewardPopup,
   } = useDailyLoginReward();
+
+  const { trustInfo, loadTrustInfo } = useTrustScore();
   
   const [canClaimWallet, setCanClaimWallet] = useState<boolean | null>(null);
   const [canClaimGame, setCanClaimGame] = useState<boolean | null>(null);
@@ -203,7 +207,12 @@ export default function RewardGalaxy() {
     if (!actualWalletAddress) {
       return { success: false, error: 'Please connect your wallet first' };
     }
-    return claimArbitrary(amount, actualWalletAddress);
+    const result = await claimArbitrary(amount, actualWalletAddress);
+    if (result.success) {
+      // Reload trust info after successful claim
+      loadTrustInfo();
+    }
+    return result;
   };
 
   const handleClaimFirstWallet = async () => {
@@ -283,7 +292,19 @@ export default function RewardGalaxy() {
             onConnect={() => open()}
           />
 
-          {/* Pending Balance & Claim Section - NEW */}
+          {/* Trust Score Card - NEW */}
+          {trustInfo && (
+            <TrustScoreCard
+              trustScore={trustInfo.trust_score}
+              tier={trustInfo.auto_approve_tier}
+              cooldownRemaining={trustInfo.cooldown_remaining}
+              hourlyRequestsRemaining={trustInfo.hourly_requests_remaining}
+              accountAgeDays={trustInfo.account_age_days}
+              successfulClaims={trustInfo.successful_claims}
+            />
+          )}
+
+          {/* Pending Balance & Claim Section */}
           <PendingBalanceCard
             pendingAmount={rewards?.pending_amount || 0}
             dailyRemaining={dailyRemaining}
