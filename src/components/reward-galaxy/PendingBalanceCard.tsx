@@ -13,7 +13,8 @@ import {
   Loader2,
   ExternalLink,
   Gift,
-  Zap
+  Zap,
+  Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { fireDiamondConfetti } from '@/components/DiamondConfetti';
@@ -25,7 +26,7 @@ interface PendingBalanceCardProps {
   walletAddress: string | null;
   isConnected: boolean;
   isClaiming: boolean;
-  onClaim: (amount: number) => Promise<{ success: boolean; txHash?: string; error?: string }>;
+  onClaim: (amount: number) => Promise<{ success: boolean; txHash?: string; error?: string; status?: 'completed' | 'pending_review' }>;
   onConnect: () => void;
 }
 
@@ -69,6 +70,22 @@ export function PendingBalanceCard({
     const result = await onClaim(claimAmount);
 
     if (result.success) {
+      // Check if pending review (not auto-approved)
+      if (result.status === 'pending_review') {
+        // Show info toast instead of success
+        toast.info(
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-blue-400" />
+            <span>Yêu cầu rút {claimAmount.toLocaleString()} CAMLY đang chờ admin duyệt. Bạn sẽ được thông báo khi hoàn tất! ⏳</span>
+          </div>,
+          { duration: 5000 }
+        );
+        // Reset amount but don't show celebration
+        setClaimAmount(0);
+        return;
+      }
+      
+      // Auto-approved and completed - show celebration
       setShowSuccess(true);
       setLastTxHash(result.txHash || null);
       fireDiamondConfetti('celebration');
