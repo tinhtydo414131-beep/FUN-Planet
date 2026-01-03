@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -99,6 +100,9 @@ export function UserDetailModal({ user, open, onClose, onDataRefresh }: UserDeta
               <User className="h-5 w-5" />
               User Details
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              View detailed information about user {user?.username || 'Unknown'}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
