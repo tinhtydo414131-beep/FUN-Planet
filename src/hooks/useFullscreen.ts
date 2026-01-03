@@ -65,17 +65,21 @@ export function useFullscreen() {
     try {
       if (element.requestFullscreen) {
         await element.requestFullscreen();
+        document.body.classList.add('fullscreen-active');
       } else if (element.webkitRequestFullscreen) {
         await element.webkitRequestFullscreen();
+        document.body.classList.add('fullscreen-active');
       } else if (element.mozRequestFullScreen) {
         await element.mozRequestFullScreen();
+        document.body.classList.add('fullscreen-active');
       } else if (element.msRequestFullscreen) {
         await element.msRequestFullscreen();
+        document.body.classList.add('fullscreen-active');
       } else {
         // Fallback for iOS and unsupported browsers - use CSS fullscreen
         setIsCSSFullscreen(true);
         setIsFullscreen(true);
-        document.body.classList.add('css-fullscreen');
+        document.body.classList.add('css-fullscreen', 'fullscreen-active');
         // Lock scroll
         document.body.style.overflow = 'hidden';
         // Request landscape orientation if supported
@@ -92,7 +96,7 @@ export function useFullscreen() {
       // Fallback to CSS fullscreen
       setIsCSSFullscreen(true);
       setIsFullscreen(true);
-      document.body.classList.add('css-fullscreen');
+      document.body.classList.add('css-fullscreen', 'fullscreen-active');
       document.body.style.overflow = 'hidden';
     }
   }, []);
@@ -105,7 +109,7 @@ export function useFullscreen() {
         // Exit CSS fullscreen
         setIsCSSFullscreen(false);
         setIsFullscreen(false);
-        document.body.classList.remove('css-fullscreen');
+        document.body.classList.remove('css-fullscreen', 'fullscreen-active');
         document.body.style.overflow = '';
         // Unlock orientation
         if (screen.orientation && (screen.orientation as any).unlock) {
@@ -125,11 +129,12 @@ export function useFullscreen() {
           await doc.msExitFullscreen();
         }
       }
+      document.body.classList.remove('fullscreen-active');
     } catch (error) {
       console.error("Error exiting fullscreen:", error);
       setIsCSSFullscreen(false);
       setIsFullscreen(false);
-      document.body.classList.remove('css-fullscreen');
+      document.body.classList.remove('css-fullscreen', 'fullscreen-active');
       document.body.style.overflow = '';
     }
   }, [isCSSFullscreen, getFullscreenElement]);
