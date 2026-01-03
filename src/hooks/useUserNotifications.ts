@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -18,6 +19,7 @@ export interface UserNotification {
 
 export function useUserNotifications() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<UserNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -85,13 +87,14 @@ export function useUserNotifications() {
     setNotifications(prev => [notification, ...prev]);
     setUnreadCount(prev => prev + 1);
 
+    const dataObj = notification.data as Record<string, any> | null;
+
     // Special handling for game_approved
     if (notification.notification_type === 'game_approved') {
       // Rainbow confetti celebration!
       fireDiamondConfetti('rainbow');
       
       // Show beautiful toast
-      const dataObj = notification.data as Record<string, any> | null;
       const rewardText = dataObj?.reward_amount 
         ? ` +${Number(dataObj.reward_amount).toLocaleString()} CAMLY!`
         : '';
@@ -105,6 +108,26 @@ export function useUserNotifications() {
         description: notification.message,
         duration: 6000,
       });
+    } else if (notification.notification_type === 'comment_reply') {
+      // Someone replied to user's comment
+      toast.info(`💬 ${notification.title}`, {
+        description: notification.message,
+        duration: 5000,
+        action: dataObj?.game_id ? {
+          label: 'Xem',
+          onClick: () => navigate(`/game/${dataObj.game_id}`),
+        } : undefined,
+      });
+    } else if (notification.notification_type === 'new_game_comment') {
+      // New comment on user's game
+      toast.info(`💬 ${notification.title}`, {
+        description: notification.message,
+        duration: 5000,
+        action: dataObj?.game_id ? {
+          label: 'Xem',
+          onClick: () => navigate(`/game/${dataObj.game_id}`),
+        } : undefined,
+      });
     } else {
       // Generic notification
       toast.info(notification.title, {
@@ -112,7 +135,7 @@ export function useUserNotifications() {
         duration: 5000,
       });
     }
-  }, []);
+  }, [navigate]);
 
   // Subscribe to realtime notifications
   useEffect(() => {

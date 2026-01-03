@@ -4002,12 +4002,46 @@ export type Database = {
         }
         Relationships: []
       }
+      uploaded_game_comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploaded_game_comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_game_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       uploaded_game_comments: {
         Row: {
           comment: string
           created_at: string
+          dislikes_count: number | null
           game_id: string
           id: string
+          likes_count: number | null
           parent_id: string | null
           updated_at: string
           user_id: string
@@ -4015,8 +4049,10 @@ export type Database = {
         Insert: {
           comment: string
           created_at?: string
+          dislikes_count?: number | null
           game_id: string
           id?: string
+          likes_count?: number | null
           parent_id?: string | null
           updated_at?: string
           user_id: string
@@ -4024,8 +4060,10 @@ export type Database = {
         Update: {
           comment?: string
           created_at?: string
+          dislikes_count?: number | null
           game_id?: string
           id?: string
+          likes_count?: number | null
           parent_id?: string | null
           updated_at?: string
           user_id?: string
