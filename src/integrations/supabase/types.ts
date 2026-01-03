@@ -5474,6 +5474,54 @@ export type Database = {
           },
         ]
       }
+      withdrawal_requests: {
+        Row: {
+          amount: number
+          auto_approved: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          trust_score: number | null
+          tx_hash: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          amount: number
+          auto_approved?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          trust_score?: number | null
+          tx_hash?: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          amount?: number
+          auto_approved?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          trust_score?: number | null
+          tx_hash?: string | null
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       camly_leaderboard: {
@@ -5592,6 +5640,10 @@ export type Database = {
         Args: { p_amount: number; p_source: string; p_user_id: string }
         Returns: number
       }
+      admin_approve_withdrawal: {
+        Args: { p_admin_id: string; p_withdrawal_id: string }
+        Returns: Json
+      }
       admin_block_users_by_ip: {
         Args: { p_admin_id: string; p_ip_address: string; p_reason?: string }
         Returns: {
@@ -5599,6 +5651,10 @@ export type Database = {
           reset_amount: number
           user_ids: string[]
         }[]
+      }
+      admin_reject_withdrawal: {
+        Args: { p_admin_id: string; p_reason: string; p_withdrawal_id: string }
+        Returns: Json
       }
       admin_reset_user_rewards: {
         Args: {
@@ -5616,6 +5672,10 @@ export type Database = {
           total_earned: number
           user_id: string
         }[]
+      }
+      calculate_user_trust_score: {
+        Args: { p_user_id: string }
+        Returns: number
       }
       can_claim_daily_login: { Args: { p_user_id: string }; Returns: boolean }
       can_claim_reward: {
@@ -5867,6 +5927,10 @@ export type Database = {
           p_user_id: string
           p_wallet_address: string
         }
+        Returns: Json
+      }
+      process_withdrawal_request: {
+        Args: { p_amount: number; p_user_id: string; p_wallet_address: string }
         Returns: Json
       }
       sync_user_reward_balances: { Args: { p_user_id: string }; Returns: Json }

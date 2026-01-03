@@ -40,7 +40,7 @@ serve(async (req) => {
       });
     }
 
-    // Verify the user
+    // Verify the admin user
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
@@ -51,91 +51,64 @@ serve(async (req) => {
       });
     }
 
-    const { walletAddress, amount, parentSignature } = await req.json();
+    // Check if user is admin
+    const { data: isAdmin } = await supabase.rpc('has_role', {
+      p_user_id: user.id,
+      p_role: 'admin'
+    });
 
-    // Validate inputs
-    if (!walletAddress || !amount || amount <= 0) {
-      return new Response(JSON.stringify({ error: 'Invalid walletAddress or amount' }), {
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: 'Admin access required' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { withdrawal_id } = await req.json();
+
+    if (!withdrawal_id) {
+      return new Response(JSON.stringify({ error: 'Missing withdrawal_id' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log(`User ${user.id} requesting claim of ${amount} CAMLY to ${walletAddress}`);
+    console.log(`Admin ${user.id} processing approved withdrawal: ${withdrawal_id}`);
 
-    // Check if user is a child requiring parent approval
-    const { data: childLink } = await supabase
-      .from('parent_child_links')
-      .select('parent_id')
-      .eq('child_id', user.id)
-      .eq('status', 'approved')
-      .maybeSingle();
+    // Get the withdrawal request
+    const { data: withdrawal, error: fetchError } = await supabase
+      .from('withdrawal_requests')
+      .select('*')
+      .eq('id', withdrawal_id)
+      .single();
 
-    if (childLink && !parentSignature) {
-      return new Response(JSON.stringify({ 
-        error: 'Parent approval required',
-        requiresParentApproval: true,
-        parentId: childLink.parent_id
-      }), {
+    if (fetchError || !withdrawal) {
+      return new Response(JSON.stringify({ error: 'Withdrawal not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (withdrawal.status !== 'approved') {
+      return new Response(JSON.stringify({ error: `Withdrawal status is ${withdrawal.status}, not approved` }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Use Smart Auto-Approve system via process_withdrawal_request
-    const { data: withdrawalResult, error: withdrawalError } = await supabase
-      .rpc('process_withdrawal_request', {
-        p_user_id: user.id,
-        p_amount: amount,
-        p_wallet_address: walletAddress
-      });
-
-    if (withdrawalError) {
-      console.error('Withdrawal request error:', withdrawalError);
-      return new Response(JSON.stringify({ error: 'Failed to process withdrawal request' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    if (!withdrawalResult.success) {
-      return new Response(JSON.stringify({ 
-        error: withdrawalResult.error,
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log(`Withdrawal request created: ${withdrawalResult.withdrawal_id}, auto_approved: ${withdrawalResult.auto_approved}, trust_score: ${withdrawalResult.trust_score}`);
-
-    // If not auto-approved, return pending status
-    if (!withdrawalResult.auto_approved) {
-      return new Response(JSON.stringify({ 
-        success: true,
-        status: 'pending_review',
-        withdrawal_id: withdrawalResult.withdrawal_id,
-        trust_score: withdrawalResult.trust_score,
-        message: 'Your withdrawal is pending admin review. You will be notified when approved.'
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Auto-approved: Process the on-chain transfer
+    // Process the on-chain transfer
     try {
       const provider = new ethers.JsonRpcProvider(BSC_RPC_URL);
       const wallet = new ethers.Wallet(rewardWalletPrivateKey, provider);
       const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, ERC20_ABI, wallet);
 
-      // Get decimals (CAMLY has 3 decimals)
       const decimals = 3;
-      const amountWithDecimals = BigInt(Math.floor(amount)) * BigInt(10 ** decimals);
+      const amountWithDecimals = BigInt(Math.floor(withdrawal.amount)) * BigInt(10 ** decimals);
 
-      console.log(`Transferring ${amount} CAMLY to ${walletAddress}`);
+      console.log(`Transferring ${withdrawal.amount} CAMLY to ${withdrawal.wallet_address}`);
 
       // Execute transfer
-      const tx = await contract.transfer(walletAddress, amountWithDecimals);
+      const tx = await contract.transfer(withdrawal.wallet_address, amountWithDecimals);
       console.log('Transaction sent:', tx.hash);
 
       // Wait for confirmation
@@ -150,14 +123,14 @@ serve(async (req) => {
           tx_hash: receipt.hash,
           completed_at: new Date().toISOString()
         })
-        .eq('id', withdrawalResult.withdrawal_id);
+        .eq('id', withdrawal_id);
 
       // Log the claim in daily_claim_logs
       await supabase
         .from('daily_claim_logs')
         .insert({
-          user_id: user.id,
-          amount_claimed: amount,
+          user_id: withdrawal.user_id,
+          amount_claimed: withdrawal.amount,
           tx_hash: receipt.hash
         });
 
@@ -165,21 +138,30 @@ serve(async (req) => {
       await supabase
         .from('camly_claims')
         .insert({
-          user_id: user.id,
-          wallet_address: walletAddress,
+          user_id: withdrawal.user_id,
+          wallet_address: withdrawal.wallet_address,
           claim_type: 'arbitrary' as any,
-          amount: amount,
+          amount: withdrawal.amount,
           status: 'completed',
           tx_hash: receipt.hash,
           claimed_at: new Date().toISOString(),
         });
 
+      // Notify user
+      await supabase
+        .from('user_notifications')
+        .insert({
+          user_id: withdrawal.user_id,
+          notification_type: 'withdrawal_completed',
+          title: 'Withdrawal Completed',
+          message: `Your withdrawal of ${withdrawal.amount.toLocaleString()} CAMLY has been sent to your wallet`,
+          data: { withdrawal_id, tx_hash: receipt.hash, amount: withdrawal.amount }
+        });
+
       return new Response(JSON.stringify({ 
-        success: true, 
-        status: 'completed',
-        txHash: receipt.hash,
-        amount: amount,
-        trust_score: withdrawalResult.trust_score
+        success: true,
+        tx_hash: receipt.hash,
+        amount: withdrawal.amount
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -187,18 +169,29 @@ serve(async (req) => {
     } catch (txError: any) {
       console.error('Transaction error:', txError);
       
-      // Mark withdrawal as failed and rollback
+      // Mark withdrawal as failed
       await supabase
         .from('withdrawal_requests')
         .update({ status: 'failed' })
-        .eq('id', withdrawalResult.withdrawal_id);
+        .eq('id', withdrawal_id);
 
-      // Rollback the database changes by adding back the pending amount
+      // Rollback - add back the pending amount
       await supabase.rpc('add_user_pending_reward', {
-        p_user_id: user.id,
-        p_amount: amount,
-        p_source: 'rollback'
+        p_user_id: withdrawal.user_id,
+        p_amount: withdrawal.amount,
+        p_source: 'rollback_failed_withdrawal'
       });
+
+      // Notify user
+      await supabase
+        .from('user_notifications')
+        .insert({
+          user_id: withdrawal.user_id,
+          notification_type: 'withdrawal_failed',
+          title: 'Withdrawal Failed',
+          message: `Your withdrawal failed due to a blockchain error. The amount has been returned to your pending balance.`,
+          data: { withdrawal_id, error: txError.message }
+        });
 
       return new Response(JSON.stringify({ 
         error: 'Transaction failed', 
@@ -210,7 +203,7 @@ serve(async (req) => {
     }
 
   } catch (error: any) {
-    console.error('Error in claim-arbitrary:', error);
+    console.error('Error in process-approved-withdrawal:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

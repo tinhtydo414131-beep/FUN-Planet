@@ -44,3 +44,6 @@ verify_jwt = true
 
 [functions.fetch-itchio-game]
 verify_jwt = true
+
+[functions.process-approved-withdrawal]
+verify_jwt = true

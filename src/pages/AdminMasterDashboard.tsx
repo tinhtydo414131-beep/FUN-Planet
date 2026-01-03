@@ -22,7 +22,8 @@ import {
   FileText,
   ScrollText,
   Sparkles,
-  Bell
+  Bell,
+  Wallet
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
@@ -36,6 +37,7 @@ import { AdminAuditLogsTab } from "@/components/admin/AdminAuditLogsTab";
 import { AdminAngelAITab } from "@/components/admin/AdminAngelAITab";
 import { AdminNotificationsTab } from "@/components/admin/AdminNotificationsTab";
 import { AdminRealtimeBell } from "@/components/admin/AdminRealtimeBell";
+import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
 
 interface Stats {
   totalUsers: number;
@@ -269,7 +271,7 @@ export default function AdminMasterDashboard() {
 
         {/* Main Tabs - Responsive Grid */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" ref={tabsRef}>
-          <TabsList className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 w-full mb-6 h-auto gap-1">
+          <TabsList className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 w-full mb-6 h-auto gap-1">
             <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <BarChart3 className="h-4 w-4" />
               <span>Overview</span>
@@ -285,6 +287,10 @@ export default function AdminMasterDashboard() {
             <TabsTrigger value="rewards" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Coins className="h-4 w-4" />
               <span>Rewards</span>
+            </TabsTrigger>
+            <TabsTrigger value="withdrawals" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <Wallet className="h-4 w-4" />
+              <span>Withdrawals</span>
             </TabsTrigger>
             <TabsTrigger value="fraud" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs relative">
               <AlertTriangle className="h-4 w-4" />
@@ -335,6 +341,10 @@ export default function AdminMasterDashboard() {
 
           <TabsContent value="rewards">
             <AdminRewardsTab onStatsUpdate={loadStats} />
+          </TabsContent>
+
+          <TabsContent value="withdrawals">
+            <AdminWithdrawalsTab />
           </TabsContent>
 
           <TabsContent value="fraud">
