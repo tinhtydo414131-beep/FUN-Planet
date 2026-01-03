@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Play, X, Maximize2, Star, Users, Flame } from "lucide-react";
 import { GamePreviewPlaceholder } from "@/components/GamePreviewPlaceholder";
 
@@ -205,13 +205,15 @@ export function FeaturedGamesSection() {
       </section>
 
       {/* Game Play Modal */}
-      <AnimatePresence mode="wait">
-        {selectedGame && (
-          <Dialog open={!!selectedGame} onOpenChange={() => closeGame()}>
-            <DialogContent 
-              className={`${isFullscreen ? 'max-w-[100vw] h-[100vh] m-0 rounded-none' : 'max-w-5xl h-[80vh]'} p-0 overflow-hidden`}
-            >
-              <DialogTitle className="sr-only">{selectedGame.title}</DialogTitle>
+      {selectedGame && (
+        <Dialog open={!!selectedGame} onOpenChange={() => closeGame()}>
+          <DialogContent 
+            className={`${isFullscreen ? 'max-w-[100vw] h-[100vh] m-0 rounded-none' : 'max-w-5xl h-[80vh]'} p-0 overflow-hidden`}
+          >
+            <DialogTitle className="sr-only">{selectedGame.title}</DialogTitle>
+            <DialogDescription className="sr-only">
+              Playing {selectedGame.title} - {selectedGame.category} game
+            </DialogDescription>
               
               {/* Header */}
               <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
@@ -240,19 +242,18 @@ export function FeaturedGamesSection() {
               </div>
 
               {/* Game Iframe */}
-              {selectedGame.external_url && (
-                <iframe
-                  src={selectedGame.external_url}
-                  className="w-full h-full border-0"
-                  title={selectedGame.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                  allowFullScreen
-                />
-              )}
-            </DialogContent>
-          </Dialog>
-        )}
-      </AnimatePresence>
+            {selectedGame.external_url && (
+              <iframe
+                src={selectedGame.external_url}
+                className="w-full h-full border-0"
+                title={selectedGame.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }
