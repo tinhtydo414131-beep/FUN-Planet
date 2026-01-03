@@ -267,24 +267,66 @@ serve(async (req) => {
 
     // Auto-approved: Process the on-chain transfer
     // IMPORTANT: TX-first flow - only deduct pending after successful TX
-    console.log('🔗 Starting on-chain transfer...');
+    console.log(`🔗 [${timestamp}] Starting on-chain transfer for ${profile?.username}...`);
+    
+    let provider: ethers.JsonRpcProvider | null = null;
+    let wallet: ethers.Wallet | null = null;
+    let contract: ethers.Contract | null = null;
     
     try {
-      // Get working provider
-      const provider = await getWorkingProvider();
-      const wallet = new ethers.Wallet(rewardWalletPrivateKey, provider);
-      const contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, ERC20_ABI, wallet);
+      // Step 1: Get working provider
+      console.log(`📡 [${timestamp}] Step 1: Connecting to BSC RPC...`);
+      try {
+        provider = await getWorkingProvider();
+        console.log(`✅ [${timestamp}] RPC connected successfully`);
+      } catch (rpcError: any) {
+        console.error(`❌ [${timestamp}] RPC CONNECTION FAILED:`, rpcError.message);
+        throw new Error(`RPC connection failed: ${rpcError.message}`);
+      }
+      
+      // Step 2: Initialize wallet
+      console.log(`🔑 [${timestamp}] Step 2: Initializing reward wallet...`);
+      try {
+        wallet = new ethers.Wallet(rewardWalletPrivateKey, provider);
+        console.log(`✅ [${timestamp}] Wallet initialized: ${wallet.address}`);
+      } catch (walletError: any) {
+        console.error(`❌ [${timestamp}] WALLET INIT FAILED:`, walletError.message);
+        throw new Error(`Wallet initialization failed: ${walletError.message}`);
+      }
+      
+      // Step 3: Check BNB balance for gas
+      console.log(`⛽ [${timestamp}] Step 3: Checking BNB balance for gas...`);
+      try {
+        const bnbBalance = await provider.getBalance(wallet.address);
+        const bnbFormatted = ethers.formatEther(bnbBalance);
+        console.log(`💰 [${timestamp}] BNB Balance: ${bnbFormatted} BNB`);
+        
+        if (bnbBalance < ethers.parseEther("0.001")) {
+          console.error(`❌ [${timestamp}] INSUFFICIENT BNB FOR GAS: ${bnbFormatted} BNB`);
+          throw new Error(`Insufficient BNB for gas: ${bnbFormatted} BNB (need at least 0.001 BNB)`);
+        }
+      } catch (bnbError: any) {
+        if (bnbError.message.includes('Insufficient BNB')) throw bnbError;
+        console.error(`❌ [${timestamp}] BNB CHECK FAILED:`, bnbError.message);
+        throw new Error(`Failed to check BNB balance: ${bnbError.message}`);
+      }
+      
+      // Step 4: Initialize contract
+      console.log(`📋 [${timestamp}] Step 4: Initializing CAMLY contract...`);
+      contract = new ethers.Contract(CAMLY_CONTRACT_ADDRESS, ERC20_ABI, wallet);
 
-      // Check wallet balance first
+      // Step 5: Check CAMLY balance
+      console.log(`🪙 [${timestamp}] Step 5: Checking CAMLY balance...`);
       const walletBalance = await contract.balanceOf(wallet.address);
       const decimals = 3;
       const amountWithDecimals = BigInt(Math.floor(amount)) * BigInt(10 ** decimals);
       
-      console.log(`💼 Reward wallet balance: ${ethers.formatUnits(walletBalance, decimals)} CAMLY`);
-      console.log(`📤 Transfer amount: ${amount} CAMLY (${amountWithDecimals} wei)`);
+      console.log(`💼 [${timestamp}] Reward wallet CAMLY: ${ethers.formatUnits(walletBalance, decimals)} CAMLY`);
+      console.log(`📤 [${timestamp}] Transfer amount: ${amount} CAMLY (${amountWithDecimals} wei)`);
 
       if (walletBalance < amountWithDecimals) {
-        console.error('❌ Insufficient balance in reward wallet');
+        console.error(`❌ [${timestamp}] INSUFFICIENT CAMLY BALANCE`);
+        console.error(`   Required: ${amount} CAMLY, Available: ${ethers.formatUnits(walletBalance, decimals)} CAMLY`);
         
         // Rollback - add back pending amount
         await supabase.rpc('add_user_pending_reward', {
@@ -293,24 +335,42 @@ serve(async (req) => {
           p_source: 'rollback_insufficient_balance'
         });
         
-        // Mark withdrawal as failed
+        // Mark withdrawal as failed and notify admin
         await supabase
           .from('withdrawal_requests')
           .update({ 
             status: 'failed',
-            admin_notes: 'Insufficient balance in reward wallet'
+            admin_notes: `Insufficient CAMLY in reward wallet. Required: ${amount}, Available: ${ethers.formatUnits(walletBalance, decimals)}`
           })
           .eq('id', withdrawalResult.withdrawal_id);
+        
+        // Create admin notification
+        await supabase
+          .from('admin_realtime_notifications')
+          .insert({
+            notification_type: 'withdrawal_failed',
+            title: 'Withdrawal Failed - Insufficient CAMLY',
+            message: `Withdrawal for ${profile?.username} failed. Reward wallet needs more CAMLY.`,
+            priority: 'high',
+            data: { 
+              user_id: user.id, 
+              username: profile?.username,
+              amount: amount, 
+              available: ethers.formatUnits(walletBalance, decimals),
+              withdrawal_id: withdrawalResult.withdrawal_id
+            }
+          });
 
         return new Response(JSON.stringify({ 
-          error: 'Insufficient funds in reward wallet. Please contact admin.' 
+          error: 'Ví thưởng tạm thời không đủ CAMLY. Vui lòng thử lại sau hoặc liên hệ admin.' 
         }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
-      // Send transaction with retry logic
+      // Step 6: Send transaction with retry logic
+      console.log(`📤 [${timestamp}] Step 6: Sending transaction...`);
       const receipt = await sendTransactionWithRetry(
         wallet, 
         contract, 
@@ -331,7 +391,7 @@ serve(async (req) => {
         .eq('id', withdrawalResult.withdrawal_id);
 
       if (updateError) {
-        console.error('⚠️ Error updating withdrawal status:', updateError);
+        console.error(`⚠️ [${timestamp}] Error updating withdrawal status:`, updateError);
       }
 
       // Log the claim in daily_claim_logs
@@ -370,8 +430,11 @@ serve(async (req) => {
       });
 
     } catch (txError: any) {
-      console.error('❌ Transaction error:', txError.message);
-      console.error('Full error:', txError);
+      console.error(`❌ [${timestamp}] TRANSACTION ERROR for ${profile?.username}:`);
+      console.error(`   Message: ${txError.message}`);
+      console.error(`   Code: ${txError.code || 'N/A'}`);
+      console.error(`   Reason: ${txError.reason || 'N/A'}`);
+      console.error(`   Full error:`, JSON.stringify(txError, Object.getOwnPropertyNames(txError)));
       
       // Mark withdrawal as failed
       await supabase
@@ -383,7 +446,7 @@ serve(async (req) => {
         .eq('id', withdrawalResult.withdrawal_id);
 
       // Rollback - add back pending amount
-      console.log('🔄 Rolling back pending amount...');
+      console.log(`🔄 [${timestamp}] Rolling back pending amount for ${profile?.username}...`);
       const { error: rollbackError } = await supabase.rpc('add_user_pending_reward', {
         p_user_id: user.id,
         p_amount: amount,
@@ -391,13 +454,32 @@ serve(async (req) => {
       });
 
       if (rollbackError) {
-        console.error('⚠️ Rollback error:', rollbackError);
+        console.error(`⚠️ [${timestamp}] Rollback error:`, rollbackError);
       } else {
-        console.log('✅ Rollback completed');
+        console.log(`✅ [${timestamp}] Rollback completed for ${profile?.username}`);
       }
+      
+      // Create admin notification for failed TX
+      await supabase
+        .from('admin_realtime_notifications')
+        .insert({
+          notification_type: 'withdrawal_failed',
+          title: 'Withdrawal TX Failed',
+          message: `TX failed for ${profile?.username}: ${txError.message?.substring(0, 100)}`,
+          priority: 'high',
+          data: { 
+            user_id: user.id, 
+            username: profile?.username,
+            amount: amount, 
+            error: txError.message,
+            withdrawal_id: withdrawalResult.withdrawal_id
+          }
+        });
+
+      console.log(`📋 [${timestamp}] ========== END (FAILED) ==========`);
 
       return new Response(JSON.stringify({ 
-        error: 'Transaction failed. Your balance has been restored.',
+        error: 'Giao dịch thất bại. Số dư của bạn đã được hoàn trả. Vui lòng thử lại sau.',
         details: txError.message 
       }), {
         status: 500,
