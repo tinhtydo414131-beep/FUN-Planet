@@ -4968,6 +4968,69 @@ export type Database = {
           },
         ]
       }
+      wallet_history: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          previous_wallet: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          previous_wallet?: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          previous_wallet?: string | null
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "wallet_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "wallet_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wallet_reset_requests: {
         Row: {
           admin_notes: string | null
