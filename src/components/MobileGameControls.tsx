@@ -28,7 +28,7 @@ export const MobileGameControls = ({
   };
 
   return (
-    <div className={`fixed bottom-24 left-0 right-0 flex justify-between px-4 gap-4 z-30 md:hidden ${className}`}>
+    <div className={`fixed left-0 right-0 flex justify-between px-4 gap-4 z-30 md:hidden ${className}`} style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}>
       {/* Left side - Directional pad */}
       <div className="relative w-32 h-32">
         {/* Up */}

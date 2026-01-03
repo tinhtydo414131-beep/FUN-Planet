@@ -47,10 +47,10 @@ export const LandscapePrompt = () => {
           <RotateCcw className="h-16 w-16 animate-spin" style={{ animationDuration: "3s" }} />
         </div>
         <h3 className="text-xl font-fredoka font-bold">
-          Rotate Your Device
+          Xoay Điện Thoại Ngang
         </h3>
         <p className="text-sm font-comic">
-          For the best gaming experience, rotate your device to landscape mode! 🎮
+          Để chơi game tốt nhất, hãy xoay điện thoại ngang nhé con yêu! 🎮✨
         </p>
       </Card>
     </div>

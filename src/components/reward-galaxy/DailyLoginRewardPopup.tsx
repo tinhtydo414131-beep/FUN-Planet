@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Calendar, Star, Sparkles, Gift, Check, CalendarHeart } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
@@ -72,6 +72,7 @@ export function DailyLoginRewardPopup({ isOpen, amount, onClose }: DailyLoginRew
         }}
       >
         <DialogTitle className="sr-only">Daily Login Reward</DialogTitle>
+        <DialogDescription className="sr-only">Phần thưởng đăng nhập hàng ngày của bạn</DialogDescription>
         
         {/* Spreading yellow light animation on load */}
         <AnimatePresence>
