@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Send, Copy, Check, AlertTriangle, Wallet } from "lucide-react";
+import { Loader2, Send, AlertTriangle, Wallet, Coins } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import confetti from "canvas-confetti";
@@ -44,13 +44,47 @@ export function TransferModal({
   const [tokenType, setTokenType] = useState("CAMLY");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [senderBalance, setSenderBalance] = useState<number>(0);
+  const [loadingBalance, setLoadingBalance] = useState(false);
 
   const isOnChainToken = tokenType !== "CAMLY";
   const needsWallet = isOnChainToken && !recipientWalletAddress;
 
+  // Fetch sender's CAMLY balance when modal opens
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!open) return;
+      setLoadingBalance(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data } = await supabase
+          .from('web3_rewards')
+          .select('camly_balance')
+          .eq('user_id', user.id)
+          .single();
+
+        setSenderBalance(data?.camly_balance || 0);
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+      } finally {
+        setLoadingBalance(false);
+      }
+    };
+
+    fetchBalance();
+  }, [open]);
+
   const handleTransfer = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       toast.error("Vui lòng nhập số tiền hợp lệ");
+      return;
+    }
+
+    // Validate CAMLY balance
+    if (tokenType === "CAMLY" && parseFloat(amount) > senderBalance) {
+      toast.error("Số dư CAMLY không đủ");
       return;
     }
 
@@ -233,9 +267,40 @@ export function TransferModal({
             </div>
           )}
 
+          {/* Sender Balance Display for CAMLY */}
+          {tokenType === "CAMLY" && (
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border border-yellow-500/30 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Coins className="w-4 h-4 text-yellow-500" />
+                <span className="text-sm text-muted-foreground">Số dư của bạn:</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {loadingBalance ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-yellow-500" />
+                ) : (
+                  <span className="font-bold text-yellow-500">{senderBalance.toLocaleString()} CAMLY</span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Amount Input */}
           <div className="space-y-2">
-            <Label htmlFor="amount">Số lượng</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="amount">Số lượng</Label>
+              {tokenType === "CAMLY" && senderBalance > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs text-yellow-500 hover:text-yellow-400"
+                  onClick={() => setAmount(senderBalance.toString())}
+                  disabled={loading}
+                >
+                  MAX
+                </Button>
+              )}
+            </div>
             <Input
               id="amount"
               type="number"

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -100,7 +100,7 @@ const GlowingRing = ({ rank }: { rank: number }) => {
 };
 
 // Podium Card Component
-const PodiumCard = ({
+const PodiumCard = memo(({
   user,
   rank,
   isCurrentUser,
@@ -249,10 +249,11 @@ const PodiumCard = ({
       </motion.div>
     </motion.div>
   );
-};
+});
+PodiumCard.displayName = 'PodiumCard';
 
 // User Row Component
-const UserRow = ({
+const UserRow = memo(({
   user,
   rank,
   isCurrentUser,
@@ -350,7 +351,8 @@ const UserRow = ({
       )}
     </motion.div>
   );
-};
+});
+UserRow.displayName = 'UserRow';
 
 export default function FullRanking() {
   const [allUsers, setAllUsers] = useState<RankedUser[]>([]);
