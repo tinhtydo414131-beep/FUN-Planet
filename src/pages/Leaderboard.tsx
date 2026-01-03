@@ -32,8 +32,9 @@ export default function Leaderboard() {
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [selectedRecipient, setSelectedRecipient] = useState<{
-    address: string;
+    id: string;
     username: string;
+    walletAddress?: string | null;
   } | null>(null);
   const [claimingReward, setClaimingReward] = useState(false);
   const [claimCooldown, setClaimCooldown] = useState(0);
@@ -301,8 +302,9 @@ export default function Leaderboard() {
                       </TooltipProvider>
                       {leader.wallet_address && <Button size="sm" onClick={() => {
                     setSelectedRecipient({
-                      address: leader.wallet_address!,
-                      username: leader.username
+                      id: leader.id,
+                      username: leader.username,
+                      walletAddress: leader.wallet_address
                     });
                     setTransferModalOpen(true);
                   }} className="h-7 sm:h-8 text-xs sm:text-sm">
@@ -323,6 +325,6 @@ export default function Leaderboard() {
       </section>
 
       {/* Transfer Modal */}
-      {selectedRecipient && <TransferModal open={transferModalOpen} onOpenChange={setTransferModalOpen} recipientAddress={selectedRecipient.address} recipientUsername={selectedRecipient.username} />}
+      {selectedRecipient && <TransferModal open={transferModalOpen} onOpenChange={setTransferModalOpen} recipientId={selectedRecipient.id} recipientUsername={selectedRecipient.username} recipientWalletAddress={selectedRecipient.walletAddress} />}
     </div>;
 }

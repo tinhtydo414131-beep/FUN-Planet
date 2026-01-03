@@ -32,7 +32,11 @@ export default function NexusLeaderboard() {
   const [loading, setLoading] = useState(true);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
-  const [selectedRecipient, setSelectedRecipient] = useState<{ address: string; username: string } | null>(null);
+  const [selectedRecipient, setSelectedRecipient] = useState<{ 
+    id: string; 
+    username: string; 
+    walletAddress?: string | null 
+  } | null>(null);
 
   const shortenAddress = (address: string | null) => {
     if (!address) return null;
@@ -157,7 +161,7 @@ export default function NexusLeaderboard() {
               </div>
 
               {/* Bottom row on mobile: wallet & transfer */}
-              {entry.profiles?.wallet_address && (
+              {entry.profiles && (
                 <div className="flex items-center justify-between gap-2 pl-10 sm:pl-0 sm:ml-auto">
                   <TooltipProvider>
                     <div className="flex items-center gap-1">
@@ -193,8 +197,9 @@ export default function NexusLeaderboard() {
                     size="sm"
                     onClick={() => {
                       setSelectedRecipient({
-                        address: entry.profiles.wallet_address!,
-                        username: entry.profiles.username
+                        id: entry.user_id,
+                        username: entry.profiles.username,
+                        walletAddress: entry.profiles.wallet_address
                       });
                       setTransferModalOpen(true);
                     }}
@@ -256,8 +261,9 @@ export default function NexusLeaderboard() {
         <TransferModal
           open={transferModalOpen}
           onOpenChange={setTransferModalOpen}
-          recipientAddress={selectedRecipient.address}
+          recipientId={selectedRecipient.id}
           recipientUsername={selectedRecipient.username}
+          recipientWalletAddress={selectedRecipient.walletAddress}
         />
       )}
     </div>

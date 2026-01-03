@@ -40,7 +40,11 @@ const ComboLeaderboard = () => {
   const [liveViewers, setLiveViewers] = useState(0);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
-  const [selectedRecipient, setSelectedRecipient] = useState<{ address: string; username: string } | null>(null);
+  const [selectedRecipient, setSelectedRecipient] = useState<{ 
+    id: string; 
+    username: string; 
+    walletAddress?: string | null 
+  } | null>(null);
   const channelRef = useRef<any>(null);
   const presenceChannelRef = useRef<any>(null);
 
@@ -403,22 +407,21 @@ const LeaderboardContent = ({ records }: { records: ComboRecord[] }) => {
 
               {/* Transfer & Combo Score */}
               <div className="flex items-center gap-3">
-                {record.profiles.wallet_address && (
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setSelectedRecipient({
-                        address: record.profiles.wallet_address!,
-                        username: record.profiles.username
-                      });
-                      setTransferModalOpen(true);
-                    }}
-                    className="h-8 flex-shrink-0"
-                  >
-                    <Send className="w-4 h-4 mr-1" />
-                    Transfer
-                  </Button>
-                )}
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setSelectedRecipient({
+                      id: record.user_id,
+                      username: record.profiles.username,
+                      walletAddress: record.profiles.wallet_address
+                    });
+                    setTransferModalOpen(true);
+                  }}
+                  className="h-8 flex-shrink-0"
+                >
+                  <Send className="w-4 h-4 mr-1" />
+                  Transfer
+                </Button>
                 <div className="flex-shrink-0 text-right">
                   <div
                     className={`text-3xl font-bold ${getComboColor(
@@ -586,8 +589,9 @@ if (loading) {
         <TransferModal
           open={transferModalOpen}
           onOpenChange={setTransferModalOpen}
-          recipientAddress={selectedRecipient.address}
+          recipientId={selectedRecipient.id}
           recipientUsername={selectedRecipient.username}
+          recipientWalletAddress={selectedRecipient.walletAddress}
         />
       )}
     </div>

@@ -212,7 +212,6 @@ const PodiumCard = ({
               e.stopPropagation();
               onTransfer(user);
             }}
-            disabled={!user.wallet_address}
             className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs px-3 py-1 h-7"
           >
             <Send className="w-3 h-3 mr-1" />
@@ -343,7 +342,6 @@ const UserRow = ({
           <Button
             size="sm"
             onClick={() => onTransfer(user)}
-            disabled={!user.wallet_address}
             className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs px-2 py-1 h-7 shrink-0"
           >
             <Send className="w-3 h-3" />
@@ -365,18 +363,21 @@ export default function FullRanking() {
   const [confettiFired, setConfettiFired] = useState(false);
   const [realtimeUpdated, setRealtimeUpdated] = useState(false);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
-  const [selectedRecipient, setSelectedRecipient] = useState<{ address: string; username: string } | null>(null);
+  const [selectedRecipient, setSelectedRecipient] = useState<{ 
+    id: string; 
+    username: string; 
+    avatar?: string | null;
+    walletAddress?: string | null;
+  } | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const handleTransfer = (targetUser: RankedUser) => {
-    if (!targetUser.wallet_address) {
-      toast.error("Người dùng chưa kết nối ví");
-      return;
-    }
     setSelectedRecipient({
-      address: targetUser.wallet_address,
-      username: targetUser.username || "User"
+      id: targetUser.id,
+      username: targetUser.username || "User",
+      avatar: targetUser.avatar_url,
+      walletAddress: targetUser.wallet_address
     });
     setTransferModalOpen(true);
   };
@@ -787,12 +788,16 @@ export default function FullRanking() {
       </div>
 
       {/* Transfer Modal */}
-      <TransferModal
-        open={transferModalOpen}
-        onOpenChange={setTransferModalOpen}
-        recipientAddress={selectedRecipient?.address || ""}
-        recipientUsername={selectedRecipient?.username || ""}
-      />
+      {selectedRecipient && (
+        <TransferModal
+          open={transferModalOpen}
+          onOpenChange={setTransferModalOpen}
+          recipientId={selectedRecipient.id}
+          recipientUsername={selectedRecipient.username}
+          recipientAvatar={selectedRecipient.avatar}
+          recipientWalletAddress={selectedRecipient.walletAddress}
+        />
+      )}
     </div>
   );
 }
