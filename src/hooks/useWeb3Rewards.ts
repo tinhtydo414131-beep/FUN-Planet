@@ -187,10 +187,6 @@ export const useWeb3Rewards = () => {
           .update({ first_wallet_claimed: true })
           .eq('user_id', user.id);
 
-        // IMPORTANT: Clear referral code from localStorage immediately after claiming
-        // This prevents the welcome banner from showing again
-        localStorage.removeItem('fun_planet_referral_code');
-
         setPendingReward({
           amount: REWARDS.FIRST_WALLET_CONNECT,
           type: 'first_wallet_connect',
@@ -198,7 +194,13 @@ export const useWeb3Rewards = () => {
         });
 
         // Process referral bonus for referrer (if user was referred)
+        // IMPORTANT: Read the code BEFORE removing it from localStorage
         const storedCode = localStorage.getItem('fun_planet_referral_code');
+        
+        // Clear referral code from localStorage immediately after reading
+        // This prevents the welcome banner from showing again
+        localStorage.removeItem('fun_planet_referral_code');
+        
         if (storedCode) {
           try {
             // Check if user already has a referral record
