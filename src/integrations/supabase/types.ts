@@ -5920,6 +5920,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      process_referral_reward: {
+        Args: {
+          p_referral_code: string
+          p_referred_id: string
+          p_referrer_id: string
+          p_reward_amount?: number
+        }
+        Returns: Json
+      }
       process_reward_claim: {
         Args: {
           p_amount: number
