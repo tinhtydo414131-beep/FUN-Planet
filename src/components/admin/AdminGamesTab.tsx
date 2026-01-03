@@ -56,6 +56,8 @@ interface Game {
   created_at: string;
   user_id: string;
   username: string;
+  external_url?: string | null;
+  game_file_path?: string | null;
 }
 
 interface AdminGamesTabProps {
@@ -73,6 +75,10 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [rejectingGame, setRejectingGame] = useState<Game | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  
+  // Preview modal state
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [previewingGame, setPreviewingGame] = useState<Game | null>(null);
 
   useEffect(() => {
     loadGames();
@@ -83,7 +89,7 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     try {
       let query = supabase
         .from("uploaded_games")
-        .select("id, title, description, thumbnail_path, status, play_count, rating_count, created_at, user_id")
+        .select("id, title, description, thumbnail_path, status, play_count, rating_count, created_at, user_id, external_url, game_file_path")
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
 
@@ -100,7 +106,7 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
           .select("id, username")
           .in("id", userIds);
 
-        const gamesWithUsers: Game[] = gamesData.map((game) => ({
+        const gamesWithUsers: Game[] = gamesData.map((game: any) => ({
           id: game.id,
           title: game.title,
           description: game.description,
@@ -111,6 +117,8 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
           created_at: game.created_at,
           user_id: game.user_id,
           username: profiles?.find((p) => p.id === game.user_id)?.username || "Unknown",
+          external_url: game.external_url,
+          game_file_path: game.game_file_path,
         }));
 
         setGames(gamesWithUsers);
@@ -128,6 +136,21 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     setRejectingGame(game);
     setRejectionReason("");
     setRejectModalOpen(true);
+  };
+
+  // Open preview modal
+  const openPreviewModal = (game: Game) => {
+    setPreviewingGame(game);
+    setPreviewModalOpen(true);
+  };
+
+  const getGamePreviewUrl = (game: Game): string | null => {
+    if (game.external_url) return game.external_url;
+    if (game.game_file_path) {
+      const { data } = supabase.storage.from('uploaded-games').getPublicUrl(game.game_file_path);
+      return data.publicUrl;
+    }
+    return null;
   };
 
   // Handle approve game with reward
@@ -494,6 +517,16 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openPreviewModal(game)}
+                            disabled={!getGamePreviewUrl(game)}
+                            className="text-blue-500 hover:text-blue-600"
+                            title="Preview game"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
                           {game.status === "pending" && (
                             <>
                               <Button
@@ -574,6 +607,31 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
               Từ chối game
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preview Modal */}
+      <Dialog open={previewModalOpen} onOpenChange={setPreviewModalOpen}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Preview: {previewingGame?.title}
+            </DialogTitle>
+            <DialogDescription>
+              Test game trước khi duyệt. Đảm bảo game hoạt động tốt.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 h-full">
+            {previewingGame && getGamePreviewUrl(previewingGame) && (
+              <iframe
+                src={getGamePreviewUrl(previewingGame)!}
+                className="w-full h-[calc(80vh-120px)] border rounded-lg bg-black"
+                title={`Preview ${previewingGame.title}`}
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

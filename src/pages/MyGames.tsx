@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Edit, Loader2, Upload, ArrowLeft, Coins, Trophy, Gamepad2, Gem, Trash2 } from "lucide-react";
+import { Edit, Loader2, Upload, ArrowLeft, Coins, Trophy, Gamepad2, Gem, Trash2, Play, AlertCircle } from "lucide-react";
 import { REWARDS } from "@/lib/web3-bsc";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GameDeleteModal from "@/components/GameDeleteModal";
 import GameTrashView from "@/components/GameTrashView";
 import { useGameTrash } from "@/hooks/useGameTrash";
+import { GameTestModal } from "@/components/game-upload/GameTestModal";
 
 interface UploadedGame {
   id: string;
@@ -26,6 +27,8 @@ interface UploadedGame {
   play_count: number;
   download_count: number;
   deleted_at: string | null;
+  external_url: string | null;
+  rejection_note: string | null;
 }
 
 export default function MyGames() {
@@ -35,6 +38,7 @@ export default function MyGames() {
   const [loading, setLoading] = useState(true);
   const [gameToDelete, setGameToDelete] = useState<UploadedGame | null>(null);
   const [activeTab, setActiveTab] = useState("active");
+  const [previewGame, setPreviewGame] = useState<UploadedGame | null>(null);
   
   const { moveToTrash, isDeleting } = useGameTrash();
 
@@ -59,7 +63,7 @@ export default function MyGames() {
     setLoading(true);
     const { data, error } = await supabase
       .from('uploaded_games')
-      .select('*')
+      .select('id, title, description, category, tags, status, game_file_path, thumbnail_path, created_at, play_count, download_count, deleted_at, external_url, rejection_note')
       .eq('user_id', user.id)
       .is('deleted_at', null)
       .order('created_at', { ascending: false });
@@ -71,6 +75,15 @@ export default function MyGames() {
       setGames(data || []);
     }
     setLoading(false);
+  };
+  
+  const getGamePlayUrl = (game: UploadedGame): string | null => {
+    if (game.external_url) return game.external_url;
+    if (game.game_file_path) {
+      const { data } = supabase.storage.from('uploaded-games').getPublicUrl(game.game_file_path);
+      return data.publicUrl;
+    }
+    return null;
   };
 
   const handleDeleteConfirm = async (reason: string, detail: string) => {
@@ -212,13 +225,23 @@ export default function MyGames() {
                     <CardHeader>
                       <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-xl line-clamp-1">{game.title}</CardTitle>
-                        <Badge variant={game.status === 'approved' ? 'default' : 'secondary'}>
-                          {game.status}
+                        <Badge 
+                          variant={game.status === 'approved' ? 'default' : game.status === 'rejected' ? 'destructive' : 'secondary'}
+                        >
+                          {game.status === 'pending' ? '⏳ Chờ duyệt' : game.status === 'approved' ? '✅ Đã duyệt' : '❌ Từ chối'}
                         </Badge>
                       </div>
                       <CardDescription className="line-clamp-2">
                         {game.description || 'No description'}
                       </CardDescription>
+                      {game.status === 'rejected' && game.rejection_note && (
+                        <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
+                          <div className="flex items-start gap-2">
+                            <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-destructive">{game.rejection_note}</p>
+                          </div>
+                        </div>
+                      )}
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex gap-2 flex-wrap">
@@ -235,14 +258,25 @@ export default function MyGames() {
                       </div>
 
                       <div className="space-y-2">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => navigate(`/game-details/${game.id}`)}
-                          className="w-full bg-gradient-to-r from-primary to-secondary"
-                        >
-                          View Details & Reviews
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => navigate(`/game-details/${game.id}`)}
+                            className="flex-1 bg-gradient-to-r from-primary to-secondary"
+                          >
+                            Chi tiết
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPreviewGame(game)}
+                            className="border-green-500/50 hover:bg-green-500/10"
+                            disabled={!getGamePlayUrl(game)}
+                          >
+                            <Play className="h-4 w-4 text-green-500" />
+                          </Button>
+                        </div>
                         <div className="flex gap-2">
                           <Button
                             variant="outline"
@@ -283,6 +317,16 @@ export default function MyGames() {
         onConfirm={handleDeleteConfirm}
         isDeleting={isDeleting}
         gameTitle={gameToDelete?.title || ""}
+      />
+      
+      {/* Game Test Modal */}
+      <GameTestModal
+        open={!!previewGame}
+        onOpenChange={(open) => !open && setPreviewGame(null)}
+        gameUrl={previewGame ? getGamePlayUrl(previewGame) : null}
+        gameTitle={previewGame?.title || ""}
+        onTestSuccess={() => setPreviewGame(null)}
+        onTestFail={() => setPreviewGame(null)}
       />
     </div>
   );
