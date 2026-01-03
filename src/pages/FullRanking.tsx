@@ -396,22 +396,22 @@ export default function FullRanking() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch claimed_amount from user_rewards for all users
+      // Fetch total_claimed_to_wallet from web3_rewards (actual withdrawn amount)
       const userIds = (profilesData || []).map(p => p.id);
-      const { data: rewardsData } = await supabase
-        .from("user_rewards")
-        .select("user_id, claimed_amount")
+      const { data: web3Data } = await supabase
+        .from("web3_rewards")
+        .select("user_id, total_claimed_to_wallet")
         .in("user_id", userIds);
 
-      // Map rewards to users
-      const rewardsMap = new Map<string, number>();
-      (rewardsData || []).forEach(r => {
-        rewardsMap.set(r.user_id, r.claimed_amount || 0);
+      // Map claimed amounts to users (only counts actual withdrawals to wallet)
+      const claimedMap = new Map<string, number>();
+      (web3Data || []).forEach(r => {
+        claimedMap.set(r.user_id, r.total_claimed_to_wallet || 0);
       });
 
       const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => ({
         ...p,
-        claimed_amount: rewardsMap.get(p.id) || 0
+        claimed_amount: claimedMap.get(p.id) || 0
       }));
 
       setAllUsers(usersWithEarnings);
