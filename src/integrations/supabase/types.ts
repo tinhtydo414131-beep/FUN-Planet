@@ -4008,6 +4008,7 @@ export type Database = {
           created_at: string
           game_id: string
           id: string
+          parent_id: string | null
           updated_at: string
           user_id: string
         }
@@ -4016,6 +4017,7 @@ export type Database = {
           created_at?: string
           game_id: string
           id?: string
+          parent_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -4024,6 +4026,7 @@ export type Database = {
           created_at?: string
           game_id?: string
           id?: string
+          parent_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -4033,6 +4036,13 @@ export type Database = {
             columns: ["game_id"]
             isOneToOne: false
             referencedRelation: "uploaded_games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "uploaded_game_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_game_comments"
             referencedColumns: ["id"]
           },
           {
