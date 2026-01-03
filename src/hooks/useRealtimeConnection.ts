@@ -186,12 +186,15 @@ export function usePostsRealtime(
 /**
  * Hook for ranking real-time updates
  * Auto-refresh when wallet_balance OR claimed_amount changes
+ * Uses single channel to avoid React Hooks order issues
  */
 export function useRankingRealtime(
   onRankingChange: () => void,
   enabled: boolean = true
 ) {
+  const channelRef = useRef<RealtimeChannel | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
   
   const triggerRefresh = useCallback(() => {
     if (debounceRef.current) {
@@ -202,46 +205,59 @@ export function useRankingRealtime(
     }, 500);
   }, [onRankingChange]);
   
-  const handleProfileChange = useCallback((payload: any) => {
-    const oldBalance = payload.old?.wallet_balance;
-    const newBalance = payload.new?.wallet_balance;
+  const setupChannel = useCallback(() => {
+    if (!enabled) return;
     
-    if (oldBalance !== newBalance) {
-      console.log('[Ranking Realtime] wallet_balance changed:', { oldBalance, newBalance });
-      triggerRefresh();
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
     }
-  }, [triggerRefresh]);
+    
+    // Single channel listening to BOTH tables
+    const channel = supabase
+      .channel('ranking-combined-updates')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'profiles'
+      }, (payload: any) => {
+        if (payload.old?.wallet_balance !== payload.new?.wallet_balance) {
+          console.log('[Ranking] wallet_balance changed:', payload.new?.wallet_balance);
+          triggerRefresh();
+        }
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public', 
+        table: 'user_rewards'
+      }, (payload: any) => {
+        console.log('[Ranking] user_rewards changed:', payload.eventType);
+        triggerRefresh();
+      })
+      .subscribe((status) => {
+        setIsConnected(status === 'SUBSCRIBED');
+        if (status === 'SUBSCRIBED') {
+          console.log('[Ranking] Realtime connected');
+        }
+      });
+    
+    channelRef.current = channel;
+  }, [enabled, triggerRefresh]);
   
-  const handleRewardsChange = useCallback((payload: any) => {
-    console.log('[Ranking Realtime] user_rewards changed:', payload.eventType);
-    triggerRefresh();
-  }, [triggerRefresh]);
-  
-  // Listen to profiles.wallet_balance changes
-  const { isConnected: profilesConnected, forceReconnect: forceReconnectProfiles } = useRealtimeConnection({
-    channelName: 'ranking-profiles',
-    table: 'profiles',
-    event: 'UPDATE',
-    onMessage: handleProfileChange,
-    enabled
-  });
-  
-  // Listen to user_rewards changes (for claimed_amount)
-  const { isConnected: rewardsConnected, forceReconnect: forceReconnectRewards } = useRealtimeConnection({
-    channelName: 'ranking-rewards',
-    table: 'user_rewards',
-    event: '*',
-    onMessage: handleRewardsChange,
-    enabled
-  });
+  useEffect(() => {
+    setupChannel();
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [setupChannel]);
   
   const forceReconnect = useCallback(() => {
-    forceReconnectProfiles();
-    forceReconnectRewards();
-  }, [forceReconnectProfiles, forceReconnectRewards]);
+    setupChannel();
+  }, [setupChannel]);
   
-  return { 
-    isConnected: profilesConnected || rewardsConnected,
-    forceReconnect
-  };
+  return { isConnected, forceReconnect };
 }
