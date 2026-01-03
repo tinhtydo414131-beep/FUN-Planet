@@ -44,48 +44,55 @@ export const useReferral = () => {
     const checkReferralCode = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const refCode = urlParams.get('ref');
+      const storedCode = localStorage.getItem(REFERRAL_STORAGE_KEY);
+      const codeToCheck = refCode || storedCode;
       
+      // Clean URL first if refCode in URL
       if (refCode) {
-        // Store referral code in localStorage
         localStorage.setItem(REFERRAL_STORAGE_KEY, refCode);
-        
-        // Look up referrer info
-        const { data: referrer } = await supabase
-          .from('profiles')
-          .select('id, username, referral_code')
-          .eq('referral_code', refCode.toUpperCase())
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      
+      // If user is logged in, check if they already claimed first_wallet reward
+      if (user && codeToCheck) {
+        const { data: rewards } = await supabase
+          .from('web3_rewards')
+          .select('first_wallet_claimed')
+          .eq('user_id', user.id)
           .maybeSingle();
         
-        if (referrer) {
-          setPendingReferrer({
-            userId: referrer.id,
-            username: referrer.username,
-            referralCode: referrer.referral_code || '',
-          });
-          setShowWelcomeBanner(true);
+        // If already claimed first wallet reward, don't show banner
+        if (rewards?.first_wallet_claimed) {
+          localStorage.removeItem(REFERRAL_STORAGE_KEY);
+          setShowWelcomeBanner(false);
+          setPendingReferrer(null);
+          return; // Stop here, don't show banner
+        }
+      }
+      
+      // No referral code to check
+      if (!codeToCheck) return;
+      
+      // Look up referrer info
+      const { data: referrer } = await supabase
+        .from('profiles')
+        .select('id, username, referral_code')
+        .eq('referral_code', codeToCheck.toUpperCase())
+        .maybeSingle();
+      
+      if (referrer) {
+        // Don't show banner if it's the user's own referral code
+        if (user && referrer.id === user.id) {
+          localStorage.removeItem(REFERRAL_STORAGE_KEY);
+          return;
         }
         
-        // Clean URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } else {
-        // Check localStorage for existing referral code
-        const storedCode = localStorage.getItem(REFERRAL_STORAGE_KEY);
-        if (storedCode && !user) {
-          const { data: referrer } = await supabase
-            .from('profiles')
-            .select('id, username, referral_code')
-            .eq('referral_code', storedCode.toUpperCase())
-            .maybeSingle();
-          
-          if (referrer) {
-            setPendingReferrer({
-              userId: referrer.id,
-              username: referrer.username,
-              referralCode: referrer.referral_code || '',
-            });
-            setShowWelcomeBanner(true);
-          }
-        }
+        setPendingReferrer({
+          userId: referrer.id,
+          username: referrer.username,
+          referralCode: referrer.referral_code || '',
+        });
+        setShowWelcomeBanner(true);
       }
     };
     
@@ -323,6 +330,13 @@ export const useReferral = () => {
     setShowWelcomeBanner(false);
   }, []);
 
+  // Permanently hide banner and clear localStorage (call after claiming reward)
+  const hideWelcomeBannerPermanently = useCallback(() => {
+    localStorage.removeItem(REFERRAL_STORAGE_KEY);
+    setShowWelcomeBanner(false);
+    setPendingReferrer(null);
+  }, []);
+
   return {
     ...stats,
     pendingReferrer,
@@ -331,6 +345,7 @@ export const useReferral = () => {
     getReferralLink,
     copyReferralLink,
     dismissWelcomeBanner,
+    hideWelcomeBannerPermanently,
     loadStats,
     clearNewTierAchieved,
     REFERRAL_REWARD_FOR_REFERRER,
