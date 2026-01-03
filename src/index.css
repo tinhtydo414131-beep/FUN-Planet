@@ -755,6 +755,38 @@
   overflow: auto !important;
 }
 
+/* Fullscreen Active - Hide navigation elements */
+body.fullscreen-active nav,
+body.fullscreen-active .mobile-bottom-nav,
+body.fullscreen-active .enhanced-mobile-nav {
+  display: none !important;
+}
+
+body.fullscreen-active .game-container {
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+/* CSS Fullscreen game container for iOS Safari */
+body.css-fullscreen .game-container {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  border-radius: 0 !important;
+  z-index: 99998 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide elements when in CSS fullscreen mode */
+body.css-fullscreen .css-fullscreen-hide {
+  display: none !important;
+}
+
 /* Gold Metallic Shine Animation for Top Ranking */
 @keyframes metallic-shine {
   0% { background-position: 0% 50%; }

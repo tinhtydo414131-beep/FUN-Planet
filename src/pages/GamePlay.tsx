@@ -123,7 +123,7 @@ const GamePlay = () => {
   const { user } = useAuth();
   const { claimFirstGameReward, pendingReward, clearPendingReward } = useWeb3Rewards();
   const isLandscape = useIsLandscape();
-  const { isFullscreen, toggleFullscreen } = useFullscreen();
+  const { isFullscreen, toggleFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
   const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLevelSelector, setShowLevelSelector] = useState(true);
@@ -136,12 +136,20 @@ const GamePlay = () => {
     const saved = localStorage.getItem("autoLevel");
     return saved !== null ? JSON.parse(saved) : true;
   });
+  const [autoFullscreen, setAutoFullscreen] = useState(() => {
+    const saved = localStorage.getItem("autoFullscreen");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+  const [showFullscreenExitHint, setShowFullscreenExitHint] = useState(false);
 
   // Double-tap to toggle fullscreen
   const doubleTapHandlers = useDoubleTap({
     onDoubleTap: () => {
       haptics.medium();
       toggleFullscreen();
+      if (!isFullscreen) {
+        setShowFullscreenExitHint(true);
+      }
       toast.success(isFullscreen ? "Thoát toàn màn hình" : "Chế độ toàn màn hình", {
         duration: 1500,
       });
@@ -158,6 +166,34 @@ const GamePlay = () => {
       return () => clearTimeout(timer);
     }
   }, [gameStarted, shownDoubleTapHint]);
+
+  // Auto-fullscreen when game starts (if enabled)
+  useEffect(() => {
+    if (gameStarted && autoFullscreen && !isFullscreen) {
+      // Small delay to ensure game is rendered
+      const timer = setTimeout(() => {
+        enterFullscreen();
+        setShowFullscreenExitHint(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [gameStarted, autoFullscreen]);
+
+  // Auto-hide fullscreen exit hint after 2.5 seconds
+  useEffect(() => {
+    if (showFullscreenExitHint) {
+      const timer = setTimeout(() => {
+        setShowFullscreenExitHint(false);
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [showFullscreenExitHint]);
+
+  // Handle auto fullscreen toggle
+  const handleAutoFullscreenToggle = (checked: boolean) => {
+    setAutoFullscreen(checked);
+    localStorage.setItem("autoFullscreen", JSON.stringify(checked));
+  };
   
   const {
     currentLevel,
@@ -564,6 +600,7 @@ const GamePlay = () => {
         </div>
       )}
       
+      {/* Fullscreen FAB Button - positioned above bottom nav */}
       {!isLandscape && gameStarted && (
         <Button
           variant="ghost"
@@ -571,11 +608,40 @@ const GamePlay = () => {
           onClick={() => {
             haptics.light();
             toggleFullscreen();
+            if (!isFullscreen) {
+              setShowFullscreenExitHint(true);
+            }
           }}
-          className="md:hidden fixed bottom-20 right-4 z-40 bg-primary/90 hover:bg-primary text-white shadow-lg rounded-full w-12 h-12 animate-scale-in active:scale-95 transition-transform"
+          className="md:hidden fixed z-40 bg-primary/90 hover:bg-primary text-white shadow-lg rounded-full w-12 h-12 animate-scale-in active:scale-95 transition-transform"
+          style={{ 
+            bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))',
+            right: '1rem'
+          }}
           title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
         >
           {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+        </Button>
+      )}
+
+      {/* Fullscreen Exit Hint */}
+      {isFullscreen && showFullscreenExitHint && (
+        <div className="md:hidden fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-black/80 text-white px-4 py-2 rounded-full text-sm font-comic animate-fade-in shadow-xl">
+          👆👆 Nhấn đúp để thoát toàn màn hình
+        </div>
+      )}
+
+      {/* Mobile Fullscreen Exit Button */}
+      {isFullscreen && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            haptics.light();
+            exitFullscreen();
+          }}
+          className="md:hidden fixed top-4 right-4 z-[100] bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 active:scale-95 transition-transform"
+        >
+          <Minimize className="h-4 w-4" />
         </Button>
       )}
       
@@ -595,17 +661,34 @@ const GamePlay = () => {
                 </Button>
               </Link>
               
-              <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-secondary/10 px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl border-2 border-primary/30">
-                <Zap className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                <Label htmlFor="auto-level" className="font-fredoka font-bold text-xs md:text-base text-foreground cursor-pointer">
-                  Auto
-                </Label>
-                <Switch
-                  id="auto-level"
-                  checked={autoLevel}
-                  onCheckedChange={handleAutoLevelToggle}
-                  className="data-[state=checked]:bg-primary"
-                />
+              <div className="flex items-center gap-2 md:gap-4">
+                {/* Auto Level Toggle */}
+                <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-secondary/10 px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl border-2 border-primary/30">
+                  <Zap className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                  <Label htmlFor="auto-level" className="font-fredoka font-bold text-xs md:text-base text-foreground cursor-pointer">
+                    Auto
+                  </Label>
+                  <Switch
+                    id="auto-level"
+                    checked={autoLevel}
+                    onCheckedChange={handleAutoLevelToggle}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                
+                {/* Auto Fullscreen Toggle - Mobile Only */}
+                <div className="md:hidden flex items-center gap-2 bg-gradient-to-r from-secondary/10 to-accent/10 px-3 py-2 rounded-xl border-2 border-secondary/30">
+                  <Maximize className="h-4 w-4 text-secondary" />
+                  <Label htmlFor="auto-fullscreen" className="font-fredoka font-bold text-xs text-foreground cursor-pointer">
+                    Full
+                  </Label>
+                  <Switch
+                    id="auto-fullscreen"
+                    checked={autoFullscreen}
+                    onCheckedChange={handleAutoFullscreenToggle}
+                    className="data-[state=checked]:bg-secondary"
+                  />
+                </div>
               </div>
             </div>
           )}
