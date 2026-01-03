@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { FeaturedGamesSection } from "@/components/FeaturedGamesSection";
-import { MobileActionBar } from "@/components/MobileActionBar";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Gamepad2, Trophy, Users, Sparkles, Shield, Gift, Upload, Globe } from "lucide-react";
@@ -450,9 +450,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-
-      {/* Mobile Fixed Action Bar */}
-      <MobileActionBar />
     </motion.div>
   );
 };
