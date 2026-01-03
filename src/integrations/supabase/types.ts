@@ -2509,6 +2509,72 @@ export type Database = {
         }
         Relationships: []
       }
+      ip_blacklist: {
+        Row: {
+          blocked_by: string | null
+          created_at: string | null
+          id: string
+          ip_address: string
+          is_active: boolean | null
+          reason: string
+          updated_at: string | null
+        }
+        Insert: {
+          blocked_by?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address: string
+          is_active?: boolean | null
+          reason: string
+          updated_at?: string | null
+        }
+        Update: {
+          blocked_by?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string
+          is_active?: boolean | null
+          reason?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ip_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ip_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lovable_games: {
         Row: {
           approved: boolean | null
@@ -4465,6 +4531,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_login_history: {
+        Row: {
+          device_fingerprint: string | null
+          id: string
+          ip_address: string
+          login_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          device_fingerprint?: string | null
+          id?: string
+          ip_address: string
+          login_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          device_fingerprint?: string | null
+          id?: string
+          ip_address?: string
+          login_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_music: {
         Row: {
           artist: string | null
@@ -4809,6 +4902,72 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_blacklist: {
+        Row: {
+          blocked_by: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          reason: string
+          updated_at: string | null
+          wallet_address: string
+        }
+        Insert: {
+          blocked_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason: string
+          updated_at?: string | null
+          wallet_address: string
+        }
+        Update: {
+          blocked_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason?: string
+          updated_at?: string | null
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "wallet_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "wallet_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_blacklist_blocked_by_fkey"
+            columns: ["blocked_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wallet_transactions: {
         Row: {
           amount: number
@@ -5143,6 +5302,14 @@ export type Database = {
         Args: { p_amount: number; p_source: string; p_user_id: string }
         Returns: number
       }
+      admin_block_users_by_ip: {
+        Args: { p_admin_id: string; p_ip_address: string; p_reason?: string }
+        Returns: {
+          blocked_count: number
+          reset_amount: number
+          user_ids: string[]
+        }[]
+      }
       admin_reset_user_rewards: {
         Args: {
           p_admin_user_id: string
@@ -5175,6 +5342,15 @@ export type Database = {
           exists_for_others: boolean
           exists_for_user: boolean
           original_user_id: string
+        }[]
+      }
+      check_ip_eligibility: {
+        Args: { p_ip_address: string; p_max_accounts?: number }
+        Returns: {
+          existing_accounts: number
+          is_blacklisted: boolean
+          is_eligible: boolean
+          reason: string
         }[]
       }
       check_similar_file_exists: {
@@ -5262,6 +5438,18 @@ export type Database = {
           new_streak: number
         }[]
       }
+      detect_ip_fraud_rings: {
+        Args: { min_accounts?: number }
+        Returns: {
+          account_count: number
+          first_seen: string
+          ip_address: string
+          last_seen: string
+          total_balance: number
+          user_ids: string[]
+          usernames: string[]
+        }[]
+      }
       find_user_for_transfer: {
         Args: { p_search_input: string }
         Returns: {
@@ -5280,6 +5468,16 @@ export type Database = {
           total_amount: number
           total_claims: number
           unique_users: number
+        }[]
+      }
+      get_fraud_ip_stats: {
+        Args: never
+        Returns: {
+          blacklisted_ips: number
+          recent_fraud_rings: number
+          total_affected_accounts: number
+          total_affected_balance: number
+          total_suspicious_ips: number
         }[]
       }
       get_or_create_daily_reward: {
@@ -5318,6 +5516,17 @@ export type Database = {
         Returns: number
       }
       get_quiz_streak: { Args: { p_user_id: string }; Returns: number }
+      get_user_ip_history: {
+        Args: { p_user_id: string }
+        Returns: {
+          first_login: string
+          ip_address: string
+          last_login: string
+          login_count: number
+          other_users_on_ip: number
+          user_agent: string
+        }[]
+      }
       get_wallet_fraud_stats: {
         Args: never
         Returns: {

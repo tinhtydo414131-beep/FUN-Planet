@@ -22,7 +22,8 @@ import {
   Search,
   RefreshCw,
   Wallet,
-  FileWarning
+  FileWarning,
+  Globe
 } from "lucide-react";
 import { format } from "date-fns";
 import { UserBlockModal } from "./UserBlockModal";
@@ -30,6 +31,8 @@ import { WalletSecurityStats } from "./WalletSecurityStats";
 import { WalletBlacklistTable } from "./WalletBlacklistTable";
 import { WalletHistoryTable } from "./WalletHistoryTable";
 import { ViolationAuditTable } from "./ViolationAuditTable";
+import { IPFraudReport } from "./IPFraudReport";
+import { IPBlacklistTable } from "./IPBlacklistTable";
 
 interface SuspiciousActivity {
   id: string;
@@ -330,13 +333,17 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="activities" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="activities" className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
             Activities
             {unreviewedCount > 0 && (
               <Badge variant="destructive" className="ml-1">{unreviewedCount}</Badge>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="ip-analysis" className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            IP Analysis
           </TabsTrigger>
           <TabsTrigger value="violations" className="flex items-center gap-2">
             <FileWarning className="h-4 w-4" />
@@ -484,6 +491,12 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* IP Analysis Tab */}
+        <TabsContent value="ip-analysis" className="space-y-4">
+          <IPFraudReport onStatsUpdate={onStatsUpdate} />
+          <IPBlacklistTable />
         </TabsContent>
 
         {/* Violations Tab */}
