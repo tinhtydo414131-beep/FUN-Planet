@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Wallet, Gem, Sparkles, Gift, Gamepad2, Upload, Users, Heart,
-  CheckCircle2, Loader2, Shield, Key, Copy, ExternalLink, X, AlertTriangle
+  CheckCircle2, Loader2, Shield, Key, Copy, ExternalLink, X, AlertTriangle,
+  MessageCircle, RefreshCw
 } from 'lucide-react';
 import { useAccount, useConnect, useDisconnect, useBalance, useChainId, useSwitchChain } from 'wagmi';
 import { bsc } from 'wagmi/chains';
@@ -12,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWalletLinking } from '@/hooks/useWalletLinking';
 import { formatCamly, isWalletConnectConfigured } from '@/lib/web3';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 
 interface LightWalletModalProps {
@@ -44,6 +47,10 @@ const playBlingSound = () => {
   }
 };
 
+const shortenAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
 export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdate }: LightWalletModalProps) => {
   const { address, isConnected } = useAccount();
   const { connect, connectors, isPending } = useConnect();
@@ -59,6 +66,14 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
   const [showChangeWarning, setShowChangeWarning] = useState(false);
   const [pendingConnector, setPendingConnector] = useState<any>(null);
   
+  // New states for improved UX
+  const [savedWallet, setSavedWallet] = useState<string | null>(null);
+  const [walletChangesCount, setWalletChangesCount] = useState(0);
+  const [showSupportRequest, setShowSupportRequest] = useState(false);
+  const [supportReason, setSupportReason] = useState('');
+  const [submittingSupportRequest, setSubmittingSupportRequest] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
+  
   // Track processed addresses to prevent duplicate checks
   const processedAddressRef = useRef<string | null>(null);
   const isProcessingRef = useRef(false);
@@ -68,6 +83,31 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
 
   // Check if on BSC
   const isOnBSC = chainId === bsc.id;
+  
+  // Fetch saved wallet info when modal opens
+  useEffect(() => {
+    if (isOpen && user && !isConnected) {
+      fetchSavedWalletInfo();
+    }
+  }, [isOpen, user, isConnected]);
+  
+  const fetchSavedWalletInfo = async () => {
+    if (!user) return;
+    
+    try {
+      // Get current wallet from profiles
+      const currentWallet = await getCurrentWallet(user.id);
+      setSavedWallet(currentWallet);
+      
+      // Check eligibility to get wallet changes count
+      if (currentWallet) {
+        const eligibility = await checkEligibility(user.id, currentWallet);
+        setWalletChangesCount(eligibility.walletChangesCount || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching saved wallet info:', error);
+    }
+  };
 
   useEffect(() => {
     // Auto-switch to BSC if connected but wrong chain
@@ -142,10 +182,23 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
       return;
     }
     
+    // Reset rejection reason
+    setRejectionReason(null);
+    
     // Check if user already has a wallet linked
     const currentWallet = await getCurrentWallet(user.id);
     
     if (currentWallet) {
+      // Check wallet changes count
+      const eligibility = await checkEligibility(user.id, currentWallet);
+      setWalletChangesCount(eligibility.walletChangesCount || 0);
+      
+      // If already at max changes, show support request instead
+      if (eligibility.walletChangesCount && eligibility.walletChangesCount >= 3) {
+        setShowSupportRequest(true);
+        return;
+      }
+      
       // User already has wallet - show warning about wallet change limits
       setPendingConnector(connector);
       setShowChangeWarning(true);
@@ -166,6 +219,47 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
   const handleCancelWalletChange = () => {
     setShowChangeWarning(false);
     setPendingConnector(null);
+  };
+  
+  // Submit support request for wallet reset
+  const handleSubmitSupportRequest = async () => {
+    if (!user || !supportReason.trim()) {
+      toast.error('Vui lòng nhập lý do');
+      return;
+    }
+    
+    setSubmittingSupportRequest(true);
+    try {
+      const { error } = await supabase
+        .from('wallet_reset_requests')
+        .insert({
+          user_id: user.id,
+          current_wallet: savedWallet,
+          reason: supportReason.trim(),
+          status: 'pending'
+        });
+      
+      if (error) throw error;
+      
+      toast.success('Yêu cầu đã được gửi! Admin sẽ xem xét và phản hồi sớm.');
+      setShowSupportRequest(false);
+      setSupportReason('');
+    } catch (error) {
+      console.error('Error submitting support request:', error);
+      toast.error('Không thể gửi yêu cầu. Vui lòng thử lại.');
+    } finally {
+      setSubmittingSupportRequest(false);
+    }
+  };
+  
+  // Copy saved wallet address
+  const copySavedAddress = () => {
+    if (savedWallet) {
+      navigator.clipboard.writeText(savedWallet);
+      setCopied(true);
+      toast.success('Địa chỉ ví đã được sao chép!');
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleConnectMetaMask = () => {
@@ -340,19 +434,96 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
               animate={{ opacity: 1, y: 0 }}
               className="space-y-4"
             >
-              {/* Airdrop Banner */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-orange-500/20 border border-amber-500/30 text-center">
+              {/* Saved Wallet Info - Show when not connected but has saved wallet */}
+              {savedWallet && !showChangeWarning && !showSupportRequest && (
                 <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-3"
                 >
-                  <Gift className="w-12 h-12 text-amber-500 mx-auto mb-2" />
+                  <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <Key className="w-5 h-5" />
+                    <span className="font-semibold">Ví đã liên kết</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
+                    <p className="flex-1 font-mono text-sm">{shortenAddress(savedWallet)}</p>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copySavedAddress}>
+                      {copied ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">
+                      Đã đổi ví: <strong className={walletChangesCount >= 3 ? 'text-red-500' : 'text-amber-500'}>{walletChangesCount}/3</strong> lần
+                    </span>
+                    {walletChangesCount < 3 && (
+                      <span className="text-green-500">Còn {3 - walletChangesCount} lần đổi</span>
+                    )}
+                  </div>
                 </motion.div>
-                <p className="font-bold text-lg text-amber-500">Connect & Get 50K CAMLY Free!</p>
-                <p className="text-sm text-muted-foreground">First connection bonus on BSC Mainnet</p>
-              </div>
+              )}
 
-              {/* Wallet Change Warning */}
+              {/* Support Request UI - Show when max wallet changes reached */}
+              {showSupportRequest && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-4 rounded-xl bg-red-500/10 border-2 border-red-500/30 space-y-4"
+                >
+                  <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                    <AlertTriangle className="w-6 h-6" />
+                    <span className="font-semibold">Bạn đã hết lượt đổi ví</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Bạn đã sử dụng hết 3 lần đổi ví. Nếu cần đổi ví mới, vui lòng gửi yêu cầu hỗ trợ và chờ admin phê duyệt.
+                  </p>
+                  <Textarea
+                    placeholder="Nhập lý do bạn cần đổi ví..."
+                    value={supportReason}
+                    onChange={(e) => setSupportReason(e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSupportRequest(false)}
+                      className="flex-1"
+                      disabled={submittingSupportRequest}
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleSubmitSupportRequest}
+                      disabled={!supportReason.trim() || submittingSupportRequest}
+                      className="flex-1 bg-red-500 hover:bg-red-600"
+                    >
+                      {submittingSupportRequest ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      ) : (
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                      )}
+                      Gửi yêu cầu
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Airdrop Banner - Only show if no saved wallet */}
+              {!savedWallet && !showSupportRequest && (
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-orange-500/20 border border-amber-500/30 text-center">
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <Gift className="w-12 h-12 text-amber-500 mx-auto mb-2" />
+                  </motion.div>
+                  <p className="font-bold text-lg text-amber-500">Connect & Get 50K CAMLY Free!</p>
+                  <p className="text-sm text-muted-foreground">First connection bonus on BSC Mainnet</p>
+                </div>
+              )}
+
+              {/* Wallet Change Warning - Improved version */}
               {showChangeWarning && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -361,12 +532,25 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
                 >
                   <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                     <AlertTriangle className="w-5 h-5" />
-                    <span className="font-semibold">Bạn đã liên kết ví!</span>
+                    <span className="font-semibold">Xác nhận đổi ví</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Bạn chỉ được đổi ví tối đa <strong>3 lần</strong>. Mỗi lần đổi sẽ được ghi nhận.
-                    Bạn có chắc muốn tiếp tục?
-                  </p>
+                  {savedWallet && (
+                    <div className="p-2 rounded-lg bg-muted/50">
+                      <p className="text-xs text-muted-foreground mb-1">Ví hiện tại:</p>
+                      <p className="font-mono text-sm">{shortenAddress(savedWallet)}</p>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Số lần đổi còn lại:</span>
+                    <span className={`font-bold ${3 - walletChangesCount === 1 ? 'text-red-500' : 'text-amber-500'}`}>
+                      {3 - walletChangesCount} lần
+                    </span>
+                  </div>
+                  {3 - walletChangesCount === 1 && (
+                    <p className="text-xs text-red-500 font-medium">
+                      ⚠️ Đây là lần đổi cuối cùng! Sau đó bạn sẽ cần liên hệ admin.
+                    </p>
+                  )}
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -381,76 +565,83 @@ export const LightWalletModal = ({ isOpen, onClose, camlyBalance, onBalanceUpdat
                       onClick={handleConfirmWalletChange}
                       className="flex-1 bg-amber-500 hover:bg-amber-600"
                     >
-                      Tiếp tục
+                      Tiếp tục đổi ví
                     </Button>
                   </div>
                 </motion.div>
               )}
 
-              {/* MetaMask */}
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleConnectMetaMask}
-                disabled={isPending || isLinking || showChangeWarning}
-                className="w-full p-4 rounded-xl border-2 border-orange-500/30 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 hover:from-orange-500/20 hover:to-yellow-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
-              >
-                <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center">
-                  <span className="text-2xl">🦊</span>
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-semibold text-lg">MetaMask</p>
-                  <p className="text-sm text-muted-foreground">Most popular wallet</p>
-                </div>
-                {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-              </motion.button>
+              {/* Connection Options - Hide when showing warnings or support request */}
+              {!showChangeWarning && !showSupportRequest && (
+                <>
+                  {/* MetaMask */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleConnectMetaMask}
+                    disabled={isPending || isLinking}
+                    className="w-full p-4 rounded-xl border-2 border-orange-500/30 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 hover:from-orange-500/20 hover:to-yellow-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center">
+                      <span className="text-2xl">🦊</span>
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="font-semibold text-lg">MetaMask</p>
+                      <p className="text-sm text-muted-foreground">
+                        {savedWallet ? 'Kết nối lại hoặc đổi ví' : 'Most popular wallet'}
+                      </p>
+                    </div>
+                    {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
+                  </motion.button>
 
-              {/* WalletConnect - Only show if configured */}
-              {isWalletConnectConfigured() && (
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleConnectWalletConnect}
-                  disabled={isPending || isLinking || showChangeWarning}
-                  className="w-full p-4 rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
-                    <span className="text-2xl">🔗</span>
+                  {/* WalletConnect - Only show if configured */}
+                  {isWalletConnectConfigured() && (
+                    <motion.button
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleConnectWalletConnect}
+                      disabled={isPending || isLinking}
+                      className="w-full p-4 rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 transition-all flex items-center gap-4 disabled:opacity-50"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
+                        <span className="text-2xl">🔗</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="font-semibold text-lg">WalletConnect</p>
+                        <p className="text-sm text-muted-foreground">Scan QR with mobile wallet</p>
+                      </div>
+                      {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
+                    </motion.button>
+                  )}
+
+                  {/* FUN Wallet */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowFunWalletCreate(true)}
+                    className="w-full p-4 rounded-xl border-2 border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 transition-all flex items-center gap-4"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <Gem className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="font-semibold text-lg">FUN Wallet</p>
+                      <p className="text-sm text-muted-foreground">Create new wallet automatically</p>
+                    </div>
+                    <div className="px-2 py-1 rounded-full bg-purple-500/20 text-purple-500 text-xs font-bold">
+                      NEW
+                    </div>
+                  </motion.button>
+
+                  {/* Security Note */}
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-sm">
+                    <Shield className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <p className="text-muted-foreground">
+                      Your keys are encrypted and secured. Safe for kids! 🔒
+                    </p>
                   </div>
-                  <div className="flex-1 text-left">
-                    <p className="font-semibold text-lg">WalletConnect</p>
-                    <p className="text-sm text-muted-foreground">Scan QR with mobile wallet</p>
-                  </div>
-                  {isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-                </motion.button>
+                </>
               )}
-
-              {/* FUN Wallet */}
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setShowFunWalletCreate(true)}
-                className="w-full p-4 rounded-xl border-2 border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 transition-all flex items-center gap-4"
-              >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <Gem className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-semibold text-lg">FUN Wallet</p>
-                  <p className="text-sm text-muted-foreground">Create new wallet automatically</p>
-                </div>
-                <div className="px-2 py-1 rounded-full bg-purple-500/20 text-purple-500 text-xs font-bold">
-                  NEW
-                </div>
-              </motion.button>
-
-              {/* Security Note */}
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-sm">
-                <Shield className="w-4 h-4 text-green-500 flex-shrink-0" />
-                <p className="text-muted-foreground">
-                  Your keys are encrypted and secured. Safe for kids! 🔒
-                </p>
-              </div>
             </motion.div>
           )}
         </div>

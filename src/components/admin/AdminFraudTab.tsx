@@ -33,6 +33,7 @@ import { WalletHistoryTable } from "./WalletHistoryTable";
 import { ViolationAuditTable } from "./ViolationAuditTable";
 import { IPFraudReport } from "./IPFraudReport";
 import { IPBlacklistTable } from "./IPBlacklistTable";
+import { WalletResetRequestsTable } from "./WalletResetRequestsTable";
 
 interface SuspiciousActivity {
   id: string;
@@ -507,6 +508,7 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
         {/* Wallet Security Tab */}
         <TabsContent value="wallets" className="space-y-4">
           <WalletSecurityStats />
+          <WalletResetRequestsTable onStatsUpdate={onStatsUpdate} />
           <WalletHistoryTable />
         </TabsContent>
 
