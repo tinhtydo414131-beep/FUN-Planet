@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef } from "react";
+import { useEffect, useState, forwardRef, lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -16,6 +16,10 @@ import {
   Line
 } from "recharts";
 import { format, subDays } from "date-fns";
+import { Loader2 } from "lucide-react";
+
+// Lazy load AdminAchievementStats
+const AdminAchievementStats = lazy(() => import("./AdminAchievementStats"));
 
 interface Stats {
   totalUsers: number;
@@ -307,6 +311,15 @@ export const AdminOverviewTab = forwardRef<HTMLDivElement, AdminOverviewTabProps
           </CardContent>
         </Card>
       </div>
+
+      {/* Achievement Analytics Section */}
+      <Suspense fallback={
+        <div className="flex justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }>
+        <AdminAchievementStats />
+      </Suspense>
     </div>
   );
 });

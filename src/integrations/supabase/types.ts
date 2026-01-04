@@ -5504,6 +5504,75 @@ export type Database = {
           },
         ]
       }
+      weekly_summary_logs: {
+        Row: {
+          camly_earned: number | null
+          created_at: string | null
+          games_played: number | null
+          id: string
+          new_achievements: number | null
+          sent_at: string | null
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          camly_earned?: number | null
+          created_at?: string | null
+          games_played?: number | null
+          id?: string
+          new_achievements?: number | null
+          sent_at?: string | null
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          camly_earned?: number | null
+          created_at?: string | null
+          games_played?: number | null
+          id?: string
+          new_achievements?: number | null
+          sent_at?: string | null
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_summary_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "weekly_summary_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "weekly_summary_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weekly_summary_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weekly_summary_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       withdrawal_requests: {
         Row: {
           admin_notes: string | null

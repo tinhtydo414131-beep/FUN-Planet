@@ -43,6 +43,7 @@ import {
   AlertCircle,
   Info,
   AlertTriangle,
+  Calendar,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -64,6 +65,7 @@ export function AdminNotificationsTab() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [sendingWeekly, setSendingWeekly] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -172,6 +174,24 @@ export function AdminNotificationsTab() {
     }
   };
 
+  const sendWeeklySummary = async () => {
+    if (!confirm("Gửi Weekly Summary cho tất cả users có hoạt động tuần qua?")) return;
+    
+    setSendingWeekly(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-weekly-summary");
+      
+      if (error) throw error;
+      
+      toast.success(`Đã gửi ${data?.summaries?.length || 0} weekly summaries!`);
+    } catch (error) {
+      console.error("Send weekly summary error:", error);
+      toast.error("Failed to send weekly summaries");
+    } finally {
+      setSendingWeekly(false);
+    }
+  };
+
   const getTypeBadge = (type: string) => {
     const icons = {
       info: <Info className="h-3 w-3" />,
@@ -259,6 +279,23 @@ export function AdminNotificationsTab() {
                 <p className="text-xl font-bold">{stats.scheduled}</p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 space-y-2">
+            <Button 
+              className="w-full" 
+              variant="outline"
+              onClick={sendWeeklySummary}
+              disabled={sendingWeekly}
+            >
+              {sendingWeekly ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Calendar className="h-4 w-4 mr-2" />
+              )}
+              Weekly Summary
+            </Button>
           </CardContent>
         </Card>
         <Card>
