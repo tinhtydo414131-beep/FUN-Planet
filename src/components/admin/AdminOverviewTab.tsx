@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -52,7 +52,8 @@ const SafeCartesianGrid = (props: React.ComponentProps<typeof CartesianGrid>) =>
   <CartesianGrid {...props} />
 );
 
-export function AdminOverviewTab({ stats, onRefresh }: AdminOverviewTabProps) {
+export const AdminOverviewTab = forwardRef<HTMLDivElement, AdminOverviewTabProps>(
+  ({ stats, onRefresh }, ref) => {
   const [topUsers, setTopUsers] = useState<TopUser[]>([]);
   const [dailyClaims, setDailyClaims] = useState<DailyClaimData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,7 +136,7 @@ export function AdminOverviewTab({ stats, onRefresh }: AdminOverviewTabProps) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Claims Line Chart */}
@@ -308,4 +309,6 @@ export function AdminOverviewTab({ stats, onRefresh }: AdminOverviewTabProps) {
       </div>
     </div>
   );
-}
+});
+
+AdminOverviewTab.displayName = "AdminOverviewTab";
