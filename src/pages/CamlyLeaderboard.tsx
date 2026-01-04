@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { ArrowLeft, Trophy, Coins, Medal, Crown, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -182,7 +183,17 @@ export default function CamlyLeaderboard() {
 
                         {/* Balance */}
                         <div className="flex items-center gap-1 shrink-0">
-                          <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-500" />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-500 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-500/50 max-w-xs">
+                                <div className="text-yellow-400 font-bold mb-1">💰 Số dư CAMLY</div>
+                                <p className="text-white/90 text-xs">Tổng CAMLY đang có trong ví nền tảng của người dùng này.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                           <span className="font-bold text-sm sm:text-base bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
                             {entry.camly_balance.toLocaleString()}
                           </span>
