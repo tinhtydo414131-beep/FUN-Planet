@@ -14,6 +14,7 @@ import {
   Wallet,
   AlertTriangle
 } from 'lucide-react';
+import { formatBalanceByAge, getRewardBadge } from '@/lib/childFriendlyDisplay';
 
 interface TrustScoreCardProps {
   trustScore: number;
@@ -25,6 +26,7 @@ interface TrustScoreCardProps {
   hasWallet?: boolean;
   pendingAmount?: number;
   onConnectWallet?: () => void;
+  birthYear?: number | null;
 }
 
 export function TrustScoreCard({
@@ -36,8 +38,11 @@ export function TrustScoreCard({
   successfulClaims,
   hasWallet = true,
   pendingAmount = 0,
-  onConnectWallet
+  onConnectWallet,
+  birthYear
 }: TrustScoreCardProps) {
+  const isChildFriendly = birthYear && (new Date().getFullYear() - birthYear) < 12;
+  const badge = getRewardBadge(pendingAmount);
   const getTierColor = () => {
     if (trustScore >= 50) return 'from-purple-500 to-pink-500';
     if (trustScore >= 40) return 'from-yellow-500 to-orange-500';
@@ -168,8 +173,11 @@ export function TrustScoreCard({
                     ⚠️ Cần kết nối ví để rút CAMLY!
                   </p>
                   <p className="text-xs text-white/70 mb-3">
-                    Bạn có {pendingAmount.toLocaleString()} CAMLY đang chờ rút nhưng chưa kết nối ví. 
-                    Kết nối ví để tăng Trust Score +20 điểm và có thể rút tiền!
+                    {isChildFriendly 
+                      ? `Bé có ${badge.emoji} ${badge.name} đang chờ rút nhưng chưa kết nối ví!`
+                      : `Bạn có ${pendingAmount.toLocaleString()} CAMLY đang chờ rút nhưng chưa kết nối ví.`
+                    }
+                    {' '}Kết nối ví để tăng Trust Score +20 điểm và có thể rút tiền!
                   </p>
                   {onConnectWallet && (
                     <Button
