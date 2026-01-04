@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Crown, Medal, ChevronRight, Gem, RefreshCw } from "lucide-react";
+import { Crown, Medal, ChevronRight, Gem, RefreshCw, Clock, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,6 +12,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 import confetti from "canvas-confetti";
 
 
@@ -20,6 +26,9 @@ interface RankedUser {
   username: string;
   avatar_url: string | null;
   wallet_balance: number | null;
+  pending_amount: number;
+  claimed_amount: number;
+  total_camly: number;
   created_at?: string | null;
 }
 
@@ -204,14 +213,55 @@ const PodiumCard = ({
         {user.username}
       </p>
 
-      {/* Balance */}
-      <div className="flex items-center gap-1 mt-1">
-        <Gem className="h-3.5 w-3.5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
-        <span className="text-sm font-extrabold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 10px rgba(255,255,255,0.8)' }}>
-          <AnimatedCounter value={user.wallet_balance || 0} duration={2000} />
-        </span>
-      </div>
+      {/* Balance - 3 rows */}
+      <TooltipProvider>
+        <div className="flex flex-col items-center gap-0.5 mt-1">
+          {/* Pending - White/Gray */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-1 cursor-help">
+                <Clock className="h-3 w-3 text-white/70" />
+                <span className="text-xs text-white/80">
+                  {(user.pending_amount || 0).toLocaleString()}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="bg-black/90 border-white/20 text-white text-xs">
+              CAMLY chờ claim
+            </TooltipContent>
+          </Tooltip>
 
+          {/* Claimed - Green */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-1 cursor-help">
+                <Gift className="h-3 w-3 text-green-400" />
+                <span className="text-xs text-green-400">
+                  {(user.claimed_amount || 0).toLocaleString()}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="bg-black/90 border-green-500/50 text-green-400 text-xs">
+              CAMLY đã nhận
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Total - Yellow (Main) */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-1 cursor-help">
+                <Gem className="h-3.5 w-3.5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
+                <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
+                  <AnimatedCounter value={user.total_camly || 0} duration={2000} />
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
+              Tổng CAMLY (xếp hạng)
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
 
       {/* Podium Base */}
       <motion.div
@@ -261,24 +311,60 @@ export const FunPlanetTopRanking = () => {
       
       console.log("[Ranking] Fetching top users...", { isRefresh, timestamp: new Date().toISOString() });
       
-      // Force fresh data with cache-busting headers
-      const { data, error: fetchError } = await supabase
+      // Fetch profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, username, avatar_url, wallet_balance, created_at")
-        .order("wallet_balance", { ascending: false, nullsFirst: false })
-        .limit(10);
+        .select("id, username, avatar_url, wallet_balance, created_at");
 
-      if (fetchError) {
-        console.error("[Ranking] Supabase error:", fetchError);
-        throw fetchError;
+      if (profilesError) {
+        console.error("[Ranking] Supabase profiles error:", profilesError);
+        throw profilesError;
       }
+
+      // Fetch user_rewards
+      const { data: rewardsData, error: rewardsError } = await supabase
+        .from("user_rewards")
+        .select("user_id, pending_amount, claimed_amount");
+
+      if (rewardsError) {
+        console.error("[Ranking] Supabase rewards error:", rewardsError);
+        throw rewardsError;
+      }
+
+      // Create rewards map
+      const rewardsMap = new Map<string, { pending_amount: number; claimed_amount: number }>();
+      rewardsData?.forEach(reward => {
+        rewardsMap.set(reward.user_id, {
+          pending_amount: Number(reward.pending_amount) || 0,
+          claimed_amount: Number(reward.claimed_amount) || 0,
+        });
+      });
+
+      // Merge and calculate total_camly
+      const mergedUsers: RankedUser[] = (profilesData || []).map(profile => {
+        const rewards = rewardsMap.get(profile.id) || { pending_amount: 0, claimed_amount: 0 };
+        return {
+          id: profile.id,
+          username: profile.username || 'Unknown',
+          avatar_url: profile.avatar_url,
+          wallet_balance: profile.wallet_balance,
+          pending_amount: rewards.pending_amount,
+          claimed_amount: rewards.claimed_amount,
+          total_camly: rewards.pending_amount + rewards.claimed_amount,
+          created_at: profile.created_at,
+        };
+      });
+
+      // Sort by total_camly DESC and take top 10
+      mergedUsers.sort((a, b) => b.total_camly - a.total_camly);
+      const top10 = mergedUsers.slice(0, 10);
       
-      console.log("[Ranking] Success! Fetched", data?.length || 0, "users:", data?.map(u => ({ 
+      console.log("[Ranking] Success! Fetched", top10.length, "users:", top10.map(u => ({ 
         username: u.username, 
-        balance: u.wallet_balance 
+        total_camly: u.total_camly 
       })));
       
-      setTopUsers(data || []);
+      setTopUsers(top10);
       setRetryCount(0);
     } catch (err: any) {
       console.error("[Ranking] Error fetching top users:", err);
@@ -309,7 +395,7 @@ export const FunPlanetTopRanking = () => {
     return () => clearInterval(interval);
   }, [fetchTopUsers]);
 
-  // Subscribe to realtime changes on profiles table
+  // Subscribe to realtime changes on profiles AND user_rewards tables
   useEffect(() => {
     const channel = supabase
       .channel('ranking-changes')
@@ -322,6 +408,18 @@ export const FunPlanetTopRanking = () => {
         },
         () => {
           console.log("Profiles table changed, refreshing ranking...");
+          fetchTopUsers(true);
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_rewards'
+        },
+        () => {
+          console.log("User rewards table changed, refreshing ranking...");
           fetchTopUsers(true);
         }
       )
@@ -366,7 +464,7 @@ export const FunPlanetTopRanking = () => {
     { emoji: "💎", delay: 2.7, x: "95%", y: "50%", duration: 5, size: "text-lg" },
   ];
 
-  const maxBalance = topUsers[0]?.wallet_balance || 1;
+  const maxTotalCamly = topUsers[0]?.total_camly || 1;
   const top3Users = topUsers.slice(0, 3);
   const remainingUsers = topUsers.slice(3);
 
@@ -631,7 +729,7 @@ export const FunPlanetTopRanking = () => {
                   <PodiumCard
                     user={top3Users[1]}
                     rank={2}
-                    maxBalance={maxBalance}
+                    maxBalance={maxTotalCamly}
                     isCurrentUser={user?.id === top3Users[1].id}
                   />
                 </div>
@@ -643,7 +741,7 @@ export const FunPlanetTopRanking = () => {
                   <PodiumCard
                     user={top3Users[0]}
                     rank={1}
-                    maxBalance={maxBalance}
+                    maxBalance={maxTotalCamly}
                     isCurrentUser={user?.id === top3Users[0].id}
                   />
                 </div>
@@ -655,7 +753,7 @@ export const FunPlanetTopRanking = () => {
                   <PodiumCard
                     user={top3Users[2]}
                     rank={3}
-                    maxBalance={maxBalance}
+                    maxBalance={maxTotalCamly}
                     isCurrentUser={user?.id === top3Users[2].id}
                   />
                 </div>
@@ -731,19 +829,64 @@ export const FunPlanetTopRanking = () => {
                               )}
                             </p>
                             <ProgressBar
-                              value={rankedUser.wallet_balance || 0}
-                              maxValue={maxBalance}
+                              value={rankedUser.total_camly || 0}
+                              maxValue={maxTotalCamly}
                             />
                           </div>
 
+                          {/* Balance - 3 values */}
+                          <TooltipProvider>
+                            <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-2 py-1 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
+                              {/* Pending */}
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-0.5 cursor-help">
+                                    <Clock className="h-3 w-3 text-white/70" />
+                                    <span className="text-xs text-white/80">
+                                      {(rankedUser.pending_amount || 0).toLocaleString()}
+                                    </span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="bg-black/90 border-white/20 text-white text-xs">
+                                  CAMLY chờ claim
+                                </TooltipContent>
+                              </Tooltip>
 
-                          {/* Balance */}
-                          <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
-                            <Gem className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
-                            <span className="text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" style={{ textShadow: '0 0 8px rgba(255,255,255,0.7)' }}>
-                              <AnimatedCounter value={rankedUser.wallet_balance || 0} />
-                            </span>
-                          </div>
+                              <span className="text-white/40">|</span>
+
+                              {/* Claimed */}
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-0.5 cursor-help">
+                                    <Gift className="h-3 w-3 text-green-400" />
+                                    <span className="text-xs text-green-400">
+                                      {(rankedUser.claimed_amount || 0).toLocaleString()}
+                                    </span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="bg-black/90 border-green-500/50 text-green-400 text-xs">
+                                  CAMLY đã nhận
+                                </TooltipContent>
+                              </Tooltip>
+
+                              <span className="text-white/40">|</span>
+
+                              {/* Total */}
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-0.5 cursor-help">
+                                    <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" />
+                                    <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" style={{ textShadow: '0 0 8px rgba(255,215,0,0.7)' }}>
+                                      {(rankedUser.total_camly || 0).toLocaleString()}
+                                    </span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
+                                  Tổng CAMLY (xếp hạng)
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                          </TooltipProvider>
                         </motion.div>
                       </HoverCardTrigger>
                       <HoverCardContent
@@ -759,19 +902,28 @@ export const FunPlanetTopRanking = () => {
                           </Avatar>
                           <div className="flex-1">
                             <p className="font-bold text-white">{rankedUser.username}</p>
-                            <div className="flex items-center gap-1 mt-1">
-                              <Gem className="h-4 w-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.7)]" />
-                              <span className="text-sm font-bold text-white" style={{ textShadow: '0 0 6px rgba(255,255,255,0.7)' }}>
-                                {(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY
-                              </span>
+                            {/* 3 data points in HoverCard */}
+                            <div className="space-y-0.5 mt-1">
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3 text-white/70" />
+                                <span className="text-xs text-white/80">Chờ: {(rankedUser.pending_amount || 0).toLocaleString()}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Gift className="h-3 w-3 text-green-400" />
+                                <span className="text-xs text-green-400">Đã nhận: {(rankedUser.claimed_amount || 0).toLocaleString()}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Gem className="h-4 w-4 text-yellow-400" />
+                                <span className="text-sm font-bold text-yellow-400">{(rankedUser.total_camly || 0).toLocaleString()} CAMLY</span>
+                              </div>
                             </div>
-                        <p className="text-xs text-white mt-1">
-                          🏆 Xếp hạng: #{rank}
-                        </p>
-                        <p className="text-xs text-white">
+                            <p className="text-xs text-white mt-1">
+                              🏆 Xếp hạng: #{rank}
+                            </p>
+                            <p className="text-xs text-white">
                               📊{" "}
                               {Math.round(
-                                ((rankedUser.wallet_balance || 0) / maxBalance) * 100
+                                ((rankedUser.total_camly || 0) / maxTotalCamly) * 100
                               )}
                               % so với #1
                             </p>
