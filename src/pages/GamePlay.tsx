@@ -13,6 +13,8 @@ import { useIsLandscape } from "@/hooks/use-mobile";
 import { useFullscreen } from "@/hooks/useFullscreen";
 import { useDoubleTap } from "@/hooks/useDoubleTap";
 import { useGameAchievements } from "@/hooks/useGameAchievements";
+import { usePlayTimeRewards } from "@/hooks/usePlayTimeRewards";
+import { type GameCategory } from "@/config/playtimeRewards";
 import { LevelSelector } from "@/components/LevelSelector";
 import { FlowerFieldLevelSelector } from "@/components/FlowerFieldLevelSelector";
 import { DailyChallengeCard } from "@/components/DailyChallengeCard";
@@ -123,6 +125,7 @@ const GamePlay = () => {
   const { gameId } = useParams();
   const { user } = useAuth();
   const { checkExplorerAchievements } = useGameAchievements();
+  const { startSession, endSession, recordActivity } = usePlayTimeRewards();
   const { claimFirstGameReward, pendingReward, clearPendingReward } = useWeb3Rewards();
   const isLandscape = useIsLandscape();
   const { isFullscreen, toggleFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
@@ -212,6 +215,11 @@ const GamePlay = () => {
       hasTrackedPlayRef.current = false; // Reset tracking when game changes
       fetchGame();
     }
+    
+    // Cleanup: end session when leaving the page
+    return () => {
+      endSession();
+    };
   }, [gameId]);
 
   useEffect(() => {
@@ -282,9 +290,17 @@ const GamePlay = () => {
   const handleStartGame = () => {
     setShowLevelSelector(false);
     setGameStarted(true);
+    
+    // Start playtime rewards session
+    if (game && user) {
+      const category = (game as any).category || 'default';
+      startSession(game.id, 'builtin', category as GameCategory);
+    }
   };
 
   const handleBackToLevelSelect = () => {
+    // End current session before going back
+    endSession();
     setShowLevelSelector(true);
     setGameStarted(false);
   };
