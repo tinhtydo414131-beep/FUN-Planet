@@ -15,6 +15,7 @@ import {
   shouldShowChildFriendlyDisplay,
   formatBalanceForChild,
 } from '@/lib/childFriendlyDisplay';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
 
 interface PlaySession {
   id: string;
@@ -50,6 +51,12 @@ interface PlayTimeRewardsState {
 
 export const usePlayTimeRewards = () => {
   const { user } = useAuth();
+  const { 
+    checkExplorerAchievements, 
+    checkCategoryAchievements, 
+    checkPlayTimeAchievement 
+  } = useGameAchievements();
+  
   const [state, setState] = useState<PlayTimeRewardsState>({
     currentSession: null,
     dailyState: {
@@ -245,6 +252,9 @@ export const usePlayTimeRewards = () => {
             });
           }
 
+          // Check explorer achievements when playing a new game
+          checkExplorerAchievements();
+
           setState(prev => ({
             ...prev,
             pendingRewards: prev.pendingRewards + bonus,
@@ -257,6 +267,11 @@ export const usePlayTimeRewards = () => {
           }));
         }
       }
+    }
+
+    // Check category achievements (educational, creative, music)
+    if (['educational', 'creative', 'music'].includes(gameCategory)) {
+      checkCategoryAchievements(gameCategory);
     }
 
     setState(prev => ({

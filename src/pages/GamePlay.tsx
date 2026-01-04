@@ -12,6 +12,7 @@ import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { useIsLandscape } from "@/hooks/use-mobile";
 import { useFullscreen } from "@/hooks/useFullscreen";
 import { useDoubleTap } from "@/hooks/useDoubleTap";
+import { useGameAchievements } from "@/hooks/useGameAchievements";
 import { LevelSelector } from "@/components/LevelSelector";
 import { FlowerFieldLevelSelector } from "@/components/FlowerFieldLevelSelector";
 import { DailyChallengeCard } from "@/components/DailyChallengeCard";
@@ -121,6 +122,7 @@ interface Game {
 const GamePlay = () => {
   const { gameId } = useParams();
   const { user } = useAuth();
+  const { checkExplorerAchievements } = useGameAchievements();
   const { claimFirstGameReward, pendingReward, clearPendingReward } = useWeb3Rewards();
   const isLandscape = useIsLandscape();
   const { isFullscreen, toggleFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
@@ -240,6 +242,14 @@ const GamePlay = () => {
     if (!game || !user) return;
 
     try {
+      // Insert into game_plays table for tracking
+      await supabase
+        .from("game_plays")
+        .insert({
+          user_id: user.id,
+          game_id: game.id,
+        });
+
       // Update game plays count only (no rewards until level completion)
       await supabase
         .from("games")
@@ -261,6 +271,9 @@ const GamePlay = () => {
           })
           .eq("id", user.id);
       }
+
+      // Check explorer achievements after tracking the play
+      checkExplorerAchievements();
     } catch (error) {
       console.error("Error tracking play:", error);
     }

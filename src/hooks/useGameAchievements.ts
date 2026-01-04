@@ -85,10 +85,10 @@ export function useGameAchievements() {
     if (!user) return;
 
     try {
-      // Count unique games played
+      // Count unique games played from user_game_plays table (this is the table used by usePlayTimeRewards)
       const { count } = await supabase
-        .from('game_plays')
-        .select('game_id', { count: 'exact', head: true })
+        .from('user_game_plays')
+        .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id);
 
       const gamesPlayed = count || 0;
