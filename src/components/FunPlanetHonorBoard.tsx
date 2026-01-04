@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, Gamepad2, Upload, Gem, Wallet } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { ethers } from "ethers";
 import { CAMLY_CONTRACT_ADDRESS, CAMLY_ABI } from "@/lib/web3";
@@ -207,11 +208,11 @@ export const FunPlanetHonorBoard = () => {
   const maxValue = Math.max(stats.totalUsers, stats.totalGames, stats.totalPlays, stats.totalUploads, stats.totalCamly, 1);
 
   const statItems = [
-    { icon: Users, label: "Users", value: stats.totalUsers, bgColor: "bg-purple-500", accentColor: "#a855f7", suffix: "players" },
-    { icon: Gamepad2, label: "Games", value: stats.totalGames, bgColor: "bg-teal-500", accentColor: "#14b8a6", suffix: "titles" },
-    { icon: Wallet, label: "Quỹ FP", value: stats.treasuryBalance, bgColor: "bg-amber-500", accentColor: "#f59e0b", suffix: "💰" },
-    { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500", accentColor: "#22c55e", suffix: "games" },
-    { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500", accentColor: "#f43f5e", suffix: "💎" },
+    { icon: Users, label: "Users", value: stats.totalUsers, bgColor: "bg-purple-500", accentColor: "#a855f7", suffix: "players", tooltip: "Tổng số người dùng đã đăng ký trên Fun Planet." },
+    { icon: Gamepad2, label: "Games", value: stats.totalGames, bgColor: "bg-teal-500", accentColor: "#14b8a6", suffix: "titles", tooltip: "Tổng số game đã được duyệt và đang hoạt động." },
+    { icon: Wallet, label: "Quỹ FP", value: stats.treasuryBalance, bgColor: "bg-amber-500", accentColor: "#f59e0b", suffix: "💰", tooltip: "Số dư CAMLY trong ví treasury blockchain của Fun Planet (0xDb79...5C69)." },
+    { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500", accentColor: "#22c55e", suffix: "games", tooltip: "Tổng số game đã được upload lên hệ thống." },
+    { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500", accentColor: "#f43f5e", suffix: "💎", tooltip: "Tổng số dư CAMLY của tất cả người dùng trên nền tảng." },
   ];
 
   return (
@@ -422,15 +423,25 @@ export const FunPlanetHonorBoard = () => {
                   />
                 </div>
 
-                {/* Icon with Pulse Animation */}
-                <motion.div 
-                  className={`relative z-10 rounded-lg ${item.bgColor} p-2 flex-shrink-0`}
-                  style={{ boxShadow: `0 0 20px ${item.accentColor}80` }}
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: index * 0.2, ease: "easeInOut" }}
-                >
-                  <item.icon className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
-                </motion.div>
+                {/* Icon with Pulse Animation & Tooltip */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <motion.div 
+                        className={`relative z-10 rounded-lg ${item.bgColor} p-2 flex-shrink-0 cursor-help`}
+                        style={{ boxShadow: `0 0 20px ${item.accentColor}80` }}
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: index * 0.2, ease: "easeInOut" }}
+                      >
+                        <item.icon className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
+                      </motion.div>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
+                      <div className="text-yellow-400 font-bold mb-1">{item.label}</div>
+                      <p className="text-white/90 text-xs">{item.tooltip}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
                 {/* Content */}
                 <div className="relative z-10 flex-1 flex items-center justify-between min-w-0">

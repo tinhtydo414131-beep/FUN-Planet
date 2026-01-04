@@ -271,7 +271,15 @@ export default function Leaderboard() {
                         <p className="text-xl sm:text-3xl font-fredoka font-bold text-red-500">{leader.leaderboard_score}</p>
                         <p className="text-xs sm:text-sm font-comic text-muted-foreground">points</p>
                         <p className="text-xs sm:text-sm font-comic text-red-500 flex items-center justify-end gap-1">
-                          <Coins className="w-3 h-3" />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Coins className="w-3 h-3 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-500/50 max-w-xs">
+                              <div className="text-yellow-400 font-bold mb-1">💰 CAMLY từ điểm</div>
+                              <p className="text-white/90 text-xs">Số CAMLY tương đương với điểm xếp hạng (1 điểm = 100 CAMLY).</p>
+                            </TooltipContent>
+                          </Tooltip>
                           {calculateCamlyCoins(leader.leaderboard_score).toLocaleString()}
                         </p>
                       </div>

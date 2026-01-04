@@ -8,6 +8,7 @@ import { useRankingRealtime } from "@/hooks/useRealtimeConnection";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import confetti from "canvas-confetti";
 import { TransferModal } from "@/components/TransferModal";
 import { toast } from "sonner";
@@ -186,7 +187,17 @@ const PodiumCard = memo(({
 
       {/* Balance */}
       <div className="flex items-center gap-1.5 mt-2">
-        <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,255,0,0.9)]" />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,255,0,0.9)] cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
+              <div className="text-yellow-400 font-bold mb-1">💎 Số dư ví</div>
+              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng. Có thể rút về blockchain hoặc tặng người khác.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <span 
           className="text-lg font-extrabold bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
           style={{ textShadow: "0 0 15px rgba(255,255,255,0.9)" }}
@@ -197,7 +208,17 @@ const PodiumCard = memo(({
 
       {/* Claimed Amount */}
       <div className="flex items-center gap-1 mt-1">
-        <Gift className="h-3 w-3 text-green-400" />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Gift className="h-3 w-3 text-green-400 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-black/90 backdrop-blur-sm border-green-400/50 max-w-xs">
+              <div className="text-green-400 font-bold mb-1">🎁 Đã nhận</div>
+              <p className="text-white/90 text-xs">Tổng CAMLY đã rút thành công về ví blockchain.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <span className="text-xs text-green-300">
           {(user.claimed_amount || 0).toLocaleString()} đã nhận
         </span>
@@ -320,7 +341,17 @@ const UserRow = memo(({
 
       {/* Claimed Amount */}
       <div className="flex items-center gap-1 shrink-0">
-        <Gift className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Gift className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-black/90 backdrop-blur-sm border-green-400/50 max-w-xs">
+              <div className="text-green-400 font-bold mb-1">🎁 Đã nhận</div>
+              <p className="text-white/90 text-xs">Tổng CAMLY đã rút thành công về ví blockchain.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <span className="text-xs sm:text-sm text-green-300 font-medium">
           {(user.claimed_amount || 0).toLocaleString()}
         </span>
@@ -328,7 +359,17 @@ const UserRow = memo(({
 
       {/* Balance */}
       <div className="flex items-center gap-1.5 shrink-0">
-        <Gem className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,255,0,0.8)]" />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Gem className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,255,0,0.8)] cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
+              <div className="text-yellow-400 font-bold mb-1">💎 Số dư ví</div>
+              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng. Có thể rút về blockchain hoặc tặng người khác.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <span 
           className="font-extrabold text-sm sm:text-base bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
           style={{ textShadow: "0 0 10px rgba(255,255,255,0.7)" }}
