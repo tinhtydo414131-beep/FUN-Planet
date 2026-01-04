@@ -47,3 +47,6 @@ verify_jwt = true
 
 [functions.process-approved-withdrawal]
 verify_jwt = true
+
+[functions.process-donation-onchain]
+verify_jwt = true

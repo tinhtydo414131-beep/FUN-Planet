@@ -23,7 +23,8 @@ import {
   ScrollText,
   Sparkles,
   Bell,
-  Wallet
+  Wallet,
+  HeartHandshake
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
@@ -38,6 +39,7 @@ import { AdminAngelAITab } from "@/components/admin/AdminAngelAITab";
 import { AdminNotificationsTab } from "@/components/admin/AdminNotificationsTab";
 import { AdminRealtimeBell } from "@/components/admin/AdminRealtimeBell";
 import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
+import { AdminDonationsTab } from "@/components/admin/AdminDonationsTab";
 
 interface Stats {
   totalUsers: number;
@@ -292,6 +294,10 @@ export default function AdminMasterDashboard() {
               <Wallet className="h-4 w-4" />
               <span>Withdrawals</span>
             </TabsTrigger>
+            <TabsTrigger value="donations" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <HeartHandshake className="h-4 w-4" />
+              <span>Donations</span>
+            </TabsTrigger>
             <TabsTrigger value="fraud" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs relative">
               <AlertTriangle className="h-4 w-4" />
               <span>Fraud</span>
@@ -345,6 +351,10 @@ export default function AdminMasterDashboard() {
 
           <TabsContent value="withdrawals">
             <AdminWithdrawalsTab />
+          </TabsContent>
+
+          <TabsContent value="donations">
+            <AdminDonationsTab />
           </TabsContent>
 
           <TabsContent value="fraud">
