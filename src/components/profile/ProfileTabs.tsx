@@ -11,6 +11,7 @@ export function ProfileTabs({ activeTab, onTabChange, children }: ProfileTabsPro
   const tabs = [
     { id: 'posts', label: 'Posts' },
     { id: 'about', label: 'About' },
+    { id: 'achievements', label: 'Achievements' },
     { id: 'friends', label: 'Friends' },
     { id: 'photos', label: 'Photos' },
     { id: 'my-games', label: 'My Games' },
