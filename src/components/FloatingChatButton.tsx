@@ -43,7 +43,7 @@ export const FloatingChatButton = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.button
-            ref={elementRef as any}
+            ref={elementRef as React.RefObject<HTMLButtonElement>}
             onClick={handleClick}
             onMouseDown={handleMouseDown}
             onMouseUp={handleLongPressEnd}
