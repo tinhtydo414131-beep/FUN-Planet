@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -83,6 +83,25 @@ export default function Profile() {
       navigate("/auth");
     }
   }, [user, authLoading, navigate]);
+
+  // Auto-sync achievements on first visit
+  const hasSyncedRef = useRef(false);
+  
+  useEffect(() => {
+    if (user && !hasSyncedRef.current) {
+      const syncKey = `achievements_synced_${user.id}`;
+      const lastSync = localStorage.getItem(syncKey);
+      const now = Date.now();
+      
+      // Auto-sync once per day
+      if (!lastSync || (now - parseInt(lastSync)) > 24 * 60 * 60 * 1000) {
+        hasSyncedRef.current = true;
+        syncAllAchievements().then(() => {
+          localStorage.setItem(syncKey, now.toString());
+        });
+      }
+    }
+  }, [user, syncAllAchievements]);
 
   useEffect(() => {
     if (user) {
