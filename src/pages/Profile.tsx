@@ -23,6 +23,7 @@ import { GameAchievementBadge } from "@/components/achievements/GameAchievementB
 import { WalletConnectModal } from "@/components/WalletConnectModal";
 import { Web3RewardNotification } from "@/components/Web3RewardNotification";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
+import { useGameAchievements } from "@/hooks/useGameAchievements";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Profile {
@@ -74,6 +75,8 @@ export default function Profile() {
     connectWallet,
     clearPendingReward,
   } = useWeb3Rewards();
+
+  const { syncAllAchievements, checkChampionAchievement } = useGameAchievements();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -135,7 +138,13 @@ export default function Profile() {
 
       if (error) throw error;
       const rank = data?.findIndex(p => p.id === user?.id) ?? -1;
-      setUserRank(rank + 1);
+      const userRankValue = rank + 1;
+      setUserRank(userRankValue);
+      
+      // Check champion achievement if user is in top 10
+      if (userRankValue > 0 && userRankValue <= 10) {
+        checkChampionAchievement(userRankValue);
+      }
     } catch (error) {
       console.error("Error fetching rank:", error);
     }
@@ -270,7 +279,7 @@ export default function Profile() {
           />
         );
       case "achievements":
-        return <GameAchievementBadge />;
+        return <GameAchievementBadge onSyncAchievements={syncAllAchievements} />;
       case "friends":
         return <FriendsSection userId={profile.id} totalFriends={profile.total_friends} />;
       case "photos":
