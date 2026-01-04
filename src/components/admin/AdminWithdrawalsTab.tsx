@@ -142,7 +142,7 @@ export const AdminWithdrawalsTab = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase.rpc('admin_approve_withdrawal', {
+      const { data, error } = await supabase.rpc('admin_approve_pending_withdrawal', {
         p_withdrawal_id: withdrawal.id,
         p_admin_id: user.id
       });
@@ -184,7 +184,7 @@ export const AdminWithdrawalsTab = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase.rpc('admin_reject_withdrawal', {
+      const { data, error } = await supabase.rpc('admin_reject_pending_withdrawal', {
         p_withdrawal_id: selectedWithdrawal.id,
         p_admin_id: user.id,
         p_reason: rejectReason

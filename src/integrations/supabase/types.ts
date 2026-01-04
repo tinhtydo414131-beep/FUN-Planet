@@ -5652,6 +5652,10 @@ export type Database = {
         Args: { p_amount: number; p_source: string; p_user_id: string }
         Returns: number
       }
+      admin_approve_pending_withdrawal: {
+        Args: { p_admin_id: string; p_withdrawal_id: string }
+        Returns: Json
+      }
       admin_approve_withdrawal: {
         Args: { p_admin_id: string; p_withdrawal_id: string }
         Returns: Json
@@ -5663,6 +5667,10 @@ export type Database = {
           reset_amount: number
           user_ids: string[]
         }[]
+      }
+      admin_reject_pending_withdrawal: {
+        Args: { p_admin_id: string; p_reason?: string; p_withdrawal_id: string }
+        Returns: Json
       }
       admin_reject_withdrawal: {
         Args: { p_admin_id: string; p_reason: string; p_withdrawal_id: string }
