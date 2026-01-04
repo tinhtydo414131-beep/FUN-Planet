@@ -187,7 +187,7 @@ export default function EditGame() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Category *</Label>
+                <Label htmlFor="category">Category * (Ảnh hưởng đến phần thưởng)</Label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
@@ -197,16 +197,59 @@ export default function EditGame() {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="action">Action</SelectItem>
-                    <SelectItem value="puzzle">Puzzle</SelectItem>
-                    <SelectItem value="adventure">Adventure</SelectItem>
-                    <SelectItem value="casual">Casual</SelectItem>
-                    <SelectItem value="educational">Educational</SelectItem>
-                    <SelectItem value="racing">Racing</SelectItem>
-                    <SelectItem value="sports">Sports</SelectItem>
-                    <SelectItem value="arcade">Arcade</SelectItem>
+                    <SelectItem value="educational">
+                      <div className="flex items-center gap-2">
+                        <span>📚 Giáo dục (Educational)</span>
+                        <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded">×2.0</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="brain">
+                      <div className="flex items-center gap-2">
+                        <span>🧠 Tư duy (Brain)</span>
+                        <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">×1.5</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="kindness">
+                      <div className="flex items-center gap-2">
+                        <span>❤️ Yêu thương (Kindness)</span>
+                        <span className="text-xs font-bold text-pink-600 bg-pink-100 px-2 py-0.5 rounded">×1.5</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="creative">
+                      <div className="flex items-center gap-2">
+                        <span>🎨 Sáng tạo (Creative)</span>
+                        <span className="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded">×1.5</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="puzzle">
+                      <div className="flex items-center gap-2">
+                        <span>🧩 Puzzle</span>
+                        <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">×1.2</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="casual">
+                      <div className="flex items-center gap-2">
+                        <span>🎮 Giải trí (Casual)</span>
+                        <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">×1.0</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="adventure">
+                      <div className="flex items-center gap-2">
+                        <span>🏃 Phiêu lưu (Adventure)</span>
+                        <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">×1.0</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="music">
+                      <div className="flex items-center gap-2">
+                        <span>🎵 Âm nhạc (Music)</span>
+                        <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">×1.0</span>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  💡 Games giáo dục và tư duy được thưởng nhiều hơn để khuyến khích nội dung có giá trị!
+                </p>
               </div>
 
               <div className="space-y-2">

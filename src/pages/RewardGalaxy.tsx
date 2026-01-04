@@ -11,6 +11,8 @@ import { useTrustScore } from '@/hooks/useTrustScore';
 import { useAppKitSafe } from '@/hooks/useAppKitSafe';
 import { useAccount } from 'wagmi';
 import { supabase } from '@/integrations/supabase/client';
+import { shouldShowChildFriendlyDisplay, calculateAge } from '@/lib/childFriendlyDisplay';
+import { getAgeGroup, AgeGroup } from '@/config/playtimeRewards';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -50,6 +52,7 @@ import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCar
 import { DailyLoginRewardCard } from '@/components/reward-galaxy/DailyLoginRewardCard';
 import { DailyLoginRewardPopup } from '@/components/reward-galaxy/DailyLoginRewardPopup';
 import { TrustScoreCard } from '@/components/reward-galaxy/TrustScoreCard';
+import { DailyPlayProgressBar } from '@/components/reward-galaxy/DailyPlayProgressBar';
 
 interface ClaimHistory {
   id: string;
@@ -111,12 +114,50 @@ export default function RewardGalaxy() {
   const [canClaimWallet, setCanClaimWallet] = useState<boolean | null>(null);
   const [canClaimGame, setCanClaimGame] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(true);
+  const [birthYear, setBirthYear] = useState<number | null>(null);
+  const [dailyPlayMinutes, setDailyPlayMinutes] = useState(0);
+
+  const isChildFriendly = shouldShowChildFriendlyDisplay(birthYear);
+  const userAge = calculateAge(birthYear);
+  const ageGroup: AgeGroup = getAgeGroup(userAge);
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/auth');
     }
   }, [user, authLoading, navigate]);
+
+  // Fetch user profile for child-friendly display
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('birth_year')
+        .eq('id', user.id)
+        .single();
+      
+      if (profile?.birth_year) {
+        setBirthYear(profile.birth_year);
+      }
+
+      // Fetch daily play time
+      const today = new Date().toISOString().split('T')[0];
+      const { data: playData } = await supabase
+        .from('daily_play_rewards')
+        .select('total_play_minutes')
+        .eq('user_id', user.id)
+        .eq('reward_date', today)
+        .single();
+      
+      if (playData) {
+        setDailyPlayMinutes(playData.total_play_minutes);
+      }
+    };
+    
+    fetchUserProfile();
+  }, [user]);
 
   // Sync AppKit wallet to database when connected - with eligibility check
   useEffect(() => {
@@ -292,7 +333,7 @@ export default function RewardGalaxy() {
             onConnect={() => open()}
           />
 
-          {/* Trust Score Card - NEW */}
+          {/* Trust Score Card */}
           {trustInfo && (
             <TrustScoreCard
               trustScore={trustInfo.trust_score}
@@ -304,6 +345,16 @@ export default function RewardGalaxy() {
               hasWallet={!!actualWalletAddress}
               pendingAmount={rewards?.pending_amount || 0}
               onConnectWallet={() => open()}
+              birthYear={birthYear}
+            />
+          )}
+
+          {/* Daily Play Progress - Child-Friendly */}
+          {isChildFriendly && (
+            <DailyPlayProgressBar
+              totalMinutesPlayed={dailyPlayMinutes}
+              ageGroup={ageGroup}
+              isChildFriendlyDisplay={isChildFriendly}
             />
           )}
 

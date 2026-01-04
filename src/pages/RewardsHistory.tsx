@@ -22,6 +22,7 @@ import {
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { motion } from 'framer-motion';
+import { formatBalanceByAge, shouldShowChildFriendlyDisplay, getRewardBadge } from '@/lib/childFriendlyDisplay';
 
 interface RewardTransaction {
   id: string;
@@ -97,6 +98,10 @@ export default function RewardsHistory() {
   const [loading, setLoading] = useState(true);
   const [totalEarned, setTotalEarned] = useState(0);
   const [totalClaimed, setTotalClaimed] = useState(0);
+  const [birthYear, setBirthYear] = useState<number | null>(null);
+  
+  const isChildFriendly = shouldShowChildFriendlyDisplay(birthYear);
+  const badge = getRewardBadge(totalEarned - totalClaimed);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -107,8 +112,21 @@ export default function RewardsHistory() {
   useEffect(() => {
     if (user) {
       fetchTransactions();
+      fetchBirthYear();
     }
   }, [user]);
+
+  const fetchBirthYear = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('birth_year')
+      .eq('id', user.id)
+      .single();
+    if (data?.birth_year) {
+      setBirthYear(data.birth_year);
+    }
+  };
 
   const fetchTransactions = async () => {
     try {
@@ -184,9 +202,11 @@ export default function RewardsHistory() {
                     <ArrowDownLeft className="w-6 h-6 text-green-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Earned</p>
+                    <p className="text-sm text-muted-foreground">
+                      {isChildFriendly ? 'Bé Đã Nhận' : 'Total Earned'}
+                    </p>
                     <p className="text-2xl font-bold text-green-600">
-                      +{totalEarned.toLocaleString()}
+                      {isChildFriendly ? formatBalanceByAge(totalEarned, birthYear) : `+${totalEarned.toLocaleString()}`}
                     </p>
                   </div>
                 </div>
@@ -200,9 +220,11 @@ export default function RewardsHistory() {
                     <ArrowUpRight className="w-6 h-6 text-red-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Claimed</p>
+                    <p className="text-sm text-muted-foreground">
+                      {isChildFriendly ? 'Đã Rút Về Ví' : 'Total Claimed'}
+                    </p>
                     <p className="text-2xl font-bold text-red-600">
-                      -{totalClaimed.toLocaleString()}
+                      {isChildFriendly ? '🎁' : `-${totalClaimed.toLocaleString()}`}
                     </p>
                   </div>
                 </div>
@@ -213,13 +235,22 @@ export default function RewardsHistory() {
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                    <Coins className="w-6 h-6 text-yellow-500" />
+                    {isChildFriendly ? (
+                      <span className="text-2xl">{badge.emoji}</span>
+                    ) : (
+                      <Coins className="w-6 h-6 text-yellow-500" />
+                    )}
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Net Balance</p>
-                    <p className="text-2xl font-bold text-yellow-600">
-                      {(totalEarned - totalClaimed).toLocaleString()}
+                    <p className="text-sm text-muted-foreground">
+                      {isChildFriendly ? badge.name : 'Net Balance'}
                     </p>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {formatBalanceByAge(totalEarned - totalClaimed, birthYear)}
+                    </p>
+                    {isChildFriendly && (
+                      <p className="text-xs text-muted-foreground">{badge.description}</p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -287,9 +318,14 @@ export default function RewardsHistory() {
                       {/* Amount */}
                       <div className="text-right">
                         <p className={`text-xl font-bold ${tx.amount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {tx.amount >= 0 ? '+' : ''}{tx.amount.toLocaleString()}
+                          {isChildFriendly 
+                            ? (tx.amount >= 0 ? formatBalanceByAge(tx.amount, birthYear) : '🎁')
+                            : `${tx.amount >= 0 ? '+' : ''}${tx.amount.toLocaleString()}`
+                          }
                         </p>
-                        <p className="text-xs text-muted-foreground">CAMLY</p>
+                        <p className="text-xs text-muted-foreground">
+                          {isChildFriendly ? 'Phần thưởng' : 'CAMLY'}
+                        </p>
                       </div>
                     </motion.div>
                   ))}
