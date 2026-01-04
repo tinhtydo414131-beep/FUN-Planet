@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift } from "lucide-react";
+import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,7 +19,9 @@ interface RankedUser {
   avatar_url: string | null;
   wallet_balance: number | null;
   wallet_address: string | null;
-  claimed_amount: number | null;
+  pending_amount: number;
+  claimed_amount: number;
+  total_camly: number;
 }
 
 const USERS_PER_PAGE = 20;
@@ -185,28 +187,25 @@ const PodiumCard = memo(({
         {user.username}
       </p>
 
-      {/* Balance */}
-      <div className="flex items-center gap-1.5 mt-2">
+      {/* Pending Amount (White) */}
+      <div className="flex items-center gap-1 mt-2">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,255,0,0.9)] cursor-help" />
+              <Clock className="h-3 w-3 text-white/70 cursor-help" />
             </TooltipTrigger>
-            <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
-              <div className="text-yellow-400 font-bold mb-1">💎 Số dư ví</div>
-              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng. Có thể rút về blockchain hoặc tặng người khác.</p>
+            <TooltipContent className="bg-black/90 backdrop-blur-sm border-white/50 max-w-xs">
+              <div className="text-white font-bold mb-1">⏳ Chờ claim</div>
+              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng, có thể rút về blockchain.</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <span 
-          className="text-lg font-extrabold bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
-          style={{ textShadow: "0 0 15px rgba(255,255,255,0.9)" }}
-        >
-          <AnimatedCounter value={user.wallet_balance || 0} duration={1500} />
+        <span className="text-xs text-white/80">
+          {(user.pending_amount || 0).toLocaleString()}
         </span>
       </div>
 
-      {/* Claimed Amount */}
+      {/* Claimed Amount (Green) */}
       <div className="flex items-center gap-1 mt-1">
         <TooltipProvider>
           <Tooltip>
@@ -220,7 +219,28 @@ const PodiumCard = memo(({
           </Tooltip>
         </TooltipProvider>
         <span className="text-xs text-green-300">
-          {(user.claimed_amount || 0).toLocaleString()} đã nhận
+          {(user.claimed_amount || 0).toLocaleString()}
+        </span>
+      </div>
+
+      {/* Total CAMLY (Yellow - Main ranking value) */}
+      <div className="flex items-center gap-1.5 mt-1">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,255,0,0.9)] cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
+              <div className="text-yellow-400 font-bold mb-1">💎 Tổng CAMLY</div>
+              <p className="text-white/90 text-xs">Tổng số CAMLY (chờ claim + đã claim). Xếp hạng theo giá trị này.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <span 
+          className="text-lg font-extrabold bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
+          style={{ textShadow: "0 0 15px rgba(255,255,255,0.9)" }}
+        >
+          <AnimatedCounter value={user.total_camly || 0} duration={1500} />
         </span>
       </div>
 
@@ -339,12 +359,30 @@ const UserRow = memo(({
         </p>
       </div>
 
-      {/* Claimed Amount */}
+      {/* Pending Amount (White) */}
       <div className="flex items-center gap-1 shrink-0">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Gift className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 cursor-help" />
+              <Clock className="w-3 h-3 text-white/60 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-black/90 backdrop-blur-sm border-white/50 max-w-xs">
+              <div className="text-white font-bold mb-1">⏳ Chờ claim</div>
+              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng, có thể rút về blockchain.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <span className="text-xs text-white/80">
+          {(user.pending_amount || 0).toLocaleString()}
+        </span>
+      </div>
+
+      {/* Claimed Amount (Green) */}
+      <div className="flex items-center gap-1 shrink-0">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Gift className="w-3 h-3 text-green-400 cursor-help" />
             </TooltipTrigger>
             <TooltipContent className="bg-black/90 backdrop-blur-sm border-green-400/50 max-w-xs">
               <div className="text-green-400 font-bold mb-1">🎁 Đã nhận</div>
@@ -352,12 +390,12 @@ const UserRow = memo(({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <span className="text-xs sm:text-sm text-green-300 font-medium">
+        <span className="text-xs text-green-300">
           {(user.claimed_amount || 0).toLocaleString()}
         </span>
       </div>
 
-      {/* Balance */}
+      {/* Total CAMLY (Yellow - Main ranking value) */}
       <div className="flex items-center gap-1.5 shrink-0">
         <TooltipProvider>
           <Tooltip>
@@ -365,8 +403,8 @@ const UserRow = memo(({
               <Gem className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,255,0,0.8)] cursor-help" />
             </TooltipTrigger>
             <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
-              <div className="text-yellow-400 font-bold mb-1">💎 Số dư ví</div>
-              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng. Có thể rút về blockchain hoặc tặng người khác.</p>
+              <div className="text-yellow-400 font-bold mb-1">💎 Tổng CAMLY</div>
+              <p className="text-white/90 text-xs">Tổng số CAMLY (chờ claim + đã claim). Xếp hạng theo giá trị này.</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -374,7 +412,7 @@ const UserRow = memo(({
           className="font-extrabold text-sm sm:text-base bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
           style={{ textShadow: "0 0 10px rgba(255,255,255,0.7)" }}
         >
-          {(user.wallet_balance || 0).toLocaleString()}
+          {(user.total_camly || 0).toLocaleString()}
         </span>
       </div>
 
@@ -432,28 +470,39 @@ export default function FullRanking() {
       // Fetch profiles with wallet_address
       const { data: profilesData, error: profilesError, count } = await supabase
         .from("profiles")
-        .select("id, username, avatar_url, wallet_balance, wallet_address", { count: "exact" })
-        .order("wallet_balance", { ascending: false, nullsFirst: false });
+        .select("id, username, avatar_url, wallet_balance, wallet_address", { count: "exact" });
 
       if (profilesError) throw profilesError;
 
-      // Fetch claimed_amount from user_rewards (total earned from all claims)
+      // Fetch pending_amount and claimed_amount from user_rewards
       const userIds = (profilesData || []).map(p => p.id);
       const { data: rewardsData } = await supabase
         .from("user_rewards")
-        .select("user_id, claimed_amount")
+        .select("user_id, pending_amount, claimed_amount")
         .in("user_id", userIds);
 
       // Map rewards to users
-      const rewardsMap = new Map<string, number>();
+      const rewardsMap = new Map<string, { pending: number; claimed: number }>();
       (rewardsData || []).forEach(r => {
-        rewardsMap.set(r.user_id, r.claimed_amount || 0);
+        rewardsMap.set(r.user_id, {
+          pending: r.pending_amount || 0,
+          claimed: r.claimed_amount || 0
+        });
       });
 
-      const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => ({
-        ...p,
-        claimed_amount: rewardsMap.get(p.id) || 0
-      }));
+      const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => {
+        const rewards = rewardsMap.get(p.id) || { pending: 0, claimed: 0 };
+        const total = rewards.pending + rewards.claimed;
+        return {
+          ...p,
+          pending_amount: rewards.pending,
+          claimed_amount: rewards.claimed,
+          total_camly: total
+        };
+      });
+
+      // Sort by total_camly descending
+      usersWithEarnings.sort((a, b) => b.total_camly - a.total_camly);
 
       setAllUsers(usersWithEarnings);
       setFilteredUsers(usersWithEarnings);
