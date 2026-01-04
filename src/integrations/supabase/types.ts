@@ -2053,6 +2053,30 @@ export type Database = {
         }
         Relationships: []
       }
+      game_achievements: {
+        Row: {
+          achievement_type: string
+          id: string
+          progress: number | null
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          id?: string
+          progress?: number | null
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          id?: string
+          progress?: number | null
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       game_cleanup_rewards: {
         Row: {
           claim_date: string

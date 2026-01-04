@@ -19,6 +19,7 @@ import { FriendsSection } from "@/components/profile/FriendsSection";
 import { PhotosSection } from "@/components/profile/PhotosSection";
 import { HonorBoard } from "@/components/profile/HonorBoard";
 import { MyGamesSection } from "@/components/profile/MyGamesSection";
+import { GameAchievementBadge } from "@/components/achievements/GameAchievementBadge";
 import { WalletConnectModal } from "@/components/WalletConnectModal";
 import { Web3RewardNotification } from "@/components/Web3RewardNotification";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
@@ -268,6 +269,8 @@ export default function Profile() {
             onProfileUpdate={handleProfileUpdate}
           />
         );
+      case "achievements":
+        return <GameAchievementBadge />;
       case "friends":
         return <FriendsSection userId={profile.id} totalFriends={profile.total_friends} />;
       case "photos":
