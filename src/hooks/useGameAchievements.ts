@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import confetti from 'canvas-confetti';
 
 interface AchievementProgress {
   type: string;
@@ -65,8 +66,23 @@ export function useGameAchievements() {
 
       if (error) throw error;
 
-      // Show toast if newly unlocked
+      // Show celebration if newly unlocked
       if (shouldUnlock && !existing?.unlocked_at) {
+        // Play celebration confetti
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#98FB98']
+        });
+        
+        // Play celebration sound
+        try {
+          const audio = new Audio('/sounds/achievement.mp3');
+          audio.volume = 0.5;
+          audio.play().catch(() => {});
+        } catch {}
+        
         toast.success(`🎉 Chúc mừng! Đã mở khóa: ${threshold.name}`, {
           duration: 5000,
           icon: '🏆'
