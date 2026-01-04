@@ -41,6 +41,7 @@ const EditGame = lazy(() => import("./pages/EditGame"));
 const GameDetails = lazy(() => import("./pages/GameDetails"));
 const RewardsHistory = lazy(() => import("./pages/RewardsHistory"));
 const CamlyLeaderboard = lazy(() => import("./pages/CamlyLeaderboard"));
+const AchievementLeaderboard = lazy(() => import("./pages/AchievementLeaderboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 const FindFriends = lazy(() => import("./pages/FindFriends"));
 const PrivateMessages = lazy(() => import("./pages/PrivateMessages"));
@@ -134,6 +135,7 @@ const AnimatedRoutes = () => {
           <Route path="/nexus-leaderboard" element={<NexusLeaderboard />} />
           <Route path="/combo-leaderboard" element={<ComboLeaderboard />} />
           <Route path="/camly-leaderboard" element={<CamlyLeaderboard />} />
+          <Route path="/achievement-leaderboard" element={<AchievementLeaderboard />} />
           <Route path="/full-ranking" element={<FullRanking />} />
           
           {/* Music */}

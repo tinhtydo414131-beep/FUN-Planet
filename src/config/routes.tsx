@@ -30,6 +30,7 @@ export const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
 export const NexusLeaderboard = lazy(() => import("@/pages/NexusLeaderboard"));
 export const ComboLeaderboard = lazy(() => import("@/pages/ComboLeaderboard"));
 export const CamlyLeaderboard = lazy(() => import("@/pages/CamlyLeaderboard"));
+export const AchievementLeaderboard = lazy(() => import("@/pages/AchievementLeaderboard"));
 export const MusicLibrary = lazy(() => import("@/pages/MusicLibrary"));
 export const PublicMusic = lazy(() => import("@/pages/PublicMusic"));
 export const ParentDashboard = lazy(() => import("@/pages/ParentDashboard"));
@@ -91,6 +92,7 @@ export const routeConfig = {
   nexusLeaderboard: "/nexus-leaderboard",
   comboLeaderboard: "/combo-leaderboard",
   camlyLeaderboard: "/camly-leaderboard",
+  achievementLeaderboard: "/achievement-leaderboard",
   
   // Music
   music: "/music",
