@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Star, Trophy, Gamepad2, Sparkles, Heart, Rocket, 
   Crown, Compass, Palette, Book, Music, Zap, Lock,
-  PartyPopper
+  PartyPopper, RefreshCw
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-
+import { toast } from "sonner";
 interface Achievement {
   id: string;
   type: string;
@@ -149,13 +150,31 @@ const GAME_ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'progress' | 
 
 interface GameAchievementBadgeProps {
   isChildFriendly?: boolean;
+  onSyncAchievements?: () => Promise<boolean | undefined>;
 }
 
-export function GameAchievementBadge({ isChildFriendly = false }: GameAchievementBadgeProps) {
+export function GameAchievementBadge({ isChildFriendly = false, onSyncAchievements }: GameAchievementBadgeProps) {
   const { user } = useAuth();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement | null>(null);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    if (!onSyncAchievements) return;
+    setSyncing(true);
+    try {
+      const result = await onSyncAchievements();
+      if (result) {
+        toast.success("Đã đồng bộ thành tích! 🎉");
+        await loadAchievements();
+      }
+    } catch (error) {
+      toast.error("Không thể đồng bộ thành tích");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   useEffect(() => {
     if (user) loadAchievements();
@@ -251,11 +270,25 @@ export function GameAchievementBadge({ isChildFriendly = false }: GameAchievemen
                 : `${unlockedCount}/${totalCount}`}
             </span>
           </div>
-          {isChildFriendly && (
-            <p className="text-xs text-muted-foreground mt-2">
-              Chơi game để mở khóa thêm huy hiệu nhé! 🎮
-            </p>
-          )}
+          <div className="flex items-center justify-between mt-2">
+            {isChildFriendly && (
+              <p className="text-xs text-muted-foreground">
+                Chơi game để mở khóa thêm huy hiệu nhé! 🎮
+              </p>
+            )}
+            {onSyncAchievements && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSync}
+                disabled={syncing}
+                className="gap-2 ml-auto"
+              >
+                <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+                {syncing ? 'Đang đồng bộ...' : 'Đồng bộ'}
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 

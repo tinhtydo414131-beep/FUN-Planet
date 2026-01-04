@@ -85,13 +85,25 @@ export function useGameAchievements() {
     if (!user) return;
 
     try {
-      // Count unique games played from user_game_plays table (this is the table used by usePlayTimeRewards)
-      const { count } = await supabase
+      // Count unique games played from user_game_plays table
+      const { count: ugpCount } = await supabase
         .from('user_game_plays')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id);
 
-      const gamesPlayed = count || 0;
+      let gamesPlayed = ugpCount || 0;
+
+      // Fallback to profiles.total_plays if user_game_plays is empty
+      // This ensures existing users can still unlock achievements
+      if (gamesPlayed === 0) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('total_plays')
+          .eq('id', user.id)
+          .single();
+        
+        gamesPlayed = profile?.total_plays || 0;
+      }
 
       // Update explorer achievements
       if (gamesPlayed >= 1) await updateProgress('first_game', gamesPlayed);
@@ -157,12 +169,53 @@ export function useGameAchievements() {
     }
   }, [user, updateProgress]);
 
+  // Sync all achievements based on current data - useful for existing users
+  const syncAllAchievements = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      // Check explorer achievements
+      await checkExplorerAchievements();
+      
+      // Check champion achievement based on leaderboard
+      const { data: rankings } = await supabase
+        .from('profiles')
+        .select('id')
+        .order('wallet_balance', { ascending: false })
+        .limit(10);
+      
+      if (rankings) {
+        const rank = rankings.findIndex(p => p.id === user.id);
+        if (rank !== -1) {
+          await checkChampionAchievement(rank + 1);
+        }
+      }
+      
+      // Check playtime achievement
+      const { data: playRewards } = await supabase
+        .from('daily_play_rewards')
+        .select('total_play_minutes')
+        .eq('user_id', user.id);
+      
+      if (playRewards) {
+        const totalMinutes = playRewards.reduce((sum, r) => sum + (r.total_play_minutes || 0), 0);
+        await checkPlayTimeAchievement(totalMinutes);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error syncing achievements:', error);
+      return false;
+    }
+  }, [user, checkExplorerAchievements, checkChampionAchievement, checkPlayTimeAchievement]);
+
   return {
     updateProgress,
     checkExplorerAchievements,
     checkCategoryAchievements,
     checkPlayTimeAchievement,
     checkStreakAchievement,
-    checkChampionAchievement
+    checkChampionAchievement,
+    syncAllAchievements
   };
 }
