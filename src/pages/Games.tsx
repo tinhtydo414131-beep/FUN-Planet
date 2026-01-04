@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, forwardRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { GameCard } from "@/components/GameCard";
@@ -825,7 +825,7 @@ interface LightTreasureCardProps {
   onPlay: () => void;
 }
 
-const LightTreasureCard = React.forwardRef<HTMLDivElement, LightTreasureCardProps>(
+const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
   ({ game, type, index, playersOnline, onPlay }, ref) => {
   const [isHovered, setIsHovered] = useState(false);
   
