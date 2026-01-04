@@ -197,9 +197,59 @@ export function useGameAchievements() {
         .select('total_play_minutes')
         .eq('user_id', user.id);
       
-      if (playRewards) {
-        const totalMinutes = playRewards.reduce((sum, r) => sum + (r.total_play_minutes || 0), 0);
+      let totalMinutes = 0;
+      if (playRewards && playRewards.length > 0) {
+        totalMinutes = playRewards.reduce((sum, r) => sum + (r.total_play_minutes || 0), 0);
+      }
+      
+      // Fallback: estimate playtime from profiles.total_plays if daily_play_rewards is empty
+      if (totalMinutes === 0) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('total_plays')
+          .eq('id', user.id)
+          .single();
+        
+        // Estimate ~2 minutes per play session
+        totalMinutes = (profile?.total_plays || 0) * 2;
+      }
+      
+      if (totalMinutes >= 60) {
         await checkPlayTimeAchievement(totalMinutes);
+      }
+      
+      // Check streak achievement from game_plays
+      const { data: playDates } = await supabase
+        .from('game_plays')
+        .select('played_at')
+        .eq('user_id', user.id)
+        .order('played_at', { ascending: false })
+        .limit(60);
+      
+      if (playDates && playDates.length > 0) {
+        // Calculate consecutive days
+        const uniqueDays = new Set<string>();
+        playDates.forEach(p => {
+          const date = new Date(p.played_at).toISOString().split('T')[0];
+          uniqueDays.add(date);
+        });
+        
+        const sortedDays = Array.from(uniqueDays).sort().reverse();
+        let streak = 1;
+        
+        for (let i = 1; i < sortedDays.length; i++) {
+          const prevDate = new Date(sortedDays[i - 1]);
+          const currDate = new Date(sortedDays[i]);
+          const diffDays = Math.floor((prevDate.getTime() - currDate.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (diffDays === 1) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        
+        await checkStreakAchievement(streak);
       }
       
       return true;
@@ -207,7 +257,7 @@ export function useGameAchievements() {
       console.error('Error syncing achievements:', error);
       return false;
     }
-  }, [user, checkExplorerAchievements, checkChampionAchievement, checkPlayTimeAchievement]);
+  }, [user, checkExplorerAchievements, checkChampionAchievement, checkPlayTimeAchievement, checkStreakAchievement]);
 
   return {
     updateProgress,
