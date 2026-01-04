@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { GameCard } from "@/components/GameCard";
@@ -825,7 +825,8 @@ interface LightTreasureCardProps {
   onPlay: () => void;
 }
 
-const LightTreasureCard = ({ game, type, index, playersOnline, onPlay }: LightTreasureCardProps) => {
+const LightTreasureCard = React.forwardRef<HTMLDivElement, LightTreasureCardProps>(
+  ({ game, type, index, playersOnline, onPlay }, ref) => {
   const [isHovered, setIsHovered] = useState(false);
   
   const getThumbnail = () => {
@@ -862,6 +863,7 @@ const LightTreasureCard = ({ game, type, index, playersOnline, onPlay }: LightTr
   
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.05, 0.5) }}
@@ -990,6 +992,8 @@ const LightTreasureCard = ({ game, type, index, playersOnline, onPlay }: LightTr
       </Link>
     </motion.div>
   );
-};
+});
+
+LightTreasureCard.displayName = "LightTreasureCard";
 
 export default Games;
