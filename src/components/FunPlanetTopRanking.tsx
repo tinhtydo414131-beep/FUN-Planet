@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Crown, Medal, ChevronRight, Gem, RefreshCw, Clock, Gift } from "lucide-react";
+import { Crown, Medal, ChevronRight, Gem, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -213,54 +213,21 @@ const PodiumCard = ({
         {user.username}
       </p>
 
-      {/* Balance - 3 rows */}
+      {/* Balance - Only Total CAMLY */}
       <TooltipProvider>
-        <div className="flex flex-col items-center gap-0.5 mt-1">
-          {/* Pending - White/Gray */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 cursor-help">
-                <Clock className="h-3 w-3 text-white/70" />
-                <span className="text-xs text-white/80">
-                  {(user.pending_amount || 0).toLocaleString()}
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="bg-black/90 border-white/20 text-white text-xs">
-              CAMLY chờ claim
-            </TooltipContent>
-          </Tooltip>
-
-          {/* Claimed - Green */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 cursor-help">
-                <Gift className="h-3 w-3 text-green-400" />
-                <span className="text-xs text-green-400">
-                  {(user.claimed_amount || 0).toLocaleString()}
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="bg-black/90 border-green-500/50 text-green-400 text-xs">
-              CAMLY đã nhận
-            </TooltipContent>
-          </Tooltip>
-
-          {/* Total - Yellow (Main) */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 cursor-help">
-                <Gem className="h-3.5 w-3.5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
-                <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
-                  <AnimatedCounter value={user.total_camly || 0} duration={2000} />
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
-              Tổng CAMLY (xếp hạng)
-            </TooltipContent>
-          </Tooltip>
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-1.5 mt-1 cursor-help">
+              <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
+              <span className="text-base font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
+                <AnimatedCounter value={user.total_camly || 0} duration={2000} />
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
+            Tổng CAMLY đã nhận
+          </TooltipContent>
+        </Tooltip>
       </TooltipProvider>
 
       {/* Podium Base */}
@@ -834,58 +801,21 @@ export const FunPlanetTopRanking = () => {
                             />
                           </div>
 
-                          {/* Balance - 3 values */}
+                          {/* Balance - Only Total CAMLY */}
                           <TooltipProvider>
-                            <div className="flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-2 py-1 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
-                              {/* Pending */}
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex items-center gap-0.5 cursor-help">
-                                    <Clock className="h-3 w-3 text-white/70" />
-                                    <span className="text-xs text-white/80">
-                                      {(rankedUser.pending_amount || 0).toLocaleString()}
-                                    </span>
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="bg-black/90 border-white/20 text-white text-xs">
-                                  CAMLY chờ claim
-                                </TooltipContent>
-                              </Tooltip>
-
-                              <span className="text-white/40">|</span>
-
-                              {/* Claimed */}
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex items-center gap-0.5 cursor-help">
-                                    <Gift className="h-3 w-3 text-green-400" />
-                                    <span className="text-xs text-green-400">
-                                      {(rankedUser.claimed_amount || 0).toLocaleString()}
-                                    </span>
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="bg-black/90 border-green-500/50 text-green-400 text-xs">
-                                  CAMLY đã nhận
-                                </TooltipContent>
-                              </Tooltip>
-
-                              <span className="text-white/40">|</span>
-
-                              {/* Total */}
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex items-center gap-0.5 cursor-help">
-                                    <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" />
-                                    <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" style={{ textShadow: '0 0 8px rgba(255,215,0,0.7)' }}>
-                                      {(rankedUser.total_camly || 0).toLocaleString()}
-                                    </span>
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
-                                  Tổng CAMLY (xếp hạng)
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)] cursor-help">
+                                  <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" />
+                                  <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" style={{ textShadow: '0 0 8px rgba(255,215,0,0.7)' }}>
+                                    {(rankedUser.total_camly || 0).toLocaleString()}
+                                  </span>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
+                                Tổng CAMLY đã nhận
+                              </TooltipContent>
+                            </Tooltip>
                           </TooltipProvider>
                         </motion.div>
                       </HoverCardTrigger>
@@ -902,20 +832,10 @@ export const FunPlanetTopRanking = () => {
                           </Avatar>
                           <div className="flex-1">
                             <p className="font-bold text-white">{rankedUser.username}</p>
-                            {/* 3 data points in HoverCard */}
-                            <div className="space-y-0.5 mt-1">
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3 text-white/70" />
-                                <span className="text-xs text-white/80">Chờ: {(rankedUser.pending_amount || 0).toLocaleString()}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Gift className="h-3 w-3 text-green-400" />
-                                <span className="text-xs text-green-400">Đã nhận: {(rankedUser.claimed_amount || 0).toLocaleString()}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Gem className="h-4 w-4 text-yellow-400" />
-                                <span className="text-sm font-bold text-yellow-400">{(rankedUser.total_camly || 0).toLocaleString()} CAMLY</span>
-                              </div>
+                            {/* Total CAMLY in HoverCard */}
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <Gem className="h-5 w-5 text-yellow-400" />
+                              <span className="text-lg font-bold text-yellow-400">{(rankedUser.total_camly || 0).toLocaleString()} CAMLY</span>
                             </div>
                             <p className="text-xs text-white mt-1">
                               🏆 Xếp hạng: #{rank}
