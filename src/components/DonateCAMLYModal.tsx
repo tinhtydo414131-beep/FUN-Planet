@@ -40,7 +40,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [donatedAmount, setDonatedAmount] = useState(0);
-  const [donationType, setDonationType] = useState<DonationType>("internal");
+  const [donationType] = useState<DonationType>("onchain"); // On-chain only - Internal disabled
   const [txHash, setTxHash] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,8 +79,8 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
   };
 
   const numericAmount = parseInt(amount) || 0;
-  const currentBalance = donationType === "internal" ? balance : onchainBalance;
-  const isValidAmount = numericAmount >= MIN_AMOUNT && numericAmount <= currentBalance;
+  const currentBalance = onchainBalance; // On-chain only
+  const isValidAmount = numericAmount >= MIN_AMOUNT && numericAmount <= currentBalance && isConnected;
 
   const handleQuickAmount = (value: number) => {
     if (value <= currentBalance) {
@@ -265,7 +265,7 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
     setMessage("");
     setIsAnonymous(false);
     setTxHash(null);
-    setDonationType("internal");
+    // donationType is now always "onchain"
     onOpenChange(false);
     onSuccess?.();
   };
@@ -495,64 +495,36 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
               </div>
 
               <div className="space-y-4">
-                {/* Donation Type Toggle */}
-                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-800/80 rounded-xl">
-                  <button
-                    onClick={() => setDonationType("internal")}
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                      donationType === "internal"
-                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                        : "text-white/60 hover:text-white/80"
-                    }`}
-                  >
-                    <Wallet className="h-4 w-4" />
-                    Internal
-                  </button>
-                  <button
-                    onClick={() => setDonationType("onchain")}
-                    disabled={!isConnected}
-                    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                      donationType === "onchain"
-                        ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg"
-                        : isConnected
-                          ? "text-white/60 hover:text-white/80"
-                          : "text-white/30 cursor-not-allowed"
-                    }`}
-                  >
-                    <Link2 className="h-4 w-4" />
-                    On-chain
-                  </button>
+                {/* On-chain Only Badge */}
+                <div className="flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-xl border border-emerald-500/30">
+                  <Link2 className="h-4 w-4 text-emerald-400" />
+                  <span className="text-sm font-medium text-emerald-300">On-chain Only</span>
+                  <span className="text-xs text-white/50">• CAMLY thật trên BSC</span>
                 </div>
 
-                {!isConnected && donationType === "internal" && (
-                  <p className="text-xs text-center text-white/50">
-                    💡 Kết nối ví để mở khóa gửi on-chain token thực
-                  </p>
-                )}
-
-                {/* Balance display */}
-                <div className="flex items-center justify-between p-3 bg-slate-800/80 rounded-xl border border-slate-600/50">
-                  <span className="text-white/80 font-medium flex items-center gap-2">
-                    {donationType === "onchain" ? (
-                      <>
-                        <Link2 className="h-4 w-4 text-emerald-400" />
-                        On-chain:
-                      </>
-                    ) : (
-                      <>
-                        <Wallet className="h-4 w-4 text-blue-400" />
-                        Số dư nội bộ:
-                      </>
-                    )}
-                  </span>
-                  <div className="flex items-center gap-1.5 bg-slate-700/80 px-3 py-1.5 rounded-lg">
-                    <span className="text-pink-400">💎</span>
-                    <span className="font-bold text-white">
-                      {currentBalance.toLocaleString()}
-                    </span>
-                    <span className="text-white/80 text-sm">CAMLY</span>
+                {/* Wallet Connection Required */}
+                {!isConnected ? (
+                  <div className="p-4 bg-amber-500/20 rounded-xl border border-amber-500/30 text-center">
+                    <Wallet className="h-8 w-8 mx-auto mb-2 text-amber-400" />
+                    <p className="text-sm text-amber-200 font-medium">Vui lòng kết nối ví MetaMask</p>
+                    <p className="text-xs text-white/50 mt-1">để gửi CAMLY thật đến ví donation</p>
                   </div>
-                </div>
+                ) : (
+                  /* Balance display - On-chain only */
+                  <div className="flex items-center justify-between p-3 bg-slate-800/80 rounded-xl border border-slate-600/50">
+                    <span className="text-white/80 font-medium flex items-center gap-2">
+                      <Link2 className="h-4 w-4 text-emerald-400" />
+                      Số dư On-chain:
+                    </span>
+                    <div className="flex items-center gap-1.5 bg-slate-700/80 px-3 py-1.5 rounded-lg">
+                      <span className="text-pink-400">💎</span>
+                      <span className="font-bold text-white">
+                        {currentBalance.toLocaleString()}
+                      </span>
+                      <span className="text-white/80 text-sm">CAMLY</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Amount input */}
                 <div>
@@ -648,28 +620,22 @@ export const DonateCAMLYModal = ({ open, onOpenChange, onSuccess }: DonateCAMLYM
                   </span>
                 </div>
 
-                {/* Donate button */}
+                {/* Donate button - On-chain only */}
                 <Button
                   onClick={() => setShowConfirm(true)}
-                  disabled={!isValidAmount || (donationType === "onchain" && !isConnected)}
-                  className={`w-full py-4 text-lg font-bold rounded-xl shadow-lg transition-all ${
-                    donationType === "onchain"
-                      ? "bg-gradient-to-r from-emerald-500 via-cyan-400 to-emerald-500 hover:from-emerald-600 hover:via-cyan-500 hover:to-emerald-600 shadow-emerald-500/30 hover:shadow-emerald-500/40"
-                      : "bg-gradient-to-r from-pink-500 via-rose-400 to-pink-500 hover:from-pink-600 hover:via-rose-500 hover:to-pink-600 shadow-pink-500/30 hover:shadow-pink-500/40"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  disabled={!isValidAmount || !isConnected}
+                  className="w-full py-4 text-lg font-bold rounded-xl shadow-lg transition-all bg-gradient-to-r from-emerald-500 via-cyan-400 to-emerald-500 hover:from-emerald-600 hover:via-cyan-500 hover:to-emerald-600 shadow-emerald-500/30 hover:shadow-emerald-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Heart className="h-5 w-5 mr-2" />
-                  {donationType === "onchain" ? "Gửi On-chain" : "Ủng hộ"}
+                  Gửi On-chain
                 </Button>
 
-                {donationType === "onchain" && (
-                  <p className="text-xs text-center text-white/50">
-                    🔗 Giao dịch thực trên BSC Mainnet đến ví{" "}
-                    <span className="font-mono text-emerald-400/70">
-                      {DONATION_WALLET_ADDRESS.slice(0, 6)}...{DONATION_WALLET_ADDRESS.slice(-4)}
-                    </span>
-                  </p>
-                )}
+                <p className="text-xs text-center text-white/50">
+                  🔗 Giao dịch thực trên BSC Mainnet đến ví{" "}
+                  <span className="font-mono text-emerald-400/70">
+                    {DONATION_WALLET_ADDRESS.slice(0, 6)}...{DONATION_WALLET_ADDRESS.slice(-4)}
+                  </span>
+                </p>
               </div>
             </motion.div>
           )}
