@@ -5,20 +5,37 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { formatBalanceForChild, getRewardBadge, shouldShowChildFriendlyDisplay } from '@/lib/childFriendlyDisplay';
 
 export const RewardGalaxyHomeBanner = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [pendingBalance, setPendingBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [birthYear, setBirthYear] = useState<number | null>(null);
+  
+  const isChildFriendly = shouldShowChildFriendlyDisplay(birthYear);
 
   useEffect(() => {
     if (user) {
       fetchPendingBalance();
+      fetchBirthYear();
     } else {
       setIsLoading(false);
     }
   }, [user]);
+
+  const fetchBirthYear = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('birth_year')
+      .eq('id', user.id)
+      .single();
+    if (data?.birth_year) {
+      setBirthYear(data.birth_year);
+    }
+  };
 
   const fetchPendingBalance = async () => {
     if (!user) return;
@@ -40,6 +57,9 @@ export const RewardGalaxyHomeBanner = () => {
   };
 
   const formatBalance = (balance: number) => {
+    if (isChildFriendly) {
+      return formatBalanceForChild(balance);
+    }
     if (balance >= 1000000) {
       return `${(balance / 1000000).toFixed(1)}M`;
     } else if (balance >= 1000) {

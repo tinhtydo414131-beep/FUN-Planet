@@ -5,14 +5,22 @@ import { toast } from '@/hooks/use-toast';
 import { 
   PLAY_REWARDS, 
   AGE_DAILY_CAPS, 
+  GAME_CATEGORY_MULTIPLIERS,
   getDailyCap,
-  type AgeGroup 
+  type AgeGroup,
+  type GameCategory,
 } from '@/config/playtimeRewards';
+import { 
+  getChildFriendlyRewardMessage, 
+  shouldShowChildFriendlyDisplay,
+  formatBalanceForChild,
+} from '@/lib/childFriendlyDisplay';
 
 interface PlaySession {
   id: string;
   gameId: string;
   gameType: 'uploaded' | 'builtin';
+  gameCategory: GameCategory;
   startedAt: Date;
   lastActivityAt: Date;
   totalSeconds: number;
@@ -36,6 +44,8 @@ interface PlayTimeRewardsState {
   canEarnRewards: boolean;
   pendingRewards: number;
   ageGroup: AgeGroup;
+  birthYear: number | null;
+  isChildFriendlyDisplay: boolean;
 }
 
 export const usePlayTimeRewards = () => {
@@ -47,13 +57,15 @@ export const usePlayTimeRewards = () => {
       newGameRewards: 0,
       timeRewards: 0,
       totalMinutes: 0,
-      dailyCap: 60000,
-      remainingCap: 60000,
+      dailyCap: 15000,
+      remainingCap: 15000,
     },
     isNewGame: false,
     canEarnRewards: true,
     pendingRewards: 0,
     ageGroup: '18+',
+    birthYear: null,
+    isChildFriendlyDisplay: false,
   });
   
   const activityTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -67,8 +79,26 @@ export const usePlayTimeRewards = () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       
-      // For now, assume 18+ since we don't have age in profiles
-      const ageGroup = '18+' as AgeGroup;
+      // Fetch birth_year from profiles to determine age group
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('birth_year')
+        .eq('id', user.id)
+        .single();
+      
+      const birthYear = profile?.birth_year || null;
+      const currentYear = new Date().getFullYear();
+      const age = birthYear ? currentYear - birthYear : null;
+      
+      // Determine age group based on actual age
+      let ageGroup: AgeGroup = '18+';
+      if (age !== null) {
+        if (age < 7) ageGroup = '3-6';
+        else if (age < 13) ageGroup = '7-12';
+        else if (age < 18) ageGroup = '13-17';
+      }
+      
+      const isChildFriendlyDisplay = shouldShowChildFriendlyDisplay(birthYear);
       const cap = getDailyCap(ageGroup);
 
       // Get or create daily reward record
@@ -144,7 +174,11 @@ export const usePlayTimeRewards = () => {
   }, [user]);
 
   // Start a play session
-  const startSession = useCallback(async (gameId: string, gameType: 'uploaded' | 'builtin' = 'builtin') => {
+  const startSession = useCallback(async (
+    gameId: string, 
+    gameType: 'uploaded' | 'builtin' = 'builtin',
+    gameCategory: GameCategory = 'default'
+  ) => {
     if (!user || !state.canEarnRewards) return;
 
     const isNew = await checkIsNewGame(gameId, gameType);
@@ -200,10 +234,16 @@ export const usePlayTimeRewards = () => {
             .eq('user_id', user.id)
             .eq('reward_date', today);
 
-          toast({
-            title: "🎮 Game Mới!",
-            description: `+${bonus.toLocaleString()} CAMLY cho game đầu tiên!`,
-          });
+          // Child-friendly toast
+          if (state.isChildFriendlyDisplay) {
+            const msg = getChildFriendlyRewardMessage('new_game', bonus);
+            toast({ title: msg.title, description: msg.message });
+          } else {
+            toast({
+              title: "🎮 Game Mới!",
+              description: `+${bonus.toLocaleString()} CAMLY cho game đầu tiên!`,
+            });
+          }
 
           setState(prev => ({
             ...prev,
@@ -225,6 +265,7 @@ export const usePlayTimeRewards = () => {
         id: session.id,
         gameId,
         gameType,
+        gameCategory,
         startedAt: new Date(),
         lastActivityAt: new Date(),
         totalSeconds: 0,
@@ -277,8 +318,11 @@ export const usePlayTimeRewards = () => {
         return prev;
       });
 
-      // Award time-based rewards
-      const reward = Math.min(PLAY_REWARDS.CAMLY_PER_MINUTE, state.dailyState.remainingCap);
+      // Award time-based rewards with category multiplier
+      const gameCategory = state.currentSession?.gameCategory || 'default';
+      const multiplier = GAME_CATEGORY_MULTIPLIERS[gameCategory] || 1.0;
+      const baseReward = Math.floor(PLAY_REWARDS.CAMLY_PER_MINUTE * multiplier);
+      const reward = Math.min(baseReward, state.dailyState.remainingCap);
       
       if (reward > 0 && state.currentSession?.isActive) {
         lastRewardTimeRef.current = now;
@@ -329,10 +373,17 @@ export const usePlayTimeRewards = () => {
           canEarnRewards: prev.dailyState.remainingCap - reward > 0,
         }));
 
-        toast({
-          title: "⏱️ Thưởng Thời Gian!",
-          description: `+${reward.toLocaleString()} CAMLY (${state.dailyState.totalMinutes + 1} phút)`,
-        });
+        // Child-friendly toast
+        if (state.isChildFriendlyDisplay) {
+          const msg = getChildFriendlyRewardMessage('playtime', reward);
+          toast({ title: msg.title, description: msg.message });
+        } else {
+          const multiplierText = multiplier > 1 ? ` (×${multiplier} ${gameCategory})` : '';
+          toast({
+            title: "⏱️ Thưởng Thời Gian!",
+            description: `+${reward.toLocaleString()} CAMLY${multiplierText}`,
+          });
+        }
       }
     }, 60000); // Every minute
   }, [user, state.dailyState, state.currentSession]);

@@ -1,14 +1,26 @@
 // CAMLY Playtime Reward System Configuration
-// Launch Phase - Attractive rewards for early adoption
+// 5D Light Economy - Rewards for VALUE, not grinding
 
 export const PLAY_REWARDS = {
-  NEW_GAME_BONUS: 10000,        // 10,000 CAMLY for first time playing each game
+  NEW_GAME_BONUS: 5000,         // 5,000 CAMLY for first time playing each game (reduced from 10k)
   MAX_NEW_GAME_BONUSES: 999,    // Unlimited new games (each game only once)
-  CAMLY_PER_MINUTE: 500,        // 500 CAMLY per minute of play
+  CAMLY_PER_MINUTE: 100,        // 100 CAMLY per minute of play (reduced from 500 to discourage grinding)
   MIN_SESSION_SECONDS: 60,      // Minimum 60 seconds to earn rewards
   AFK_TIMEOUT_SECONDS: 120,     // 2 minutes without activity = AFK
   COOLDOWN_SECONDS: 60,         // 1 minute cooldown between reward claims
 } as const;
+
+// Game category multipliers - Reward QUALITY over quantity
+export const GAME_CATEGORY_MULTIPLIERS = {
+  educational: 2.0,    // ×2 for educational games
+  brain: 1.5,          // ×1.5 for brain training games
+  puzzle: 1.2,         // ×1.2 for puzzle games
+  kindness: 1.5,       // ×1.5 for kindness/sharing games
+  creativity: 1.5,     // ×1.5 for creative games
+  default: 1.0,        // ×1 for casual/adventure games
+} as const;
+
+export type GameCategory = keyof typeof GAME_CATEGORY_MULTIPLIERS;
 
 export const CREATOR_REWARDS = {
   UPLOAD_BONUS: 500000,         // 500,000 CAMLY when game is approved
@@ -22,11 +34,12 @@ export const CREATOR_REWARDS = {
   },
 } as const;
 
+// Age-based daily caps - adjusted for new CAMLY_PER_MINUTE rate
 export const AGE_DAILY_CAPS = {
-  '3-6': { maxMinutes: 30, maxCamly: 15000 },
-  '7-12': { maxMinutes: 60, maxCamly: 30000 },
-  '13-17': { maxMinutes: 90, maxCamly: 45000 },
-  '18+': { maxMinutes: 120, maxCamly: 60000 },
+  '3-6': { maxMinutes: 30, maxCamly: 3000 },    // 30 min × 100 = 3,000 base
+  '7-12': { maxMinutes: 60, maxCamly: 6000 },   // 60 min × 100 = 6,000 base
+  '13-17': { maxMinutes: 90, maxCamly: 9000 },  // 90 min × 100 = 9,000 base
+  '18+': { maxMinutes: 120, maxCamly: 15000 },  // 120 min × 100 + bonus = 15,000
 } as const;
 
 export type AgeGroup = keyof typeof AGE_DAILY_CAPS;
