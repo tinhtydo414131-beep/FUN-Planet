@@ -47,6 +47,11 @@ interface DailyClaimData {
 
 const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
 
+// Wrapper to avoid ref forwarding warning in recharts
+const SafeCartesianGrid = (props: React.ComponentProps<typeof CartesianGrid>) => (
+  <CartesianGrid {...props} />
+);
+
 export function AdminOverviewTab({ stats, onRefresh }: AdminOverviewTabProps) {
   const [topUsers, setTopUsers] = useState<TopUser[]>([]);
   const [dailyClaims, setDailyClaims] = useState<DailyClaimData[]>([]);
@@ -142,7 +147,7 @@ export function AdminOverviewTab({ stats, onRefresh }: AdminOverviewTabProps) {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyClaims}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis 
                     dataKey="date" 
                     stroke="hsl(var(--muted-foreground))"
@@ -230,7 +235,7 @@ export function AdminOverviewTab({ stats, onRefresh }: AdminOverviewTabProps) {
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={topUsers} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis 
                   type="number"
                   stroke="hsl(var(--muted-foreground))"
