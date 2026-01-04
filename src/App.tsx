@@ -65,6 +65,7 @@ const WelcomeCreatorPopup = lazy(() => import("@/components/WelcomeCreatorPopup"
 const GameCompleteClaimPopup = lazy(() => import("@/components/GameCompleteClaimPopup").then(m => ({ default: m.GameCompleteClaimPopup })));
 const DailyLoginRewardPopup = lazy(() => import("@/components/reward-galaxy/DailyLoginRewardPopup").then(m => ({ default: m.DailyLoginRewardPopup })));
 const MobileBottomNavEnhanced = lazy(() => import("@/components/MobileBottomNavEnhanced").then(m => ({ default: m.MobileBottomNavEnhanced })));
+const BirthYearPopup = lazy(() => import("@/components/BirthYearPopup").then(m => ({ default: m.BirthYearPopup })));
 
 // Lazy load private chat components
 const FloatingChatWindows = lazy(() => import("@/components/private-chat/FloatingChatWindows").then(m => ({ default: m.FloatingChatWindows })));
@@ -74,6 +75,7 @@ const CallProvider = lazy(() => import("@/components/private-chat/CallProvider")
 import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
 import { useDailyLoginReward } from "@/hooks/useDailyLoginReward";
+import { useBirthYearPopup } from "@/hooks/useBirthYearPopup";
 
 const queryClient = new QueryClient();
 
@@ -192,6 +194,11 @@ const AppContent = () => {
     closeRewardPopup, 
     autoClaimOnLogin 
   } = useDailyLoginReward();
+  const {
+    showPopup: showBirthYearPopup,
+    closePopup: closeBirthYearPopup,
+    onBirthYearSaved,
+  } = useBirthYearPopup();
   
   const hasAutoClaimedRef = useRef(false);
 
@@ -274,6 +281,17 @@ const AppContent = () => {
               isOpen={showRewardPopup}
               amount={claimedAmount}
               onClose={closeRewardPopup}
+            />
+          </Suspense>
+        )}
+        
+        {/* Birth Year Popup - Shows for users without birth_year */}
+        {showBirthYearPopup && (
+          <Suspense fallback={null}>
+            <BirthYearPopup
+              open={showBirthYearPopup}
+              onOpenChange={closeBirthYearPopup}
+              onBirthYearSaved={onBirthYearSaved}
             />
           </Suspense>
         )}

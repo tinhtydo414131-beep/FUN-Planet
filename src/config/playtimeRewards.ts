@@ -17,7 +17,11 @@ export const GAME_CATEGORY_MULTIPLIERS = {
   puzzle: 1.2,         // ×1.2 for puzzle games
   kindness: 1.5,       // ×1.5 for kindness/sharing games
   creativity: 1.5,     // ×1.5 for creative games
-  default: 1.0,        // ×1 for casual/adventure games
+  creative: 1.5,       // alias for creativity
+  adventure: 1.0,      // ×1 for adventure games
+  casual: 1.0,         // ×1 for casual games
+  music: 1.0,          // ×1 for music games
+  default: 1.0,        // ×1 for other games
 } as const;
 
 export type GameCategory = keyof typeof GAME_CATEGORY_MULTIPLIERS;

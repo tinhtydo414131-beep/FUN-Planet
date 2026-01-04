@@ -9,6 +9,24 @@ import { useAuth } from "@/hooks/useAuth";
 import GameDeleteModal from "@/components/GameDeleteModal";
 import { useGameTrash } from "@/hooks/useGameTrash";
 import { GamePreviewPlaceholder } from "@/components/GamePreviewPlaceholder";
+import { GAME_CATEGORY_MULTIPLIERS, GameCategory } from "@/config/playtimeRewards";
+
+// Category badge config with multiplier display
+const getCategoryBadge = (category: string) => {
+  const multiplier = GAME_CATEGORY_MULTIPLIERS[category as GameCategory] || GAME_CATEGORY_MULTIPLIERS.default;
+  const configs: Record<string, { emoji: string; label: string; color: string }> = {
+    educational: { emoji: "📚", label: "Học Vui", color: "bg-emerald-500/20 text-emerald-700 border-emerald-500/50" },
+    brain: { emoji: "🧠", label: "Thông Minh", color: "bg-purple-500/20 text-purple-700 border-purple-500/50" },
+    puzzle: { emoji: "🧩", label: "Puzzle", color: "bg-blue-500/20 text-blue-700 border-blue-500/50" },
+    kindness: { emoji: "💖", label: "Yêu Thương", color: "bg-pink-500/20 text-pink-700 border-pink-500/50" },
+    creative: { emoji: "🎨", label: "Sáng Tạo", color: "bg-orange-500/20 text-orange-700 border-orange-500/50" },
+    creativity: { emoji: "🎨", label: "Sáng Tạo", color: "bg-orange-500/20 text-orange-700 border-orange-500/50" },
+    casual: { emoji: "🎮", label: "Giải Trí", color: "bg-gray-500/20 text-gray-700 border-gray-500/50" },
+    adventure: { emoji: "🗺️", label: "Phiêu Lưu", color: "bg-amber-500/20 text-amber-700 border-amber-500/50" },
+  };
+  const config = configs[category] || configs.casual;
+  return { ...config, multiplier };
+};
 
 interface UploadedGame {
   id: string;
@@ -162,10 +180,18 @@ export const UploadedGameCard = ({ game, onDeleted }: UploadedGameCardProps) => 
             </p>
           )}
 
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">
-              {game.category}
-            </Badge>
+          <div className="flex items-center gap-2 flex-wrap">
+            {(() => {
+              const badge = getCategoryBadge(game.category);
+              return (
+                <Badge variant="outline" className={`text-xs border ${badge.color}`}>
+                  {badge.emoji} {badge.label}
+                  {badge.multiplier > 1 && (
+                    <span className="ml-1 font-bold text-green-600">×{badge.multiplier}</span>
+                  )}
+                </Badge>
+              );
+            })()}
             {game.rating && game.rating > 0 && (
               <div className="flex items-center gap-1 text-sm">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
