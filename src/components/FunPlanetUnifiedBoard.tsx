@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, Gamepad2, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw, Wallet, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,33 +70,36 @@ interface RankedUser {
 type TabType = "creators" | "donors";
 
 // =============== HELPER COMPONENTS ===============
-const AnimatedCounter = ({ value, duration = 2000 }: { value: number; duration?: number }) => {
-  const [count, setCount] = useState(0);
-  const prevValueRef = useRef(value);
-  
-  useEffect(() => {
-    let startTime: number;
-    let animationFrame: number;
-    const startValue = prevValueRef.current;
+const AnimatedCounter = React.forwardRef<HTMLSpanElement, { value: number; duration?: number }>(
+  ({ value, duration = 2000 }, ref) => {
+    const [count, setCount] = useState(0);
+    const prevValueRef = useRef(value);
     
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
-      setCount(Math.floor(startValue + (value - startValue) * progress));
+    useEffect(() => {
+      let startTime: number;
+      let animationFrame: number;
+      const startValue = prevValueRef.current;
       
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      } else {
-        prevValueRef.current = value;
-      }
-    };
+      const animate = (currentTime: number) => {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        setCount(Math.floor(startValue + (value - startValue) * progress));
+        
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        } else {
+          prevValueRef.current = value;
+        }
+      };
+      
+      animationFrame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationFrame);
+    }, [value, duration]);
     
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [value, duration]);
-  
-  return <span className="text-white">{count.toLocaleString()}</span>;
-};
+    return <span ref={ref} className="text-white">{count.toLocaleString()}</span>;
+  }
+);
+AnimatedCounter.displayName = "AnimatedCounter";
 
 const ProgressBar = ({ value, maxValue }: { value: number; maxValue: number }) => {
   const percentage = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
