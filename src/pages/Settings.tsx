@@ -38,6 +38,7 @@ interface ProfileData {
   avatar_url: string | null;
   email: string;
   created_at: string;
+  birth_year: number | null;
 }
 export default function Settings() {
   const {
@@ -52,7 +53,8 @@ export default function Settings() {
   const [formData, setFormData] = useState({
     username: "",
     bio: "",
-    email: ""
+    email: "",
+    birthYear: ""
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -88,13 +90,14 @@ export default function Settings() {
       const {
         data,
         error
-      } = await supabase.from("profiles").select("username, bio, avatar_url, email, created_at").eq("id", user?.id).single();
+      } = await supabase.from("profiles").select("username, bio, avatar_url, email, created_at, birth_year").eq("id", user?.id).single();
       if (error) throw error;
       setProfile(data);
       setFormData({
         username: data.username || "",
         bio: data.bio || "",
-        email: data.email || ""
+        email: data.email || "",
+        birthYear: data.birth_year ? String(data.birth_year) : ""
       });
     } catch (error: any) {
       console.error("Error fetching profile:", error);
@@ -138,12 +141,25 @@ export default function Settings() {
     setSaving(true);
     
     try {
+      // Parse birth year if provided
+      const birthYearValue = formData.birthYear ? parseInt(formData.birthYear) : null;
+      const currentYear = new Date().getFullYear();
+      
+      // Validate birth year
+      if (birthYearValue && (birthYearValue < currentYear - 100 || birthYearValue > currentYear - 3)) {
+        toast.error("Năm sinh không hợp lệ!");
+        setSaving(false);
+        isSubmittingRef.current = false;
+        return;
+      }
+      
       // Use retry logic for mobile network issues
       const result = await withRetry(
         async () => {
           return supabase.from("profiles").update({
             username: formData.username.trim(),
-            bio: formData.bio.trim() || null
+            bio: formData.bio.trim() || null,
+            birth_year: birthYearValue
           }).eq("id", user?.id);
         },
         { operationName: "Lưu thông tin", maxRetries: 3 }
@@ -365,6 +381,30 @@ export default function Settings() {
                   {errors.bio && <p className="text-sm text-destructive font-comic">{errors.bio}</p>}
                   <p className="text-xs text-muted-foreground font-comic text-right">
                     {formData.bio.length}/200 ký tự
+                  </p>
+                </div>
+
+                {/* Birth Year */}
+                <div className="space-y-2">
+                  <Label htmlFor="birthYear" className="text-base font-fredoka text-foreground flex items-center gap-2">
+                    Năm sinh 🎂
+                    <span className="text-xs font-normal text-muted-foreground">(để hiển thị phần thưởng phù hợp)</span>
+                  </Label>
+                  <Input 
+                    id="birthYear" 
+                    type="number" 
+                    value={formData.birthYear} 
+                    onChange={e => setFormData({
+                      ...formData,
+                      birthYear: e.target.value
+                    })} 
+                    placeholder="VD: 2015" 
+                    className="border-4 focus:ring-4 focus:ring-primary/20 border-primary/40 focus:border-primary" 
+                    min={new Date().getFullYear() - 100}
+                    max={new Date().getFullYear() - 3}
+                  />
+                  <p className="text-xs text-muted-foreground font-comic">
+                    Trẻ em dưới 12 tuổi sẽ thấy phần thưởng dạng ⭐ thân thiện hơn
                   </p>
                 </div>
 
