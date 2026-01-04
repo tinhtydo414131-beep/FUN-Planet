@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatCamly, CAMLY_CONTRACT_ADDRESS } from '@/lib/web3';
 import { LightWalletModal } from './LightWalletModal';
 import { cn } from '@/lib/utils';
+import { formatBalanceForChild, getRewardBadge, shouldShowChildFriendlyDisplay } from '@/lib/childFriendlyDisplay';
 
 interface LightWalletButtonProps {
   variant?: 'header' | 'floating';
@@ -20,6 +21,9 @@ export const LightWalletButton = ({ variant = 'header', className }: LightWallet
   const [camlyBalance, setCamlyBalance] = useState(0);
   const [nftAvatarUrl, setNftAvatarUrl] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [birthYear, setBirthYear] = useState<number | null>(null);
+  
+  const isChildFriendly = shouldShowChildFriendlyDisplay(birthYear);
 
   // Fetch on-chain BNB balance
   const { data: bnbBalance } = useBalance({
@@ -61,11 +65,12 @@ export const LightWalletButton = ({ variant = 'header', className }: LightWallet
     if (!user) return;
     const { data } = await supabase
       .from('profiles')
-      .select('wallet_balance')
+      .select('wallet_balance, birth_year')
       .eq('id', user.id)
       .single();
     if (data) {
       setCamlyBalance(data.wallet_balance || 0);
+      setBirthYear(data.birth_year || null);
     }
   };
 
@@ -144,7 +149,14 @@ export const LightWalletButton = ({ variant = 'header', className }: LightWallet
                 />
               )}
               <span className="font-bold text-white text-sm">
-                {formatCamly(camlyBalance)} CAMLY
+                {isChildFriendly ? (
+                  <span className="flex items-center gap-1">
+                    {formatBalanceForChild(camlyBalance)}
+                    <span className="text-xs">{getRewardBadge(camlyBalance).emoji}</span>
+                  </span>
+                ) : (
+                  `${formatCamly(camlyBalance)} CAMLY`
+                )}
               </span>
             </div>
           ) : (
@@ -230,7 +242,14 @@ export const LightWalletButton = ({ variant = 'header', className }: LightWallet
                 {shortenAddress(address)}
               </span>
               <span className="font-bold text-amber-500 text-sm">
-                {formatCamly(camlyBalance)} CAMLY
+                {isChildFriendly ? (
+                  <span className="flex items-center gap-1">
+                    {formatBalanceForChild(camlyBalance)}
+                    <span className="text-xs">{getRewardBadge(camlyBalance).emoji}</span>
+                  </span>
+                ) : (
+                  `${formatCamly(camlyBalance)} CAMLY`
+                )}
               </span>
             </div>
             <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />

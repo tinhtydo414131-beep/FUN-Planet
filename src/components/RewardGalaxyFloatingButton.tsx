@@ -6,12 +6,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useDraggable } from '@/hooks/useDraggable';
 import { cn } from '@/lib/utils';
+import { formatBalanceForChild, getRewardBadge, shouldShowChildFriendlyDisplay } from '@/lib/childFriendlyDisplay';
 
 export const RewardGalaxyFloatingButton = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [pendingBalance, setPendingBalance] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [birthYear, setBirthYear] = useState<number | null>(null);
+  
+  const isChildFriendly = shouldShowChildFriendlyDisplay(birthYear);
 
   const { 
     isDragging, 
@@ -28,6 +32,7 @@ export const RewardGalaxyFloatingButton = () => {
   useEffect(() => {
     if (user) {
       fetchPendingBalance();
+      fetchBirthYear();
       
       // Subscribe to realtime updates
       const channel = supabase
@@ -67,7 +72,22 @@ export const RewardGalaxyFloatingButton = () => {
     }
   };
 
+  const fetchBirthYear = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('birth_year')
+      .eq('id', user.id)
+      .single();
+    if (data?.birth_year) {
+      setBirthYear(data.birth_year);
+    }
+  };
+
   const formatBalance = (balance: number) => {
+    if (isChildFriendly) {
+      return formatBalanceForChild(balance);
+    }
     if (balance >= 1000000) {
       return `${(balance / 1000000).toFixed(1)}M`;
     } else if (balance >= 1000) {

@@ -3313,6 +3313,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           bio_full: string | null
+          birth_year: number | null
           cover_url: string | null
           created_at: string | null
           education: string | null
@@ -3337,6 +3338,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           bio_full?: string | null
+          birth_year?: number | null
           cover_url?: string | null
           created_at?: string | null
           education?: string | null
@@ -3361,6 +3363,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           bio_full?: string | null
+          birth_year?: number | null
           cover_url?: string | null
           created_at?: string | null
           education?: string | null
