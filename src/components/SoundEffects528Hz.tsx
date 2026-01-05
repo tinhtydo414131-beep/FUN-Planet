@@ -127,4 +127,11 @@ export const playRewardSound = () => {
   audio.play().catch(console.error);
 };
 
+// Play weekly summary celebration sound
+export const playWeeklySummarySound = () => {
+  const audio = new Audio("/audio/radiant-dreamland.mp3");
+  audio.volume = 0.5;
+  audio.play().catch(console.error);
+};
+
 export default SoundEffects528Hz;
