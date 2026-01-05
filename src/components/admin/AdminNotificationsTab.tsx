@@ -25,9 +25,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -44,6 +46,10 @@ import {
   Info,
   AlertTriangle,
   Calendar,
+  Gamepad2,
+  Gem,
+  Trophy,
+  Eye,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -66,7 +72,16 @@ export function AdminNotificationsTab() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [sendingWeekly, setSendingWeekly] = useState(false);
+  const [previewingWeekly, setPreviewingWeekly] = useState(false);
+  const [weeklyPreview, setWeeklyPreview] = useState<Array<{
+    user_id: string;
+    username: string;
+    games_played: number;
+    camly_earned: number;
+    new_achievements: number;
+  }> | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     message: "",
@@ -174,6 +189,25 @@ export function AdminNotificationsTab() {
     }
   };
 
+  const previewWeeklySummary = async () => {
+    setPreviewingWeekly(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-weekly-summary", {
+        body: { preview: true }
+      });
+      
+      if (error) throw error;
+      
+      setWeeklyPreview(data?.summaries || []);
+      setPreviewDialogOpen(true);
+    } catch (error) {
+      console.error("Preview weekly summary error:", error);
+      toast.error("Failed to preview weekly summaries");
+    } finally {
+      setPreviewingWeekly(false);
+    }
+  };
+
   const sendWeeklySummary = async () => {
     if (!confirm("Gửi Weekly Summary cho tất cả users có hoạt động tuần qua?")) return;
     
@@ -184,6 +218,8 @@ export function AdminNotificationsTab() {
       if (error) throw error;
       
       toast.success(`Đã gửi ${data?.summaries?.length || 0} weekly summaries!`);
+      setPreviewDialogOpen(false);
+      setWeeklyPreview(null);
     } catch (error) {
       console.error("Send weekly summary error:", error);
       toast.error("Failed to send weekly summaries");
@@ -286,6 +322,18 @@ export function AdminNotificationsTab() {
             <Button 
               className="w-full" 
               variant="outline"
+              onClick={previewWeeklySummary}
+              disabled={previewingWeekly}
+            >
+              {previewingWeekly ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Users className="h-4 w-4 mr-2" />
+              )}
+              Preview Summary
+            </Button>
+            <Button 
+              className="w-full" 
               onClick={sendWeeklySummary}
               disabled={sendingWeekly}
             >
@@ -294,7 +342,7 @@ export function AdminNotificationsTab() {
               ) : (
                 <Calendar className="h-4 w-4 mr-2" />
               )}
-              Weekly Summary
+              Send Weekly
             </Button>
           </CardContent>
         </Card>
@@ -512,6 +560,119 @@ export function AdminNotificationsTab() {
           )}
         </CardContent>
       </Card>
+
+      {/* Weekly Summary Preview Dialog */}
+      <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Preview Weekly Summary
+            </DialogTitle>
+            <DialogDescription>
+              Danh sách {weeklyPreview?.length || 0} users sẽ nhận Weekly Summary
+            </DialogDescription>
+          </DialogHeader>
+          
+          {weeklyPreview && weeklyPreview.length > 0 ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-blue-500" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Users</p>
+                        <p className="text-xl font-bold">{weeklyPreview.length}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2">
+                      <Gamepad2 className="h-5 w-5 text-green-500" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total Games</p>
+                        <p className="text-xl font-bold">
+                          {weeklyPreview.reduce((sum, u) => sum + u.games_played, 0)}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2">
+                      <Gem className="h-5 w-5 text-yellow-500" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total CAMLY</p>
+                        <p className="text-xl font-bold">
+                          {weeklyPreview.reduce((sum, u) => sum + u.camly_earned, 0).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead className="text-center">Games</TableHead>
+                    <TableHead className="text-center">CAMLY</TableHead>
+                    <TableHead className="text-center">Achievements</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {weeklyPreview.map((user) => (
+                    <TableRow key={user.user_id}>
+                      <TableCell className="font-medium">{user.username || "Unknown"}</TableCell>
+                      <TableCell className="text-center">
+                        <Badge className="bg-green-500/20 text-green-600">
+                          🎮 {user.games_played}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge className="bg-yellow-500/20 text-yellow-600">
+                          💎 {user.camly_earned.toLocaleString()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge className="bg-purple-500/20 text-purple-600">
+                          🏆 {user.new_achievements}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>Không có user nào có hoạt động tuần qua</p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreviewDialogOpen(false)}>
+              Đóng
+            </Button>
+            {weeklyPreview && weeklyPreview.length > 0 && (
+              <Button onClick={sendWeeklySummary} disabled={sendingWeekly}>
+                {sendingWeekly ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 mr-2" />
+                )}
+                Gửi {weeklyPreview.length} Summaries
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
