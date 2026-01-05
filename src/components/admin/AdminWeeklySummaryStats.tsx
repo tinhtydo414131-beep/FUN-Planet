@@ -23,6 +23,8 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -44,6 +46,8 @@ import {
   Scale,
   ArrowUpRight,
   ArrowDownRight,
+  BarChart3,
+  LineChart,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -97,6 +101,7 @@ export function AdminWeeklySummaryStats() {
   const [availableWeeks, setAvailableWeeks] = useState<string[]>([]);
   const [exporting, setExporting] = useState(false);
   const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
+  const [chartType, setChartType] = useState<"area" | "bar">("area");
 
   // Comparison states
   const [compareMode, setCompareMode] = useState(false);
@@ -440,45 +445,93 @@ export function AdminWeeklySummaryStats() {
       {trendData.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Weekly Trend
-            </CardTitle>
-            <CardDescription>Games played and CAMLY earned over time</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Weekly Trend
+                </CardTitle>
+                <CardDescription>Games played and CAMLY earned over time</CardDescription>
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  variant={chartType === "area" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("area")}
+                  className="gap-1"
+                >
+                  <LineChart className="h-4 w-4" />
+                  Area
+                </Button>
+                <Button
+                  variant={chartType === "bar" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("bar")}
+                  className="gap-1"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Bar
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={trendData}>
-                <defs>
-                  <linearGradient id="colorGames" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorCamly" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#eab308" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#eab308" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
-                  }}
-                  labelFormatter={(_, payload) => {
-                    if (payload && payload[0]) {
-                      return payload[0].payload.weekFull;
-                    }
-                    return "";
-                  }}
-                />
-                <Legend />
-                <Area type="monotone" dataKey="games" stroke="#22c55e" fill="url(#colorGames)" name="Games Played" strokeWidth={2} />
-                <Area type="monotone" dataKey="camly" stroke="#eab308" fill="url(#colorCamly)" name="CAMLY Earned" strokeWidth={2} />
-              </AreaChart>
+              {chartType === "bar" ? (
+                <BarChart data={trendData}>
+                  <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                    labelFormatter={(_, payload) => {
+                      if (payload && payload[0]) {
+                        return payload[0].payload.weekFull;
+                      }
+                      return "";
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="games" fill="#22c55e" name="Games Played" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="camly" fill="#eab308" name="CAMLY Earned" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              ) : (
+                <AreaChart data={trendData}>
+                  <defs>
+                    <linearGradient id="colorGames" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorCamly" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#eab308" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#eab308" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                    labelFormatter={(_, payload) => {
+                      if (payload && payload[0]) {
+                        return payload[0].payload.weekFull;
+                      }
+                      return "";
+                    }}
+                  />
+                  <Legend />
+                  <Area type="monotone" dataKey="games" stroke="#22c55e" fill="url(#colorGames)" name="Games Played" strokeWidth={2} />
+                  <Area type="monotone" dataKey="camly" stroke="#eab308" fill="url(#colorCamly)" name="CAMLY Earned" strokeWidth={2} />
+                </AreaChart>
+              )}
             </ResponsiveContainer>
           </CardContent>
         </Card>

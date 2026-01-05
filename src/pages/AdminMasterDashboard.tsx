@@ -24,7 +24,8 @@ import {
   Sparkles,
   Bell,
   Wallet,
-  HeartHandshake
+  HeartHandshake,
+  Target
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
@@ -41,6 +42,7 @@ import { AdminRealtimeBell } from "@/components/admin/AdminRealtimeBell";
 import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
 import { AdminDonationsTab } from "@/components/admin/AdminDonationsTab";
 import { AdminWeeklySummaryStats } from "@/components/admin/AdminWeeklySummaryStats";
+import { AdminKPIDashboard } from "@/components/admin/AdminKPIDashboard";
 
 interface Stats {
   totalUsers: number;
@@ -274,10 +276,14 @@ export default function AdminMasterDashboard() {
 
         {/* Main Tabs - Responsive Grid */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" ref={tabsRef}>
-          <TabsList className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 w-full mb-6 h-auto gap-1">
+          <TabsList className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-14 w-full mb-6 h-auto gap-1">
             <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <BarChart3 className="h-4 w-4" />
               <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="kpi" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <Target className="h-4 w-4" />
+              <span>KPI</span>
             </TabsTrigger>
             <TabsTrigger value="users" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Users className="h-4 w-4" />
@@ -336,6 +342,10 @@ export default function AdminMasterDashboard() {
 
           <TabsContent value="overview">
             <AdminOverviewTab stats={stats} onRefresh={loadStats} />
+          </TabsContent>
+
+          <TabsContent value="kpi">
+            <AdminKPIDashboard />
           </TabsContent>
 
           <TabsContent value="users">
