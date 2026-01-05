@@ -3342,6 +3342,8 @@ export type Database = {
           created_at: string | null
           education: string | null
           email: string
+          email_marketing: boolean | null
+          email_weekly_summary: boolean | null
           id: string
           last_withdrawal_at: string | null
           leaderboard_score: number | null
@@ -3367,6 +3369,8 @@ export type Database = {
           created_at?: string | null
           education?: string | null
           email: string
+          email_marketing?: boolean | null
+          email_weekly_summary?: boolean | null
           id: string
           last_withdrawal_at?: string | null
           leaderboard_score?: number | null
@@ -3392,6 +3396,8 @@ export type Database = {
           created_at?: string | null
           education?: string | null
           email?: string
+          email_marketing?: boolean | null
+          email_weekly_summary?: boolean | null
           id?: string
           last_withdrawal_at?: string | null
           leaderboard_score?: number | null

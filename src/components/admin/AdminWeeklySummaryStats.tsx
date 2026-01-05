@@ -30,6 +30,9 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -48,6 +51,8 @@ import {
   ArrowDownRight,
   BarChart3,
   LineChart,
+  PieChart as PieChartIcon,
+  Layers,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -101,7 +106,10 @@ export function AdminWeeklySummaryStats() {
   const [availableWeeks, setAvailableWeeks] = useState<string[]>([]);
   const [exporting, setExporting] = useState(false);
   const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
-  const [chartType, setChartType] = useState<"area" | "bar">("area");
+  const [chartType, setChartType] = useState<"area" | "bar" | "stacked" | "donut">("area");
+
+  // Colors for charts
+  const COLORS = ["#22c55e", "#eab308", "#a855f7", "#3b82f6"];
 
   // Comparison states
   const [compareMode, setCompareMode] = useState(false);
@@ -453,7 +461,7 @@ export function AdminWeeklySummaryStats() {
                 </CardTitle>
                 <CardDescription>Games played and CAMLY earned over time</CardDescription>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1 flex-wrap">
                 <Button
                   variant={chartType === "area" ? "default" : "outline"}
                   size="sm"
@@ -472,12 +480,87 @@ export function AdminWeeklySummaryStats() {
                   <BarChart3 className="h-4 w-4" />
                   Bar
                 </Button>
+                <Button
+                  variant={chartType === "stacked" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("stacked")}
+                  className="gap-1"
+                >
+                  <Layers className="h-4 w-4" />
+                  Stacked
+                </Button>
+                <Button
+                  variant={chartType === "donut" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setChartType("donut")}
+                  className="gap-1"
+                >
+                  <PieChartIcon className="h-4 w-4" />
+                  Donut
+                </Button>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              {chartType === "bar" ? (
+              {chartType === "donut" ? (
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: "Games Played", value: stats.totalGamesPlayed, color: "#22c55e" },
+                      { name: "CAMLY Earned", value: stats.totalCamlyDistributed, color: "#eab308" },
+                      { name: "Achievements", value: stats.totalAchievements, color: "#a855f7" },
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={3}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    labelLine={{ stroke: "hsl(var(--muted-foreground))" }}
+                  >
+                    {[
+                      { name: "Games Played", value: stats.totalGamesPlayed, color: "#22c55e" },
+                      { name: "CAMLY Earned", value: stats.totalCamlyDistributed, color: "#eab308" },
+                      { name: "Achievements", value: stats.totalAchievements, color: "#a855f7" },
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                    formatter={(value: number) => value.toLocaleString()}
+                  />
+                  <Legend />
+                </PieChart>
+              ) : chartType === "stacked" ? (
+                <BarChart data={trendData}>
+                  <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                    labelFormatter={(_, payload) => {
+                      if (payload && payload[0]) {
+                        return payload[0].payload.weekFull;
+                      }
+                      return "";
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="games" stackId="a" fill="#22c55e" name="Games Played" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="achievements" stackId="a" fill="#a855f7" name="Achievements" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              ) : chartType === "bar" ? (
                 <BarChart data={trendData}>
                   <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} />

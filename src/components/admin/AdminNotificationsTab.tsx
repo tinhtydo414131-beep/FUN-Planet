@@ -50,6 +50,8 @@ import {
   Gem,
   Trophy,
   Eye,
+  Mail,
+  TestTube,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -73,6 +75,8 @@ export function AdminNotificationsTab() {
   const [sending, setSending] = useState(false);
   const [sendingWeekly, setSendingWeekly] = useState(false);
   const [previewingWeekly, setPreviewingWeekly] = useState(false);
+  const [testingEmail, setTestingEmail] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
   const [weeklyPreview, setWeeklyPreview] = useState<Array<{
     user_id: string;
     username: string;
@@ -228,6 +232,37 @@ export function AdminNotificationsTab() {
     }
   };
 
+  const testWeeklySummaryEmail = async () => {
+    if (!testEmail) {
+      toast.error("Vui lòng nhập email để test");
+      return;
+    }
+    
+    setTestingEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-weekly-summary", {
+        body: { 
+          testMode: true,
+          testEmail: testEmail
+        }
+      });
+      
+      if (error) throw error;
+      
+      if (data?.testEmailSent) {
+        toast.success(`Test email đã gửi đến ${testEmail}!`);
+      } else {
+        toast.info("Test email được log (RESEND_API_KEY chưa cấu hình)");
+      }
+      console.log("Test email result:", data);
+    } catch (error) {
+      console.error("Test email error:", error);
+      toast.error("Không thể gửi test email. Kiểm tra logs.");
+    } finally {
+      setTestingEmail(false);
+    }
+  };
+
   const getTypeBadge = (type: string) => {
     const icons = {
       info: <Info className="h-3 w-3" />,
@@ -344,6 +379,35 @@ export function AdminNotificationsTab() {
               )}
               Send Weekly
             </Button>
+          </CardContent>
+        </Card>
+        <Card className="col-span-2">
+          <CardContent className="pt-4">
+            <div className="flex gap-2 items-center">
+              <Input 
+                placeholder="Email để test (vd: admin@example.com)..."
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                className="flex-1"
+                type="email"
+              />
+              <Button 
+                variant="secondary"
+                onClick={testWeeklySummaryEmail}
+                disabled={testingEmail || !testEmail}
+                className="gap-2"
+              >
+                {testingEmail ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <TestTube className="h-4 w-4" />
+                )}
+                Test Email
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Gửi email test với dữ liệu mẫu để kiểm tra template
+            </p>
           </CardContent>
         </Card>
         <Card>
