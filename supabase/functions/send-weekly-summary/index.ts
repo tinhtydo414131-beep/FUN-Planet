@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "https://esm.sh/resend@4.0.0";
+import { render } from "https://esm.sh/@react-email/render@0.0.12";
+import React from "https://esm.sh/react@18.3.1";
+import { WeeklySummaryEmail } from "./_templates/weekly-summary-email.tsx";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,8 +19,12 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Initialize Resend if API key is available
+    const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
     // Check if this is a preview request
     let isPreview = false;
@@ -28,6 +36,7 @@ serve(async (req) => {
     }
 
     console.log(`Starting weekly summary ${isPreview ? "preview" : "generation"}...`);
+    console.log(`Resend email enabled: ${!!resend}`);
 
     // Calculate week range
     const now = new Date();
@@ -35,10 +44,10 @@ serve(async (req) => {
     weekStart.setDate(now.getDate() - 7);
     const weekStartStr = weekStart.toISOString().split("T")[0];
 
-    // Get all active users
+    // Get all active users - including email for email sending
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("id, username");
+      .select("id, username, email");
 
     if (profilesError) {
       console.error("Error fetching profiles:", profilesError);
@@ -48,6 +57,8 @@ serve(async (req) => {
     console.log(`Found ${profiles?.length || 0} users to process`);
 
     const summaries = [];
+    let emailsSent = 0;
+    let emailsFailed = 0;
 
     for (const profile of profiles || []) {
       try {
@@ -83,6 +94,7 @@ serve(async (req) => {
             summaries.push({
               user_id: profile.id,
               username: profile.username,
+              email: profile.email,
               games_played: gamesPlayed || 0,
               camly_earned: camlyEarned,
               new_achievements: newAchievements || 0,
@@ -141,9 +153,43 @@ serve(async (req) => {
             is_read: false,
           });
 
+          // Send email if Resend is configured and user has email
+          if (resend && profile.email) {
+            try {
+              const html = render(
+                React.createElement(WeeklySummaryEmail, {
+                  username: profile.username || "User",
+                  gamesPlayed: gamesPlayed || 0,
+                  camlyEarned: camlyEarned,
+                  newAchievements: newAchievements || 0,
+                  weekStart: weekStartStr,
+                })
+              );
+
+              const { error: emailError } = await resend.emails.send({
+                from: "FunPlanet <noreply@resend.dev>",
+                to: [profile.email],
+                subject: `📊 Tổng kết tuần: ${gamesPlayed || 0} games, ${camlyEarned.toLocaleString()} CAMLY`,
+                html,
+              });
+
+              if (emailError) {
+                console.error(`Failed to send email to ${profile.email}:`, emailError);
+                emailsFailed++;
+              } else {
+                console.log(`Email sent to ${profile.email}`);
+                emailsSent++;
+              }
+            } catch (emailError) {
+              console.error(`Error sending email to ${profile.email}:`, emailError);
+              emailsFailed++;
+            }
+          }
+
           summaries.push({
             user_id: profile.id,
             username: profile.username,
+            email: profile.email,
             games_played: gamesPlayed || 0,
             camly_earned: camlyEarned,
             new_achievements: newAchievements || 0,
@@ -155,11 +201,14 @@ serve(async (req) => {
     }
 
     console.log(`Generated ${summaries.length} weekly summaries`);
+    console.log(`Emails sent: ${emailsSent}, failed: ${emailsFailed}`);
 
     return new Response(
       JSON.stringify({
         success: true,
         message: `Generated ${summaries.length} weekly summaries`,
+        emailsSent,
+        emailsFailed,
         summaries,
       }),
       {
