@@ -105,6 +105,21 @@ serve(async (req) => {
             },
           });
 
+          // Also send to user's personal notifications
+          await supabase.from("user_notifications").insert({
+            user_id: profile.id,
+            notification_type: "weekly_summary",
+            title: "📊 Tổng kết tuần của bạn",
+            message,
+            data: {
+              games_played: gamesPlayed || 0,
+              camly_earned: camlyEarned,
+              new_achievements: newAchievements || 0,
+              week_start: weekStartStr,
+            },
+            is_read: false,
+          });
+
           summaries.push({
             user_id: profile.id,
             username: profile.username,

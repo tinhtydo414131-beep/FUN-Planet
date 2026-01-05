@@ -226,6 +226,10 @@ export const Navigation = () => {
                       <Settings className="mr-3 h-5 w-5" />
                       <span className="font-medium">Settings</span>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/achievement-leaderboard")} className="py-3">
+                      <Trophy className="mr-3 h-5 w-5 text-amber-500" />
+                      <span className="font-medium">🏅 Bảng xếp hạng Thành tích</span>
+                    </DropdownMenuItem>
                     {isAdmin && (
                       <>
                         <DropdownMenuSeparator />
