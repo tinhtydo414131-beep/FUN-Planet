@@ -129,7 +129,10 @@ export function useUserNotifications() {
         } : undefined,
       });
     } else if (notification.notification_type === 'weekly_summary') {
-      // Weekly summary celebration
+      // Weekly summary celebration with special sound
+      import('@/components/SoundEffects528Hz').then(({ playWeeklySummarySound }) => {
+        playWeeklySummarySound();
+      });
       fireDiamondConfetti('rainbow');
       
       const summary = dataObj ? 

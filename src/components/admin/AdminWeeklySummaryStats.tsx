@@ -11,6 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -22,6 +29,7 @@ import {
   Gamepad2,
   Gem,
   Trophy,
+  Download,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -57,22 +65,51 @@ export function AdminWeeklySummaryStats() {
     uniqueUsers: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [selectedWeek, setSelectedWeek] = useState<string>("all");
+  const [availableWeeks, setAvailableWeeks] = useState<string[]>([]);
+  const [exporting, setExporting] = useState(false);
+
+  useEffect(() => {
+    loadAvailableWeeks();
+  }, []);
 
   useEffect(() => {
     loadSummaryLogs();
-  }, []);
+  }, [selectedWeek]);
+
+  const loadAvailableWeeks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("weekly_summary_logs")
+        .select("week_start")
+        .order("week_start", { ascending: false });
+
+      if (error) throw error;
+
+      const uniqueWeeks = [...new Set((data || []).map((w) => w.week_start))];
+      setAvailableWeeks(uniqueWeeks);
+    } catch (error) {
+      console.error("Load available weeks error:", error);
+    }
+  };
 
   const loadSummaryLogs = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("weekly_summary_logs")
         .select(`
           *,
           profiles:user_id (username, avatar_url)
         `)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(100);
+
+      if (selectedWeek !== "all") {
+        query = query.eq("week_start", selectedWeek);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -96,6 +133,45 @@ export function AdminWeeklySummaryStats() {
     }
   };
 
+  const exportToCSV = () => {
+    if (logs.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+
+    setExporting(true);
+    try {
+      const headers = ["Username", "Week Start", "Games Played", "CAMLY Earned", "New Achievements", "Sent At"];
+      const rows = logs.map((log) => [
+        log.profiles?.username || "Unknown",
+        format(new Date(log.week_start), "yyyy-MM-dd"),
+        log.games_played.toString(),
+        log.camly_earned.toString(),
+        log.new_achievements.toString(),
+        format(new Date(log.created_at), "yyyy-MM-dd HH:mm"),
+      ]);
+
+      const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `weekly-summaries-${selectedWeek === "all" ? "all" : selectedWeek}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Exported ${logs.length} records to CSV`);
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Failed to export data");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -106,6 +182,45 @@ export function AdminWeeklySummaryStats() {
 
   return (
     <div className="space-y-4">
+      {/* Filter & Actions Row */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground">Filter by week:</span>
+          <Select value={selectedWeek} onValueChange={setSelectedWeek}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select week" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">📅 All Weeks</SelectItem>
+              {availableWeeks.map((week) => (
+                <SelectItem key={week} value={week}>
+                  {format(new Date(week), "MMM d, yyyy")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedWeek !== "all" && (
+            <Badge variant="secondary">
+              Showing: {format(new Date(selectedWeek), "MMM d, yyyy")}
+            </Badge>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={exportToCSV} disabled={exporting || logs.length === 0}>
+            {exporting ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4 mr-2" />
+            )}
+            Export CSV
+          </Button>
+          <Button variant="outline" size="sm" onClick={loadSummaryLogs}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+      </div>
+
       {/* Stats Overview */}
       <div className="grid grid-cols-5 gap-4">
         <Card>
@@ -167,22 +282,27 @@ export function AdminWeeklySummaryStats() {
 
       {/* Logs Table */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
             Weekly Summary History
+            {logs.length > 0 && (
+              <Badge variant="outline" className="ml-2">
+                {logs.length} records
+              </Badge>
+            )}
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={loadSummaryLogs}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
         </CardHeader>
         <CardContent>
           {logs.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No weekly summaries sent yet</p>
-              <p className="text-sm">Summaries will appear here after the first send</p>
+              <p>No weekly summaries found</p>
+              <p className="text-sm">
+                {selectedWeek !== "all" 
+                  ? "Try selecting a different week or 'All Weeks'" 
+                  : "Summaries will appear here after the first send"}
+              </p>
             </div>
           ) : (
             <Table>
