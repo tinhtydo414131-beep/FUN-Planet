@@ -40,6 +40,7 @@ import { AdminNotificationsTab } from "@/components/admin/AdminNotificationsTab"
 import { AdminRealtimeBell } from "@/components/admin/AdminRealtimeBell";
 import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
 import { AdminDonationsTab } from "@/components/admin/AdminDonationsTab";
+import { AdminWeeklySummaryStats } from "@/components/admin/AdminWeeklySummaryStats";
 
 interface Stats {
   totalUsers: number;
@@ -378,7 +379,10 @@ export default function AdminMasterDashboard() {
           </TabsContent>
 
           <TabsContent value="notifications">
-            <AdminNotificationsTab />
+            <div className="space-y-6">
+              <AdminNotificationsTab />
+              <AdminWeeklySummaryStats />
+            </div>
           </TabsContent>
 
           <TabsContent value="settings">

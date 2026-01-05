@@ -18,7 +18,16 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log("Starting weekly summary generation...");
+    // Check if this is a preview request
+    let isPreview = false;
+    try {
+      const body = await req.json();
+      isPreview = body?.preview === true;
+    } catch {
+      // No body or invalid JSON, continue with normal flow
+    }
+
+    console.log(`Starting weekly summary ${isPreview ? "preview" : "generation"}...`);
 
     // Calculate week range
     const now = new Date();
@@ -69,6 +78,18 @@ serve(async (req) => {
 
         // Only create summary if user has any activity
         if ((gamesPlayed || 0) > 0 || camlyEarned > 0 || (newAchievements || 0) > 0) {
+          // If preview mode, just collect the summary data without sending
+          if (isPreview) {
+            summaries.push({
+              user_id: profile.id,
+              username: profile.username,
+              games_played: gamesPlayed || 0,
+              camly_earned: camlyEarned,
+              new_achievements: newAchievements || 0,
+            });
+            continue;
+          }
+
           // Insert weekly summary log
           const { error: insertError } = await supabase
             .from("weekly_summary_logs")

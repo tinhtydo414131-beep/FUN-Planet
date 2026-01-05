@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift, Clock } from "lucide-react";
+import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift, Clock, Award } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,9 +9,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import confetti from "canvas-confetti";
 import { TransferModal } from "@/components/TransferModal";
 import { toast } from "sonner";
+import AchievementLeaderboard from "@/components/leaderboard/AchievementLeaderboard";
 
 interface RankedUser {
   id: string;
@@ -444,6 +446,7 @@ export default function FullRanking() {
   const [confettiFired, setConfettiFired] = useState(false);
   const [realtimeUpdated, setRealtimeUpdated] = useState(false);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("camly");
   const [selectedRecipient, setSelectedRecipient] = useState<{ 
     id: string; 
     username: string; 
@@ -706,31 +709,51 @@ export default function FullRanking() {
           </Button>
         </motion.div>
 
-        {/* Current User Rank */}
-        {user && currentUserRank && currentUserRank > 3 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-yellow-500/20 to-amber-500/10 border-2 border-yellow-400/50"
-            style={{ boxShadow: "0 0 30px rgba(255,215,0,0.2)" }}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-white/80 text-sm">Thứ hạng của bạn</span>
-              <div className="flex items-center gap-3">
-                <span 
-                  className="text-3xl font-black bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent"
-                  style={{ textShadow: "0 0 15px rgba(255,215,0,0.5)" }}
-                >
-                  #{currentUserRank}
-                </span>
-                <span className="text-white/60 text-sm">/ {totalUsers}</span>
-              </div>
-            </div>
-          </motion.div>
-        )}
+        {/* Tabs for CAMLY vs Achievement Ranking */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-2 bg-white/10 border border-white/20">
+            <TabsTrigger 
+              value="camly" 
+              className="data-[state=active]:bg-yellow-500/80 data-[state=active]:text-black text-white"
+            >
+              <Gem className="w-4 h-4 mr-2" />
+              CAMLY Ranking
+            </TabsTrigger>
+            <TabsTrigger 
+              value="achievement" 
+              className="data-[state=active]:bg-purple-500/80 data-[state=active]:text-white text-white"
+            >
+              <Award className="w-4 h-4 mr-2" />
+              Achievement Ranking
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Top 3 Podium */}
-        {!loading && top3Users.length >= 3 && (
+          <TabsContent value="camly" className="mt-4">
+            {/* Current User Rank */}
+            {user && currentUserRank && currentUserRank > 3 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-yellow-500/20 to-amber-500/10 border-2 border-yellow-400/50"
+                style={{ boxShadow: "0 0 30px rgba(255,215,0,0.2)" }}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-white/80 text-sm">Thứ hạng của bạn</span>
+                  <div className="flex items-center gap-3">
+                    <span 
+                      className="text-3xl font-black bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent"
+                      style={{ textShadow: "0 0 15px rgba(255,215,0,0.5)" }}
+                    >
+                      #{currentUserRank}
+                    </span>
+                    <span className="text-white/60 text-sm">/ {totalUsers}</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Top 3 Podium */}
+            {!loading && top3Users.length >= 3 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -877,6 +900,12 @@ export default function FullRanking() {
             Trang {currentPage} / {totalPages} ({filteredUsers.length} người chơi)
           </p>
         )}
+          </TabsContent>
+
+          <TabsContent value="achievement" className="mt-4">
+            <AchievementLeaderboard />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Transfer Modal */}
