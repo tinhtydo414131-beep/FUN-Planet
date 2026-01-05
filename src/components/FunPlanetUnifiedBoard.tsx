@@ -101,11 +101,14 @@ const AnimatedCounter = React.forwardRef<HTMLSpanElement, { value: number; durat
 );
 AnimatedCounter.displayName = "AnimatedCounter";
 
-const ProgressBar = ({ value, maxValue }: { value: number; maxValue: number }) => {
+const ProgressBar = React.forwardRef<
+  HTMLDivElement,
+  { value: number; maxValue: number }
+>(({ value, maxValue }, ref) => {
   const percentage = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
 
   return (
-    <div className="w-full h-2.5 bg-white/20 rounded-full overflow-hidden mt-1">
+    <div ref={ref} className="w-full h-2.5 bg-white/20 rounded-full overflow-hidden mt-1">
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${percentage}%` }}
@@ -115,7 +118,8 @@ const ProgressBar = ({ value, maxValue }: { value: number; maxValue: number }) =
       />
     </div>
   );
-};
+});
+ProgressBar.displayName = "ProgressBar";
 
 // Badges
 const creatorBadges = [

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -18,6 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -30,8 +41,16 @@ import {
   Gem,
   Trophy,
   Download,
+  Scale,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 import { format } from "date-fns";
+
+// Safe wrapper to avoid ref warnings
+const SafeCartesianGrid = (props: React.ComponentProps<typeof CartesianGrid>) => (
+  <CartesianGrid {...props} />
+);
 
 interface WeeklySummaryLog {
   id: string;
@@ -55,6 +74,15 @@ interface SummaryStats {
   uniqueUsers: number;
 }
 
+interface TrendDataPoint {
+  week: string;
+  weekFull: string;
+  games: number;
+  camly: number;
+  achievements: number;
+  users: number;
+}
+
 export function AdminWeeklySummaryStats() {
   const [logs, setLogs] = useState<WeeklySummaryLog[]>([]);
   const [stats, setStats] = useState<SummaryStats>({
@@ -68,9 +96,21 @@ export function AdminWeeklySummaryStats() {
   const [selectedWeek, setSelectedWeek] = useState<string>("all");
   const [availableWeeks, setAvailableWeeks] = useState<string[]>([]);
   const [exporting, setExporting] = useState(false);
+  const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
+
+  // Comparison states
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareWeek1, setCompareWeek1] = useState<string>("");
+  const [compareWeek2, setCompareWeek2] = useState<string>("");
+  const [comparisonData, setComparisonData] = useState<{
+    week1Stats: SummaryStats | null;
+    week2Stats: SummaryStats | null;
+  } | null>(null);
+  const [comparing, setComparing] = useState(false);
 
   useEffect(() => {
     loadAvailableWeeks();
+    loadTrendData();
   }, []);
 
   useEffect(() => {
@@ -90,6 +130,59 @@ export function AdminWeeklySummaryStats() {
       setAvailableWeeks(uniqueWeeks);
     } catch (error) {
       console.error("Load available weeks error:", error);
+    }
+  };
+
+  const loadTrendData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("weekly_summary_logs")
+        .select("week_start, games_played, camly_earned, new_achievements, user_id")
+        .order("week_start", { ascending: true });
+
+      if (error) throw error;
+
+      if (data) {
+        const grouped: Record<string, {
+          week: string;
+          weekFull: string;
+          games: number;
+          camly: number;
+          achievements: number;
+          users: Set<string>;
+        }> = {};
+
+        data.forEach((log) => {
+          const week = log.week_start;
+          if (!grouped[week]) {
+            grouped[week] = {
+              week: format(new Date(week), "MMM d"),
+              weekFull: format(new Date(week), "MMM d, yyyy"),
+              games: 0,
+              camly: 0,
+              achievements: 0,
+              users: new Set(),
+            };
+          }
+          grouped[week].games += log.games_played || 0;
+          grouped[week].camly += log.camly_earned || 0;
+          grouped[week].achievements += log.new_achievements || 0;
+          grouped[week].users.add(log.user_id);
+        });
+
+        const trendArray: TrendDataPoint[] = Object.values(grouped).map((g) => ({
+          week: g.week,
+          weekFull: g.weekFull,
+          games: g.games,
+          camly: g.camly,
+          achievements: g.achievements,
+          users: g.users.size,
+        }));
+
+        setTrendData(trendArray);
+      }
+    } catch (error) {
+      console.error("Load trend data error:", error);
     }
   };
 
@@ -133,6 +226,69 @@ export function AdminWeeklySummaryStats() {
     }
   };
 
+  const calculateWeekStats = async (week: string): Promise<SummaryStats | null> => {
+    const { data, error } = await supabase
+      .from("weekly_summary_logs")
+      .select("*")
+      .eq("week_start", week);
+
+    if (error || !data) return null;
+
+    const uniqueUsers = new Set(data.map((d) => d.user_id));
+    return {
+      totalSummaries: data.length,
+      totalGamesPlayed: data.reduce((sum, d) => sum + (d.games_played || 0), 0),
+      totalCamlyDistributed: data.reduce((sum, d) => sum + (d.camly_earned || 0), 0),
+      totalAchievements: data.reduce((sum, d) => sum + (d.new_achievements || 0), 0),
+      uniqueUsers: uniqueUsers.size,
+    };
+  };
+
+  const loadComparison = async () => {
+    if (!compareWeek1 || !compareWeek2) {
+      toast.error("Please select two weeks to compare");
+      return;
+    }
+
+    setComparing(true);
+    try {
+      const [week1Stats, week2Stats] = await Promise.all([
+        calculateWeekStats(compareWeek1),
+        calculateWeekStats(compareWeek2),
+      ]);
+
+      setComparisonData({ week1Stats, week2Stats });
+    } catch (error) {
+      console.error("Load comparison error:", error);
+      toast.error("Failed to load comparison data");
+    } finally {
+      setComparing(false);
+    }
+  };
+
+  const getDiffBadge = (val1: number, val2: number) => {
+    if (val1 === 0) return null;
+    const diff = ((val2 - val1) / val1) * 100;
+    const isPositive = diff >= 0;
+    return (
+      <Badge
+        variant="outline"
+        className={`ml-2 ${
+          isPositive
+            ? "border-green-500/50 text-green-500"
+            : "border-red-500/50 text-red-500"
+        }`}
+      >
+        {isPositive ? (
+          <ArrowUpRight className="h-3 w-3 mr-1" />
+        ) : (
+          <ArrowDownRight className="h-3 w-3 mr-1" />
+        )}
+        {Math.abs(diff).toFixed(1)}%
+      </Badge>
+    );
+  };
+
   const exportToCSV = () => {
     if (logs.length === 0) {
       toast.error("No data to export");
@@ -172,7 +328,7 @@ export function AdminWeeklySummaryStats() {
     }
   };
 
-  if (loading) {
+  if (loading && logs.length === 0) {
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -214,7 +370,7 @@ export function AdminWeeklySummaryStats() {
             )}
             Export CSV
           </Button>
-          <Button variant="outline" size="sm" onClick={loadSummaryLogs}>
+          <Button variant="outline" size="sm" onClick={() => { loadSummaryLogs(); loadTrendData(); }}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
@@ -279,6 +435,142 @@ export function AdminWeeklySummaryStats() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Trend Chart */}
+      {trendData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              Weekly Trend
+            </CardTitle>
+            <CardDescription>Games played and CAMLY earned over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={280}>
+              <AreaChart data={trendData}>
+                <defs>
+                  <linearGradient id="colorGames" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorCamly" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#eab308" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#eab308" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <SafeCartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                  }}
+                  labelFormatter={(_, payload) => {
+                    if (payload && payload[0]) {
+                      return payload[0].payload.weekFull;
+                    }
+                    return "";
+                  }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="games" stroke="#22c55e" fill="url(#colorGames)" name="Games Played" strokeWidth={2} />
+                <Area type="monotone" dataKey="camly" stroke="#eab308" fill="url(#colorCamly)" name="CAMLY Earned" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Week Comparison */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Scale className="h-5 w-5 text-primary" />
+              Week Comparison
+            </div>
+            <Switch checked={compareMode} onCheckedChange={setCompareMode} />
+          </CardTitle>
+          <CardDescription>Compare metrics between two different weeks</CardDescription>
+        </CardHeader>
+        {compareMode && (
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap items-center gap-4">
+              <Select value={compareWeek1} onValueChange={setCompareWeek1}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Week 1" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableWeeks.map((week) => (
+                    <SelectItem key={week} value={week}>
+                      {format(new Date(week), "MMM d, yyyy")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <span className="text-muted-foreground font-medium">vs</span>
+
+              <Select value={compareWeek2} onValueChange={setCompareWeek2}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Week 2" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableWeeks.map((week) => (
+                    <SelectItem key={week} value={week}>
+                      {format(new Date(week), "MMM d, yyyy")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button onClick={loadComparison} disabled={comparing}>
+                {comparing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Scale className="h-4 w-4 mr-2" />}
+                Compare
+              </Button>
+            </div>
+
+            {comparisonData && comparisonData.week1Stats && comparisonData.week2Stats && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                {/* Week 1 Stats */}
+                <Card className="border-blue-500/30 bg-blue-500/5">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-blue-500">
+                      {format(new Date(compareWeek1), "MMM d, yyyy")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span className="text-muted-foreground">Summaries:</span><span className="font-bold">{comparisonData.week1Stats.totalSummaries}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Games:</span><span className="font-bold text-green-500">{comparisonData.week1Stats.totalGamesPlayed.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">CAMLY:</span><span className="font-bold text-yellow-500">{comparisonData.week1Stats.totalCamlyDistributed.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Achievements:</span><span className="font-bold text-purple-500">{comparisonData.week1Stats.totalAchievements}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Users:</span><span className="font-bold">{comparisonData.week1Stats.uniqueUsers}</span></div>
+                  </CardContent>
+                </Card>
+
+                {/* Week 2 Stats with Diff */}
+                <Card className="border-green-500/30 bg-green-500/5">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-green-500">
+                      {format(new Date(compareWeek2), "MMM d, yyyy")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center"><span className="text-muted-foreground">Summaries:</span><span className="font-bold flex items-center">{comparisonData.week2Stats.totalSummaries}{getDiffBadge(comparisonData.week1Stats.totalSummaries, comparisonData.week2Stats.totalSummaries)}</span></div>
+                    <div className="flex justify-between items-center"><span className="text-muted-foreground">Games:</span><span className="font-bold text-green-500 flex items-center">{comparisonData.week2Stats.totalGamesPlayed.toLocaleString()}{getDiffBadge(comparisonData.week1Stats.totalGamesPlayed, comparisonData.week2Stats.totalGamesPlayed)}</span></div>
+                    <div className="flex justify-between items-center"><span className="text-muted-foreground">CAMLY:</span><span className="font-bold text-yellow-500 flex items-center">{comparisonData.week2Stats.totalCamlyDistributed.toLocaleString()}{getDiffBadge(comparisonData.week1Stats.totalCamlyDistributed, comparisonData.week2Stats.totalCamlyDistributed)}</span></div>
+                    <div className="flex justify-between items-center"><span className="text-muted-foreground">Achievements:</span><span className="font-bold text-purple-500 flex items-center">{comparisonData.week2Stats.totalAchievements}{getDiffBadge(comparisonData.week1Stats.totalAchievements, comparisonData.week2Stats.totalAchievements)}</span></div>
+                    <div className="flex justify-between items-center"><span className="text-muted-foreground">Users:</span><span className="font-bold flex items-center">{comparisonData.week2Stats.uniqueUsers}{getDiffBadge(comparisonData.week1Stats.uniqueUsers, comparisonData.week2Stats.uniqueUsers)}</span></div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </CardContent>
+        )}
+      </Card>
 
       {/* Logs Table */}
       <Card>
