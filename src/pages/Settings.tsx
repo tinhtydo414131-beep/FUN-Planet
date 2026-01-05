@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Save, Loader2, Lock, LogOut, Trash2, Key, Mail, User as UserIcon, Bell, Volume2, Sparkles, Clock, Palette, Eye, EyeOff, X } from "lucide-react";
+import { EmailPreferences } from "@/components/settings/EmailPreferences";
 import { toast } from "sonner";
 import { AvatarUpload } from "@/components/AvatarUpload";
 import { z } from "zod";
@@ -845,6 +846,11 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Email Preferences Card */}
+          <div className="mt-6">
+            <EmailPreferences />
+          </div>
 
           {/* Account Management Card */}
           <Card className="border-4 border-primary/30 shadow-2xl mt-6">

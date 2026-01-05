@@ -26,16 +26,20 @@ serve(async (req) => {
     // Initialize Resend if API key is available
     const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
-    // Check if this is a preview request
+    // Check request body for modes
     let isPreview = false;
+    let testMode = false;
+    let testEmail = "";
     try {
       const body = await req.json();
       isPreview = body?.preview === true;
+      testMode = body?.testMode === true;
+      testEmail = body?.testEmail || "";
     } catch {
       // No body or invalid JSON, continue with normal flow
     }
 
-    console.log(`Starting weekly summary ${isPreview ? "preview" : "generation"}...`);
+    console.log(`Weekly summary mode: preview=${isPreview}, testMode=${testMode}, testEmail=${testEmail}`);
     console.log(`Resend email enabled: ${!!resend}`);
 
     // Calculate week range
@@ -44,10 +48,82 @@ serve(async (req) => {
     weekStart.setDate(now.getDate() - 7);
     const weekStartStr = weekStart.toISOString().split("T")[0];
 
-    // Get all active users - including email for email sending
+    // Handle test mode - send a test email with sample data
+    if (testMode && testEmail) {
+      console.log(`Sending test email to: ${testEmail}`);
+      
+      const testHtml = render(
+        React.createElement(WeeklySummaryEmail, {
+          username: "Test User",
+          gamesPlayed: 15,
+          camlyEarned: 2500,
+          newAchievements: 3,
+          weekStart: weekStartStr,
+        })
+      );
+
+      if (resend) {
+        try {
+          const { error: emailError } = await resend.emails.send({
+            from: "FunPlanet <noreply@resend.dev>",
+            to: [testEmail],
+            subject: "[TEST] 📊 Tổng kết tuần: 15 games, 2,500 CAMLY",
+            html: testHtml,
+          });
+
+          if (emailError) {
+            console.error("Test email error:", emailError);
+            return new Response(
+              JSON.stringify({ 
+                success: false, 
+                error: emailError.message,
+                testEmailSent: false 
+              }),
+              { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+
+          console.log(`Test email sent successfully to ${testEmail}`);
+          return new Response(
+            JSON.stringify({ 
+              success: true, 
+              testEmailSent: true,
+              testEmail,
+              message: `Test email sent to ${testEmail}`
+            }),
+            { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        } catch (err) {
+          console.error("Test email exception:", err);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: err instanceof Error ? err.message : "Unknown error",
+              testEmailSent: false 
+            }),
+            { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+      } else {
+        // No Resend API key, just log the test
+        console.log("RESEND_API_KEY not configured. Test email logged but not sent.");
+        console.log("Test email HTML preview:", testHtml.substring(0, 500) + "...");
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            testEmailSent: false,
+            testEmail,
+            message: "Test email logged (RESEND_API_KEY not configured)"
+          }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+    }
+
+    // Get all active users - including email and email preferences
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("id, username, email");
+      .select("id, username, email, email_weekly_summary");
 
     if (profilesError) {
       console.error("Error fetching profiles:", profilesError);
@@ -59,6 +135,7 @@ serve(async (req) => {
     const summaries = [];
     let emailsSent = 0;
     let emailsFailed = 0;
+    let emailsSkipped = 0;
 
     for (const profile of profiles || []) {
       try {
@@ -95,6 +172,7 @@ serve(async (req) => {
               user_id: profile.id,
               username: profile.username,
               email: profile.email,
+              email_weekly_summary: profile.email_weekly_summary,
               games_played: gamesPlayed || 0,
               camly_earned: camlyEarned,
               new_achievements: newAchievements || 0,
@@ -153,36 +231,42 @@ serve(async (req) => {
             is_read: false,
           });
 
-          // Send email if Resend is configured and user has email
+          // Send email if Resend is configured and user has email AND user opted-in
           if (resend && profile.email) {
-            try {
-              const html = render(
-                React.createElement(WeeklySummaryEmail, {
-                  username: profile.username || "User",
-                  gamesPlayed: gamesPlayed || 0,
-                  camlyEarned: camlyEarned,
-                  newAchievements: newAchievements || 0,
-                  weekStart: weekStartStr,
-                })
-              );
+            // Check if user has opted out of weekly summary emails
+            if (profile.email_weekly_summary === false) {
+              console.log(`User ${profile.email} opted out of weekly summary emails, skipping`);
+              emailsSkipped++;
+            } else {
+              try {
+                const html = render(
+                  React.createElement(WeeklySummaryEmail, {
+                    username: profile.username || "User",
+                    gamesPlayed: gamesPlayed || 0,
+                    camlyEarned: camlyEarned,
+                    newAchievements: newAchievements || 0,
+                    weekStart: weekStartStr,
+                  })
+                );
 
-              const { error: emailError } = await resend.emails.send({
-                from: "FunPlanet <noreply@resend.dev>",
-                to: [profile.email],
-                subject: `📊 Tổng kết tuần: ${gamesPlayed || 0} games, ${camlyEarned.toLocaleString()} CAMLY`,
-                html,
-              });
+                const { error: emailError } = await resend.emails.send({
+                  from: "FunPlanet <noreply@resend.dev>",
+                  to: [profile.email],
+                  subject: `📊 Tổng kết tuần: ${gamesPlayed || 0} games, ${camlyEarned.toLocaleString()} CAMLY`,
+                  html,
+                });
 
-              if (emailError) {
-                console.error(`Failed to send email to ${profile.email}:`, emailError);
+                if (emailError) {
+                  console.error(`Failed to send email to ${profile.email}:`, emailError);
+                  emailsFailed++;
+                } else {
+                  console.log(`Email sent to ${profile.email}`);
+                  emailsSent++;
+                }
+              } catch (emailError) {
+                console.error(`Error sending email to ${profile.email}:`, emailError);
                 emailsFailed++;
-              } else {
-                console.log(`Email sent to ${profile.email}`);
-                emailsSent++;
               }
-            } catch (emailError) {
-              console.error(`Error sending email to ${profile.email}:`, emailError);
-              emailsFailed++;
             }
           }
 
@@ -201,7 +285,7 @@ serve(async (req) => {
     }
 
     console.log(`Generated ${summaries.length} weekly summaries`);
-    console.log(`Emails sent: ${emailsSent}, failed: ${emailsFailed}`);
+    console.log(`Emails sent: ${emailsSent}, failed: ${emailsFailed}, skipped: ${emailsSkipped}`);
 
     return new Response(
       JSON.stringify({
@@ -209,6 +293,7 @@ serve(async (req) => {
         message: `Generated ${summaries.length} weekly summaries`,
         emailsSent,
         emailsFailed,
+        emailsSkipped,
         summaries,
       }),
       {
