@@ -128,6 +128,18 @@ export function useUserNotifications() {
           onClick: () => navigate(`/game/${dataObj.game_id}`),
         } : undefined,
       });
+    } else if (notification.notification_type === 'weekly_summary') {
+      // Weekly summary celebration
+      fireDiamondConfetti('rainbow');
+      
+      const summary = dataObj ? 
+        `🎮 ${dataObj.games_played || 0} game • 💎 ${Number(dataObj.camly_earned || 0).toLocaleString()} CAMLY • 🏆 ${dataObj.new_achievements || 0} thành tích` 
+        : notification.message;
+      
+      toast.success(`📊 ${notification.title}`, {
+        description: summary,
+        duration: 8000,
+      });
     } else {
       // Generic notification
       toast.info(notification.title, {

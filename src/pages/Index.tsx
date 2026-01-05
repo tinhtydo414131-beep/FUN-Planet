@@ -362,8 +362,8 @@ const Index = () => {
               { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: "Parents" },
               { path: "/wallet", icon: "💰", label: "Wallet" },
               { path: "/leaderboard", icon: "🏆", label: "Leaders" },
+              { path: "/achievement-leaderboard", icon: "🏅", label: "Thành tích" },
               { path: "/find-friends", icon: "👥", label: "Friends" },
-              { path: "/about", icon: "ℹ️", label: "About" },
               { path: user ? "/profile" : "/auth", icon: "👤", label: user ? "Profile" : "Login" },
             ].map((item) => (
               <Button
