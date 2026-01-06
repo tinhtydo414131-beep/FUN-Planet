@@ -91,28 +91,21 @@ function LightRays() {
   );
 }
 
-// Ellipse geometry helper for wings
-function EllipseGeometry({ radiusX, radiusY, segments = 32 }: { radiusX: number; radiusY: number; segments?: number }) {
-  const points = useMemo(() => {
-    const pts: THREE.Vector2[] = [];
-    for (let i = 0; i <= segments; i++) {
-      const angle = (i / segments) * Math.PI * 2;
-      pts.push(new THREE.Vector2(Math.cos(angle) * radiusX, Math.sin(angle) * radiusY));
+// Helper to create ellipse shape for wings (used inline to avoid ref issues)
+function createEllipseShape(radiusX: number, radiusY: number, segments: number = 32): THREE.Shape {
+  const shape = new THREE.Shape();
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    const x = Math.cos(angle) * radiusX;
+    const y = Math.sin(angle) * radiusY;
+    if (i === 0) {
+      shape.moveTo(x, y);
+    } else {
+      shape.lineTo(x, y);
     }
-    return pts;
-  }, [radiusX, radiusY, segments]);
-  
-  const shape = useMemo(() => {
-    const s = new THREE.Shape();
-    s.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      s.lineTo(points[i].x, points[i].y);
-    }
-    s.closePath();
-    return s;
-  }, [points]);
-
-  return <shapeGeometry args={[shape]} />;
+  }
+  shape.closePath();
+  return shape;
 }
 
 // Main angel character with texture
@@ -187,13 +180,13 @@ function AngelCharacter() {
 
         {/* Wing glow - left */}
         <mesh position={[-0.9, 0, -0.2]} rotation={[0, 0, 0.3]}>
-          <EllipseGeometry radiusX={0.3} radiusY={0.5} />
+          <shapeGeometry args={[createEllipseShape(0.3, 0.5)]} />
           <meshBasicMaterial color="#FFFFFF" transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
 
         {/* Wing glow - right */}
         <mesh position={[0.9, 0, -0.2]} rotation={[0, 0, -0.3]}>
-          <EllipseGeometry radiusX={0.3} radiusY={0.5} />
+          <shapeGeometry args={[createEllipseShape(0.3, 0.5)]} />
           <meshBasicMaterial color="#FFFFFF" transparent opacity={0.4} side={THREE.DoubleSide} />
         </mesh>
 
