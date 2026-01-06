@@ -707,6 +707,44 @@ export function AdminAngelAITab() {
             <Button variant="outline" size="icon" onClick={loadGameStats} disabled={batchEvaluating}>
               <RefreshCw className="h-4 w-4" />
             </Button>
+            <Button
+              variant="destructive"
+              className="gap-2"
+              onClick={async () => {
+                try {
+                  toast.info("🧪 Đang test Auto-Reject workflow...");
+                  const { data, error } = await supabase.functions.invoke('angel-evaluate-game', {
+                    body: {
+                      game_id: 'test-mode-' + Date.now(),
+                      title: '🔫 Súng Bắn Zombie Máu Me 18+',
+                      description: 'Game bắn súng bạo lực, máu me, giết người, cờ bạc casino, slot machine gambling. Nội dung người lớn, 18+, violence extreme.',
+                      categories: ['violence', 'gambling', 'adult'],
+                      thumbnail_url: null,
+                      testMode: true
+                    }
+                  });
+                  
+                  if (error) {
+                    toast.error("Test thất bại: " + error.message);
+                  } else {
+                    toast.success(
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold">🧪 Test Auto-Reject OK!</span>
+                        <span className="text-sm">Auto-rejected: {data?.auto_rejected ? 'Yes ✅' : 'No ❌'}</span>
+                        <span className="text-sm">Violence: {data?.violence_score}/10</span>
+                        <span className="text-sm">Gambling: {data?.has_gambling_mechanics ? 'Yes' : 'No'}</span>
+                      </div>
+                    );
+                    console.log('[Test Auto-Reject Result]', data);
+                  }
+                } catch (err: any) {
+                  toast.error("Test lỗi: " + err.message);
+                }
+              }}
+            >
+              <AlertCircle className="h-4 w-4" />
+              Test Auto-Reject
+            </Button>
           </div>
 
           {/* Batch Progress */}
