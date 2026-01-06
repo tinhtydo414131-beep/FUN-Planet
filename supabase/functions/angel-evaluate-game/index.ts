@@ -36,6 +36,13 @@ Hãy đánh giá game này theo các tiêu chí sau:
 - "12+": Phù hợp từ 12 tuổi
 - "Not suitable": Không phù hợp FUN Planet
 
+## 5. PHÂN TÍCH HÌNH ẢNH THUMBNAIL (nếu có)
+- Có nội dung bạo lực trực quan (máu, vũ khí, xác chết)?
+- Có hình ảnh khiêu gợi hoặc không phù hợp?
+- Có biểu tượng đáng ngờ (ma quỷ, phản cảm)?
+- Có text không phù hợp trong ảnh?
+- Ảnh có chất lượng và phù hợp cho trẻ em?
+
 Trả về JSON với format chính xác theo function schema.`
 
 Deno.serve(async (req) => {
@@ -79,7 +86,50 @@ THÔNG TIN GAME CẦN ĐÁNH GIÁ:
 
 Hãy đánh giá game này dựa trên thông tin trên.`
 
+    // Prepare messages with optional image for vision analysis
+    const userContent: any[] = [{ type: 'text', text: gameInfo }]
+    
+    // Try to fetch thumbnail for vision analysis
+    let thumbnailBase64: string | null = null
+    if (thumbnail_url) {
+      try {
+        console.log(`[Angel AI] Fetching thumbnail for vision analysis: ${thumbnail_url}`)
+        const imageResponse = await fetch(thumbnail_url)
+        if (imageResponse.ok) {
+          const imageBuffer = await imageResponse.arrayBuffer()
+          const bytes = new Uint8Array(imageBuffer)
+          // Check image size - limit to 4MB for base64
+          if (bytes.length < 4 * 1024 * 1024) {
+            let binary = ''
+            for (let i = 0; i < bytes.length; i++) {
+              binary += String.fromCharCode(bytes[i])
+            }
+            thumbnailBase64 = btoa(binary)
+            
+            // Detect mime type from URL
+            const ext = thumbnail_url.toLowerCase().split('.').pop()?.split('?')[0] || 'jpeg'
+            const mimeType = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
+            
+            userContent.push({
+              type: 'image_url',
+              image_url: { url: `data:${mimeType};base64,${thumbnailBase64}` }
+            })
+            console.log(`[Angel AI] Thumbnail loaded for vision analysis (${bytes.length} bytes)`)
+          } else {
+            console.log(`[Angel AI] Thumbnail too large for vision analysis: ${bytes.length} bytes`)
+          }
+        }
+      } catch (imgError) {
+        console.warn('[Angel AI] Failed to fetch thumbnail for vision:', imgError)
+        // Continue without image analysis
+      }
+    }
+
     // Call Lovable AI Gateway with tool calling for structured output
+    // Use gemini-2.5-pro for vision analysis if we have an image
+    const model = thumbnailBase64 ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash'
+    console.log(`[Angel AI] Using model: ${model}`)
+
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -87,10 +137,10 @@ Hãy đánh giá game này dựa trên thông tin trên.`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model,
         messages: [
           { role: 'system', content: ANGEL_EVALUATOR_PROMPT },
-          { role: 'user', content: gameInfo }
+          { role: 'user', content: userContent }
         ],
         tools: [
           {
@@ -151,6 +201,21 @@ Hãy đánh giá game này dựa trên thông tin trên.`
                     },
                     required: ['score', 'categories', 'learning_outcomes', 'details']
                   },
+                  thumbnail_analysis: {
+                    type: 'object',
+                    properties: {
+                      is_appropriate: { type: 'boolean', description: 'Hình ảnh có phù hợp cho trẻ em không' },
+                      concerns: { type: 'array', items: { type: 'string' }, description: 'Các vấn đề phát hiện trong ảnh' },
+                      detected_elements: { 
+                        type: 'array', 
+                        items: { type: 'string' },
+                        description: 'violence, suggestive, scary, text_inappropriate, weapons, blood, occult'
+                      },
+                      quality_score: { type: 'number', description: 'Chất lượng ảnh 1-10' },
+                      details: { type: 'string', description: 'Chi tiết phân tích ảnh' }
+                    },
+                    required: ['is_appropriate', 'concerns', 'detected_elements', 'quality_score', 'details']
+                  },
                   themes: { type: 'array', items: { type: 'string' } },
                   positive_aspects: { type: 'array', items: { type: 'string' } },
                   concerns: { type: 'array', items: { type: 'string' } },
@@ -184,7 +249,7 @@ Hãy đánh giá game này dựa trên thông tin trên.`
     }
 
     const aiData = await aiResponse.json()
-    console.log('[Angel AI] Raw response:', JSON.stringify(aiData))
+    console.log('[Angel AI] Raw response received')
 
     // Extract tool call result
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0]
@@ -198,6 +263,28 @@ Hãy đánh giá game này dựa trên thông tin trên.`
 
     const evaluation = JSON.parse(toolCall.function.arguments)
     console.log('[Angel AI] Parsed evaluation:', JSON.stringify(evaluation))
+
+    // Check for auto-reject conditions
+    const autoRejectReasons: string[] = []
+    const violenceScore = evaluation.violence?.score || 0
+    const hasGambling = evaluation.monetization?.has_gambling || false
+    const thumbnailInappropriate = evaluation.thumbnail_analysis?.is_appropriate === false
+    const notSuitable = evaluation.recommended_age === 'Not suitable'
+
+    if (violenceScore > 7) {
+      autoRejectReasons.push(`Mức độ bạo lực quá cao (${violenceScore}/10): ${evaluation.violence?.details || 'Nội dung bạo lực không phù hợp'}`)
+    }
+    if (hasGambling) {
+      autoRejectReasons.push(`Phát hiện yếu tố cờ bạc: ${evaluation.monetization?.details || 'Game có cơ chế gambling'}`)
+    }
+    if (thumbnailInappropriate) {
+      autoRejectReasons.push(`Hình ảnh thumbnail không phù hợp: ${evaluation.thumbnail_analysis?.details || 'Ảnh chứa nội dung không phù hợp trẻ em'}`)
+    }
+    if (notSuitable) {
+      autoRejectReasons.push(`Nội dung không phù hợp cho FUN Planet: ${evaluation.summary}`)
+    }
+
+    const shouldAutoReject = autoRejectReasons.length > 0
 
     // Save to database using upsert
     const { data: savedReview, error: saveError } = await supabase
@@ -218,10 +305,19 @@ Hãy đánh giá game này dựa trên thông tin trên.`
         educational_categories: evaluation.educational?.categories || [],
         learning_outcomes: evaluation.educational?.learning_outcomes || [],
         educational_details: evaluation.educational?.details || '',
+        // Thumbnail analysis fields
+        thumbnail_is_appropriate: evaluation.thumbnail_analysis?.is_appropriate ?? true,
+        thumbnail_concerns: evaluation.thumbnail_analysis?.concerns || [],
+        thumbnail_detected_elements: evaluation.thumbnail_analysis?.detected_elements || [],
+        thumbnail_quality_score: evaluation.thumbnail_analysis?.quality_score || null,
+        thumbnail_details: evaluation.thumbnail_analysis?.details || '',
+        // Auto-reject fields
+        auto_rejected: shouldAutoReject,
+        auto_reject_reasons: autoRejectReasons,
         detected_themes: evaluation.themes || [],
         positive_aspects: evaluation.positive_aspects || [],
         concerns: evaluation.concerns || [],
-        ai_model: 'gemini-2.5-flash',
+        ai_model: model,
         confidence_score: evaluation.confidence || 0.8,
         review_summary: evaluation.summary || '',
         full_ai_response: aiData,
@@ -241,11 +337,69 @@ Hãy đánh giá game này dựa trên thông tin trên.`
 
     console.log(`[Angel AI] Evaluation saved for game ${game_id}`)
 
+    // Auto-reject if conditions met
+    if (shouldAutoReject) {
+      console.log(`[Angel AI] Auto-rejecting game ${game_id}:`, autoRejectReasons)
+      
+      const rejectionNote = `[🤖 Auto-Rejected by Angel AI]\n\n${autoRejectReasons.join('\n\n')}`
+      
+      // Update game status to rejected
+      const { error: rejectError } = await supabase
+        .from('uploaded_games')
+        .update({ 
+          status: 'rejected',
+          rejection_note: rejectionNote
+        })
+        .eq('id', game_id)
+
+      if (rejectError) {
+        console.error('[Angel AI] Failed to auto-reject game:', rejectError)
+      } else {
+        console.log(`[Angel AI] Game ${game_id} auto-rejected successfully`)
+        
+        // Get game info for notification
+        const { data: gameData } = await supabase
+          .from('uploaded_games')
+          .select('user_id, title')
+          .eq('id', game_id)
+          .single()
+
+        if (gameData?.user_id) {
+          // Send notification to uploader
+          const { error: notifError } = await supabase
+            .from('user_notifications')
+            .insert({
+              user_id: gameData.user_id,
+              notification_type: 'game_auto_rejected',
+              title: '🤖 Game bị từ chối tự động',
+              message: `"${gameData.title}" đã bị Angel AI từ chối do: ${autoRejectReasons[0].slice(0, 100)}...`,
+              data: { 
+                game_id: game_id,
+                game_title: gameData.title,
+                rejection_reasons: autoRejectReasons,
+                ai_review_id: savedReview.id,
+                auto_rejected: true
+              }
+            })
+
+          if (notifError) {
+            console.error('[Angel AI] Failed to send notification:', notifError)
+          } else {
+            console.log(`[Angel AI] Notification sent to user ${gameData.user_id}`)
+          }
+        }
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         review: savedReview,
-        message: `Game "${title}" đã được đánh giá: ${evaluation.recommended_age}, điểm ${evaluation.overall_score}/100`
+        auto_rejected: shouldAutoReject,
+        auto_reject_reasons: autoRejectReasons,
+        message: shouldAutoReject 
+          ? `Game "${title}" đã bị tự động từ chối do vi phạm quy định`
+          : `Game "${title}" đã được đánh giá: ${evaluation.recommended_age}, điểm ${evaluation.overall_score}/100`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

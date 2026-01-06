@@ -7,12 +7,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Star, Send, Loader2, Trash2, Edit2, Download, Reply, Flag, Play, X, MessageCircle } from "lucide-react";
+import { ArrowLeft, Star, Send, Loader2, Trash2, Edit2, Download, Reply, Flag, Play, X, MessageCircle, Sparkles, BookOpen } from "lucide-react";
 import JSZip from "jszip";
 import { z } from "zod";
 import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentVoteButtons } from "@/components/game/CommentVoteButtons";
+import {
+  AgeBadge,
+  SafetyBadge,
+  EducationalStars,
+  LootboxWarning
+} from "@/components/games/AIGameRating";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -101,6 +107,17 @@ interface GameComment {
   replies?: GameComment[];
 }
 
+interface AIReviewData {
+  recommended_age: string;
+  is_safe_for_kids: boolean;
+  educational_score: number;
+  educational_categories: string[];
+  has_lootbox: boolean;
+  has_gambling_mechanics: boolean;
+  review_summary: string;
+  overall_score: number;
+}
+
 export default function GameDetails() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -125,6 +142,7 @@ export default function GameDetails() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [gameHtml, setGameHtml] = useState<string>('');
   const [loadingGame, setLoadingGame] = useState(false);
+  const [aiReview, setAiReview] = useState<AIReviewData | null>(null);
 
   // Handle messaging the game author
   const handleMessageAuthor = () => {
@@ -267,6 +285,26 @@ export default function GameDetails() {
       if (authorData) {
         setAuthor(authorData);
       }
+    }
+
+    // Fetch AI review data
+    const { data: reviewData } = await supabase
+      .from('game_ai_reviews')
+      .select(`
+        recommended_age,
+        is_safe_for_kids,
+        educational_score,
+        educational_categories,
+        has_lootbox,
+        has_gambling_mechanics,
+        review_summary,
+        overall_score
+      `)
+      .eq('game_id', id)
+      .maybeSingle();
+
+    if (reviewData) {
+      setAiReview(reviewData);
     }
     
     setLoading(false);
@@ -926,6 +964,58 @@ export default function GameDetails() {
                   <span>👥 {game.play_count} plays</span>
                   <span>⬇️ {game.download_count} downloads</span>
                 </div>
+
+                {/* AI Rating Section */}
+                {aiReview && (
+                  <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-sm font-medium text-purple-400">
+                      <Sparkles className="w-4 h-4" />
+                      Đánh giá bởi Angel AI
+                    </div>
+                    
+                    {/* Badges Row */}
+                    <div className="flex flex-wrap gap-2">
+                      <AgeBadge age={aiReview.recommended_age} />
+                      <SafetyBadge isSafe={aiReview.is_safe_for_kids} />
+                      {aiReview.educational_score >= 7 && (
+                        <Badge className="bg-blue-500/20 text-blue-400">
+                          <BookOpen className="w-3 h-3 mr-1" />
+                          Giáo dục
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {/* Educational Stars */}
+                    {aiReview.educational_score > 0 && (
+                      <EducationalStars score={aiReview.educational_score} />
+                    )}
+                    
+                    {/* Educational Categories */}
+                    {aiReview.educational_categories?.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {aiReview.educational_categories.map((cat) => (
+                          <Badge key={cat} variant="outline" className="text-xs">
+                            {cat}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Lootbox Warning */}
+                    <LootboxWarning 
+                      hasLootbox={aiReview.has_lootbox} 
+                      hasGambling={aiReview.has_gambling_mechanics} 
+                    />
+                    
+                    {/* AI Summary */}
+                    {aiReview.review_summary && (
+                      <p className="text-sm text-muted-foreground italic">
+                        "{aiReview.review_summary}"
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-2">
                   <Button
                     onClick={handlePlayGame}
