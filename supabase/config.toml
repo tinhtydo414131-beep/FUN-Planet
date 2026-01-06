@@ -53,9 +53,3 @@ verify_jwt = true
 
 [functions.send-weekly-summary]
 verify_jwt = false
-
-[functions.track-email]
-verify_jwt = false
-
-[functions.send-notification-email]
-verify_jwt = false
