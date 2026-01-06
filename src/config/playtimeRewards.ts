@@ -1,14 +1,35 @@
 // CAMLY Playtime Reward System Configuration
 // 5D Light Economy - Rewards for VALUE, not grinding
+// "Camly Coin = phần thưởng cho GIÁ TRỊ, KHÔNG cho THỜI GIAN"
 
 export const PLAY_REWARDS = {
-  NEW_GAME_BONUS: 5000,         // 5,000 CAMLY for first time playing each game (reduced from 10k)
-  MAX_NEW_GAME_BONUSES: 999,    // Unlimited new games (each game only once)
-  CAMLY_PER_MINUTE: 100,        // 100 CAMLY per minute of play (reduced from 500 to discourage grinding)
-  MIN_SESSION_SECONDS: 60,      // Minimum 60 seconds to earn rewards
-  AFK_TIMEOUT_SECONDS: 120,     // 2 minutes without activity = AFK
-  COOLDOWN_SECONDS: 60,         // 1 minute cooldown between reward claims
+  // === VALUE-BASED REWARDS (Primary) ===
+  NEW_GAME_BONUS: 5000,           // 5,000 CAMLY for first time playing each game
+  MAX_NEW_GAME_BONUSES: 999,      // Unlimited new games (each game only once)
+  GAME_COMPLETE_BONUS: 2000,      // 2,000 CAMLY for completing a game/level
+  LEARNING_MILESTONE: 5000,       // 5,000 CAMLY for achieving learning milestones
+  SHARING_BONUS: 1000,            // 1,000 CAMLY for sharing game with friends
+  KINDNESS_ACTION: 500,           // 500 CAMLY for kind behaviors (AI detected)
+  COOPERATION_BONUS: 1500,        // 1,500 CAMLY for cooperative play
+  
+  // === TIME-BASED REWARDS (Reduced - discourage grinding) ===
+  CAMLY_PER_MINUTE: 50,           // Reduced from 100 → 50 (không khuyến khích cày cuốc)
+  MIN_SESSION_SECONDS: 60,        // Minimum 60 seconds to earn rewards
+  AFK_TIMEOUT_SECONDS: 120,       // 2 minutes without activity = AFK
+  COOLDOWN_SECONDS: 60,           // 1 minute cooldown between reward claims
 } as const;
+
+// Behavior types for value-based rewards
+export const BEHAVIOR_TYPES = {
+  KINDNESS: 'kindness',           // Helping others, sharing
+  SHARING: 'sharing',             // Sharing games/planets with friends
+  COOPERATION: 'cooperation',     // Team building, group activities
+  LEARNING: 'learning',           // Educational achievements
+  GAME_COMPLETE: 'game_complete', // Completing games/levels
+  MILESTONE: 'milestone',         // Major achievements
+} as const;
+
+export type BehaviorType = typeof BEHAVIOR_TYPES[keyof typeof BEHAVIOR_TYPES];
 
 // Game category multipliers - Reward QUALITY over quantity
 export const GAME_CATEGORY_MULTIPLIERS = {
