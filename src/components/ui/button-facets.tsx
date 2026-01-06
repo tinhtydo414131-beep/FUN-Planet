@@ -1,6 +1,8 @@
-export const ButtonFacets = () => {
+import { forwardRef } from 'react';
+
+export const ButtonFacets = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>((props, ref) => {
   return (
-    <>
+    <div ref={ref} {...props}>
       {/* Ambient diamond glow halo - Reduced intensity */}
       <div className="absolute inset-[-6px] rounded-2xl bg-gradient-radial from-cyan-400/15 via-purple-400/10 to-transparent blur-xl opacity-50 pointer-events-none" />
       
@@ -542,8 +544,10 @@ export const ButtonFacets = () => {
           }}
         />
       </div>
-    </>
+    </div>
   );
-};
+});
+
+ButtonFacets.displayName = 'ButtonFacets';
 
 export default ButtonFacets;

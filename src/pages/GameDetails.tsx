@@ -13,6 +13,7 @@ import { z } from "zod";
 import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CommentVoteButtons } from "@/components/game/CommentVoteButtons";
+import { useEngagementRewards } from "@/hooks/useEngagementRewards";
 import {
   AgeBadge,
   SafetyBadge,
@@ -126,6 +127,7 @@ export default function GameDetails() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { openChat } = useChatWindows();
+  const { checkAndAwardEngagementRewards } = useEngagementRewards();
   const [game, setGame] = useState<GameDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [ratings, setRatings] = useState<GameRating[]>([]);
@@ -350,6 +352,11 @@ export default function GameDetails() {
       setUserRating(rating);
       toast.success("Rating submitted!");
       loadRatings();
+      
+      // Check and award engagement rewards to game creator
+      if (id && game?.user_id) {
+        checkAndAwardEngagementRewards(id, game.user_id);
+      }
     } catch (error: any) {
       console.error('Rating error:', error);
       toast.error(error.message || "Failed to submit rating");
@@ -395,6 +402,11 @@ export default function GameDetails() {
 
       setCommentText("");
       loadComments();
+      
+      // Check and award engagement rewards to game creator
+      if (id && game?.user_id && !editingComment) {
+        checkAndAwardEngagementRewards(id, game.user_id);
+      }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
