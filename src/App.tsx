@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Web3Provider } from "@/providers/Web3Provider";
 import { CoinNotification } from "@/components/CoinNotification";
+import { RewardMarquee } from "@/components/RewardMarquee";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -25,6 +26,7 @@ const PublicProfile = lazy(() => import("./pages/PublicProfile"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Friends = lazy(() => import("./pages/Friends"));
 const Chat = lazy(() => import("./pages/Chat"));
+const Community = lazy(() => import("./pages/Community"));
 const NexusLeaderboard = lazy(() => import("./pages/NexusLeaderboard"));
 const FunWallet = lazy(() => import("./pages/FunWallet"));
 const MusicLibrary = lazy(() => import("./pages/MusicLibrary"));
@@ -127,7 +129,7 @@ const AnimatedRoutes = () => {
           <Route path="/friends" element={<Friends />} />
           <Route path="/find-friends" element={<FindFriends />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/community" element={<Chat />} />
+          <Route path="/community" element={<Community />} />
           <Route path="/messages" element={<PrivateMessages />} />
           
           {/* Leaderboards */}
@@ -223,6 +225,7 @@ const AppContent = () => {
       <Toaster />
       <Sonner />
       <CoinNotification />
+      <RewardMarquee />
       
       {/* Lazy loaded components with Suspense */}
       <Suspense fallback={null}>

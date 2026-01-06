@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { useBehaviorRewards } from '@/hooks/useBehaviorRewards';
 
 interface Post {
   id: string;
@@ -45,6 +46,7 @@ export function PostCard({ post, currentUserId, onDelete }: PostCardProps) {
   const [newComment, setNewComment] = useState('');
   const [loadingComments, setLoadingComments] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
+  const { awardSharing } = useBehaviorRewards();
 
   const reactions = [
     { emoji: '👍', type: 'like' },
@@ -238,6 +240,8 @@ export function PostCard({ post, currentUserId, onDelete }: PostCardProps) {
   const handleShare = () => {
     navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
     toast.success('Link copied!');
+    // Award sharing bonus
+    awardSharing('Chia sẻ bài viết với bạn bè');
   };
 
   const getPrivacyIcon = () => {

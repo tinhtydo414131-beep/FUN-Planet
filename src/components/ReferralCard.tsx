@@ -9,6 +9,7 @@ import { ReferralTierProgress } from './ReferralTierProgress';
 import { TierAchievementModal } from './TierAchievementModal';
 import { getCurrentTier, getNextTier, REFERRAL_TIERS, ReferralTier } from '@/utils/referralTiers';
 import { useNavigate } from 'react-router-dom';
+import { useBehaviorRewards } from '@/hooks/useBehaviorRewards';
 
 const ReferralCard = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const ReferralCard = () => {
     newTierAchieved,
     clearNewTierAchieved,
   } = useReferral();
+  const { awardSharing } = useBehaviorRewards();
   
   const [copied, setCopied] = useState(false);
   const [showTierModal, setShowTierModal] = useState(false);
@@ -65,6 +67,8 @@ const ReferralCard = () => {
           text: `Tham gia Fun Planet với mình và nhận 50.000 Camly miễn phí! 🎮🎁`,
           url: link,
         });
+        // Award sharing bonus
+        awardSharing('Chia sẻ link giới thiệu');
       } catch {
         // User cancelled sharing
       }
