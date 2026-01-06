@@ -100,6 +100,15 @@ interface UnreviewedGame {
   status: string;
 }
 
+interface AppealStats {
+  totalAppeals: number;
+  pendingAppeals: number;
+  approvedAppeals: number;
+  rejectedAppeals: number;
+  approvalRate: number;
+  avgProcessingTimeHours: number;
+}
+
 export function AdminAngelAITab() {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<string>("7");
@@ -127,11 +136,54 @@ export function AdminAngelAITab() {
   const [batchEvaluating, setBatchEvaluating] = useState(false);
   const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
   const [aiAnalytics, setAiAnalytics] = useState<AIAnalytics | null>(null);
+  const [appealStats, setAppealStats] = useState<AppealStats | null>(null);
 
   useEffect(() => {
     loadStats();
     loadGameStats();
+    loadAppealStats();
   }, [dateRange]);
+
+  // Load appeal statistics
+  const loadAppealStats = async () => {
+    try {
+      const { data: appeals } = await supabase
+        .from('game_appeals')
+        .select('id, status, created_at, reviewed_at')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (!appeals) return;
+
+      const total = appeals.length;
+      const pending = appeals.filter(a => a.status === 'pending').length;
+      const approved = appeals.filter(a => a.status === 'approved').length;
+      const rejected = appeals.filter(a => a.status === 'rejected').length;
+
+      // Calculate avg processing time for reviewed appeals
+      const reviewedAppeals = appeals.filter(a => a.reviewed_at);
+      let avgHours = 0;
+      if (reviewedAppeals.length > 0) {
+        const totalHours = reviewedAppeals.reduce((sum, a) => {
+          const created = new Date(a.created_at).getTime();
+          const reviewed = new Date(a.reviewed_at!).getTime();
+          return sum + (reviewed - created) / (1000 * 60 * 60);
+        }, 0);
+        avgHours = totalHours / reviewedAppeals.length;
+      }
+
+      setAppealStats({
+        totalAppeals: total,
+        pendingAppeals: pending,
+        approvedAppeals: approved,
+        rejectedAppeals: rejected,
+        approvalRate: (approved + rejected) > 0 ? (approved / (approved + rejected)) * 100 : 0,
+        avgProcessingTimeHours: avgHours,
+      });
+    } catch (error) {
+      console.error('Load appeal stats error:', error);
+    }
+  };
 
   // Load game evaluation statistics
   const loadGameStats = async () => {
@@ -909,6 +961,75 @@ export function AdminAngelAITab() {
                 {gameStats.autoRejected} out of {gameStats.reviewedGames} reviewed games
               </p>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Appeal Statistics Panel */}
+      {appealStats && appealStats.totalAppeals > 0 && (
+        <Card className="border-orange-500/20 bg-gradient-to-r from-orange-500/5 to-transparent">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-orange-500" />
+              Appeal Statistics
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-background/50 rounded-lg">
+                <p className="text-2xl font-bold">{appealStats.totalAppeals}</p>
+                <p className="text-sm text-muted-foreground">Total Appeals</p>
+              </div>
+              <div className="text-center p-4 bg-amber-500/10 rounded-lg">
+                <p className="text-2xl font-bold text-amber-600">{appealStats.pendingAppeals}</p>
+                <p className="text-sm text-muted-foreground">Pending</p>
+              </div>
+              <div className="text-center p-4 bg-green-500/10 rounded-lg">
+                <p className="text-2xl font-bold text-green-600">
+                  {appealStats.approvalRate.toFixed(1)}%
+                </p>
+                <p className="text-sm text-muted-foreground">Approval Rate</p>
+              </div>
+              <div className="text-center p-4 bg-blue-500/10 rounded-lg">
+                <p className="text-2xl font-bold text-blue-600">
+                  {appealStats.avgProcessingTimeHours.toFixed(1)}h
+                </p>
+                <p className="text-sm text-muted-foreground">Avg Processing</p>
+              </div>
+            </div>
+
+            {/* Pie Chart for Approval/Rejection */}
+            {(appealStats.approvedAppeals > 0 || appealStats.rejectedAppeals > 0 || appealStats.pendingAppeals > 0) && (
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Approved', value: appealStats.approvedAppeals, fill: '#22c55e' },
+                        { name: 'Rejected', value: appealStats.rejectedAppeals, fill: '#ef4444' },
+                        { name: 'Pending', value: appealStats.pendingAppeals, fill: '#f59e0b' }
+                      ].filter(d => d.value > 0)}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={70}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {[
+                        { fill: '#22c55e' },
+                        { fill: '#ef4444' },
+                        { fill: '#f59e0b' }
+                      ].map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

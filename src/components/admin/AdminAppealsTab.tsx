@@ -72,6 +72,48 @@ export function AdminAppealsTab() {
     loadAppeals();
   }, [statusFilter]);
 
+  // Realtime subscription for new appeals
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-appeals-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'game_appeals'
+        },
+        (payload) => {
+          console.log('[Realtime] New appeal:', payload);
+          toast.info('🔔 New appeal received!', {
+            description: 'Click refresh to view',
+            action: {
+              label: 'Refresh',
+              onClick: () => loadAppeals()
+            }
+          });
+          loadAppeals();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'game_appeals'
+        },
+        (payload) => {
+          console.log('[Realtime] Appeal updated:', payload);
+          loadAppeals();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const loadAppeals = async () => {
     setLoading(true);
     try {
