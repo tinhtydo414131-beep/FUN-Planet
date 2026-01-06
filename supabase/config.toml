@@ -53,3 +53,6 @@ verify_jwt = true
 
 [functions.send-weekly-summary]
 verify_jwt = false
+
+[functions.angel-evaluate-game]
+verify_jwt = false

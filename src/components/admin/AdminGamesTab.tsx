@@ -42,8 +42,31 @@ import {
   Users,
   ThumbsUp,
   Gift,
+  Sparkles,
+  Brain,
 } from "lucide-react";
 import { format } from "date-fns";
+import { AgeBadge, SafetyBadge, AIReviewCard } from "@/components/games/AIGameRating";
+
+interface GameAIReview {
+  overall_score: number;
+  is_safe_for_kids: boolean;
+  recommended_age: string;
+  violence_score: number;
+  violence_types: string[];
+  violence_details: string;
+  has_lootbox: boolean;
+  has_gambling_mechanics: boolean;
+  monetization_concerns: string[];
+  educational_score: number;
+  educational_categories: string[];
+  learning_outcomes: string[];
+  detected_themes: string[];
+  positive_aspects: string[];
+  concerns: string[];
+  review_summary: string;
+  confidence_score: number;
+}
 
 interface Game {
   id: string;
@@ -58,6 +81,7 @@ interface Game {
   username: string;
   external_url?: string | null;
   game_file_path?: string | null;
+  ai_review?: GameAIReview | null;
 }
 
 interface AdminGamesTabProps {
@@ -79,6 +103,11 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
   // Preview modal state
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewingGame, setPreviewingGame] = useState<Game | null>(null);
+  
+  // AI Review modal state
+  const [aiReviewModalOpen, setAiReviewModalOpen] = useState(false);
+  const [reviewingGame, setReviewingGame] = useState<Game | null>(null);
+  const [evaluatingId, setEvaluatingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadGames();
@@ -101,10 +130,16 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
 
       if (gamesData) {
         const userIds = [...new Set(gamesData.map((g) => g.user_id))];
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, username")
-          .in("id", userIds);
+        const gameIds = gamesData.map(g => g.id);
+        
+        // Fetch profiles and AI reviews in parallel
+        const [profilesResult, aiReviewsResult] = await Promise.all([
+          supabase.from("profiles").select("id, username").in("id", userIds),
+          supabase.from("game_ai_reviews").select("*").in("game_id", gameIds)
+        ]);
+
+        const profiles = profilesResult.data;
+        const aiReviews = aiReviewsResult.data;
 
         const gamesWithUsers: Game[] = gamesData.map((game: any) => ({
           id: game.id,
@@ -119,6 +154,7 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
           username: profiles?.find((p) => p.id === game.user_id)?.username || "Unknown",
           external_url: game.external_url,
           game_file_path: game.game_file_path,
+          ai_review: aiReviews?.find((r) => r.game_id === game.id) || null,
         }));
 
         setGames(gamesWithUsers);
@@ -142,6 +178,44 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
   const openPreviewModal = (game: Game) => {
     setPreviewingGame(game);
     setPreviewModalOpen(true);
+  };
+
+  // Open AI review modal
+  const openAIReviewModal = (game: Game) => {
+    setReviewingGame(game);
+    setAiReviewModalOpen(true);
+  };
+
+  // Trigger AI evaluation for a game
+  const triggerAIEvaluation = async (game: Game) => {
+    setEvaluatingId(game.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('angel-evaluate-game', {
+        body: {
+          game_id: game.id,
+          title: game.title,
+          description: game.description,
+          categories: [],
+          thumbnail_url: game.thumbnail_path
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success(
+        <div className="flex flex-col gap-1">
+          <span className="font-bold">🔮 Angel AI đã đánh giá xong!</span>
+          <span className="text-sm">{data.message}</span>
+        </div>
+      );
+      
+      loadGames();
+    } catch (error: any) {
+      console.error("AI evaluation error:", error);
+      toast.error("Lỗi khi đánh giá AI: " + (error.message || "Unknown error"));
+    } finally {
+      setEvaluatingId(null);
+    }
   };
 
   const getGamePreviewUrl = (game: Game): string | null => {
@@ -477,6 +551,10 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
                     <TableHead>Creator</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>
+                      <Sparkles className="h-4 w-4 inline mr-1" />
+                      AI Review
+                    </TableHead>
+                    <TableHead>
                       <Users className="h-4 w-4 inline mr-1" />
                       Plays
                     </TableHead>
@@ -510,6 +588,40 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
                       </TableCell>
                       <TableCell>{game.username}</TableCell>
                       <TableCell>{getStatusBadge(game.status)}</TableCell>
+                      <TableCell>
+                        {game.ai_review ? (
+                          <div className="flex items-center gap-1">
+                            <AgeBadge age={game.ai_review.recommended_age} size="sm" />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openAIReviewModal(game)}
+                              className="text-purple-500 hover:text-purple-600 p-1"
+                              title="Xem đánh giá AI"
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => triggerAIEvaluation(game)}
+                            disabled={evaluatingId === game.id}
+                            className="text-purple-500 hover:text-purple-600"
+                            title="Đánh giá bằng AI"
+                          >
+                            {evaluatingId === game.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Brain className="h-4 w-4 mr-1" />
+                                <span className="text-xs">AI</span>
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell>{game.play_count || 0}</TableCell>
                       <TableCell>{game.rating_count || 0}</TableCell>
                       <TableCell className="text-muted-foreground">
@@ -632,6 +744,41 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
               />
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Review Modal */}
+      <Dialog open={aiReviewModalOpen} onOpenChange={setAiReviewModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-400" />
+              Angel AI Review: {reviewingGame?.title}
+            </DialogTitle>
+            <DialogDescription>
+              Kết quả đánh giá tự động từ Angel AI
+            </DialogDescription>
+          </DialogHeader>
+          {reviewingGame?.ai_review && (
+            <AIReviewCard review={reviewingGame.ai_review as GameAIReview} />
+          )}
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => reviewingGame && triggerAIEvaluation(reviewingGame)}
+              disabled={evaluatingId === reviewingGame?.id}
+            >
+              {evaluatingId === reviewingGame?.id ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Đánh giá lại
+            </Button>
+            <Button onClick={() => setAiReviewModalOpen(false)}>
+              Đóng
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

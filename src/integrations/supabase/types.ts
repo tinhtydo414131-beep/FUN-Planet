@@ -2161,6 +2161,98 @@ export type Database = {
         }
         Relationships: []
       }
+      game_ai_reviews: {
+        Row: {
+          ai_model: string | null
+          concerns: string[] | null
+          confidence_score: number | null
+          detected_themes: string[] | null
+          educational_categories: string[] | null
+          educational_details: string | null
+          educational_score: number | null
+          full_ai_response: Json | null
+          game_id: string
+          has_gambling_mechanics: boolean | null
+          has_lootbox: boolean | null
+          id: string
+          is_safe_for_kids: boolean | null
+          learning_outcomes: string[] | null
+          monetization_concerns: string[] | null
+          monetization_details: string | null
+          overall_score: number | null
+          positive_aspects: string[] | null
+          recommended_age: string | null
+          review_summary: string | null
+          reviewed_at: string | null
+          updated_at: string | null
+          violence_details: string | null
+          violence_score: number | null
+          violence_types: string[] | null
+        }
+        Insert: {
+          ai_model?: string | null
+          concerns?: string[] | null
+          confidence_score?: number | null
+          detected_themes?: string[] | null
+          educational_categories?: string[] | null
+          educational_details?: string | null
+          educational_score?: number | null
+          full_ai_response?: Json | null
+          game_id: string
+          has_gambling_mechanics?: boolean | null
+          has_lootbox?: boolean | null
+          id?: string
+          is_safe_for_kids?: boolean | null
+          learning_outcomes?: string[] | null
+          monetization_concerns?: string[] | null
+          monetization_details?: string | null
+          overall_score?: number | null
+          positive_aspects?: string[] | null
+          recommended_age?: string | null
+          review_summary?: string | null
+          reviewed_at?: string | null
+          updated_at?: string | null
+          violence_details?: string | null
+          violence_score?: number | null
+          violence_types?: string[] | null
+        }
+        Update: {
+          ai_model?: string | null
+          concerns?: string[] | null
+          confidence_score?: number | null
+          detected_themes?: string[] | null
+          educational_categories?: string[] | null
+          educational_details?: string | null
+          educational_score?: number | null
+          full_ai_response?: Json | null
+          game_id?: string
+          has_gambling_mechanics?: boolean | null
+          has_lootbox?: boolean | null
+          id?: string
+          is_safe_for_kids?: boolean | null
+          learning_outcomes?: string[] | null
+          monetization_concerns?: string[] | null
+          monetization_details?: string | null
+          overall_score?: number | null
+          positive_aspects?: string[] | null
+          recommended_age?: string | null
+          review_summary?: string | null
+          reviewed_at?: string | null
+          updated_at?: string | null
+          violence_details?: string | null
+          violence_score?: number | null
+          violence_types?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_ai_reviews_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: true
+            referencedRelation: "uploaded_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_cleanup_rewards: {
         Row: {
           claim_date: string
