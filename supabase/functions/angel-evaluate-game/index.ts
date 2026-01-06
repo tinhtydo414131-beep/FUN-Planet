@@ -46,21 +46,36 @@ Hãy đánh giá game này theo các tiêu chí sau:
 Trả về JSON với format chính xác theo function schema.`
 
 Deno.serve(async (req) => {
+  console.log(`[Angel AI] ========== NEW REQUEST ==========`)
+  console.log(`[Angel AI] Method: ${req.method}`)
+  console.log(`[Angel AI] Time: ${new Date().toISOString()}`)
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { game_id, title, description, categories, thumbnail_url } = await req.json()
+    const requestBody = await req.json()
+    console.log(`[Angel AI] Request body keys: ${Object.keys(requestBody).join(', ')}`)
+    
+    const { game_id, title, description, categories, thumbnail_url } = requestBody
+    
+    console.log(`[Angel AI] === PARSED DATA ===`)
+    console.log(`[Angel AI] game_id: ${game_id}`)
+    console.log(`[Angel AI] title: ${title}`)
+    console.log(`[Angel AI] description length: ${description?.length || 0}`)
+    console.log(`[Angel AI] thumbnail_url: ${thumbnail_url || 'NULL/UNDEFINED'}`)
+    console.log(`[Angel AI] thumbnail_url type: ${typeof thumbnail_url}`)
 
     if (!game_id || !title) {
+      console.log(`[Angel AI] ERROR: Missing required fields`)
       return new Response(
         JSON.stringify({ error: 'Missing required fields: game_id, title' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    console.log(`[Angel AI] Evaluating game: ${title} (${game_id})`)
+    console.log(`[Angel AI] ✅ Starting evaluation for: "${title}" (${game_id})`)
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
