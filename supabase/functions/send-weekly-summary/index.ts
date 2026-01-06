@@ -52,6 +52,10 @@ serve(async (req) => {
     if (testMode && testEmail) {
       console.log(`Sending test email to: ${testEmail}`);
       
+      // Generate email ID for tracking
+      const emailId = crypto.randomUUID();
+      const trackingBaseUrl = `${supabaseUrl}/functions/v1/track-email`;
+      
       const testHtml = render(
         React.createElement(WeeklySummaryEmail, {
           username: "Test User",
@@ -59,13 +63,25 @@ serve(async (req) => {
           camlyEarned: 2500,
           newAchievements: 3,
           weekStart: weekStartStr,
+          emailId,
+          trackingBaseUrl,
         })
       );
 
       if (resend) {
         try {
+          // Log to email_analytics
+          await supabase.from("email_analytics").insert({
+            email_id: emailId,
+            recipient_email: testEmail,
+            user_id: null,
+            email_type: "weekly_summary",
+            subject: "[TEST] 📊 Tổng kết tuần: 15 games, 2,500 CAMLY",
+            metadata: { test: true },
+          });
+
           const { error: emailError } = await resend.emails.send({
-            from: "FunPlanet <noreply@resend.dev>",
+            from: "FunPlanet <noreply@funplanet.vn>",
             to: [testEmail],
             subject: "[TEST] 📊 Tổng kết tuần: 15 games, 2,500 CAMLY",
             html: testHtml,
@@ -89,6 +105,7 @@ serve(async (req) => {
               success: true, 
               testEmailSent: true,
               testEmail,
+              emailId,
               message: `Test email sent to ${testEmail}`
             }),
             { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -239,6 +256,10 @@ serve(async (req) => {
               emailsSkipped++;
             } else {
               try {
+                // Generate email ID for tracking
+                const emailId = crypto.randomUUID();
+                const trackingBaseUrl = `${supabaseUrl}/functions/v1/track-email`;
+                
                 const html = render(
                   React.createElement(WeeklySummaryEmail, {
                     username: profile.username || "User",
@@ -246,13 +267,32 @@ serve(async (req) => {
                     camlyEarned: camlyEarned,
                     newAchievements: newAchievements || 0,
                     weekStart: weekStartStr,
+                    emailId,
+                    trackingBaseUrl,
                   })
                 );
 
+                const emailSubject = `📊 Tổng kết tuần: ${gamesPlayed || 0} games, ${camlyEarned.toLocaleString()} CAMLY`;
+
+                // Log to email_analytics before sending
+                await supabase.from("email_analytics").insert({
+                  email_id: emailId,
+                  recipient_email: profile.email,
+                  user_id: profile.id,
+                  email_type: "weekly_summary",
+                  subject: emailSubject,
+                  metadata: {
+                    games_played: gamesPlayed || 0,
+                    camly_earned: camlyEarned,
+                    new_achievements: newAchievements || 0,
+                    week_start: weekStartStr,
+                  },
+                });
+
                 const { error: emailError } = await resend.emails.send({
-                  from: "FunPlanet <noreply@resend.dev>",
+                  from: "FunPlanet <noreply@funplanet.vn>",
                   to: [profile.email],
-                  subject: `📊 Tổng kết tuần: ${gamesPlayed || 0} games, ${camlyEarned.toLocaleString()} CAMLY`,
+                  subject: emailSubject,
                   html,
                 });
 
