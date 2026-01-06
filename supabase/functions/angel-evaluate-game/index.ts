@@ -91,13 +91,22 @@ Hãy đánh giá game này dựa trên thông tin trên.`
     
     // Try to fetch thumbnail for vision analysis
     let thumbnailBase64: string | null = null
+    let thumbnailMimeType = 'image/jpeg'
     if (thumbnail_url) {
+      console.log(`[Angel AI] === VISION ANALYSIS START ===`)
+      console.log(`[Angel AI] Thumbnail URL: ${thumbnail_url}`)
       try {
-        console.log(`[Angel AI] Fetching thumbnail for vision analysis: ${thumbnail_url}`)
-        const imageResponse = await fetch(thumbnail_url)
+        const imageResponse = await fetch(thumbnail_url, {
+          headers: { 'Accept': 'image/*' }
+        })
+        console.log(`[Angel AI] Fetch response status: ${imageResponse.status}`)
+        console.log(`[Angel AI] Content-Type: ${imageResponse.headers.get('content-type')}`)
+        
         if (imageResponse.ok) {
           const imageBuffer = await imageResponse.arrayBuffer()
           const bytes = new Uint8Array(imageBuffer)
+          console.log(`[Angel AI] Image size: ${bytes.length} bytes (${(bytes.length / 1024).toFixed(2)} KB)`)
+          
           // Check image size - limit to 4MB for base64
           if (bytes.length < 4 * 1024 * 1024) {
             let binary = ''
@@ -106,29 +115,42 @@ Hãy đánh giá game này dựa trên thông tin trên.`
             }
             thumbnailBase64 = btoa(binary)
             
-            // Detect mime type from URL
-            const ext = thumbnail_url.toLowerCase().split('.').pop()?.split('?')[0] || 'jpeg'
-            const mimeType = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
+            // Detect mime type from URL or content-type header
+            const contentType = imageResponse.headers.get('content-type')
+            if (contentType && contentType.includes('image/')) {
+              thumbnailMimeType = contentType.split(';')[0].trim()
+            } else {
+              const ext = thumbnail_url.toLowerCase().split('.').pop()?.split('?')[0] || 'jpeg'
+              thumbnailMimeType = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
+            }
             
             userContent.push({
               type: 'image_url',
-              image_url: { url: `data:${mimeType};base64,${thumbnailBase64}` }
+              image_url: { url: `data:${thumbnailMimeType};base64,${thumbnailBase64}` }
             })
-            console.log(`[Angel AI] Thumbnail loaded for vision analysis (${bytes.length} bytes)`)
+            console.log(`[Angel AI] ✅ Thumbnail encoded successfully!`)
+            console.log(`[Angel AI] MIME type: ${thumbnailMimeType}`)
+            console.log(`[Angel AI] Base64 length: ${thumbnailBase64.length} chars`)
           } else {
-            console.log(`[Angel AI] Thumbnail too large for vision analysis: ${bytes.length} bytes`)
+            console.log(`[Angel AI] ⚠️ Thumbnail too large: ${bytes.length} bytes (max 4MB)`)
           }
+        } else {
+          console.log(`[Angel AI] ⚠️ Failed to fetch thumbnail: HTTP ${imageResponse.status}`)
         }
       } catch (imgError) {
-        console.warn('[Angel AI] Failed to fetch thumbnail for vision:', imgError)
+        console.error('[Angel AI] ❌ Thumbnail fetch error:', imgError)
         // Continue without image analysis
       }
+      console.log(`[Angel AI] === VISION ANALYSIS END ===`)
+    } else {
+      console.log(`[Angel AI] No thumbnail URL provided - skipping vision analysis`)
     }
 
     // Call Lovable AI Gateway with tool calling for structured output
     // Use gemini-2.5-pro for vision analysis if we have an image
     const model = thumbnailBase64 ? 'google/gemini-2.5-pro' : 'google/gemini-2.5-flash'
-    console.log(`[Angel AI] Using model: ${model}`)
+    console.log(`[Angel AI] 🤖 Selected model: ${model}`)
+    console.log(`[Angel AI] Has thumbnail for vision: ${thumbnailBase64 ? 'YES' : 'NO'}`)
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

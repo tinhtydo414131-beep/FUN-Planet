@@ -108,6 +108,7 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
   const [aiReviewModalOpen, setAiReviewModalOpen] = useState(false);
   const [reviewingGame, setReviewingGame] = useState<Game | null>(null);
   const [evaluatingId, setEvaluatingId] = useState<string | null>(null);
+  const [batchEvaluating, setBatchEvaluating] = useState(false);
 
   useEffect(() => {
     loadGames();
@@ -216,6 +217,59 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     } finally {
       setEvaluatingId(null);
     }
+  };
+
+  // Batch AI evaluation for games missing reviews
+  const evaluateMissingReviews = async () => {
+    const gamesWithoutReview = games.filter(g => g.status === 'approved' && !g.ai_review);
+    
+    if (gamesWithoutReview.length === 0) {
+      toast.info("Tất cả game đã có AI review!");
+      return;
+    }
+
+    setBatchEvaluating(true);
+    let successCount = 0;
+    let failCount = 0;
+
+    toast.info(`Đang đánh giá ${gamesWithoutReview.length} game...`);
+
+    for (const game of gamesWithoutReview) {
+      try {
+        const { error } = await supabase.functions.invoke('angel-evaluate-game', {
+          body: {
+            game_id: game.id,
+            title: game.title,
+            description: game.description,
+            categories: [],
+            thumbnail_url: game.thumbnail_path
+          }
+        });
+
+        if (error) {
+          failCount++;
+          console.error(`Failed to evaluate ${game.title}:`, error);
+        } else {
+          successCount++;
+        }
+        
+        // Small delay to avoid rate limiting
+        await new Promise(r => setTimeout(r, 1000));
+      } catch (err) {
+        failCount++;
+        console.error(`Error evaluating ${game.title}:`, err);
+      }
+    }
+
+    setBatchEvaluating(false);
+    loadGames();
+    
+    toast.success(
+      <div className="flex flex-col gap-1">
+        <span className="font-bold">🔮 Đánh giá batch hoàn tất!</span>
+        <span className="text-sm">Thành công: {successCount} | Lỗi: {failCount}</span>
+      </div>
+    );
   };
 
   const getGamePreviewUrl = (game: Game): string | null => {
@@ -516,6 +570,19 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
             </Select>
             <Button variant="outline" size="icon" onClick={loadGames}>
               <RefreshCw className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={evaluateMissingReviews}
+              disabled={batchEvaluating}
+              className="text-purple-600 border-purple-300 hover:bg-purple-50"
+            >
+              {batchEvaluating ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Brain className="h-4 w-4 mr-2" />
+              )}
+              Re-evaluate Missing ({games.filter(g => g.status === 'approved' && !g.ai_review).length})
             </Button>
           </div>
         </CardContent>
