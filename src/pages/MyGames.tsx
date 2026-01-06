@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Edit, Loader2, Upload, ArrowLeft, Coins, Trophy, Gamepad2, Gem, Trash2, Play, AlertCircle } from "lucide-react";
+import { Edit, Loader2, Upload, ArrowLeft, Coins, Trophy, Gamepad2, Gem, Trash2, Play, AlertCircle, MessageSquare } from "lucide-react";
 import { REWARDS } from "@/lib/web3-bsc";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GameDeleteModal from "@/components/GameDeleteModal";
 import GameTrashView from "@/components/GameTrashView";
 import { useGameTrash } from "@/hooks/useGameTrash";
 import { GameTestModal } from "@/components/game-upload/GameTestModal";
+import { GameAppealModal } from "@/components/games/GameAppealModal";
 
 interface UploadedGame {
   id: string;
@@ -39,6 +40,7 @@ export default function MyGames() {
   const [gameToDelete, setGameToDelete] = useState<UploadedGame | null>(null);
   const [activeTab, setActiveTab] = useState("active");
   const [previewGame, setPreviewGame] = useState<UploadedGame | null>(null);
+  const [appealGame, setAppealGame] = useState<UploadedGame | null>(null);
   
   const { moveToTrash, isDeleting } = useGameTrash();
 
@@ -238,7 +240,18 @@ export default function MyGames() {
                         <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
                           <div className="flex items-start gap-2">
                             <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
-                            <p className="text-xs text-destructive">{game.rejection_note}</p>
+                            <div className="flex-1">
+                              <p className="text-xs text-destructive">{game.rejection_note}</p>
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="h-auto p-0 text-xs text-primary mt-1"
+                                onClick={() => setAppealGame(game)}
+                              >
+                                <MessageSquare className="w-3 h-3 mr-1" />
+                                Khiếu nại quyết định này
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -328,6 +341,19 @@ export default function MyGames() {
         onTestSuccess={() => setPreviewGame(null)}
         onTestFail={() => setPreviewGame(null)}
       />
+
+      {/* Game Appeal Modal */}
+      {user && (
+        <GameAppealModal
+          open={!!appealGame}
+          onOpenChange={(open) => !open && setAppealGame(null)}
+          gameId={appealGame?.id || ""}
+          gameTitle={appealGame?.title || ""}
+          rejectionNote={appealGame?.rejection_note || null}
+          userId={user.id}
+          onSuccess={loadGames}
+        />
+      )}
     </div>
   );
 }

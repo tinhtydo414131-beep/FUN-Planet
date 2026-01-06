@@ -25,7 +25,8 @@ import {
   Bell,
   Wallet,
   HeartHandshake,
-  Target
+  Target,
+  MessageSquare,
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
@@ -43,6 +44,7 @@ import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
 import { AdminDonationsTab } from "@/components/admin/AdminDonationsTab";
 import { AdminWeeklySummaryStats } from "@/components/admin/AdminWeeklySummaryStats";
 import { AdminKPIDashboard } from "@/components/admin/AdminKPIDashboard";
+import { AdminAppealsTab } from "@/components/admin/AdminAppealsTab";
 
 interface Stats {
   totalUsers: number;
@@ -330,6 +332,10 @@ export default function AdminMasterDashboard() {
               <Sparkles className="h-4 w-4" />
               <span>Angel AI</span>
             </TabsTrigger>
+            <TabsTrigger value="appeals" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
+              <MessageSquare className="h-4 w-4" />
+              <span>Appeals</span>
+            </TabsTrigger>
             <TabsTrigger value="notifications" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Bell className="h-4 w-4" />
               <span>Notify</span>
@@ -386,6 +392,10 @@ export default function AdminMasterDashboard() {
 
           <TabsContent value="angelai">
             <AdminAngelAITab />
+          </TabsContent>
+
+          <TabsContent value="appeals">
+            <AdminAppealsTab />
           </TabsContent>
 
           <TabsContent value="notifications">
