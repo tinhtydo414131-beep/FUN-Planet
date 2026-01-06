@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -29,6 +30,10 @@ import {
   Calendar,
   Clock,
   Sparkles,
+  Gamepad2,
+  CheckCircle,
+  AlertCircle,
+  Play,
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import {
@@ -63,6 +68,20 @@ interface TopUser {
   lastActive: string;
 }
 
+interface GameReviewStats {
+  totalGames: number;
+  reviewedGames: number;
+  missingReviews: number;
+  autoRejected: number;
+}
+
+interface UnreviewedGame {
+  id: string;
+  title: string;
+  created_at: string;
+  status: string;
+}
+
 export function AdminAngelAITab() {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<string>("7");
@@ -76,10 +95,149 @@ export function AdminAngelAITab() {
   const [dailyActivity, setDailyActivity] = useState<DailyActivity[]>([]);
   const [topUsers, setTopUsers] = useState<TopUser[]>([]);
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
+  
+  // Game evaluation stats
+  const [gameStats, setGameStats] = useState<GameReviewStats>({
+    totalGames: 0,
+    reviewedGames: 0,
+    missingReviews: 0,
+    autoRejected: 0,
+  });
+  const [unreviewedGames, setUnreviewedGames] = useState<UnreviewedGame[]>([]);
+  const [batchEvaluating, setBatchEvaluating] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
 
   useEffect(() => {
     loadStats();
+    loadGameStats();
   }, [dateRange]);
+
+  // Load game evaluation statistics
+  const loadGameStats = async () => {
+    try {
+      // Get all approved games
+      const { data: allGames, count: totalCount } = await supabase
+        .from("uploaded_games")
+        .select("id, title, created_at, status", { count: "exact" })
+        .is("deleted_at", null);
+
+      // Get all AI reviews
+      const { data: reviews } = await supabase
+        .from("game_ai_reviews")
+        .select("game_id, auto_rejected");
+
+      const reviewedGameIds = new Set(reviews?.map(r => r.game_id) || []);
+      const autoRejectedCount = reviews?.filter(r => r.auto_rejected).length || 0;
+
+      // Find unreviewed games (approved but no AI review)
+      const unreviewed = allGames?.filter(g => 
+        g.status === 'approved' && !reviewedGameIds.has(g.id)
+      ) || [];
+
+      setGameStats({
+        totalGames: totalCount || 0,
+        reviewedGames: reviews?.length || 0,
+        missingReviews: unreviewed.length,
+        autoRejected: autoRejectedCount,
+      });
+
+      setUnreviewedGames(unreviewed.slice(0, 10).map(g => ({
+        id: g.id,
+        title: g.title,
+        created_at: g.created_at,
+        status: g.status,
+      })));
+    } catch (error) {
+      console.error("Load game stats error:", error);
+    }
+  };
+
+  // Convert relative path to absolute URL for Edge Function
+  const getAbsoluteThumbnailUrl = (path: string | null | undefined): string | null => {
+    if (!path) return null;
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return `${window.location.origin}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
+  // Batch evaluate all missing games
+  const evaluateAllMissing = async () => {
+    if (unreviewedGames.length === 0) {
+      toast.info("Tất cả game approved đã có AI review!");
+      return;
+    }
+
+    // Fetch full game data for unreviewed games
+    const { data: fullGames } = await supabase
+      .from("uploaded_games")
+      .select("id, title, description, thumbnail_path")
+      .in("id", unreviewedGames.map(g => g.id));
+
+    if (!fullGames || fullGames.length === 0) {
+      toast.error("Không tìm thấy game để đánh giá");
+      return;
+    }
+
+    setBatchEvaluating(true);
+    setBatchProgress({ current: 0, total: fullGames.length });
+    let successCount = 0;
+    let failCount = 0;
+    let currentDelay = 800;
+
+    toast.info(`🔮 Bắt đầu đánh giá ${fullGames.length} game...`);
+
+    for (let i = 0; i < fullGames.length; i++) {
+      const game = fullGames[i];
+      setBatchProgress({ current: i + 1, total: fullGames.length });
+
+      try {
+        const absoluteThumbnailUrl = getAbsoluteThumbnailUrl(game.thumbnail_path);
+        console.log(`[Angel AI Batch ${i + 1}/${fullGames.length}] Evaluating "${game.title}"`);
+
+        const { error } = await supabase.functions.invoke('angel-evaluate-game', {
+          body: {
+            game_id: game.id,
+            title: game.title,
+            description: game.description,
+            categories: [],
+            thumbnail_url: absoluteThumbnailUrl
+          }
+        });
+
+        if (error) {
+          failCount++;
+          if (error.message?.includes('429')) {
+            currentDelay = Math.min(currentDelay * 2, 5000);
+            toast.warning("⏳ Rate limited, slowing down...");
+          } else if (error.message?.includes('402')) {
+            toast.error("💳 Hết credits! Vui lòng nạp thêm.");
+            break;
+          }
+        } else {
+          successCount++;
+          currentDelay = Math.max(currentDelay * 0.9, 800);
+        }
+
+        await new Promise(r => setTimeout(r, currentDelay));
+      } catch (err: any) {
+        failCount++;
+        if (err.status === 429) {
+          currentDelay = Math.min(currentDelay * 2, 5000);
+          await new Promise(r => setTimeout(r, 3000));
+        }
+      }
+    }
+
+    setBatchEvaluating(false);
+    setBatchProgress(null);
+    loadGameStats();
+
+    toast.success(
+      <div className="flex flex-col gap-1">
+        <span className="font-bold">🔮 Đánh giá batch hoàn tất!</span>
+        <span className="text-sm">Thành công: {successCount} | Lỗi: {failCount}</span>
+      </div>
+    );
+  };
 
   const loadStats = async () => {
     setLoading(true);
@@ -276,6 +434,127 @@ export function AdminAngelAITab() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Game Evaluation Health Panel */}
+      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Gamepad2 className="h-5 w-5 text-primary" />
+            Game AI Evaluation Status
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50">
+              <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-xs text-muted-foreground">Total Games</p>
+                <p className="text-lg font-bold">{gameStats.totalGames}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              <div>
+                <p className="text-xs text-muted-foreground">Reviewed</p>
+                <p className="text-lg font-bold text-green-600">{gameStats.reviewedGames}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50">
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              <div>
+                <p className="text-xs text-muted-foreground">Missing Review</p>
+                <p className="text-lg font-bold text-amber-600">{gameStats.missingReviews}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50">
+              <AlertCircle className="h-5 w-5 text-red-500" />
+              <div>
+                <p className="text-xs text-muted-foreground">Auto-Rejected</p>
+                <p className="text-lg font-bold text-red-600">{gameStats.autoRejected}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          {gameStats.totalGames > 0 && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Review Coverage</span>
+                <span className="font-medium">
+                  {Math.round((gameStats.reviewedGames / gameStats.totalGames) * 100)}%
+                </span>
+              </div>
+              <Progress 
+                value={(gameStats.reviewedGames / gameStats.totalGames) * 100} 
+                className="h-2"
+              />
+            </div>
+          )}
+
+          {/* Batch Evaluate Button */}
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={evaluateAllMissing}
+              disabled={batchEvaluating || gameStats.missingReviews === 0}
+              className="gap-2"
+            >
+              {batchEvaluating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Đang đánh giá {batchProgress?.current}/{batchProgress?.total}...
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  Đánh giá {gameStats.missingReviews} game còn thiếu
+                </>
+              )}
+            </Button>
+            <Button variant="outline" size="icon" onClick={loadGameStats} disabled={batchEvaluating}>
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Batch Progress */}
+          {batchProgress && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Batch Progress</span>
+                <span className="font-medium">
+                  {batchProgress.current}/{batchProgress.total}
+                </span>
+              </div>
+              <Progress 
+                value={(batchProgress.current / batchProgress.total) * 100} 
+                className="h-2"
+              />
+            </div>
+          )}
+
+          {/* Unreviewed Games List */}
+          {unreviewedGames.length > 0 && !batchEvaluating && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">
+                Games chưa có AI review (top 10):
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {unreviewedGames.map(game => (
+                  <div 
+                    key={game.id} 
+                    className="flex items-center justify-between p-2 rounded bg-background/50 text-sm"
+                  >
+                    <span className="truncate flex-1">{game.title}</span>
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      {format(new Date(game.created_at), "dd/MM")}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

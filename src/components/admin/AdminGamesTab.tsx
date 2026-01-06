@@ -229,7 +229,10 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     }
   };
 
-  // Batch AI evaluation for games missing reviews
+  // State for batch progress
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
+
+  // Batch AI evaluation for games missing reviews with rate limit protection
   const evaluateMissingReviews = async () => {
     const gamesWithoutReview = games.filter(g => g.status === 'approved' && !g.ai_review);
     
@@ -239,17 +242,29 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     }
 
     setBatchEvaluating(true);
+    setBatchProgress({ current: 0, total: gamesWithoutReview.length });
     let successCount = 0;
     let failCount = 0;
+    let consecutiveErrors = 0;
+    let currentDelay = 800; // Start with 800ms delay
 
-    toast.info(`Đang đánh giá ${gamesWithoutReview.length} game...`);
+    toast.info(`🔮 Bắt đầu đánh giá ${gamesWithoutReview.length} game...`);
 
-    for (const game of gamesWithoutReview) {
+    for (let i = 0; i < gamesWithoutReview.length; i++) {
+      const game = gamesWithoutReview[i];
+      setBatchProgress({ current: i + 1, total: gamesWithoutReview.length });
+
+      // Stop if too many consecutive errors
+      if (consecutiveErrors >= 3) {
+        toast.error(`Dừng batch vì có ${consecutiveErrors} lỗi liên tiếp. Đã hoàn thành ${successCount}/${gamesWithoutReview.length}.`);
+        break;
+      }
+
       try {
         const absoluteThumbnailUrl = getAbsoluteThumbnailUrl(game.thumbnail_path);
-        console.log(`[Admin Batch] Evaluating "${game.title}" with thumbnail:`, absoluteThumbnailUrl);
+        console.log(`[Admin Batch ${i + 1}/${gamesWithoutReview.length}] Evaluating "${game.title}"`);
         
-        const { error } = await supabase.functions.invoke('angel-evaluate-game', {
+        const { data, error } = await supabase.functions.invoke('angel-evaluate-game', {
           body: {
             game_id: game.id,
             title: game.title,
@@ -261,20 +276,41 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
 
         if (error) {
           failCount++;
+          consecutiveErrors++;
           console.error(`Failed to evaluate ${game.title}:`, error);
+          
+          // Check for rate limit (429) or payment required (402)
+          if (error.message?.includes('429') || error.message?.includes('rate limit')) {
+            toast.warning("⏳ Đang bị rate limit, tăng delay...");
+            currentDelay = Math.min(currentDelay * 2, 5000); // Exponential backoff, max 5s
+          } else if (error.message?.includes('402')) {
+            toast.error("💳 Hết credits AI! Vui lòng nạp thêm.");
+            break;
+          }
         } else {
           successCount++;
+          consecutiveErrors = 0;
+          currentDelay = Math.max(currentDelay * 0.9, 800); // Gradually reduce delay if successful
         }
         
-        // Small delay to avoid rate limiting
-        await new Promise(r => setTimeout(r, 1000));
-      } catch (err) {
+        // Delay with exponential backoff
+        await new Promise(r => setTimeout(r, currentDelay));
+      } catch (err: any) {
         failCount++;
+        consecutiveErrors++;
         console.error(`Error evaluating ${game.title}:`, err);
+        
+        // Handle rate limit errors
+        if (err.status === 429) {
+          toast.warning("⏳ Rate limited, waiting longer...");
+          currentDelay = Math.min(currentDelay * 2, 5000);
+          await new Promise(r => setTimeout(r, 3000)); // Extra wait
+        }
       }
     }
 
     setBatchEvaluating(false);
+    setBatchProgress(null);
     loadGames();
     
     toast.success(
