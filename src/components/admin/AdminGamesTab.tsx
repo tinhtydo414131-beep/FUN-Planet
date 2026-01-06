@@ -187,17 +187,27 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
     setAiReviewModalOpen(true);
   };
 
+  // Convert relative path to absolute URL for Edge Function
+  const getAbsoluteThumbnailUrl = (path: string | null | undefined): string | null => {
+    if (!path) return null;
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return `${window.location.origin}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
   // Trigger AI evaluation for a game
   const triggerAIEvaluation = async (game: Game) => {
     setEvaluatingId(game.id);
     try {
+      const absoluteThumbnailUrl = getAbsoluteThumbnailUrl(game.thumbnail_path);
+      console.log('[Admin] Triggering AI evaluation with thumbnail:', absoluteThumbnailUrl);
+      
       const { data, error } = await supabase.functions.invoke('angel-evaluate-game', {
         body: {
           game_id: game.id,
           title: game.title,
           description: game.description,
           categories: [],
-          thumbnail_url: game.thumbnail_path
+          thumbnail_url: absoluteThumbnailUrl
         }
       });
 
@@ -236,13 +246,16 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
 
     for (const game of gamesWithoutReview) {
       try {
+        const absoluteThumbnailUrl = getAbsoluteThumbnailUrl(game.thumbnail_path);
+        console.log(`[Admin Batch] Evaluating "${game.title}" with thumbnail:`, absoluteThumbnailUrl);
+        
         const { error } = await supabase.functions.invoke('angel-evaluate-game', {
           body: {
             game_id: game.id,
             title: game.title,
             description: game.description,
             categories: [],
-            thumbnail_url: game.thumbnail_path
+            thumbnail_url: absoluteThumbnailUrl
           }
         });
 

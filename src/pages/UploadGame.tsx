@@ -635,13 +635,23 @@ export default function UploadGame() {
       setLoading(false);
       
       // Trigger Angel AI evaluation in background (don't block upload flow)
+      // Ensure thumbnail URL is absolute for Edge Function
+      const absoluteThumbnailUrl = (() => {
+        const thumbPath = thumbnailPath || formData.thumbnailUrl;
+        if (!thumbPath) return null;
+        if (thumbPath.startsWith('http')) return thumbPath;
+        return `${window.location.origin}${thumbPath.startsWith('/') ? '' : '/'}${thumbPath}`;
+      })();
+      
+      console.log('[Angel AI] Sending thumbnail URL:', absoluteThumbnailUrl);
+      
       supabase.functions.invoke('angel-evaluate-game', {
         body: {
           game_id: insertedGame.id,
           title: formData.title,
           description: formData.description,
           categories: selectedTopics,
-          thumbnail_url: thumbnailPath || formData.thumbnailUrl
+          thumbnail_url: absoluteThumbnailUrl
         }
       }).then(({ data, error }) => {
         if (error) {
