@@ -1,204 +1,32 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import ja from './locales/ja';
+import ko from './locales/ko';
+import zh from './locales/zh';
+import th from './locales/th';
+import id from './locales/id';
+import es from './locales/es';
+import fr from './locales/fr';
+import de from './locales/de';
+import ru from './locales/ru';
+import pt from './locales/pt';
+import hi from './locales/hi';
 
 const resources = {
-  en: {
-    translation: {
-      // Navigation
-      nav: {
-        home: 'Home',
-        games: 'Games',
-        wallet: 'Wallet',
-        profile: 'Profile',
-        friends: 'Friends',
-        messages: 'Messages',
-        leaderboard: 'Leaderboard',
-        settings: 'Settings',
-      },
-      // Common
-      common: {
-        play: 'Play',
-        back: 'Back',
-        save: 'Save',
-        cancel: 'Cancel',
-        confirm: 'Confirm',
-        loading: 'Loading...',
-        error: 'Error',
-        success: 'Success',
-        welcome: 'Welcome',
-        logout: 'Logout',
-        login: 'Login',
-        signup: 'Sign Up',
-      },
-      // Wallet
-      wallet: {
-        title: 'FUN Wallet',
-        balance: 'Balance',
-        send: 'Send',
-        receive: 'Receive',
-        history: 'History',
-        connect: 'Connect Wallet',
-        disconnect: 'Disconnect',
-        totalDonated: 'Total Donated',
-        kidsHelped: 'Kids Helped',
-        transactions: 'Transactions',
-      },
-      // Games
-      games: {
-        title: 'Games',
-        play: 'Play Now',
-        featured: 'Featured Games',
-        popular: 'Popular',
-        new: 'New',
-        categories: 'Categories',
-        search: 'Search games...',
-        uploadGame: 'Upload Game',
-        myGames: 'My Games',
-        recentlyPlayed: 'Recently Played',
-        createdBy: 'Created by',
-      },
-      // Rewards
-      rewards: {
-        title: 'Rewards',
-        earnedToday: 'Earned Today',
-        totalEarned: 'Total Earned',
-        claimReward: 'Claim Reward',
-        dailyBonus: 'Daily Bonus',
-        gameReward: 'Game Reward',
-        referralReward: 'Referral Reward',
-        uploadReward: 'Upload Reward',
-      },
-      // Role Selection
-      roles: {
-        selectRole: 'Select Your Role',
-        player: "I'm a Player",
-        playerDesc: 'Play games and earn CAMLY coins!',
-        developer: "I'm a Developer",
-        developerDesc: 'Create games and earn 500,000 CAMLY per game!',
-        welcome: 'Role saved successfully!',
-        welcomeDesc: 'Welcome to FUN Planet 5D!',
-      },
-      // Messages
-      messages: {
-        title: 'Messages',
-        newMessage: 'New Message',
-        typeMessage: 'Type a message...',
-        send: 'Send',
-        online: 'Online',
-        offline: 'Offline',
-        typing: 'typing...',
-      },
-      // Profile
-      profile: {
-        title: 'Profile',
-        editProfile: 'Edit Profile',
-        myAchievements: 'My Achievements',
-        myNFTs: 'My NFTs',
-        totalPlays: 'Total Plays',
-        totalLikes: 'Total Likes',
-        joinedDate: 'Joined',
-      },
-    },
-  },
-  vi: {
-    translation: {
-      // Navigation
-      nav: {
-        home: 'Trang chủ',
-        games: 'Trò chơi',
-        wallet: 'Ví',
-        profile: 'Hồ sơ',
-        friends: 'Bạn bè',
-        messages: 'Tin nhắn',
-        leaderboard: 'Bảng xếp hạng',
-        settings: 'Cài đặt',
-      },
-      // Common
-      common: {
-        play: 'Chơi',
-        back: 'Quay lại',
-        save: 'Lưu',
-        cancel: 'Hủy',
-        confirm: 'Xác nhận',
-        loading: 'Đang tải...',
-        error: 'Lỗi',
-        success: 'Thành công',
-        welcome: 'Chào mừng',
-        logout: 'Đăng xuất',
-        login: 'Đăng nhập',
-        signup: 'Đăng ký',
-      },
-      // Wallet
-      wallet: {
-        title: 'Ví FUN',
-        balance: 'Số dư',
-        send: 'Gửi',
-        receive: 'Nhận',
-        history: 'Lịch sử',
-        connect: 'Kết nối ví',
-        disconnect: 'Ngắt kết nối',
-        totalDonated: 'Đã Quyên Góp',
-        kidsHelped: 'Trẻ Em Được Giúp',
-        transactions: 'Giao Dịch',
-      },
-      // Games
-      games: {
-        title: 'Trò Chơi',
-        play: 'Chơi Ngay',
-        featured: 'Game Nổi Bật',
-        popular: 'Phổ Biến',
-        new: 'Mới',
-        categories: 'Thể Loại',
-        search: 'Tìm kiếm game...',
-        uploadGame: 'Tải Game Lên',
-        myGames: 'Game Của Tôi',
-        recentlyPlayed: 'Chơi Gần Đây',
-        createdBy: 'Tạo bởi',
-      },
-      // Rewards
-      rewards: {
-        title: 'Phần Thưởng',
-        earnedToday: 'Hôm Nay',
-        totalEarned: 'Tổng Cộng',
-        claimReward: 'Nhận Thưởng',
-        dailyBonus: 'Thưởng Hàng Ngày',
-        gameReward: 'Thưởng Game',
-        referralReward: 'Thưởng Giới Thiệu',
-        uploadReward: 'Thưởng Upload',
-      },
-      // Role Selection
-      roles: {
-        selectRole: 'Chọn Vai Trò',
-        player: 'Tôi là Người Chơi',
-        playerDesc: 'Chơi game và kiếm CAMLY coins!',
-        developer: 'Tôi là Lập Trình Viên',
-        developerDesc: 'Tạo game và kiếm 500.000 CAMLY mỗi game!',
-        welcome: 'Role đã được lưu thành công!',
-        welcomeDesc: 'Chào mừng đến FUN Planet 5D!',
-      },
-      // Messages
-      messages: {
-        title: 'Tin Nhắn',
-        newMessage: 'Tin Nhắn Mới',
-        typeMessage: 'Nhập tin nhắn...',
-        send: 'Gửi',
-        online: 'Trực tuyến',
-        offline: 'Ngoại tuyến',
-        typing: 'đang nhập...',
-      },
-      // Profile
-      profile: {
-        title: 'Hồ Sơ',
-        editProfile: 'Chỉnh Sửa',
-        myAchievements: 'Thành Tựu',
-        myNFTs: 'NFT Của Tôi',
-        totalPlays: 'Tổng Lượt Chơi',
-        totalLikes: 'Tổng Lượt Thích',
-        joinedDate: 'Ngày Tham Gia',
-      },
-    },
-  },
+  en: { translation: { nav: { home: 'Home', games: 'Games', wallet: 'Wallet', profile: 'Profile', friends: 'Friends', messages: 'Messages', leaderboard: 'Leaderboard', settings: 'Settings' }, common: { play: 'Play', back: 'Back', save: 'Save', cancel: 'Cancel', confirm: 'Confirm', loading: 'Loading...', error: 'Error', success: 'Success', welcome: 'Welcome', logout: 'Logout', login: 'Login', signup: 'Sign Up' }, wallet: { title: 'FUN Wallet', balance: 'Balance', send: 'Send', receive: 'Receive', history: 'History', connect: 'Connect Wallet', disconnect: 'Disconnect', totalDonated: 'Total Donated', kidsHelped: 'Kids Helped', transactions: 'Transactions' }, games: { title: 'Games', play: 'Play Now', featured: 'Featured Games', popular: 'Popular', new: 'New', categories: 'Categories', search: 'Search games...', uploadGame: 'Upload Game', myGames: 'My Games', recentlyPlayed: 'Recently Played', createdBy: 'Created by' }, rewards: { title: 'Rewards', earnedToday: 'Earned Today', totalEarned: 'Total Earned', claimReward: 'Claim Reward', dailyBonus: 'Daily Bonus', gameReward: 'Game Reward', referralReward: 'Referral Reward', uploadReward: 'Upload Reward' }, roles: { selectRole: 'Select Your Role', player: "I'm a Player", playerDesc: 'Play games and earn CAMLY coins!', developer: "I'm a Developer", developerDesc: 'Create games and earn 500,000 CAMLY per game!', welcome: 'Role saved successfully!', welcomeDesc: 'Welcome to FUN Planet 5D!' }, messages: { title: 'Messages', newMessage: 'New Message', typeMessage: 'Type a message...', send: 'Send', online: 'Online', offline: 'Offline', typing: 'typing...' }, profile: { title: 'Profile', editProfile: 'Edit Profile', myAchievements: 'My Achievements', myNFTs: 'My NFTs', totalPlays: 'Total Plays', totalLikes: 'Total Likes', joinedDate: 'Joined' }, leaderboard: { topCreators: 'Top Creators', donateAndSponsor: 'Donate & Sponsor' } } },
+  vi: { translation: { nav: { home: 'Trang chủ', games: 'Trò chơi', wallet: 'Ví', profile: 'Hồ sơ', friends: 'Bạn bè', messages: 'Tin nhắn', leaderboard: 'Bảng xếp hạng', settings: 'Cài đặt' }, common: { play: 'Chơi', back: 'Quay lại', save: 'Lưu', cancel: 'Hủy', confirm: 'Xác nhận', loading: 'Đang tải...', error: 'Lỗi', success: 'Thành công', welcome: 'Chào mừng', logout: 'Đăng xuất', login: 'Đăng nhập', signup: 'Đăng ký' }, wallet: { title: 'Ví FUN', balance: 'Số dư', send: 'Gửi', receive: 'Nhận', history: 'Lịch sử', connect: 'Kết nối ví', disconnect: 'Ngắt kết nối', totalDonated: 'Đã Quyên Góp', kidsHelped: 'Trẻ Em Được Giúp', transactions: 'Giao Dịch' }, games: { title: 'Trò Chơi', play: 'Chơi Ngay', featured: 'Game Nổi Bật', popular: 'Phổ Biến', new: 'Mới', categories: 'Thể Loại', search: 'Tìm kiếm game...', uploadGame: 'Tải Game Lên', myGames: 'Game Của Tôi', recentlyPlayed: 'Chơi Gần Đây', createdBy: 'Tạo bởi' }, rewards: { title: 'Phần Thưởng', earnedToday: 'Hôm Nay', totalEarned: 'Tổng Cộng', claimReward: 'Nhận Thưởng', dailyBonus: 'Thưởng Hàng Ngày', gameReward: 'Thưởng Game', referralReward: 'Thưởng Giới Thiệu', uploadReward: 'Thưởng Upload' }, roles: { selectRole: 'Chọn Vai Trò', player: 'Tôi là Người Chơi', playerDesc: 'Chơi game và kiếm CAMLY coins!', developer: 'Tôi là Lập Trình Viên', developerDesc: 'Tạo game và kiếm 500.000 CAMLY mỗi game!', welcome: 'Role đã được lưu thành công!', welcomeDesc: 'Chào mừng đến FUN Planet 5D!' }, messages: { title: 'Tin Nhắn', newMessage: 'Tin Nhắn Mới', typeMessage: 'Nhập tin nhắn...', send: 'Gửi', online: 'Trực tuyến', offline: 'Ngoại tuyến', typing: 'đang nhập...' }, profile: { title: 'Hồ Sơ', editProfile: 'Chỉnh Sửa', myAchievements: 'Thành Tựu', myNFTs: 'NFT Của Tôi', totalPlays: 'Tổng Lượt Chơi', totalLikes: 'Tổng Lượt Thích', joinedDate: 'Ngày Tham Gia' }, leaderboard: { topCreators: 'Top Nhà Sáng Tạo', donateAndSponsor: 'Donate & Sponsor' } } },
+  ja: { translation: ja },
+  ko: { translation: ko },
+  zh: { translation: zh },
+  th: { translation: th },
+  id: { translation: id },
+  es: { translation: es },
+  fr: { translation: fr },
+  de: { translation: de },
+  ru: { translation: ru },
+  pt: { translation: pt },
+  hi: { translation: hi },
 };
 
 i18n
@@ -206,15 +34,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'vi', // Default to Vietnamese
+    lng: 'vi',
     fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
-    },
+    interpolation: { escapeValue: false },
+    detection: { order: ['localStorage', 'navigator'], caches: ['localStorage'] },
   });
 
 export default i18n;
