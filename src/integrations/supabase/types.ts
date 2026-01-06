@@ -463,6 +463,82 @@ export type Database = {
         }
         Relationships: []
       }
+      behavior_rewards: {
+        Row: {
+          amount: number
+          behavior_type: string
+          created_at: string
+          description: string | null
+          detected_by: string | null
+          game_id: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          behavior_type: string
+          created_at?: string
+          description?: string | null
+          detected_by?: string | null
+          game_id?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          behavior_type?: string
+          created_at?: string
+          description?: string | null
+          detected_by?: string | null
+          game_id?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "behavior_rewards_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "behavior_rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "behavior_rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "behavior_rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "behavior_rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "behavior_rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocked_games: {
         Row: {
           child_id: string
