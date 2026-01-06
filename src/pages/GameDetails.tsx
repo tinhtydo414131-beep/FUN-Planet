@@ -116,6 +116,8 @@ interface AIReviewData {
   has_gambling_mechanics: boolean;
   review_summary: string;
   overall_score: number;
+  auto_rejected?: boolean;
+  thumbnail_is_appropriate?: boolean;
 }
 
 export default function GameDetails() {
@@ -298,13 +300,15 @@ export default function GameDetails() {
         has_lootbox,
         has_gambling_mechanics,
         review_summary,
-        overall_score
+        overall_score,
+        auto_rejected,
+        thumbnail_is_appropriate
       `)
       .eq('game_id', id)
       .maybeSingle();
 
     if (reviewData) {
-      setAiReview(reviewData);
+      setAiReview(reviewData as AIReviewData);
     }
     
     setLoading(false);
