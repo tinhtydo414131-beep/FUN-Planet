@@ -661,7 +661,7 @@ export const FunPlanetCombinedBoard = () => {
                 }`}
               >
                 <Gem className={`h-4 w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
-                <span className={`text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Top Donors</span>
+                <span className={`text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Donate & Sponsor</span>
               </button>
             </div>
 
