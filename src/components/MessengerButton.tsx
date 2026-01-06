@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { MessageCircle } from "lucide-react";
 
-export const MessengerButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Button>>((props, ref) => {
+export function MessengerButton() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -14,7 +14,8 @@ export const MessengerButton = forwardRef<HTMLButtonElement, React.ComponentProp
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      subscribeToMessages();
+      const cleanup = subscribeToMessages();
+      return cleanup;
     }
   }, [user]);
 
@@ -87,12 +88,10 @@ export const MessengerButton = forwardRef<HTMLButtonElement, React.ComponentProp
 
   return (
     <Button
-      ref={ref}
       variant="ghost"
       size="icon"
       className="relative"
       onClick={() => navigate("/messages")}
-      {...props}
     >
       <MessageCircle className="w-5 h-5" />
       {unreadCount > 0 && (
@@ -102,6 +101,4 @@ export const MessengerButton = forwardRef<HTMLButtonElement, React.ComponentProp
       )}
     </Button>
   );
-});
-
-MessengerButton.displayName = "MessengerButton";
+}
