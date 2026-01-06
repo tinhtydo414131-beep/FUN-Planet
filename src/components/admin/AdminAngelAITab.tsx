@@ -34,6 +34,10 @@ import {
   CheckCircle,
   AlertCircle,
   Play,
+  XCircle,
+  Baby,
+  Shield,
+  GraduationCap,
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import {
@@ -46,6 +50,9 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 interface ChatStats {
@@ -73,6 +80,17 @@ interface GameReviewStats {
   reviewedGames: number;
   missingReviews: number;
   autoRejected: number;
+  allMissingReviews: number; // All games without AI review (not just approved)
+}
+
+interface AIAnalytics {
+  ageDistribution: { age: string; count: number; color: string }[];
+  safetyDistribution: { safe: number; unsafe: number };
+  topConcerns: { concern: string; count: number }[];
+  avgEducationalScore: number;
+  avgViolenceScore: number;
+  gamblingCount: number;
+  lootboxCount: number;
 }
 
 interface UnreviewedGame {
@@ -102,10 +120,13 @@ export function AdminAngelAITab() {
     reviewedGames: 0,
     missingReviews: 0,
     autoRejected: 0,
+    allMissingReviews: 0,
   });
   const [unreviewedGames, setUnreviewedGames] = useState<UnreviewedGame[]>([]);
+  const [allUnreviewedGames, setAllUnreviewedGames] = useState<UnreviewedGame[]>([]);
   const [batchEvaluating, setBatchEvaluating] = useState(false);
   const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
+  const [aiAnalytics, setAiAnalytics] = useState<AIAnalytics | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -115,38 +136,105 @@ export function AdminAngelAITab() {
   // Load game evaluation statistics
   const loadGameStats = async () => {
     try {
-      // Get all approved games
+      // Get all games
       const { data: allGames, count: totalCount } = await supabase
         .from("uploaded_games")
         .select("id, title, created_at, status", { count: "exact" })
         .is("deleted_at", null);
 
-      // Get all AI reviews
+      // Get all AI reviews with full data for analytics
       const { data: reviews } = await supabase
         .from("game_ai_reviews")
-        .select("game_id, auto_rejected");
+        .select("game_id, auto_rejected, recommended_age, is_safe_for_kids, concerns, educational_score, violence_score, has_gambling_mechanics, has_lootbox");
 
       const reviewedGameIds = new Set(reviews?.map(r => r.game_id) || []);
       const autoRejectedCount = reviews?.filter(r => r.auto_rejected).length || 0;
 
-      // Find unreviewed games (approved but no AI review)
-      const unreviewed = allGames?.filter(g => 
+      // Find approved games without AI review (for backward compat button)
+      const unreviewedApproved = allGames?.filter(g => 
         g.status === 'approved' && !reviewedGameIds.has(g.id)
+      ) || [];
+
+      // Find ALL games without AI review (new button)
+      const allUnreviewed = allGames?.filter(g => 
+        !reviewedGameIds.has(g.id)
       ) || [];
 
       setGameStats({
         totalGames: totalCount || 0,
         reviewedGames: reviews?.length || 0,
-        missingReviews: unreviewed.length,
+        missingReviews: unreviewedApproved.length,
         autoRejected: autoRejectedCount,
+        allMissingReviews: allUnreviewed.length,
       });
 
-      setUnreviewedGames(unreviewed.slice(0, 10).map(g => ({
+      setUnreviewedGames(unreviewedApproved.slice(0, 10).map(g => ({
         id: g.id,
         title: g.title,
         created_at: g.created_at,
         status: g.status,
       })));
+
+      setAllUnreviewedGames(allUnreviewed.slice(0, 10).map(g => ({
+        id: g.id,
+        title: g.title,
+        created_at: g.created_at,
+        status: g.status,
+      })));
+
+      // Calculate AI Analytics
+      if (reviews && reviews.length > 0) {
+        // Age distribution
+        const ageCounts: Record<string, number> = { '3+': 0, '6+': 0, '9+': 0, '12+': 0, 'Unknown': 0 };
+        const ageColors: Record<string, string> = { '3+': '#10b981', '6+': '#3b82f6', '9+': '#f59e0b', '12+': '#ef4444', 'Unknown': '#6b7280' };
+        
+        reviews.forEach(r => {
+          const age = r.recommended_age || 'Unknown';
+          if (ageCounts[age] !== undefined) {
+            ageCounts[age]++;
+          } else {
+            ageCounts['Unknown']++;
+          }
+        });
+
+        const ageDistribution = Object.entries(ageCounts)
+          .filter(([_, count]) => count > 0)
+          .map(([age, count]) => ({ age, count, color: ageColors[age] || '#6b7280' }));
+
+        // Safety distribution
+        const safeCount = reviews.filter(r => r.is_safe_for_kids).length;
+        const safetyDistribution = { safe: safeCount, unsafe: reviews.length - safeCount };
+
+        // Top concerns
+        const concernsMap: Record<string, number> = {};
+        reviews.forEach(r => {
+          if (r.concerns && Array.isArray(r.concerns)) {
+            r.concerns.forEach((c: string) => {
+              concernsMap[c] = (concernsMap[c] || 0) + 1;
+            });
+          }
+        });
+        const topConcerns = Object.entries(concernsMap)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([concern, count]) => ({ concern, count }));
+
+        // Averages
+        const avgEducationalScore = reviews.reduce((sum, r) => sum + (r.educational_score || 0), 0) / reviews.length;
+        const avgViolenceScore = reviews.reduce((sum, r) => sum + (r.violence_score || 0), 0) / reviews.length;
+        const gamblingCount = reviews.filter(r => r.has_gambling_mechanics).length;
+        const lootboxCount = reviews.filter(r => r.has_lootbox).length;
+
+        setAiAnalytics({
+          ageDistribution,
+          safetyDistribution,
+          topConcerns,
+          avgEducationalScore: Math.round(avgEducationalScore * 10) / 10,
+          avgViolenceScore: Math.round(avgViolenceScore * 10) / 10,
+          gamblingCount,
+          lootboxCount,
+        });
+      }
     } catch (error) {
       console.error("Load game stats error:", error);
     }
@@ -234,6 +322,93 @@ export function AdminAngelAITab() {
     toast.success(
       <div className="flex flex-col gap-1">
         <span className="font-bold">🔮 Đánh giá batch hoàn tất!</span>
+        <span className="text-sm">Thành công: {successCount} | Lỗi: {failCount}</span>
+      </div>
+    );
+  };
+
+  // Re-evaluate ALL games without AI review (not just approved)
+  const evaluateAllGames = async () => {
+    if (gameStats.allMissingReviews === 0) {
+      toast.info("Tất cả game đã có AI review!");
+      return;
+    }
+
+    // Fetch full game data for ALL unreviewed games
+    const { data: allGames } = await supabase
+      .from("uploaded_games")
+      .select("id, title, description, thumbnail_path")
+      .is("deleted_at", null);
+
+    const { data: reviews } = await supabase
+      .from("game_ai_reviews")
+      .select("game_id");
+
+    const reviewedIds = new Set(reviews?.map(r => r.game_id) || []);
+    const unreviewedAll = allGames?.filter(g => !reviewedIds.has(g.id)) || [];
+
+    if (unreviewedAll.length === 0) {
+      toast.info("Không có game nào cần đánh giá!");
+      return;
+    }
+
+    setBatchEvaluating(true);
+    setBatchProgress({ current: 0, total: unreviewedAll.length });
+    let successCount = 0;
+    let failCount = 0;
+    let currentDelay = 800;
+
+    toast.info(`🔮 Bắt đầu đánh giá TẤT CẢ ${unreviewedAll.length} game...`);
+
+    for (let i = 0; i < unreviewedAll.length; i++) {
+      const game = unreviewedAll[i];
+      setBatchProgress({ current: i + 1, total: unreviewedAll.length });
+
+      try {
+        const absoluteThumbnailUrl = getAbsoluteThumbnailUrl(game.thumbnail_path);
+        console.log(`[Angel AI All Games ${i + 1}/${unreviewedAll.length}] Evaluating "${game.title}"`);
+
+        const { error } = await supabase.functions.invoke('angel-evaluate-game', {
+          body: {
+            game_id: game.id,
+            title: game.title,
+            description: game.description,
+            categories: [],
+            thumbnail_url: absoluteThumbnailUrl
+          }
+        });
+
+        if (error) {
+          failCount++;
+          if (error.message?.includes('429')) {
+            currentDelay = Math.min(currentDelay * 2, 5000);
+            toast.warning("⏳ Rate limited, slowing down...");
+          } else if (error.message?.includes('402')) {
+            toast.error("💳 Hết credits! Vui lòng nạp thêm.");
+            break;
+          }
+        } else {
+          successCount++;
+          currentDelay = Math.max(currentDelay * 0.9, 800);
+        }
+
+        await new Promise(r => setTimeout(r, currentDelay));
+      } catch (err: any) {
+        failCount++;
+        if (err.status === 429) {
+          currentDelay = Math.min(currentDelay * 2, 5000);
+          await new Promise(r => setTimeout(r, 3000));
+        }
+      }
+    }
+
+    setBatchEvaluating(false);
+    setBatchProgress(null);
+    loadGameStats();
+
+    toast.success(
+      <div className="flex flex-col gap-1">
+        <span className="font-bold">🔮 Đánh giá TẤT CẢ game hoàn tất!</span>
         <span className="text-sm">Thành công: {successCount} | Lỗi: {failCount}</span>
       </div>
     );
@@ -492,22 +667,40 @@ export function AdminAngelAITab() {
             </div>
           )}
 
-          {/* Batch Evaluate Button */}
-          <div className="flex items-center gap-4">
+          {/* Batch Evaluate Buttons */}
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               onClick={evaluateAllMissing}
               disabled={batchEvaluating || gameStats.missingReviews === 0}
               className="gap-2"
+              variant="outline"
             >
               {batchEvaluating ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Đang đánh giá {batchProgress?.current}/{batchProgress?.total}...
+                  Đang đánh giá...
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4" />
-                  Đánh giá {gameStats.missingReviews} game còn thiếu
+                  Đánh giá {gameStats.missingReviews} game approved
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={evaluateAllGames}
+              disabled={batchEvaluating || gameStats.allMissingReviews === 0}
+              className="gap-2 bg-gradient-to-r from-primary to-secondary"
+            >
+              {batchEvaluating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {batchProgress?.current}/{batchProgress?.total}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Re-evaluate All ({gameStats.allMissingReviews})
                 </>
               )}
             </Button>
@@ -555,6 +748,132 @@ export function AdminAngelAITab() {
           )}
         </CardContent>
       </Card>
+
+      {/* AI Analytics Dashboard */}
+      {aiAnalytics && (
+        <Card className="border-purple-500/20 bg-gradient-to-r from-purple-500/5 to-transparent">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-purple-500" />
+              AI Review Analytics
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Quick Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-3 rounded-lg bg-background/50 text-center">
+                <p className="text-2xl font-bold text-green-600">{aiAnalytics.avgEducationalScore}</p>
+                <p className="text-xs text-muted-foreground">Avg Educational</p>
+              </div>
+              <div className="p-3 rounded-lg bg-background/50 text-center">
+                <p className="text-2xl font-bold text-red-600">{aiAnalytics.avgViolenceScore}</p>
+                <p className="text-xs text-muted-foreground">Avg Violence</p>
+              </div>
+              <div className="p-3 rounded-lg bg-background/50 text-center">
+                <p className="text-2xl font-bold text-amber-600">{aiAnalytics.gamblingCount}</p>
+                <p className="text-xs text-muted-foreground">Gambling Detected</p>
+              </div>
+              <div className="p-3 rounded-lg bg-background/50 text-center">
+                <p className="text-2xl font-bold text-orange-600">{aiAnalytics.lootboxCount}</p>
+                <p className="text-xs text-muted-foreground">Lootbox Detected</p>
+              </div>
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Age Distribution */}
+              <div>
+                <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                  <Baby className="h-4 w-4" />
+                  Age Rating Distribution
+                </p>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={aiAnalytics.ageDistribution}
+                        dataKey="count"
+                        nameKey="age"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={70}
+                        label={({ age, count }) => `${age}: ${count}`}
+                      >
+                        {aiAnalytics.ageDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Safety Distribution */}
+              <div>
+                <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Safety Distribution
+                </p>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { name: 'Safe', value: aiAnalytics.safetyDistribution.safe, fill: '#10b981' },
+                      { name: 'Unsafe', value: aiAnalytics.safetyDistribution.unsafe, fill: '#ef4444' },
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                      <Tooltip />
+                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                        {[
+                          { fill: '#10b981' },
+                          { fill: '#ef4444' },
+                        ].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            {/* Top Concerns */}
+            {aiAnalytics.topConcerns.length > 0 && (
+              <div>
+                <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                  <XCircle className="h-4 w-4 text-red-500" />
+                  Top 5 Concerns
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {aiAnalytics.topConcerns.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded bg-background/50">
+                      <span className="text-sm truncate">{item.concern}</span>
+                      <Badge variant="secondary">{item.count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Auto-reject Rate */}
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Auto-Reject Rate</span>
+                <span className="text-lg font-bold text-red-600">
+                  {gameStats.reviewedGames > 0 
+                    ? Math.round((gameStats.autoRejected / gameStats.reviewedGames) * 100) 
+                    : 0}%
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {gameStats.autoRejected} out of {gameStats.reviewedGames} reviewed games
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
