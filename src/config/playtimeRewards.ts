@@ -12,8 +12,8 @@ export const PLAY_REWARDS = {
   KINDNESS_ACTION: 500,           // 500 CAMLY for kind behaviors (AI detected)
   COOPERATION_BONUS: 1500,        // 1,500 CAMLY for cooperative play
   
-  // === TIME-BASED REWARDS (Reduced - discourage grinding) ===
-  CAMLY_PER_MINUTE: 50,           // Reduced from 100 → 50 (không khuyến khích cày cuốc)
+  // === TIME-BASED REWARDS (DISABLED - value over time) ===
+  CAMLY_PER_MINUTE: 0,            // DISABLED: No more time-based grinding rewards
   MIN_SESSION_SECONDS: 60,        // Minimum 60 seconds to earn rewards
   AFK_TIMEOUT_SECONDS: 120,       // 2 minutes without activity = AFK
   COOLDOWN_SECONDS: 60,           // 1 minute cooldown between reward claims

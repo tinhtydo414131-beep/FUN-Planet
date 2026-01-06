@@ -2424,6 +2424,44 @@ export type Database = {
         }
         Relationships: []
       }
+      game_engagement_rewards: {
+        Row: {
+          amount: number
+          created_at: string
+          creator_id: string
+          game_id: string | null
+          id: string
+          reward_type: string
+          threshold_reached: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          creator_id: string
+          game_id?: string | null
+          id?: string
+          reward_type: string
+          threshold_reached: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          creator_id?: string
+          game_id?: string | null
+          id?: string
+          reward_type?: string
+          threshold_reached?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_engagement_rewards_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "uploaded_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_plays: {
         Row: {
           game_id: string
@@ -2850,6 +2888,45 @@ export type Database = {
           is_active?: boolean | null
           storage_path?: string
           title?: string
+        }
+        Relationships: []
+      }
+      interest_groups: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          description_vi: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          member_count: number | null
+          name: string
+          name_vi: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          description_vi?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          member_count?: number | null
+          name: string
+          name_vi?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          description_vi?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          member_count?: number | null
+          name?: string
+          name_vi?: string | null
         }
         Relationships: []
       }
@@ -4295,6 +4372,39 @@ export type Database = {
           },
         ]
       }
+      system_wallets: {
+        Row: {
+          created_at: string
+          encrypted_private_key: string | null
+          id: string
+          is_active: boolean | null
+          last_used_at: string | null
+          user_id: string
+          wallet_address: string
+          wallet_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          encrypted_private_key?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          user_id: string
+          wallet_address: string
+          wallet_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          encrypted_private_key?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          user_id?: string
+          wallet_address?: string
+          wallet_type?: string | null
+        }
+        Relationships: []
+      }
       upload_game_rewards: {
         Row: {
           claimed_at: string
@@ -4934,6 +5044,32 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_interests: {
+        Row: {
+          group_id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_interests_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "interest_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_login_history: {
         Row: {
