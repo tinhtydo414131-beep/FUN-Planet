@@ -5,6 +5,8 @@ import {
   Head,
   Heading,
   Html,
+  Img,
+  Link,
   Preview,
   Text,
   Section,
@@ -19,6 +21,8 @@ interface WeeklySummaryEmailProps {
   camlyEarned: number;
   newAchievements: number;
   weekStart: string;
+  emailId?: string;
+  trackingBaseUrl?: string;
 }
 
 export const WeeklySummaryEmail = ({
@@ -27,6 +31,8 @@ export const WeeklySummaryEmail = ({
   camlyEarned,
   newAchievements,
   weekStart,
+  emailId,
+  trackingBaseUrl,
 }: WeeklySummaryEmailProps) => (
   <Html>
     <Head />
@@ -71,6 +77,18 @@ export const WeeklySummaryEmail = ({
             ? "👍 Tốt lắm! Tiếp tục duy trì nhé!" 
             : "💪 Hãy chơi thêm game để kiếm nhiều CAMLY hơn nữa!"}
         </Text>
+
+        {/* CTA Button */}
+        {emailId && trackingBaseUrl && (
+          <Section style={buttonSection}>
+            <Link
+              href={`${trackingBaseUrl}?id=${emailId}&action=click&redirect=https://funplanet.vn/games`}
+              style={button}
+            >
+              Chơi Game Ngay 🎮
+            </Link>
+          </Section>
+        )}
         
         <Text style={footer}>
           Tiếp tục chơi game và kiếm thêm CAMLY nhé! 🚀
@@ -80,7 +98,22 @@ export const WeeklySummaryEmail = ({
         
         <Text style={footerSmall}>
           © 2025 FunPlanet. Email này được gửi tự động hàng tuần.
+          <br />
+          <Link href="https://funplanet.vn/settings" style={footerLink}>
+            Cài đặt email
+          </Link>
         </Text>
+
+        {/* Tracking Pixel */}
+        {emailId && trackingBaseUrl && (
+          <Img
+            src={`${trackingBaseUrl}?id=${emailId}&action=open`}
+            width="1"
+            height="1"
+            alt=""
+            style={{ display: 'none' }}
+          />
+        )}
       </Container>
     </Body>
   </Html>
@@ -185,4 +218,25 @@ const footerSmall = {
   fontSize: '11px',
   textAlign: 'center' as const,
   margin: '0',
+}
+
+const footerLink = {
+  color: '#6366f1',
+  textDecoration: 'none',
+}
+
+const buttonSection = {
+  textAlign: 'center' as const,
+  margin: '24px 0',
+}
+
+const button = {
+  backgroundColor: '#6366f1',
+  borderRadius: '8px',
+  color: '#ffffff',
+  display: 'inline-block',
+  fontSize: '16px',
+  fontWeight: 'bold' as const,
+  padding: '14px 32px',
+  textDecoration: 'none',
 }
