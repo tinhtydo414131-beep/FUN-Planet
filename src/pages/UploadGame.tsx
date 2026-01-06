@@ -634,6 +634,23 @@ export default function UploadGame() {
       setUploadProgress(100);
       setLoading(false);
       
+      // Trigger Angel AI evaluation in background (don't block upload flow)
+      supabase.functions.invoke('angel-evaluate-game', {
+        body: {
+          game_id: insertedGame.id,
+          title: formData.title,
+          description: formData.description,
+          categories: selectedTopics,
+          thumbnail_url: thumbnailPath || formData.thumbnailUrl
+        }
+      }).then(({ data, error }) => {
+        if (error) {
+          console.warn('[Angel AI] Evaluation failed:', error);
+        } else {
+          console.log('[Angel AI] Evaluation completed:', data);
+        }
+      });
+      
       // Open test modal
       toast.info("🎮 Hãy test game để xác nhận nó hoạt động!", { duration: 4000 });
       setShowTestModal(true);
