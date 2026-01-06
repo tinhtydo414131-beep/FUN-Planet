@@ -75,6 +75,16 @@ Deno.serve(async (req) => {
       )
     }
 
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(game_id)) {
+      console.log(`[Angel AI] ERROR: Invalid UUID format: ${game_id}`)
+      return new Response(
+        JSON.stringify({ error: 'Invalid game_id format. Must be a valid UUID.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     console.log(`[Angel AI] ✅ Starting evaluation for: "${title}" (${game_id})`)
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
