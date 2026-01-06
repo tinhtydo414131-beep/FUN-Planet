@@ -1,4 +1,4 @@
-import { Bell, Check, CheckCheck, Gamepad2, Gift, X } from 'lucide-react';
+import { Bell, Check, CheckCheck, Gamepad2, Gift, X, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -24,6 +24,8 @@ export function NotificationBell() {
         return <Gamepad2 className="h-4 w-4 text-green-500" />;
       case 'game_rejected':
         return <X className="h-4 w-4 text-red-500" />;
+      case 'game_auto_rejected':
+        return <Bot className="h-4 w-4 text-red-500" />;
       case 'reward':
         return <Gift className="h-4 w-4 text-yellow-500" />;
       default:
@@ -38,6 +40,8 @@ export function NotificationBell() {
       case 'game_approved':
         return 'bg-green-500/10';
       case 'game_rejected':
+        return 'bg-red-500/10';
+      case 'game_auto_rejected':
         return 'bg-red-500/10';
       case 'reward':
         return 'bg-yellow-500/10';

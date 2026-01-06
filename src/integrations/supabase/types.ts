@@ -2164,6 +2164,8 @@ export type Database = {
       game_ai_reviews: {
         Row: {
           ai_model: string | null
+          auto_reject_reasons: string[] | null
+          auto_rejected: boolean | null
           concerns: string[] | null
           confidence_score: number | null
           detected_themes: string[] | null
@@ -2184,6 +2186,11 @@ export type Database = {
           recommended_age: string | null
           review_summary: string | null
           reviewed_at: string | null
+          thumbnail_concerns: string[] | null
+          thumbnail_details: string | null
+          thumbnail_detected_elements: string[] | null
+          thumbnail_is_appropriate: boolean | null
+          thumbnail_quality_score: number | null
           updated_at: string | null
           violence_details: string | null
           violence_score: number | null
@@ -2191,6 +2198,8 @@ export type Database = {
         }
         Insert: {
           ai_model?: string | null
+          auto_reject_reasons?: string[] | null
+          auto_rejected?: boolean | null
           concerns?: string[] | null
           confidence_score?: number | null
           detected_themes?: string[] | null
@@ -2211,6 +2220,11 @@ export type Database = {
           recommended_age?: string | null
           review_summary?: string | null
           reviewed_at?: string | null
+          thumbnail_concerns?: string[] | null
+          thumbnail_details?: string | null
+          thumbnail_detected_elements?: string[] | null
+          thumbnail_is_appropriate?: boolean | null
+          thumbnail_quality_score?: number | null
           updated_at?: string | null
           violence_details?: string | null
           violence_score?: number | null
@@ -2218,6 +2232,8 @@ export type Database = {
         }
         Update: {
           ai_model?: string | null
+          auto_reject_reasons?: string[] | null
+          auto_rejected?: boolean | null
           concerns?: string[] | null
           confidence_score?: number | null
           detected_themes?: string[] | null
@@ -2238,6 +2254,11 @@ export type Database = {
           recommended_age?: string | null
           review_summary?: string | null
           reviewed_at?: string | null
+          thumbnail_concerns?: string[] | null
+          thumbnail_details?: string | null
+          thumbnail_detected_elements?: string[] | null
+          thumbnail_is_appropriate?: boolean | null
+          thumbnail_quality_score?: number | null
           updated_at?: string | null
           violence_details?: string | null
           violence_score?: number | null
