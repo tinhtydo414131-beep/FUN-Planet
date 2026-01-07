@@ -112,6 +112,12 @@ export const BackgroundMusicPlayer = () => {
 
   const togglePlay = async () => {
     if (!audioRef.current) return;
+    
+    // Check if playlist is available
+    if (playlist.length === 0 || !playlist[currentTrack]?.src) {
+      console.warn('No audio source available');
+      return;
+    }
 
     if (isPlaying) {
       audioRef.current.pause();
@@ -131,11 +137,14 @@ export const BackgroundMusicPlayer = () => {
     audioRef.current.muted = false;
     audioRef.current.volume = effectiveVolume / 100;
 
+    console.log('Attempting to play:', playlist[currentTrack]?.title, playlist[currentTrack]?.src);
+
     try {
       await audioRef.current.play();
       setIsPlaying(true);
+      console.log('Playback started successfully');
     } catch (error) {
-      console.log("Audio play failed on user gesture:", error);
+      console.error("Audio play failed:", error);
     }
   };
   const toggleMute = () => {
@@ -249,7 +258,16 @@ export const BackgroundMusicPlayer = () => {
                 🎵 Music Player
               </h3>
               <p className="text-sm font-comic text-muted-foreground truncate">
-                {playlist[currentTrack]?.title || 'Loading...'}
+                {isLoadingPlaylist ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Đang tải nhạc...
+                  </span>
+                ) : playlist.length === 0 ? (
+                  'Chưa có nhạc'
+                ) : (
+                  playlist[currentTrack]?.title || 'Unknown'
+                )}
               </p>
             </div>
 
@@ -267,9 +285,12 @@ export const BackgroundMusicPlayer = () => {
               <Button
                 onClick={togglePlay}
                 size="lg"
-                className="h-16 w-16 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all duration-300 hover:scale-110 border-4 border-white/30"
+                disabled={isLoadingPlaylist || playlist.length === 0}
+                className="h-16 w-16 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all duration-300 hover:scale-110 border-4 border-white/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                {isPlaying ? (
+                {isLoadingPlaylist ? (
+                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                ) : isPlaying ? (
                   <Pause className="w-8 h-8 text-white fill-white" />
                 ) : (
                   <Play className="w-8 h-8 text-white fill-white ml-1" />
