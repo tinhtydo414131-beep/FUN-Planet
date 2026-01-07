@@ -544,6 +544,28 @@ export default function Auth() {
               </TabsContent>
             </Tabs>
 
+            {/* Divider */}
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-muted-foreground/20" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground font-comic">
+                  {t('auth.or')}
+                </span>
+              </div>
+            </div>
+
+            {/* Explore as Guest Button */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/")}
+              className="w-full h-12 font-fredoka text-base border-2 border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5 transition-all"
+            >
+              {t('auth.exploreAsGuest')}
+            </Button>
+
             {/* Forgot Password Modal */}
             {showForgotPassword && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">

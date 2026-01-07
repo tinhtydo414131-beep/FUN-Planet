@@ -150,4 +150,8 @@ export default {
     title: 'Drehe Dein Handy',
     description: 'Für das beste Spielerlebnis drehe dein Handy ins Querformat! 🎮✨',
   },
+  auth: {
+    exploreAsGuest: 'Als Gast erkunden 👀',
+    or: 'oder',
+  },
 };

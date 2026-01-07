@@ -150,4 +150,8 @@ export default {
     title: 'Tournez Votre Téléphone',
     description: 'Pour la meilleure expérience de jeu, tournez votre téléphone en mode paysage! 🎮✨',
   },
+  auth: {
+    exploreAsGuest: 'Explorer en tant qu\'Invité 👀',
+    or: 'ou',
+  },
 };
