@@ -26,11 +26,7 @@ import confetti from "canvas-confetti";
 import { toast } from "sonner";
 
 // Import all game components
-import { GuessNumber } from "@/components/games/GuessNumber";
-import { ColorMatch } from "@/components/games/ColorMatch";
-
 import { WordScramble } from "@/components/games/WordScramble";
-import { MathQuiz } from "@/components/games/MathQuiz";
 import { SimonSays } from "@/components/games/SimonSays";
 import { TriviaQuiz } from "@/components/games/TriviaQuiz";
 import { TreasureHunt } from "@/components/games/TreasureHunt";
@@ -74,10 +70,8 @@ import { RockPaperScissors } from "@/components/games/RockPaperScissors";
 import { FlappyBird } from "@/components/games/FlappyBird";
 
 import { SimonSays3D } from "@/components/games/SimonSays3D";
-import { GuessNumber3D } from "@/components/games/GuessNumber3D";
 import { WordScramble3D } from "@/components/games/WordScramble3D";
 import { TriviaQuiz3D } from "@/components/games/TriviaQuiz3D";
-import { MathQuiz3D } from "@/components/games/MathQuiz3D";
 import { StarCollector3D } from "@/components/games/StarCollector3D";
 import { PetParadise3D } from "@/components/games/PetParadise3D";
 import { DreamWorld3D } from "@/components/games/DreamWorld3D";
@@ -366,10 +360,9 @@ const GamePlay = () => {
     // Map component_name from database to actual components
     switch (componentKey) {
       // Casual & Happy Games
-      case "ColorMatch":
+      case "ColorMatch3D": 
       case "color-match":
-        return <ColorMatch {...gameProps} />;
-      case "ColorMatch3D": return <ColorMatch3D {...gameProps} />;
+        return <ColorMatch3D {...gameProps} />;
       case "StarCollector": return <StarCollector3D {...gameProps} />;
       case "StarCollector2D": return <StarCollector {...gameProps} />;
       case "HappinessGarden": return <HappinessGarden3D {...gameProps} />;
@@ -382,15 +375,13 @@ const GamePlay = () => {
       case "MusicCreator2D": return <MusicCreator {...gameProps} />;
       
       // Brain & Educational Games
-      case "GuessNumber": return <GuessNumber3D {...gameProps} />;
-      case "GuessNumber2D": return <GuessNumber {...gameProps} />;
       case "WordScramble": return <WordScramble3D {...gameProps} />;
       case "WordScramble2D": return <WordScramble {...gameProps} />;
-      case "MathQuiz": return <MathQuiz3D {...gameProps} />;
-      case "MathQuiz2D": return <MathQuiz {...gameProps} />;
       case "SimonSays": return <SimonSays3D {...gameProps} />;
       case "SimonSays2D": return <SimonSays {...gameProps} />;
-      case "TriviaQuiz": return <TriviaQuiz3D {...gameProps} />;
+      case "TriviaQuiz": 
+      case "trivia-quiz":
+        return <TriviaQuiz3D {...gameProps} />;
       case "TriviaQuiz2D": return <TriviaQuiz {...gameProps} />;
       
       // Building & Creation Games
