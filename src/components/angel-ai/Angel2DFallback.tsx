@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import angelAvatar from "@/assets/angel-ai-avatar.png";
 
@@ -10,25 +11,33 @@ interface Angel2DFallbackProps {
  * Uses beautiful chibi angel image with sparkle effects
  */
 export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
-  // Generate sparkles with different colors
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Sparkle colors - expanded pastel rainbow for magical effect
   const sparkleColors = [
     "#FFD700", // Gold
     "#FF69B4", // Hot Pink
+    "#FFB6C1", // Light Pink
     "#87CEEB", // Sky Blue
-    "#98FB98", // Pale Green
-    "#DDA0DD", // Plum
-    "#FFA500", // Orange
+    "#ADD8E6", // Light Blue
     "#E6E6FA", // Lavender
+    "#DDA0DD", // Plum
+    "#D8BFD8", // Thistle (light purple)
+    "#98FB98", // Pale Green
+    "#FFDAB9", // Peach
+    "#F0E68C", // Khaki Gold
   ];
 
-  const sparkles = Array.from({ length: 20 }, (_, i) => ({
+  // Generate more sparkles for extra magic
+  const sparkles = Array.from({ length: 30 }, (_, i) => ({
     id: i,
     x: Math.random() * 100 - 50,
     y: Math.random() * 100 - 50,
-    scale: Math.random() * 0.5 + 0.3,
-    duration: Math.random() * 2 + 1.5,
+    scale: Math.random() * 0.6 + 0.2,
+    duration: Math.random() * 1.2 + 1.2,
     delay: Math.random() * 2,
     color: sparkleColors[Math.floor(Math.random() * sparkleColors.length)],
+    rotation: Math.random() * 360,
   }));
 
   // Light rays
@@ -42,12 +51,55 @@ export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
     <motion.div
       className="relative w-20 h-20 cursor-pointer select-none"
       onClick={onClick}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
+      {/* Trail effects - expanding rings on hover */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={`trail-${i}`}
+          className="absolute inset-[-10px] rounded-full pointer-events-none"
+          style={{
+            background: `radial-gradient(circle, 
+              ${['rgba(255,182,193,0.35)', 'rgba(135,206,235,0.3)', 'rgba(221,160,221,0.25)'][i]} 0%, 
+              transparent 70%)`,
+            filter: "blur(4px)",
+          }}
+          animate={{
+            scale: isHovered ? [1, 1.5 + i * 0.25, 2 + i * 0.3] : [1, 1.15, 1],
+            opacity: isHovered ? [0.7, 0.35, 0] : [0.25, 0.15, 0.25],
+          }}
+          transition={{
+            duration: 1.2,
+            delay: i * 0.12,
+            repeat: Infinity,
+            ease: "easeOut",
+          }}
+        />
+      ))}
+
+      {/* Comet tail effect on hover */}
+      <motion.div
+        className="absolute -left-2 top-1/2 -translate-y-1/2 h-10 rounded-full pointer-events-none"
+        style={{
+          background: "linear-gradient(to left, rgba(255,215,0,0.6), rgba(255,182,193,0.4), rgba(135,206,235,0.2), transparent)",
+          filter: "blur(6px)",
+        }}
+        animate={{
+          width: isHovered ? 35 : 0,
+          opacity: isHovered ? [0.9, 0.5, 0.9] : 0,
+        }}
+        transition={{
+          width: { duration: 0.3 },
+          opacity: { duration: 0.6, repeat: isHovered ? Infinity : 0 },
+        }}
+      />
+
       {/* Outer glow ring */}
       <motion.div
         className="absolute inset-[-20px] rounded-full"
@@ -154,46 +206,54 @@ export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
           />
         </motion.div>
 
-        {/* Wing shimmer effects - left */}
+        {/* Wing shimmer effects - left wing with flapping animation */}
         <motion.div
-          className="absolute -left-4 top-1/2 -translate-y-1/2 w-6 h-12"
+          className="absolute -left-4 top-1/2 -translate-y-1/2 w-7 h-14 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse at right, rgba(255,255,255,0.6) 0%, rgba(255,215,0,0.3) 40%, transparent 70%)",
-            filter: "blur(4px)",
+            background: "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,215,0,0.4) 40%, rgba(255,182,193,0.3) 70%, transparent 100%)",
+            borderRadius: "60% 0 60% 60%",
+            filter: "blur(2px)",
+            transformOrigin: "right center",
           }}
           animate={{
-            opacity: [0.5, 0.9, 0.5],
-            scaleX: [0.8, 1.2, 0.8],
-            x: [-2, 2, -2],
+            opacity: [0.5, 0.95, 0.5],
+            scaleX: [0.7, 1.4, 0.7],
+            scaleY: [1, 0.85, 1],
+            rotate: [-8, 15, -8],
+            x: [-3, 8, -3],
           }}
           transition={{
-            duration: 2,
+            duration: 0.45,
             repeat: Infinity,
             ease: "easeInOut",
           }}
         />
 
-        {/* Wing shimmer effects - right */}
+        {/* Wing shimmer effects - right wing with flapping animation */}
         <motion.div
-          className="absolute -right-4 top-1/2 -translate-y-1/2 w-6 h-12"
+          className="absolute -right-4 top-1/2 -translate-y-1/2 w-7 h-14 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse at left, rgba(255,255,255,0.6) 0%, rgba(255,215,0,0.3) 40%, transparent 70%)",
-            filter: "blur(4px)",
+            background: "linear-gradient(-135deg, rgba(255,255,255,0.6) 0%, rgba(255,215,0,0.4) 40%, rgba(255,182,193,0.3) 70%, transparent 100%)",
+            borderRadius: "0 60% 60% 60%",
+            filter: "blur(2px)",
+            transformOrigin: "left center",
           }}
           animate={{
-            opacity: [0.5, 0.9, 0.5],
-            scaleX: [0.8, 1.2, 0.8],
-            x: [2, -2, 2],
+            opacity: [0.5, 0.95, 0.5],
+            scaleX: [0.7, 1.4, 0.7],
+            scaleY: [1, 0.85, 1],
+            rotate: [8, -15, 8],
+            x: [3, -8, 3],
           }}
           transition={{
-            duration: 2,
+            duration: 0.45,
             repeat: Infinity,
             ease: "easeInOut",
           }}
         />
       </motion.div>
 
-      {/* Multi-colored sparkles */}
+      {/* Multi-colored sparkles with rotation */}
       {sparkles.map((sparkle) => (
         <motion.div
           key={sparkle.id}
@@ -207,7 +267,8 @@ export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
           animate={{
             opacity: [0, 1, 0],
             scale: [0, sparkle.scale, 0],
-            y: [sparkle.y, sparkle.y - 20, sparkle.y - 40],
+            y: [sparkle.y, sparkle.y - 25, sparkle.y - 50],
+            rotate: [0, sparkle.rotation, sparkle.rotation * 2],
           }}
           transition={{
             duration: sparkle.duration,
