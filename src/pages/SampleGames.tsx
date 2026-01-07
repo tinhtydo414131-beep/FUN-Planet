@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -79,6 +80,7 @@ const SAMPLE_GAMES: SampleGame[] = [
 ];
 
 export default function SampleGames() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeGame, setActiveGame] = useState<SampleGame | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -248,9 +250,9 @@ export default function SampleGames() {
                   </motion.div>
                   
                   <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-white">Game Loading Issue</h3>
+                    <h3 className="text-xl font-bold text-white">{t('games.loadingIssue')}</h3>
                     <p className="text-white/60 text-sm">
-                      The game is taking longer than expected to load. This might be due to your connection or browser settings.
+                      {t('games.loadingIssueDesc')}
                     </p>
                   </div>
                   
@@ -260,7 +262,7 @@ export default function SampleGames() {
                       className="bg-primary hover:bg-primary/90"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
-                      Try Again
+                      {t('games.tryAgain')}
                     </Button>
                     <Button
                       onClick={handleOpenInNewTab}
@@ -268,12 +270,12 @@ export default function SampleGames() {
                       className="border-white/30 text-white hover:bg-white/10"
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
-                      Open in New Tab
+                      {t('games.openInNewTab')}
                     </Button>
                   </div>
                   
                   <p className="text-white/40 text-xs">
-                    Tip: Opening in a new tab often resolves loading issues
+                    {t('games.loadingTip')}
                   </p>
                 </div>
               </div>
@@ -311,7 +313,7 @@ export default function SampleGames() {
               className="mb-4"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Games
+              {t('games.backToGames')}
             </Button>
             
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full border border-yellow-400/30">
@@ -412,7 +414,7 @@ export default function SampleGames() {
                       className={`w-full bg-gradient-to-r ${game.gradient} hover:opacity-90 text-white font-bold py-6 text-lg group-hover:scale-[1.02] transition-transform`}
                     >
                       <Play className="w-5 h-5 mr-2" />
-                      Play Now
+                      {t('games.play')}
                     </Button>
                   </CardContent>
                 </Card>
