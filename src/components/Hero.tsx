@@ -21,9 +21,7 @@ export const Hero = () => {
     playClick,
     playPop,
     isSoundEnabled,
-    isMusicEnabled,
-    toggleSound,
-    toggleMusic
+    toggleSound
   } = useGameAudio();
 
   useEffect(() => {
@@ -69,7 +67,7 @@ export const Hero = () => {
         <div className="text-center space-y-6 sm:space-y-8">
           {/* Audio controls */}
           <div className="flex justify-end mb-2">
-            <AudioControls isMusicEnabled={isMusicEnabled} isSoundEnabled={isSoundEnabled} onToggleMusic={toggleMusic} onToggleSound={toggleSound} />
+            <AudioControls isSoundEnabled={isSoundEnabled} onToggleSound={toggleSound} />
           </div>
           
           {/* Badge */}

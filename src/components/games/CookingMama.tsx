@@ -224,9 +224,7 @@ export function CookingMama() {
                 <span className="font-bold text-orange-800">{stars}</span>
               </div>
               <AudioControls 
-                isMusicEnabled={isMusicEnabled}
                 isSoundEnabled={isSoundEnabled}
-                onToggleMusic={toggleMusic}
                 onToggleSound={toggleSound}
               />
             </div>
@@ -289,9 +287,7 @@ export function CookingMama() {
               ))}
             </div>
             <AudioControls 
-              isMusicEnabled={isMusicEnabled}
               isSoundEnabled={isSoundEnabled}
-              onToggleMusic={toggleMusic}
               onToggleSound={toggleSound}
             />
           </div>
