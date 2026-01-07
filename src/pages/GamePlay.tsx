@@ -28,7 +28,6 @@ import { toast } from "sonner";
 // Import all game components
 import { WordScramble } from "@/components/games/WordScramble";
 import { SimonSays } from "@/components/games/SimonSays";
-import { TriviaQuiz } from "@/components/games/TriviaQuiz";
 import { TreasureHunt } from "@/components/games/TreasureHunt";
 import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
 
@@ -46,9 +45,6 @@ import PetParadise from "@/components/games/PetParadise";
 import MusicCreator from "@/components/games/MusicCreator";
 import FlowerField from "@/components/games/FlowerField";
 import LilBlockBuddy from "@/components/games/LilBlockBuddy";
-import TetrisGame from "@/components/games/TetrisGame";
-import { Game2048Nexus } from "@/components/games/Game2048Nexus";
-import Game2048 from "@/components/games/Game2048";
 import { HappyKitchenJoy } from "@/components/games/HappyKitchenJoy";
 import { CookingMama } from "@/components/games/CookingMama";
 import SchoolBuilder from "@/components/games/SchoolBuilder";
@@ -71,7 +67,7 @@ import { FlappyBird } from "@/components/games/FlappyBird";
 
 import { SimonSays3D } from "@/components/games/SimonSays3D";
 import { WordScramble3D } from "@/components/games/WordScramble3D";
-import { TriviaQuiz3D } from "@/components/games/TriviaQuiz3D";
+
 import { StarCollector3D } from "@/components/games/StarCollector3D";
 import { PetParadise3D } from "@/components/games/PetParadise3D";
 import { DreamWorld3D } from "@/components/games/DreamWorld3D";
@@ -103,7 +99,7 @@ import HappyPark3D from "@/components/games/HappyPark3D";
 import CommunityHub3D from "@/components/games/CommunityHub3D";
 import LilBlockBuddy3D from "@/components/games/LilBlockBuddy3D";
 import CookingMama3D from "@/components/games/CookingMama3D";
-import Game2048Nexus3D from "@/components/games/Game2048Nexus3D";
+
 import HappyKitchenJoy3D from "@/components/games/HappyKitchenJoy3D";
 
 
@@ -379,10 +375,6 @@ const GamePlay = () => {
       case "WordScramble2D": return <WordScramble {...gameProps} />;
       case "SimonSays": return <SimonSays3D {...gameProps} />;
       case "SimonSays2D": return <SimonSays {...gameProps} />;
-      case "TriviaQuiz": 
-      case "trivia-quiz":
-        return <TriviaQuiz3D {...gameProps} />;
-      case "TriviaQuiz2D": return <TriviaQuiz {...gameProps} />;
       
       // Building & Creation Games
       case "PlanetBuilder": return <PlanetBuilder3D {...gameProps} />;
@@ -461,23 +453,10 @@ const GamePlay = () => {
       case "TreasureHunt2D": return <TreasureHunt {...gameProps} />;
       case "LilBlockBuddy": return <LilBlockBuddy3D {...gameProps} />;
       case "LilBlockBuddy2D": return <LilBlockBuddy {...gameProps} />;
-      case "TetrisGame":
-      case "tetris":
-      case "xep-hinh":
-        return <TetrisGame {...gameProps} onBack={handleBackToLevelSelect} />;
       case "CookingMama":
       case "cooking-mama":
         return <CookingMama3D {...gameProps} />;
       case "CookingMama2D": return <CookingMama />;
-
-      case "Game2048":
-      case "2048":
-        return <Game2048 onBack={handleBackToLevelSelect} />;
-      case "Game2048Nexus": 
-      case "2048-nexus":
-        return <Game2048Nexus3D {...gameProps} />;
-      case "Game2048Nexus2D":
-        return <Game2048Nexus {...gameProps} />;
       case "HappyKitchenJoy": 
       case "happy-kitchen-joy":
         return <HappyKitchenJoy3D {...gameProps} />;
