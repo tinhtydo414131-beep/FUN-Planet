@@ -7,7 +7,8 @@ import {
   MicOff, 
   Volume2, 
   VolumeX, 
-  Settings
+  Settings,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,6 @@ import { useWebSpeechSynthesis } from "@/hooks/useWebSpeechSynthesis";
 import { VoiceSettingsPanel } from "@/components/angel-ai/VoiceSettingsPanel";
 import { PersonalitySelector, PersonalityMode } from "@/components/angel-ai/PersonalitySelector";
 import { ChatMessageBubble } from "@/components/angel-ai/ChatMessageBubble";
-import { FloatingFairy } from "@/components/angel-ai/FloatingFairy";
 
 interface FunID {
   id: string;
@@ -245,24 +245,27 @@ export function ChatInterface() {
       {/* Messages */}
       <ScrollArea ref={scrollRef} className="flex-1 p-4">
         <div className="max-w-2xl mx-auto space-y-4">
-          {/* Welcome message with Fairy */}
+          {/* Welcome message if no messages */}
           {messages.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-8"
             >
-              {/* Floating Fairy */}
-              <div className="flex justify-center mb-6">
-                <FloatingFairy size="lg" showSparkles />
-              </div>
+              <motion.div
+                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 flex items-center justify-center shadow-xl"
+              >
+                <Sparkles className="w-10 h-10 text-white" />
+              </motion.div>
               
-              <p className="text-lg font-medium bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent px-4">
+              <p className="text-lg font-medium bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent">
                 {getWelcomeMessage()}
               </p>
 
               {/* Quick suggestions */}
-              <div className="flex flex-wrap justify-center gap-2 mt-6">
+              <div className="flex flex-wrap justify-center gap-2 mt-4">
                 {[
                   "Kể chuyện cổ tích",
                   "Tại sao trời xanh?",
@@ -277,9 +280,9 @@ export function ChatInterface() {
                       setInputValue(suggestion);
                       inputRef.current?.focus();
                     }}
-                    className="rounded-full text-xs border-pink-200 hover:border-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20"
+                    className="rounded-full text-xs border-purple-200 hover:border-purple-400"
                   >
-                    ✨ {suggestion}
+                    {suggestion}
                   </Button>
                 ))}
               </div>
