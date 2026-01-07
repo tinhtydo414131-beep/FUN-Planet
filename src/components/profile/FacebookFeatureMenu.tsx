@@ -298,7 +298,6 @@ export const FacebookFeatureMenu = ({
             >
               {showAll ? t('common.showLess') : `${t('common.seeAll')} (${featureItems.length})`}
             </Button>
-            </Button>
           )}
         </CardContent>
       </Card>
@@ -354,7 +353,6 @@ export const FacebookFeatureMenu = ({
               onClick={() => setShowAll(true)}
             >
               {t('common.seeMore')}
-            </Button>
             </Button>
           )}
         </CardContent>
