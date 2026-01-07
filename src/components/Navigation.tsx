@@ -29,12 +29,14 @@ import { GlobalSearchModal } from "./GlobalSearchModal";
 import { MessengerButton } from "./MessengerButton";
 import { NotificationBell } from "./notifications/NotificationBell";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 export const Navigation = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -96,9 +98,9 @@ export const Navigation = () => {
   };
 
   const navLinks = [
-    { path: "/games", label: "Play Games" },
-    { path: "/public-music", label: "Music" },
-    { path: "/reward-galaxy", label: "🎁 Quà Từ Cha Vũ Trụ", special: true },
+    { path: "/games", label: t('nav.playGames') },
+    { path: "/public-music", label: t('nav.music') },
+    { path: "/reward-galaxy", label: t('nav.rewardGalaxy'), special: true },
     ...(isAdmin ? [{ path: "/admin/master", label: "👑 Admin", admin: true }] : []),
   ];
 
@@ -186,15 +188,15 @@ export const Navigation = () => {
                   <DropdownMenuContent align="end" className="w-56 rounded-xl">
                     <DropdownMenuItem onClick={() => navigate("/profile")} className="py-3">
                       <User className="mr-3 h-5 w-5" />
-                      <span className="font-medium">My Profile</span>
+                      <span className="font-medium">{t('nav.myProfile')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/wallet")} className="py-3">
                       <Wallet className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Fun Wallet</span>
+                      <span className="font-medium">{t('nav.funWallet')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/find-friends")} className="py-3 relative">
                       <Users className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Find Friends</span>
+                      <span className="font-medium">{t('nav.findFriends')}</span>
                       {pendingCount > 0 && (
                         <Badge className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5">
                           {pendingCount}
@@ -203,35 +205,35 @@ export const Navigation = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/messages")} className="py-3">
                       <MessageCircle className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Messages</span>
+                      <span className="font-medium">{t('nav.messages')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/education")} className="py-3">
                       <BookOpen className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Education Hub</span>
+                      <span className="font-medium">{t('nav.educationHub')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate("/reward-galaxy")} 
                       className="py-3 text-yellow-600 hover:text-yellow-500 bg-gradient-to-r from-yellow-500/5 to-orange-500/5 hover:from-yellow-500/10 hover:to-orange-500/10 group"
                     >
                       <Gift className="mr-3 h-5 w-5 group-hover:animate-bounce" />
-                      <span className="font-medium">🎁 Quà từ Cha Vũ Trụ</span>
+                      <span className="font-medium">{t('nav.rewardGalaxy')}</span>
                       <Sparkles className="ml-auto h-4 w-4 text-yellow-400 animate-pulse" />
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/dashboard")} className="py-3 text-pink-600">
                       <Users className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Invite Friends</span>
+                      <span className="font-medium">{t('nav.inviteFriends')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/parent-dashboard")} className="py-3">
                       <Shield className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Parent Controls</span>
+                      <span className="font-medium">{t('nav.parentControls')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/settings")} className="py-3">
                       <Settings className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Settings</span>
+                      <span className="font-medium">{t('nav.settings')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/achievement-leaderboard")} className="py-3">
                       <Trophy className="mr-3 h-5 w-5 text-amber-500" />
-                      <span className="font-medium">🏅 Bảng xếp hạng Thành tích</span>
+                      <span className="font-medium">{t('nav.achievementLeaderboard')}</span>
                     </DropdownMenuItem>
                     {isAdmin && (
                       <>
@@ -241,14 +243,14 @@ export const Navigation = () => {
                           className="py-3 text-orange-600 hover:text-orange-500 bg-gradient-to-r from-orange-500/5 to-red-500/5 hover:from-orange-500/10 hover:to-red-500/10"
                         >
                           <Crown className="mr-3 h-5 w-5" />
-                          <span className="font-medium">Admin Dashboard</span>
+                          <span className="font-medium">{t('nav.adminDashboard')}</span>
                         </DropdownMenuItem>
                       </>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="py-3">
                       <LogOut className="mr-3 h-5 w-5" />
-                      <span className="font-medium">Log Out</span>
+                      <span className="font-medium">{t('nav.logOut')}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -257,7 +259,7 @@ export const Navigation = () => {
                   onClick={() => navigate("/auth")}
                   className="font-jakarta font-bold text-base px-6 py-2.5 h-11 rounded-xl bg-gradient-to-r from-primary to-secondary shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                 >
-                  Login
+                  {t('common.login')}
                 </Button>
               )}
             </div>
@@ -324,7 +326,7 @@ export const Navigation = () => {
                         }}
                         className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-secondary font-jakarta font-bold text-base"
                       >
-                        Login / Sign Up
+                        {t('nav.loginSignup')}
                       </Button>
                     )}
                   </div>
@@ -339,7 +341,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <User className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-inter font-medium">My Profile</span>
+                            <span className="font-inter font-medium">{t('nav.myProfile')}</span>
                           </button>
                         </SheetClose>
                         <SheetClose asChild>
@@ -348,7 +350,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Wallet className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-inter font-medium">Fun Wallet</span>
+                            <span className="font-inter font-medium">{t('nav.funWallet')}</span>
                           </button>
                         </SheetClose>
                         <SheetClose asChild>
@@ -361,7 +363,7 @@ export const Navigation = () => {
                             }}
                           >
                             <Gift className="w-5 h-5 text-yellow-500" />
-                            <span className="font-inter font-bold text-yellow-600">🎁 Quà Từ Cha Vũ Trụ</span>
+                            <span className="font-inter font-bold text-yellow-600">{t('nav.rewardGalaxy')}</span>
                             <Sparkles className="ml-auto w-4 h-4 text-yellow-400 animate-pulse" />
                           </button>
                         </SheetClose>
@@ -371,7 +373,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Users className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-inter font-medium">Find Friends</span>
+                            <span className="font-inter font-medium">{t('nav.findFriends')}</span>
                             {pendingCount > 0 && (
                               <Badge className="ml-auto bg-red-500 text-white text-xs px-2">
                                 {pendingCount}
@@ -385,7 +387,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Settings className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-inter font-medium">Settings</span>
+                            <span className="font-inter font-medium">{t('nav.settings')}</span>
                           </button>
                         </SheetClose>
                         {isAdmin && (
@@ -399,7 +401,7 @@ export const Navigation = () => {
                               }}
                             >
                               <Crown className="w-5 h-5 text-orange-500" />
-                              <span className="font-inter font-bold text-orange-600">👑 Admin Dashboard</span>
+                              <span className="font-inter font-bold text-orange-600">👑 {t('nav.adminDashboard')}</span>
                             </button>
                           </SheetClose>
                         )}
@@ -416,7 +418,7 @@ export const Navigation = () => {
                           className="flex items-center gap-3 w-full p-4 rounded-xl text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <LogOut className="w-5 h-5" />
-                          <span className="font-inter font-medium">Log Out</span>
+                          <span className="font-inter font-medium">{t('nav.logOut')}</span>
                         </button>
                       </SheetClose>
                     </div>
