@@ -3,19 +3,32 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Music, Volume2, VolumeX, Play, Pause, SkipForward, SkipBack, Shuffle, Repeat, Repeat1, GripVertical } from "lucide-react";
+import { Music, Volume2, VolumeX, Play, Pause, SkipForward, SkipBack, Shuffle, Repeat, Repeat1, GripVertical, Loader2 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDraggable } from "@/hooks/useDraggable";
-const PLAYLIST = [
+import { supabase } from "@/integrations/supabase/client";
+
+const R2_BASE_URL = "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/music/";
+
+interface Track {
+  title: string;
+  src: string;
+  artist?: string;
+}
+
+// Fallback playlist khi không có nhạc từ database
+const FALLBACK_PLAYLIST: Track[] = [
   { title: "Radiant Dreamland", src: "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/radiant-dreamland.mp3" },
   { title: "Angel of the Stars", src: "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/angel-of-the-stars.mp3" }
 ];
 
 export const BackgroundMusicPlayer = () => {
+  const [playlist, setPlaylist] = useState<Track[]>(FALLBACK_PLAYLIST);
+  const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
   const [isMuted, setIsMuted] = useState(false);
@@ -39,6 +52,40 @@ export const BackgroundMusicPlayer = () => {
     storageKey: "music_player_position",
     defaultPosition: { x: window.innerWidth - 80, y: 16 },
   });
+
+  // Fetch music from database
+  useEffect(() => {
+    const fetchPlaylist = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_music')
+          .select('id, title, artist, storage_path')
+          .eq('parent_approved', true)
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (error) {
+          console.error('Error fetching music:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          const tracks: Track[] = data.map(song => ({
+            title: song.title || 'Unknown',
+            artist: song.artist || undefined,
+            src: `${R2_BASE_URL}${song.storage_path}`
+          }));
+          setPlaylist(tracks);
+        }
+      } catch (error) {
+        console.error('Error fetching playlist:', error);
+      } finally {
+        setIsLoadingPlaylist(false);
+      }
+    };
+
+    fetchPlaylist();
+  }, []);
   useEffect(() => {
     const savedVolume = localStorage.getItem("funplanet_music_volume");
     
@@ -111,11 +158,11 @@ export const BackgroundMusicPlayer = () => {
     if (shuffle) {
       let nextIndex;
       do {
-        nextIndex = Math.floor(Math.random() * PLAYLIST.length);
-      } while (nextIndex === currentTrack && PLAYLIST.length > 1);
+        nextIndex = Math.floor(Math.random() * playlist.length);
+      } while (nextIndex === currentTrack && playlist.length > 1);
       setCurrentTrack(nextIndex);
     } else {
-      setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
+      setCurrentTrack((prev) => (prev + 1) % playlist.length);
     }
   };
 
@@ -123,11 +170,11 @@ export const BackgroundMusicPlayer = () => {
     if (shuffle) {
       let prevIndex;
       do {
-        prevIndex = Math.floor(Math.random() * PLAYLIST.length);
-      } while (prevIndex === currentTrack && PLAYLIST.length > 1);
+        prevIndex = Math.floor(Math.random() * playlist.length);
+      } while (prevIndex === currentTrack && playlist.length > 1);
       setCurrentTrack(prevIndex);
     } else {
-      setCurrentTrack((prev) => (prev - 1 + PLAYLIST.length) % PLAYLIST.length);
+      setCurrentTrack((prev) => (prev - 1 + playlist.length) % playlist.length);
     }
   };
 
@@ -205,7 +252,7 @@ export const BackgroundMusicPlayer = () => {
                 🎵 Music Player
               </h3>
               <p className="text-sm font-comic text-muted-foreground truncate">
-                {PLAYLIST[currentTrack].title}
+                {playlist[currentTrack]?.title || 'Loading...'}
               </p>
             </div>
 
@@ -329,7 +376,7 @@ export const BackgroundMusicPlayer = () => {
 
             {/* Track Info */}
             <div className="text-center text-xs font-comic text-muted-foreground">
-              Track {currentTrack + 1} of {PLAYLIST.length}
+              Track {currentTrack + 1} of {playlist.length}
             </div>
           </div>
         </PopoverContent>
@@ -338,7 +385,7 @@ export const BackgroundMusicPlayer = () => {
       {/* Audio Element */}
       <audio
         ref={audioRef}
-        src={PLAYLIST[currentTrack].src}
+        src={playlist[currentTrack]?.src}
         preload="auto"
         onEnded={handleTrackEnd}
       />
