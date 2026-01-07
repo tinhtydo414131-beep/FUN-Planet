@@ -4,12 +4,14 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 // 🎀 FUN PLANET PASTEL CUTE BOTTOM NAV - Kids Gaming 2025
 export const MobileBottomNavEnhanced = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { isDev } = useUserRole();
+  const { t } = useTranslation();
 
   // Hide bottom nav on game play pages for immersive experience
   const hideOnPaths = ['/game/'];
@@ -18,23 +20,23 @@ export const MobileBottomNavEnhanced = () => {
   if (shouldHide) return null;
 
   const baseNavItems = [
-    { icon: Home, label: "Home", labelVi: "Trang chủ", path: "/", emoji: "🏠", color: "from-[hsl(340,70%,75%)] to-[hsl(280,65%,75%)]" },
-    { icon: Gamepad2, label: "Games", labelVi: "Game", path: "/games", emoji: "🎮", color: "from-[hsl(280,65%,75%)] to-[hsl(200,70%,75%)]" },
-    { icon: Trophy, label: "Rank", labelVi: "BXH", path: "/leaderboard", emoji: "🏆", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
+    { icon: Home, label: t('nav.home'), path: "/", emoji: "🏠", color: "from-[hsl(340,70%,75%)] to-[hsl(280,65%,75%)]" },
+    { icon: Gamepad2, label: t('nav.games'), path: "/games", emoji: "🎮", color: "from-[hsl(280,65%,75%)] to-[hsl(200,70%,75%)]" },
+    { icon: Trophy, label: t('nav.rank'), path: "/leaderboard", emoji: "🏆", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
   ];
 
   // Add upload tab for developers, wallet for others
   const navItems = isDev 
     ? [
         ...baseNavItems.slice(0, 2),
-        { icon: Upload, label: "Upload", labelVi: "Tải lên", path: "/upload-game", emoji: "📤", color: "from-[hsl(160,55%,70%)] to-[hsl(180,60%,65%)]" },
+        { icon: Upload, label: t('nav.upload'), path: "/upload-game", emoji: "📤", color: "from-[hsl(160,55%,70%)] to-[hsl(180,60%,65%)]" },
         ...baseNavItems.slice(2),
-        { icon: User, label: "Profile", labelVi: "Cá nhân", path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
       ]
     : [
         ...baseNavItems,
-        { icon: Wallet, label: "Wallet", labelVi: "Ví", path: user ? "/wallet" : "/auth", emoji: "💰", color: "from-[hsl(45,85%,70%)] to-[hsl(340,70%,75%)]" },
-        { icon: User, label: "Profile", labelVi: "Cá nhân", path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
+        { icon: Wallet, label: t('nav.wallet'), path: user ? "/wallet" : "/auth", emoji: "💰", color: "from-[hsl(45,85%,70%)] to-[hsl(340,70%,75%)]" },
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
       ];
 
   const isActive = (path: string) => {
@@ -121,11 +123,11 @@ export const MobileBottomNavEnhanced = () => {
                 "text-xs font-bold transition-all duration-300",
                 active ? "text-primary" : "text-muted-foreground"
               )}>
-                {item.labelVi}
+                {item.label}
               </span>
               
               {/* 🎯 Badge for notifications (example) */}
-              {item.label === "Profile" && user && (
+              {item.path === (user ? "/profile" : "/auth") && user && (
                 <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-[hsl(340,70%,65%)] to-[hsl(0,65%,60%)] rounded-full animate-pulse" />
               )}
             </Link>
