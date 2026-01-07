@@ -6390,10 +6390,7 @@ export type Database = {
           wallet_address: string
         }[]
       }
-      get_daily_claim_remaining: {
-        Args: { p_user_id: string }
-        Returns: number
-      }
+      get_daily_claim_remaining: { Args: { p_user_id: string }; Returns: Json }
       get_daily_login_stats: {
         Args: { p_date?: string }
         Returns: {
