@@ -31,7 +31,7 @@ import { SimonSays } from "@/components/games/SimonSays";
 import { TreasureHunt } from "@/components/games/TreasureHunt";
 import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
 
-import { ColorMatch3D } from "@/components/games/ColorMatch3D";
+
 import PlanetBuilder from "@/components/games/PlanetBuilder";
 import HappinessGarden from "@/components/games/HappinessGarden";
 import SpaceExplorer from "@/components/games/SpaceExplorer";
@@ -356,9 +356,6 @@ const GamePlay = () => {
     // Map component_name from database to actual components
     switch (componentKey) {
       // Casual & Happy Games
-      case "ColorMatch3D": 
-      case "color-match":
-        return <ColorMatch3D {...gameProps} />;
       case "StarCollector": return <StarCollector3D {...gameProps} />;
       case "StarCollector2D": return <StarCollector {...gameProps} />;
       case "HappinessGarden": return <HappinessGarden3D {...gameProps} />;
