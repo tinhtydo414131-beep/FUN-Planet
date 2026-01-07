@@ -272,7 +272,7 @@ const Index = () => {
                     <p className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">{category.count}</p>
                     <p className="text-lg md:text-xl font-bold drop-shadow-lg">{category.name}</p>
                     <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-sm drop-shadow-lg">Play now →</span>
+                      <span className="text-sm drop-shadow-lg">{t('home.playNowArrow')}</span>
                     </div>
                   </div>
                 </div>
@@ -291,7 +291,7 @@ const Index = () => {
               size="lg"
               className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl"
             >
-              Browse All Games 🎮
+              {t('home.browseAll')}
             </Button>
           </motion.div>
         </div>
@@ -307,10 +307,10 @@ const Index = () => {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-              Why Kids Love Us! 💖
+              {t('home.whyKidsLove')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need for the best gaming experience!
+              {t('home.bestExperience')}
             </p>
           </motion.div>
           
@@ -351,22 +351,22 @@ const Index = () => {
       <section className="py-12 px-4 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
         <div className="container mx-auto max-w-7xl">
           <h2 className="text-3xl font-bold text-center mb-8 text-primary">
-            Quick Access 🚀
+            {t('home.quickAccess')}
           </h2>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
             {[
-              { path: "/games", icon: "🎮", label: "Games" },
-              { path: "/upload-game", icon: "📤", label: "Upload" },
-              { path: "/global-airdrop", icon: "🎁", label: "Airdrop" },
-              { path: "/planet-explorer", icon: "🌍", label: "3D Build" },
-              { path: "/nft-gallery", icon: "💎", label: "NFTs" },
-              { path: "/chat", icon: "💬", label: "Chat" },
-              { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: "Parents" },
-              { path: "/wallet", icon: "💰", label: "Wallet" },
-              { path: "/leaderboard", icon: "🏆", label: "Leaders" },
-              { path: "/achievement-leaderboard", icon: "🏅", label: "Thành tích" },
-              { path: "/find-friends", icon: "👥", label: "Friends" },
-              { path: user ? "/profile" : "/auth", icon: "👤", label: user ? "Profile" : "Login" },
+              { path: "/games", icon: "🎮", label: t('home.gamesLabel') },
+              { path: "/upload-game", icon: "📤", label: t('home.uploadLabel') },
+              { path: "/global-airdrop", icon: "🎁", label: t('home.airdropLabel') },
+              { path: "/planet-explorer", icon: "🌍", label: t('home.buildLabel') },
+              { path: "/nft-gallery", icon: "💎", label: t('home.nftsLabel') },
+              { path: "/chat", icon: "💬", label: t('home.chatLabel') },
+              { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: t('home.parentsLabel') },
+              { path: "/wallet", icon: "💰", label: t('home.walletLabel') },
+              { path: "/leaderboard", icon: "🏆", label: t('home.leadersLabel') },
+              { path: "/achievement-leaderboard", icon: "🏅", label: t('home.achievementsLabel') },
+              { path: "/find-friends", icon: "👥", label: t('home.friendsLabel') },
+              { path: user ? "/profile" : "/auth", icon: "👤", label: user ? t('home.profileLabel') : t('home.loginLabel') },
             ].map((item) => (
               <Button
                 key={item.path}
@@ -387,10 +387,10 @@ const Index = () => {
         <div className="container mx-auto max-w-4xl">
           <Card className="p-8 md:p-12 border-4 border-primary/40 shadow-2xl bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Ready to Start Playing? 🚀
+              {t('home.readyToPlay')}
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of kids having fun, making friends, and earning rewards!
+              {t('home.joinThousands')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -398,7 +398,7 @@ const Index = () => {
                 size="lg"
                 className="text-xl px-10 py-6 bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl"
               >
-                Play Now! 🎮
+                {t('home.playNow')}
               </Button>
               <Button
                 onClick={() => navigate("/upload-game")}
@@ -406,7 +406,7 @@ const Index = () => {
                 variant="outline"
                 className="text-xl px-10 py-6 border-2 border-primary hover:bg-primary/10"
               >
-                Upload Game 📤
+                {t('home.uploadGame')}
               </Button>
             </div>
           </Card>
@@ -419,35 +419,35 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
             <div>
               <h3 className="text-xl font-bold text-primary mb-4">FUN Planet 🌍</h3>
-              <p className="text-muted-foreground">Build Your Planet – Play & Earn Joy!</p>
+              <p className="text-muted-foreground">{t('home.footerSlogan')}</p>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">Games</h4>
+              <h4 className="text-lg font-bold mb-4">{t('nav.games')}</h4>
               <div className="space-y-2">
-                <p onClick={() => navigate("/games")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">Browse Games</p>
-                <p onClick={() => navigate("/upload-game")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">Upload Game</p>
-                <p onClick={() => navigate("/leaderboard")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">Leaderboard</p>
+                <p onClick={() => navigate("/games")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.browseGames')}</p>
+                <p onClick={() => navigate("/upload-game")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.uploadGame')}</p>
+                <p onClick={() => navigate("/leaderboard")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('nav.leaderboard')}</p>
               </div>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">Features</h4>
+              <h4 className="text-lg font-bold mb-4">{t('home.features')}</h4>
               <div className="space-y-2">
-                <p onClick={() => navigate("/global-airdrop")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">Claim Airdrop</p>
-                <p onClick={() => navigate("/nft-gallery")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">NFT Gallery</p>
-                <p onClick={() => navigate("/planet-explorer")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">3D Builder</p>
+                <p onClick={() => navigate("/global-airdrop")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.claimAirdrop')}</p>
+                <p onClick={() => navigate("/nft-gallery")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.nftGallery')}</p>
+                <p onClick={() => navigate("/planet-explorer")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.builder3D')}</p>
               </div>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">About</h4>
+              <h4 className="text-lg font-bold mb-4">{t('home.about')}</h4>
               <div className="space-y-2">
-                <p onClick={() => navigate("/about")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">About Us</p>
-                <p onClick={() => navigate("/parent-dashboard")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">For Parents</p>
+                <p onClick={() => navigate("/about")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.aboutUs')}</p>
+                <p onClick={() => navigate("/parent-dashboard")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.forParents')}</p>
               </div>
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-primary/20 text-center">
             <p className="text-muted-foreground">
-              © 2024 FUN Planet Web3. Made with 💖 for kids everywhere!
+              {t('home.copyright')}
             </p>
           </div>
         </div>
