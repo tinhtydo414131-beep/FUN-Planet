@@ -28,6 +28,7 @@ import {
 import { GlobalSearchModal } from "./GlobalSearchModal";
 import { MessengerButton } from "./MessengerButton";
 import { NotificationBell } from "./notifications/NotificationBell";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export const Navigation = () => {
   const { user, signOut } = useAuth();
@@ -156,6 +157,8 @@ export const Navigation = () => {
               ))}
 
 
+              <LanguageSwitcher />
+              
               {user && (
                 <>
                   <NotificationBell />
@@ -280,6 +283,8 @@ export const Navigation = () => {
           </NavLink>
           
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            
             {user && (
               <>
                 <NotificationBell />
