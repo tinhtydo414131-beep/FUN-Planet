@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useIsMobile, useIsLandscape } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 import { RotateCcw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Shows a prompt to rotate device to landscape for better gaming experience
  */
 export const LandscapePrompt = () => {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const isLandscape = useIsLandscape();
   const [showPrompt, setShowPrompt] = useState(false);
@@ -47,10 +49,10 @@ export const LandscapePrompt = () => {
           <RotateCcw className="h-16 w-16 animate-spin" style={{ animationDuration: "3s" }} />
         </div>
         <h3 className="text-xl font-fredoka font-bold">
-          Xoay Điện Thoại Ngang
+          {t('landscape.title')}
         </h3>
         <p className="text-sm font-comic">
-          Để chơi game tốt nhất, hãy xoay điện thoại ngang nhé con yêu! 🎮✨
+          {t('landscape.description')}
         </p>
       </Card>
     </div>
