@@ -90,11 +90,23 @@ export const BackgroundMusicPlayer = () => {
         }
 
         if (data && data.length > 0) {
-          const tracks: Track[] = data.map(song => ({
-            title: song.title || 'Unknown',
-            artist: song.artist || undefined,
-            src: song.storage_path || ''
-          }));
+          const tracks: Track[] = data.map(song => {
+            let audioSrc = song.storage_path || '';
+            
+            // Nếu storage_path là relative path (Supabase Storage), convert sang public URL
+            if (audioSrc && !audioSrc.startsWith('http')) {
+              const { data: urlData } = supabase.storage
+                .from('music')
+                .getPublicUrl(audioSrc);
+              audioSrc = urlData.publicUrl;
+            }
+            
+            return {
+              title: song.title || 'Unknown',
+              artist: song.artist || undefined,
+              src: audioSrc
+            };
+          });
           console.log('Loaded playlist:', tracks.length, 'tracks');
           setPlaylist(tracks);
         } else {
