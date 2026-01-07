@@ -150,4 +150,8 @@ export default {
     title: 'Gira Tu Teléfono',
     description: '¡Para la mejor experiencia de juego, gira tu teléfono horizontalmente! 🎮✨',
   },
+  auth: {
+    exploreAsGuest: 'Explorar como Invitado 👀',
+    or: 'o',
+  },
 };

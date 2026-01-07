@@ -150,4 +150,8 @@ export default {
     title: 'Gire Seu Telefone',
     description: 'Para a melhor experiência de jogo, gire seu telefone para paisagem! 🎮✨',
   },
+  auth: {
+    exploreAsGuest: 'Explorar como Convidado 👀',
+    or: 'ou',
+  },
 };

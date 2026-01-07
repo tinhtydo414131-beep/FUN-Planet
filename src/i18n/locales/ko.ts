@@ -150,4 +150,8 @@ export default {
     title: '휴대폰을 가로로 돌려주세요',
     description: '최고의 게임 경험을 위해 휴대폰을 가로로 돌려주세요! 🎮✨',
   },
+  auth: {
+    exploreAsGuest: '게스트로 탐색 👀',
+    or: '또는',
+  },
 };

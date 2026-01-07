@@ -150,4 +150,8 @@ export default {
     title: 'Putar Ponselmu',
     description: 'Untuk pengalaman game terbaik, putar ponselmu ke mode landscape! 🎮✨',
   },
+  auth: {
+    exploreAsGuest: 'Jelajahi sebagai Tamu 👀',
+    or: 'atau',
+  },
 };
