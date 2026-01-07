@@ -2,32 +2,30 @@ import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX, Music } from "lucide-react";
 
 interface AudioControlsProps {
-  isMusicEnabled: boolean;
   isSoundEnabled: boolean;
-  onToggleMusic: () => void;
   onToggleSound: () => void;
 }
 
 export const AudioControls = ({ 
-  isMusicEnabled, 
   isSoundEnabled, 
-  onToggleMusic, 
   onToggleSound 
 }: AudioControlsProps) => {
+  
+  const handleMusicClick = () => {
+    // Dispatch event to BackgroundMusicPlayer
+    window.dispatchEvent(new CustomEvent('fp-music:toggle'));
+  };
+
   return (
     <div className="flex gap-2 items-center justify-center">
       <Button
         variant="outline"
         size="icon"
-        onClick={onToggleMusic}
+        onClick={handleMusicClick}
         className="flex items-center justify-center"
-        title={isMusicEnabled ? "Tắt nhạc nền" : "Bật nhạc nền"}
+        title="Mở nhạc nền"
       >
-        {isMusicEnabled ? (
-          <Music className="h-5 w-5 text-purple-500" />
-        ) : (
-          <Music className="h-5 w-5 text-purple-500 opacity-50" />
-        )}
+        <Music className="h-5 w-5 text-purple-500" />
       </Button>
       
       <Button

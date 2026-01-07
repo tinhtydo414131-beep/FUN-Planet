@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { useDraggable } from "@/hooks/useDraggable";
 import { supabase } from "@/integrations/supabase/client";
-
-// R2_BASE_URL không cần nữa - storage_path trong database đã là full URL
+import { toast } from "@/hooks/use-toast";
 
 interface Track {
   title: string;
@@ -27,6 +26,7 @@ export const BackgroundMusicPlayer = () => {
   const [volume, setVolume] = useState(50);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [autoSkip, setAutoSkip] = useState(() => {
     const saved = localStorage.getItem("music_auto_skip");
     return saved !== null ? JSON.parse(saved) : true;
@@ -41,11 +41,37 @@ export const BackgroundMusicPlayer = () => {
   });
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Move useDraggable BEFORE any conditional returns
   const { position, isDragging, handleMouseDown, style } = useDraggable({
     storageKey: "music_player_position",
     defaultPosition: { x: window.innerWidth - 80, y: 16 },
   });
+
+  // Listen for toggle event from AudioControls
+  useEffect(() => {
+    const handleMusicToggle = () => {
+      setPopoverOpen(true);
+      if (isLoadingPlaylist) {
+        toast({ title: "🎵 Đang tải nhạc...", description: "Vui lòng chờ trong giây lát" });
+        return;
+      }
+      if (playlist.length === 0) {
+        toast({ title: "🎵 Chưa có nhạc", description: "Không tìm thấy bài hát nào", variant: "destructive" });
+        return;
+      }
+      // Toggle play/pause
+      if (audioRef.current) {
+        if (isPlaying) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        } else {
+          audioRef.current.play().then(() => setIsPlaying(true)).catch(console.error);
+        }
+      }
+    };
+
+    window.addEventListener('fp-music:toggle', handleMusicToggle);
+    return () => window.removeEventListener('fp-music:toggle', handleMusicToggle);
+  }, [isLoadingPlaylist, playlist.length, isPlaying]);
 
   // Fetch music from database
   useEffect(() => {
@@ -223,7 +249,7 @@ export const BackgroundMusicPlayer = () => {
   
   return (
     <div 
-      className="fixed top-4 right-4 z-50 select-none md:bottom-6 md:right-6 md:top-auto"
+      className="fixed top-4 right-4 z-[999] select-none md:bottom-6 md:right-6 md:top-auto"
       style={style}
     >
       <div className="relative group">
@@ -237,13 +263,13 @@ export const BackgroundMusicPlayer = () => {
           <GripVertical className="w-3 h-3 text-white" />
         </div>
         
-        <Popover>
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
             <Button
               size="lg"
-              className={`h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-primary via-secondary to-accent shadow-2xl hover:shadow-[0_20px_50px_rgba(59,130,246,0.6)] transition-all duration-300 hover:scale-110 border-2 md:border-4 border-white/20 ${isDragging ? 'cursor-grabbing scale-105' : ''}`}
+              className={`h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-primary via-secondary to-accent shadow-2xl hover:shadow-[0_20px_50px_rgba(59,130,246,0.6)] transition-all duration-300 hover:scale-110 border-2 md:border-4 border-white/20 ${isDragging ? 'cursor-grabbing scale-105' : ''} ${isPlaying ? 'ring-4 ring-green-400/50' : ''}`}
             >
-              <Music className="w-5 h-5 md:w-8 md:h-8 text-white animate-pulse" />
+              <Music className={`w-5 h-5 md:w-8 md:h-8 text-white ${isPlaying ? 'animate-bounce' : 'animate-pulse'}`} />
             </Button>
           </PopoverTrigger>
         
@@ -405,9 +431,15 @@ export const BackgroundMusicPlayer = () => {
         ref={audioRef}
         src={playlist[currentTrack]?.src}
         preload="auto"
+        crossOrigin="anonymous"
         onEnded={handleTrackEnd}
         onError={(e) => {
           console.error('Audio load error:', playlist[currentTrack]?.src, e);
+          toast({ title: "⚠️ Lỗi tải nhạc", description: "Đang chuyển bài tiếp theo...", variant: "destructive" });
+          // Auto-skip to next track on error
+          if (playlist.length > 1) {
+            setTimeout(() => nextTrack(), 1000);
+          }
         }}
       />
       </div>
