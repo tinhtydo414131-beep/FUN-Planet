@@ -20,14 +20,8 @@ interface Track {
   artist?: string;
 }
 
-// Fallback playlist khi không có nhạc từ database
-const FALLBACK_PLAYLIST: Track[] = [
-  { title: "Radiant Dreamland", src: "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/radiant-dreamland.mp3" },
-  { title: "Angel of the Stars", src: "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/angel-of-the-stars.mp3" }
-];
-
 export const BackgroundMusicPlayer = () => {
-  const [playlist, setPlaylist] = useState<Track[]>(FALLBACK_PLAYLIST);
+  const [playlist, setPlaylist] = useState<Track[]>([]);
   const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
@@ -70,11 +64,18 @@ export const BackgroundMusicPlayer = () => {
         }
 
         if (data && data.length > 0) {
-          const tracks: Track[] = data.map(song => ({
-            title: song.title || 'Unknown',
-            artist: song.artist || undefined,
-            src: `${R2_BASE_URL}${song.storage_path}`
-          }));
+          const tracks: Track[] = data.map(song => {
+            // Kiểm tra xem storage_path là URL đầy đủ hay đường dẫn tương đối
+            const storagePath = song.storage_path || '';
+            const isFullUrl = storagePath.startsWith('http://') || storagePath.startsWith('https://');
+            const src = isFullUrl ? storagePath : `${R2_BASE_URL}${storagePath}`;
+            
+            return {
+              title: song.title || 'Unknown',
+              artist: song.artist || undefined,
+              src
+            };
+          });
           setPlaylist(tracks);
         }
       } catch (error) {
