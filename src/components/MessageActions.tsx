@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,6 +33,7 @@ interface MessageActionsProps {
 }
 
 export function MessageActionsMenu({ messageId, isOwn, isPinned, onEdit, onDelete, onForward, onReply, onPin }: MessageActionsProps) {
+  const { t } = useTranslation();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   return (
@@ -49,38 +51,38 @@ export function MessageActionsMenu({ messageId, isOwn, isPinned, onEdit, onDelet
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => onReply(messageId)} className="gap-2">
             <Reply className="w-4 h-4" />
-            Reply
+            {t('messages.reply')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onPin(messageId)} className="gap-2">
             {isPinned ? (
               <>
                 <PinOff className="w-4 h-4" />
-                Unpin
+                {t('messages.unpin')}
               </>
             ) : (
               <>
                 <Pin className="w-4 h-4" />
-                Pin
+                {t('messages.pin')}
               </>
             )}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onForward(messageId)} className="gap-2">
             <Forward className="w-4 h-4" />
-            Forward
+            {t('messages.forward')}
           </DropdownMenuItem>
           {isOwn && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onEdit(messageId)} className="gap-2">
                 <Pencil className="w-4 h-4" />
-                Edit
+                {t('common.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setShowDeleteDialog(true)}
                 className="gap-2 text-destructive focus:text-destructive"
               >
                 <Trash2 className="w-4 h-4" />
-                Delete
+                {t('common.delete')}
               </DropdownMenuItem>
             </>
           )}
@@ -90,18 +92,18 @@ export function MessageActionsMenu({ messageId, isOwn, isPinned, onEdit, onDelet
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-fredoka">Delete Message?</AlertDialogTitle>
+            <AlertDialogTitle className="font-fredoka">{t('messages.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This message will be permanently deleted for everyone. This action cannot be undone.
+              {t('messages.deleteDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => onDelete(messageId)}
               className="bg-destructive hover:bg-destructive/90"
             >
-              Delete
+              {t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

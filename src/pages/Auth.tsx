@@ -61,7 +61,7 @@ export default function Auth() {
   const handleConnect = async () => {
     // Prevent double-click causing -32002 error
     if (isConnectingRef.current || loading) {
-      toast.info("Đang kết nối ví... Vui lòng kiểm tra MetaMask!");
+      toast.info(t('auth.connectingWallet'));
       return;
     }
 
@@ -71,13 +71,13 @@ export default function Auth() {
         // Check if on mobile
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         if (isMobile) {
-          toast.error("Vui lòng mở trang này trong ứng dụng Trust Wallet hoặc MetaMask!", {
-            description: "Hoặc cài đặt ví trên trình duyệt của bạn.",
+          toast.error(t('auth.noWalletMobile'), {
+            description: t('auth.installWalletMobile'),
             duration: 6000,
           });
         } else {
-          toast.error("Chưa phát hiện ví trong trình duyệt.", {
-            description: "Vui lòng cài MetaMask hoặc Trust Wallet extension.",
+          toast.error(t('auth.noWalletDetected'), {
+            description: t('auth.installWallet'),
             duration: 5000,
           });
         }
@@ -88,7 +88,7 @@ export default function Auth() {
       const injectedConnector = connectors.find((c) => c.id === 'injected');
 
       if (!injectedConnector) {
-        toast.error("Không thể kết nối ví. Vui lòng thử lại!");
+        toast.error(t('auth.walletConnectFailed'));
         return;
       }
 
@@ -100,15 +100,15 @@ export default function Auth() {
         if (isConnectingRef.current) {
           setLoading(false);
           isConnectingRef.current = false;
-          toast.error("Kết nối ví quá lâu. Vui lòng kiểm tra MetaMask và thử lại!", {
-            description: "Có thể có request đang chờ trong ví của bạn.",
+          toast.error(t('auth.walletTimeout'), {
+            description: t('auth.pendingRequest'),
           });
         }
       }, 30000);
 
       await connectAsync({ connector: injectedConnector });
       clearTimeout(timeoutId);
-      toast.success("🎉 Kết nối ví thành công!");
+      toast.success(t('auth.walletConnectSuccess'));
     } catch (error: any) {
       console.error("Wallet connect error:", error);
       const errorCode = error?.code || error?.cause?.code;
@@ -116,17 +116,17 @@ export default function Auth() {
       
       // Handle specific error codes
       if (errorCode === -32002 || message.includes("pending") || message.includes("already pending")) {
-        toast.error("Có request đang chờ trong ví!", {
-          description: "Vui lòng mở MetaMask/Trust Wallet và xác nhận hoặc từ chối request.",
+        toast.error(t('auth.pendingWalletRequest'), {
+          description: t('auth.checkWallet'),
           duration: 6000,
         });
       } else if (message.toLowerCase().includes("user rejected") || message.toLowerCase().includes("user denied")) {
-        toast.error("Bạn đã từ chối kết nối ví!");
+        toast.error(t('auth.walletRejected'));
       } else if (message.includes("already connected") || message.includes("Connector already connected")) {
         // Already connected - just proceed
-        toast.success("Ví đã được kết nối!");
+        toast.success(t('auth.walletAlreadyConnected'));
       } else {
-        toast.error("Không thể kết nối ví. Vui lòng thử lại!", {
+        toast.error(t('auth.walletConnectFailed'), {
           description: message.slice(0, 100),
         });
       }
@@ -140,7 +140,7 @@ export default function Auth() {
     disconnect();
     setStep("connect");
     setUsername("");
-    toast.info("Đã ngắt kết nối ví");
+    toast.info(t('auth.walletDisconnected'));
   };
 
   // Prevent double submission on mobile
@@ -163,12 +163,12 @@ export default function Auth() {
       if (authMode === "signup") {
         usernameSchema.parse(username);
         if (password !== confirmPassword) {
-          toast.error("Mật khẩu xác nhận không khớp!");
+          toast.error(t('auth.passwordMismatch'));
           return;
         }
       }
     } catch (error: any) {
-      toast.error(error.errors?.[0]?.message || "Dữ liệu không hợp lệ!");
+      toast.error(error.errors?.[0]?.message || t('auth.invalidData'));
       return;
     }
 
@@ -200,7 +200,7 @@ export default function Auth() {
           .eq("id", data.user.id)
           .single();
 
-        toast.success(`🎉 Chào mừng trở lại, ${profile?.username || "bạn"}!`);
+        toast.success(t('auth.welcomeBack', { name: profile?.username || "bạn" }));
         navigate("/");
       } else {
         // Signup
@@ -218,18 +218,18 @@ export default function Auth() {
         if (error) throw error;
 
         if (!data.session) {
-          toast.success("🎊 Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.");
+          toast.success(t('auth.signupSuccess'));
         } else {
-          toast.success("🎊 Chào mừng đến với FUN Planet!");
+          toast.success(t('auth.welcomeFunPlanet'));
           navigate("/");
         }
       }
     } catch (error: any) {
       console.error("Auth error:", error);
       if (error.message?.includes("already registered")) {
-        toast.error("Email này đã được đăng ký!");
+        toast.error(t('auth.emailAlreadyRegistered'));
       } else if (error.message?.includes("Invalid login credentials")) {
-        toast.error("Email hoặc mật khẩu không đúng!");
+        toast.error(t('auth.invalidCredentials'));
       } else {
         toast.error(formatErrorMessage(error));
       }
@@ -245,7 +245,7 @@ export default function Auth() {
     try {
       emailSchema.parse(resetEmail);
     } catch (error: any) {
-      toast.error(error.errors?.[0]?.message || "Email không hợp lệ!");
+      toast.error(error.errors?.[0]?.message || t('auth.invalidData'));
       return;
     }
 
@@ -258,12 +258,12 @@ export default function Auth() {
 
       if (error) throw error;
 
-      toast.success("📧 Đã gửi email đặt lại mật khẩu! Vui lòng kiểm tra hộp thư.");
+      toast.success(t('auth.resetEmailSent'));
       setShowForgotPassword(false);
       setResetEmail("");
     } catch (error: any) {
       console.error("Reset password error:", error);
-      toast.error(error.message || "Không thể gửi email. Vui lòng thử lại!");
+      toast.error(error.message || t('auth.cannotSendEmail'));
     } finally {
       setLoading(false);
     }
@@ -279,17 +279,17 @@ export default function Auth() {
     }
 
     if (!address) {
-      toast.error("Ví chưa kết nối!");
+      toast.error(t('auth.walletNotConnected'));
       return;
     }
 
     if (!username.trim()) {
-      toast.error("Vui lòng nhập tên người dùng!");
+      toast.error(t('auth.enterUsername'));
       return;
     }
 
     if (username.length < 3) {
-      toast.error("Tên người dùng phải có ít nhất 3 ký tự!");
+      toast.error(t('auth.usernameMin'));
       return;
     }
 
@@ -322,11 +322,11 @@ export default function Auth() {
         });
 
         if (signUpError) {
-          throw new Error(signUpError.message || "Không thể tạo tài khoản");
+          throw new Error(signUpError.message || t('auth.cannotCreateAccount'));
         }
 
         if (!signUpData.session) {
-          throw new Error("Không thể tạo phiên đăng nhập");
+          throw new Error(t('auth.cannotCreateSession'));
         }
 
         localStorage.setItem("funplanet_session", JSON.stringify(signUpData.session));
@@ -347,7 +347,7 @@ export default function Auth() {
           // Don't throw - user is already logged in
         }
 
-        toast.success("🎊 Chào mừng đến với FUN Planet!");
+        toast.success(t('auth.welcomeFunPlanet'));
         navigate("/");
       } else if (signInData?.session) {
         // Login successful
@@ -359,10 +359,10 @@ export default function Auth() {
           .eq("id", signInData.user.id)
           .single();
 
-        toast.success(`🎉 Chào mừng trở lại, ${profile?.username || "bạn"}!`);
+        toast.success(t('auth.welcomeBack', { name: profile?.username || "bạn" }));
         navigate("/");
       } else {
-        throw new Error(signInError?.message || "Đăng nhập thất bại");
+        throw new Error(signInError?.message || t('auth.loginFailed'));
       }
     } catch (error: any) {
       console.error("Auth error:", error);
@@ -384,10 +384,10 @@ export default function Auth() {
               </div>
             </div>
             <CardTitle className="text-3xl font-fredoka text-primary">
-              Chào mừng! 🎮
+              {t('auth.welcome')}
             </CardTitle>
             <CardDescription className="text-base font-comic">
-              Chọn cách đăng nhập
+              {t('auth.chooseLogin')}
             </CardDescription>
           </CardHeader>
 
@@ -396,11 +396,11 @@ export default function Auth() {
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="email" className="font-fredoka">
                   <Mail className="w-4 h-4 mr-2" />
-                  Email
+                  {t('auth.email')}
                 </TabsTrigger>
                 <TabsTrigger value="wallet" className="font-fredoka">
                   <Wallet className="w-4 h-4 mr-2" />
-                  Ví Crypto
+                  {t('auth.cryptoWallet')}
                 </TabsTrigger>
               </TabsList>
 
@@ -412,14 +412,14 @@ export default function Auth() {
                     onClick={() => setAuthMode("login")}
                     className="font-fredoka flex-1"
                   >
-                    Đăng nhập
+                    {t('auth.login')}
                   </Button>
                   <Button
                     variant={authMode === "signup" ? "default" : "outline"}
                     onClick={() => setAuthMode("signup")}
                     className="font-fredoka flex-1"
                   >
-                    Đăng ký
+                    {t('auth.signup')}
                   </Button>
                 </div>
 
@@ -428,11 +428,11 @@ export default function Auth() {
                     <div className="space-y-2">
                       <label className="text-sm font-comic text-muted-foreground flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        Tên người dùng
+                        {t('auth.username')}
                       </label>
                       <Input
                         type="text"
-                        placeholder="Nhập tên người dùng"
+                        placeholder={t('auth.usernamePlaceholder')}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         className="h-12 border-4 border-primary/40 focus:border-primary focus:ring-4 focus:ring-primary/20"
@@ -444,7 +444,7 @@ export default function Auth() {
                   <div className="space-y-2">
                     <label className="text-sm font-comic text-muted-foreground flex items-center gap-2">
                       <Mail className="w-4 h-4" />
-                      Email
+                      {t('auth.email')}
                     </label>
                     <Input
                       type="email"
@@ -459,7 +459,7 @@ export default function Auth() {
                   <div className="space-y-2">
                     <label className="text-sm font-comic text-muted-foreground flex items-center gap-2">
                       <Lock className="w-4 h-4" />
-                      Mật khẩu
+                      {t('auth.password')}
                     </label>
                     <Input
                       type="password"
@@ -475,7 +475,7 @@ export default function Auth() {
                     <div className="space-y-2">
                       <label className="text-sm font-comic text-muted-foreground flex items-center gap-2">
                         <Lock className="w-4 h-4" />
-                        Xác nhận mật khẩu
+                        {t('auth.confirmPassword')}
                       </label>
                       <Input
                         type="password"
@@ -499,7 +499,7 @@ export default function Auth() {
                         htmlFor="remember"
                         className="text-sm font-comic leading-none cursor-pointer select-none"
                       >
-                        Ghi nhớ đăng nhập
+                        {t('auth.rememberMe')}
                       </label>
                     </div>
                   )}
@@ -509,7 +509,7 @@ export default function Auth() {
                     disabled={loading}
                     className="w-full h-14 text-lg font-fredoka font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all"
                   >
-                    {loading ? "Đang xử lý... ⏳" : authMode === "login" ? "Đăng nhập 🚀" : "Đăng ký 🎉"}
+                    {loading ? t('auth.processing') : authMode === "login" ? `${t('auth.login')} 🚀` : `${t('auth.signup')} 🎉`}
                   </Button>
 
                   {authMode === "login" && (
@@ -519,7 +519,7 @@ export default function Auth() {
                       onClick={() => setShowForgotPassword(true)}
                       className="w-full font-comic text-sm text-muted-foreground hover:text-primary"
                     >
-                      Quên mật khẩu? 🔑
+                      {t('auth.forgotPassword')} 🔑
                     </Button>
                   )}
                 </form>
@@ -532,14 +532,14 @@ export default function Auth() {
                   disabled={loading}
                   className="w-full h-16 text-lg font-fredoka font-bold bg-gradient-to-r from-accent to-secondary hover:shadow-xl transition-all"
                 >
-                  {loading ? "Đang kết nối... ⏳" : "🦊 Kết nối ví"}
+                  {loading ? t('auth.sending') : `🦊 ${t('heroActions.connectWallet')}`}
                 </Button>
 
                 <div className="p-4 bg-muted/50 rounded-xl space-y-2 text-sm font-comic text-muted-foreground">
-                  <p className="font-bold text-foreground">📱 Hỗ trợ:</p>
+                  <p className="font-bold text-foreground">📱 {t('auth.support')}</p>
                   <p>• MetaMask • Trust Wallet</p>
                   <p>• Coinbase • WalletConnect</p>
-                  <p className="text-xs pt-2 border-t">Hoạt động trên web & mobile</p>
+                  <p className="text-xs pt-2 border-t">{t('auth.worksOnWebMobile')}</p>
                 </div>
               </TabsContent>
             </Tabs>
@@ -550,10 +550,10 @@ export default function Auth() {
                 <Card className="w-full max-w-md border-2 border-primary/20 shadow-2xl rounded-3xl">
                   <CardHeader>
                     <CardTitle className="text-2xl font-fredoka text-primary">
-                      Đặt lại mật khẩu 🔑
+                      {t('auth.resetPassword')}
                     </CardTitle>
                     <CardDescription className="font-comic">
-                      Nhập email của bạn để nhận link đặt lại mật khẩu
+                      {t('auth.enterEmailReset')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -561,7 +561,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <label className="text-sm font-comic text-muted-foreground flex items-center gap-2">
                           <Mail className="w-4 h-4" />
-                          Email
+                          {t('auth.email')}
                         </label>
                         <Input
                           type="email"
@@ -584,14 +584,14 @@ export default function Auth() {
                           className="flex-1 h-12 font-fredoka"
                           disabled={loading}
                         >
-                          Hủy
+                          {t('common.cancel')}
                         </Button>
                         <Button
                           type="submit"
                           disabled={loading}
                           className="flex-1 h-12 font-fredoka font-bold bg-gradient-to-r from-primary to-secondary"
                         >
-                          {loading ? "Đang gửi... ⏳" : "Gửi email 📧"}
+                          {loading ? t('auth.sending') : t('auth.sendEmail')}
                         </Button>
                       </div>
                     </form>
@@ -615,10 +615,10 @@ export default function Auth() {
             </div>
           </div>
           <CardTitle className="text-3xl font-fredoka text-primary">
-            Bước cuối! 🎉
+            {t('auth.finalStep')}
           </CardTitle>
           <CardDescription className="text-base font-comic">
-            Chọn tên người dùng của bạn
+            {t('auth.chooseUsername')}
           </CardDescription>
         </CardHeader>
 
@@ -630,7 +630,7 @@ export default function Auth() {
                 <Wallet className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground">Ví đã kết nối</p>
+                <p className="text-xs text-muted-foreground">{t('auth.walletConnected')}</p>
                 <p className="font-mono text-xs truncate">{address}</p>
               </div>
               <Button
@@ -639,7 +639,7 @@ export default function Auth() {
                 size="sm"
                 className="text-xs"
               >
-                Đổi
+                {t('auth.change')}
               </Button>
             </div>
           </div>
@@ -649,7 +649,7 @@ export default function Auth() {
             <div className="space-y-2">
               <Input
                 type="text"
-                placeholder="Tên người dùng (tối thiểu 3 ký tự)"
+                placeholder={t('auth.usernamePlaceholderMin')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="h-14 text-base border-2 border-primary/30 focus:border-primary"
@@ -664,12 +664,12 @@ export default function Auth() {
               disabled={loading || username.length < 3}
               className="w-full h-14 text-lg font-fredoka font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all"
             >
-              {loading ? "Đang xử lý... ⏳" : "Bắt đầu chơi! 🚀"}
+              {loading ? t('auth.processing') : t('auth.startPlaying')}
             </Button>
           </form>
 
           <p className="text-xs text-center text-muted-foreground font-comic">
-            🔒 Thông tin của bạn được bảo mật an toàn
+            {t('auth.infoSecure')}
           </p>
         </CardContent>
       </Card>
