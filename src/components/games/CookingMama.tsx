@@ -97,13 +97,12 @@ export function CookingMama() {
   const { playClick, playSuccess, playPop, playJump, playScore, startBackgroundMusic, stopBackgroundMusic, isMusicEnabled, isSoundEnabled, toggleMusic, toggleSound } = useGameAudio();
 
   useEffect(() => {
-    startBackgroundMusic();
+    // Không cần gọi startBackgroundMusic - đã có BackgroundMusicPlayer global
     const saved = localStorage.getItem('cookingMamaProgress');
     if (saved) {
       const data = JSON.parse(saved);
       setStars(data.stars || 0);
     }
-    return () => stopBackgroundMusic();
   }, []);
 
   useEffect(() => {

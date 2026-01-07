@@ -36,7 +36,7 @@ export const WordScramble = ({
 
   useEffect(() => {
     scrambleWord();
-    startBackgroundMusic();
+    // Không cần gọi startBackgroundMusic - đã có BackgroundMusicPlayer global
   }, [currentWord]);
 
   const scrambleWord = () => {
