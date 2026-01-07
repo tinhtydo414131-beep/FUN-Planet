@@ -3,7 +3,7 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Float, Sparkles, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { TextureLoader } from 'three';
-import angelAvatarUrl from "@/assets/angel-ai-avatar.jpg";
+import angelAvatarUrl from "@/assets/angel-ai-avatar.png";
 
 // Glowing orb particle
 function GlowingOrb({ position, color, size = 0.05 }: { position: [number, number, number]; color: string; size?: number }) {
