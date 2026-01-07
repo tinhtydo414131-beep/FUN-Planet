@@ -136,17 +136,29 @@ export const BackgroundMusicPlayer = () => {
     }
   }, [volume, isMuted]);
 
-  // Khi đổi bài trong lúc đang phát, tự phát lại bài mới
+  // Khi đổi bài, bắt buộc load lại audio rồi mới play
   useEffect(() => {
-    if (audioRef.current && isPlaying) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.log("Audio play failed on track change:", error);
-        });
+    if (audioRef.current && playlist[currentTrack]?.src) {
+      // Bắt buộc load lại file audio mới
+      audioRef.current.load();
+      
+      if (isPlaying) {
+        // Đợi audio sẵn sàng rồi mới play
+        const handleCanPlay = () => {
+          audioRef.current?.play().catch((error) => {
+            console.log("Audio play failed on track change:", error);
+          });
+          audioRef.current?.removeEventListener('canplay', handleCanPlay);
+        };
+        
+        audioRef.current.addEventListener('canplay', handleCanPlay);
+        
+        return () => {
+          audioRef.current?.removeEventListener('canplay', handleCanPlay);
+        };
       }
     }
-  }, [currentTrack, isPlaying]);
+  }, [currentTrack, playlist]);
 
   const togglePlay = async () => {
     if (!audioRef.current) return;
