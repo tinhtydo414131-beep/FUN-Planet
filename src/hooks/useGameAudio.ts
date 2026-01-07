@@ -140,11 +140,12 @@ export const useGameAudio = () => {
   };
 
   const toggleMusic = () => {
-    setIsMusicEnabled(!isMusicEnabled);
-    if (isMusicEnabled) {
-      stopBackgroundMusic();
-    } else {
+    const newState = !isMusicEnabled;
+    setIsMusicEnabled(newState);
+    if (newState) {
       startBackgroundMusic();
+    } else {
+      stopBackgroundMusic();
     }
   };
 

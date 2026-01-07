@@ -20,7 +20,7 @@ export const AudioControls = ({
         variant="outline"
         size="icon"
         onClick={onToggleMusic}
-        className="relative"
+        className="flex items-center justify-center"
         title={isMusicEnabled ? "Tắt nhạc nền" : "Bật nhạc nền"}
       >
         {isMusicEnabled ? (
@@ -34,7 +34,7 @@ export const AudioControls = ({
         variant="outline"
         size="icon"
         onClick={onToggleSound}
-        className="relative"
+        className="flex items-center justify-center"
         title={isSoundEnabled ? "Tắt hiệu ứng âm thanh" : "Bật hiệu ứng âm thanh"}
       >
         {isSoundEnabled ? (
