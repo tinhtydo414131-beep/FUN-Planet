@@ -122,20 +122,15 @@ export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
 
         {/* Main angel image */}
         <motion.div
-          className="relative w-full h-full rounded-full overflow-hidden"
+          className="relative w-full h-full"
           style={{
-            boxShadow: `
-              0 0 20px rgba(255,215,0,0.5),
-              0 0 40px rgba(255,182,193,0.3),
-              0 0 60px rgba(135,206,235,0.2),
-              inset 0 0 20px rgba(255,255,255,0.3)
-            `,
+            filter: "drop-shadow(0 0 10px rgba(255,215,0,0.6)) drop-shadow(0 0 20px rgba(255,182,193,0.4))",
           }}
         >
           <img
             src={angelAvatar}
             alt="Angel AI"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             style={{
               filter: "brightness(1.1) contrast(1.05) saturate(1.1)",
             }}
