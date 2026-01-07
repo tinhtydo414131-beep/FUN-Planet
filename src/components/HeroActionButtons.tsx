@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Gamepad2, Wallet, Upload, Globe, Sparkles, Loader2 } from "lucide-react";
@@ -15,6 +16,7 @@ interface HeroActionButtonsProps {
 }
 
 export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
@@ -68,23 +70,23 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
     if (!isConnected) {
       try {
         if (typeof window.ethereum === 'undefined') {
-          toast.error('Chưa phát hiện ví. Vui lòng cài MetaMask hoặc Trust Wallet.');
+          toast.error(t('auth.noWalletDetected'));
           return;
         }
         const injectedConnector = connectors.find((c) => 
           c.id === 'injected' || c.id === 'metaMask' || c.id.includes('injected')
         );
         if (!injectedConnector) {
-          toast.error('Không thể kết nối ví. Vui lòng thử lại!');
+          toast.error(t('auth.walletConnectFailed'));
           return;
         }
         await connectAsync({ connector: injectedConnector });
       } catch (error: any) {
         const message = String(error?.shortMessage || error?.message || '');
         if (message.toLowerCase().includes('user rejected')) {
-          toast.error('Bạn đã từ chối kết nối ví!');
+          toast.error(t('auth.walletRejected'));
         } else {
-          toast.error('Không thể kết nối ví. Vui lòng thử lại!');
+          toast.error(t('auth.walletConnectFailed'));
         }
       }
       return;
@@ -104,8 +106,8 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
   const actions = [
     {
       id: "play",
-      label: "Play Now",
-      sublabel: "No Registration Required",
+      label: t('heroActions.playNow'),
+      sublabel: t('heroActions.noRegistration'),
       icon: Gamepad2,
       gradient: "from-green-500 via-emerald-500 to-teal-500",
       shadow: "shadow-green-500/30",
@@ -114,8 +116,8 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
     },
     {
       id: "wallet",
-      label: "Connect Wallet",
-      sublabel: isConnected && !firstWalletClaimed ? "Get 50K CAMLY Free!" : isConnected ? "Connected ✓" : "Get 50K CAMLY Free!",
+      label: t('heroActions.connectWallet'),
+      sublabel: isConnected && !firstWalletClaimed ? t('heroActions.get50kFree') : isConnected ? t('heroActions.connected') : t('heroActions.get50kFree'),
       icon: Wallet,
       gradient: "from-purple-500 via-pink-500 to-rose-500",
       shadow: "shadow-purple-500/30",
@@ -126,8 +128,8 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
     },
     {
       id: "upload",
-      label: "Upload Game",
-      sublabel: "Get 500K CAMLY",
+      label: t('heroActions.uploadGame'),
+      sublabel: t('heroActions.get500k'),
       icon: Upload,
       gradient: "from-orange-500 via-amber-500 to-yellow-500",
       shadow: "shadow-orange-500/30",
@@ -136,8 +138,8 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
     },
     {
       id: "builder",
-      label: "3D Planet Builder",
-      sublabel: "Build Your Child's World",
+      label: t('heroActions.planetBuilder'),
+      sublabel: t('heroActions.buildWorld'),
       icon: Globe,
       gradient: "from-blue-500 via-cyan-500 to-sky-500",
       shadow: "shadow-blue-500/30",

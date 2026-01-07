@@ -1,5 +1,6 @@
 import { Home, Gamepad2, Upload, MessageCircle, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
@@ -7,7 +8,9 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { haptics } from "@/utils/haptics";
 import confetti from "canvas-confetti";
+
 export const EnhancedMobileNav = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -56,21 +59,21 @@ export const EnhancedMobileNav = () => {
   const navItems = [
     { 
       icon: Home, 
-      label: "Trang chủ", 
+      label: t('nav.home'), 
       path: "/", 
       emoji: "🏠",
       gradient: "from-orange-500 to-pink-500"
     },
     { 
       icon: Gamepad2, 
-      label: "Game", 
+      label: t('nav.games'), 
       path: "/games", 
       emoji: "🎮",
       gradient: "from-blue-500 to-cyan-500"
     },
     { 
       icon: Upload, 
-      label: "Tải lên", 
+      label: t('nav.upload'), 
       path: "/upload-game", 
       emoji: "✨",
       gradient: "from-green-500 to-emerald-500",
@@ -78,7 +81,7 @@ export const EnhancedMobileNav = () => {
     },
     { 
       icon: MessageCircle, 
-      label: "Chat", 
+      label: t('messages.title'), 
       path: "/chat", 
       emoji: "💬",
       gradient: "from-purple-500 to-pink-500",
@@ -86,7 +89,7 @@ export const EnhancedMobileNav = () => {
     },
     { 
       icon: User, 
-      label: "Cá nhân", 
+      label: t('nav.profile'), 
       path: user ? "/profile" : "/auth", 
       emoji: "👤",
       gradient: "from-yellow-500 to-orange-500"
