@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -229,6 +230,7 @@ export const FacebookFeatureMenu = ({
   showQuickActions = true,
   maxItems 
 }: FacebookFeatureMenuProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
 
@@ -238,7 +240,7 @@ export const FacebookFeatureMenu = ({
     } else if (item.route) {
       navigate(item.route);
     } else {
-      toast.info(`${item.label} coming soon!`);
+      toast.info(`${item.label} ${t('common.comingSoon')}`);
     }
   };
 
@@ -252,7 +254,7 @@ export const FacebookFeatureMenu = ({
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-bold flex items-center gap-2">
             <Compass className="w-5 h-5 text-primary" />
-            Shortcuts
+            {t('common.shortcuts')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-1 p-2">
@@ -294,7 +296,8 @@ export const FacebookFeatureMenu = ({
               className="w-full mt-2"
               onClick={() => setShowAll(!showAll)}
             >
-              {showAll ? "Show Less" : `See All (${featureItems.length})`}
+              {showAll ? t('common.showLess') : `${t('common.seeAll')} (${featureItems.length})`}
+            </Button>
             </Button>
           )}
         </CardContent>
@@ -350,7 +353,8 @@ export const FacebookFeatureMenu = ({
               className="w-full mt-3"
               onClick={() => setShowAll(true)}
             >
-              See More
+              {t('common.seeMore')}
+            </Button>
             </Button>
           )}
         </CardContent>
@@ -359,7 +363,7 @@ export const FacebookFeatureMenu = ({
       {showQuickActions && (
         <Card className="shadow-sm bg-gradient-to-r from-primary/5 to-secondary/5">
           <CardContent className="p-3">
-            <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">Quick Actions</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">{t('common.quickActions')}</p>
             <div className="grid grid-cols-4 gap-1">
               {quickActions.map((item) => (
                 <FeatureButton

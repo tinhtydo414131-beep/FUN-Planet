@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,12 +13,8 @@ import { useAccount, useDisconnect, useConnect } from 'wagmi';
 import { z } from "zod";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 
-// Email/Password validation schema
-const emailSchema = z.string().email("Email không hợp lệ").max(255, "Email quá dài");
-const passwordSchema = z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự").max(100, "Mật khẩu quá dài");
-const usernameSchema = z.string().min(3, "Tên người dùng phải có ít nhất 3 ký tự").max(20, "Tên người dùng quá dài");
-
 export default function Auth() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,6 +26,11 @@ export default function Auth() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  
+  // Validation schemas with translations
+  const emailSchema = z.string().email(t('auth.invalidEmail')).max(255, t('auth.emailTooLong'));
+  const passwordSchema = z.string().min(6, t('auth.passwordMin')).max(100, t('auth.passwordTooLong'));
+  const usernameSchema = z.string().min(3, t('auth.usernameMin')).max(20, t('auth.usernameTooLong'));
   
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
