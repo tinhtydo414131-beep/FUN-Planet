@@ -89,64 +89,18 @@ export const useGameAudio = () => {
     playSound(1000, 0.15, 'triangle');
   };
 
-  const startBackgroundMusic = async (forceStart = false) => {
-    if ((!forceStart && !isMusicEnabled) || !audioContextRef.current || musicNodeRef.current) return;
-
-    await resumeAudioContext();
-
-    const ctx = audioContextRef.current;
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-
-    oscillator.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    oscillator.type = 'sine';
-    oscillator.frequency.value = 440;
-    filter.type = 'lowpass';
-    filter.frequency.value = 1000;
-    gainNode.gain.value = 0.05;
-
-    // Create a simple melody pattern
-    const notes = [440, 494, 523, 587, 523, 494]; // A, B, C, D, C, B
-    let noteIndex = 0;
-
-    const playNextNote = () => {
-      if (oscillator && audioContextRef.current) {
-        oscillator.frequency.setValueAtTime(notes[noteIndex], ctx.currentTime);
-        noteIndex = (noteIndex + 1) % notes.length;
-      }
-    };
-
-    const intervalId = setInterval(playNextNote, 500);
-
-    oscillator.start();
-    musicNodeRef.current = oscillator;
-
-    // Store interval ID for cleanup
-    (oscillator as any).intervalId = intervalId;
+  // Các hàm này giờ không làm gì - nhạc nền được quản lý bởi BackgroundMusicPlayer
+  const startBackgroundMusic = async (_forceStart = false) => {
+    // Không phát oscillator music nữa - dùng BackgroundMusicPlayer thay thế
   };
 
   const stopBackgroundMusic = () => {
-    if (musicNodeRef.current) {
-      const intervalId = (musicNodeRef.current as any).intervalId;
-      if (intervalId) clearInterval(intervalId);
-      
-      musicNodeRef.current.stop();
-      musicNodeRef.current = null;
-    }
+    // Không cần dừng gì - nhạc nền được quản lý bởi BackgroundMusicPlayer
   };
 
   const toggleMusic = () => {
-    const newState = !isMusicEnabled;
-    setIsMusicEnabled(newState);
-    if (newState) {
-      startBackgroundMusic(true);
-    } else {
-      stopBackgroundMusic();
-    }
+    setIsMusicEnabled(!isMusicEnabled);
+    // State này giờ chỉ dùng cho UI, không còn điều khiển oscillator
   };
 
   const toggleSound = () => {

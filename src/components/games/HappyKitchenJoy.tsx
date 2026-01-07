@@ -125,11 +125,9 @@ export const HappyKitchenJoy = ({ onBack }: { onBack?: () => void }) => {
   const [showTutorial, setShowTutorial] = useState(true);
   const plateRef = useRef<HTMLDivElement>(null);
 
-  // Start background music on mount
+  // Cleanup voice on unmount - không cần gọi startBackgroundMusic vì đã có BackgroundMusicPlayer global
   useEffect(() => {
-    startBackgroundMusic();
     return () => {
-      stopBackgroundMusic();
       stopVoice();
     };
   }, []);

@@ -12,7 +12,7 @@ import {
 import { useDraggable } from "@/hooks/useDraggable";
 import { supabase } from "@/integrations/supabase/client";
 
-const R2_BASE_URL = "https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/music/";
+// R2_BASE_URL không cần nữa - storage_path trong database đã là full URL
 
 interface Track {
   title: string;
@@ -64,19 +64,15 @@ export const BackgroundMusicPlayer = () => {
         }
 
         if (data && data.length > 0) {
-          const tracks: Track[] = data.map(song => {
-            // Kiểm tra xem storage_path là URL đầy đủ hay đường dẫn tương đối
-            const storagePath = song.storage_path || '';
-            const isFullUrl = storagePath.startsWith('http://') || storagePath.startsWith('https://');
-            const src = isFullUrl ? storagePath : `${R2_BASE_URL}${storagePath}`;
-            
-            return {
-              title: song.title || 'Unknown',
-              artist: song.artist || undefined,
-              src
-            };
-          });
+          const tracks: Track[] = data.map(song => ({
+            title: song.title || 'Unknown',
+            artist: song.artist || undefined,
+            src: song.storage_path || ''
+          }));
+          console.log('Loaded playlist:', tracks.length, 'tracks');
           setPlaylist(tracks);
+        } else {
+          console.log('No music found in database');
         }
       } catch (error) {
         console.error('Error fetching playlist:', error);
@@ -389,6 +385,9 @@ export const BackgroundMusicPlayer = () => {
         src={playlist[currentTrack]?.src}
         preload="auto"
         onEnded={handleTrackEnd}
+        onError={(e) => {
+          console.error('Audio load error:', playlist[currentTrack]?.src, e);
+        }}
       />
       </div>
     </div>
