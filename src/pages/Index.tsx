@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { FeaturedGamesSection } from "@/components/FeaturedGamesSection";
@@ -36,6 +37,7 @@ import { RewardGalaxyHomeBanner } from "@/components/RewardGalaxyHomeBanner";
 import { TodayRewardsCard } from "@/components/TodayRewardsCard";
 
 const Index = () => {
+  const { t } = useTranslation();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { pendingReferrer, showWelcomeBanner, dismissWelcomeBanner } = useReferral();
@@ -104,53 +106,53 @@ const Index = () => {
   const features = [
     {
       icon: <Gamepad2 className="w-10 h-10 text-primary" />,
-      title: "100+ Fun Games",
-      description: "Play amazing games made for kids! From puzzles to adventures! 🎮",
+      title: t('home.funGames'),
+      description: `${t('home.funGamesDesc')} 🎮`,
       color: "from-primary to-purple-500",
       image: featureGames
     },
     {
       icon: <Shield className="w-10 h-10 text-accent" />,
-      title: "Safe & Secure",
-      description: "Kid-friendly content, no ads, and parent-approved safety! 🛡️",
+      title: t('home.safeSecure'),
+      description: `${t('home.safeSecureDesc')} 🛡️`,
       color: "from-accent to-green-500",
       image: featureSafe
     },
     {
       icon: <Gift className="w-10 h-10 text-secondary" />,
-      title: "Earn Rewards",
-      description: "Play games and earn crypto tokens you can collect! 🎁",
+      title: t('home.earnRewards'),
+      description: `${t('home.earnRewardsDesc')} 🎁`,
       color: "from-secondary to-orange-500",
       image: featureRewards
     },
     {
       icon: <Users className="w-10 h-10 text-primary" />,
-      title: "Make Friends",
-      description: "Chat with other kids and make new gaming buddies! 👥",
+      title: t('home.makeFriends'),
+      description: `${t('home.makeFriendsDesc')} 👥`,
       color: "from-primary to-pink-500",
       image: featureFriends
     },
     {
       icon: <Trophy className="w-10 h-10 text-accent" />,
-      title: "Compete & Win",
-      description: "Join the leaderboard and become the top player! 🏆",
+      title: t('home.competeWin'),
+      description: `${t('home.competeWinDesc')} 🏆`,
       color: "from-accent to-blue-500",
       image: featureCompete
     },
     {
       icon: <Sparkles className="w-10 h-10 text-secondary" />,
-      title: "Learn While Playing",
-      description: "Educational games that make learning super fun! ✨",
+      title: t('home.learnPlaying'),
+      description: `${t('home.learnPlayingDesc')} ✨`,
       color: "from-secondary to-purple-500",
       image: featureLearning
     }
   ];
 
   const categories = [
-    { name: "Adventure 🗺️", count: 15, color: "bg-gradient-to-br from-primary to-purple-500", image: categoryAdventure },
-    { name: "Puzzle 🧩", count: 12, color: "bg-gradient-to-br from-accent to-green-500", image: categoryPuzzle },
-    { name: "Casual 🎯", count: 20, color: "bg-gradient-to-br from-secondary to-orange-500", image: categoryCasual },
-    { name: "Educational 📚", count: 8, color: "bg-gradient-to-br from-primary to-pink-500", image: categoryEducational },
+    { name: `${t('home.adventure')} 🗺️`, count: 15, color: "bg-gradient-to-br from-primary to-purple-500", image: categoryAdventure },
+    { name: `${t('home.puzzle')} 🧩`, count: 12, color: "bg-gradient-to-br from-accent to-green-500", image: categoryPuzzle },
+    { name: `${t('home.casual')} 🎯`, count: 20, color: "bg-gradient-to-br from-secondary to-orange-500", image: categoryCasual },
+    { name: `${t('home.educational')} 📚`, count: 8, color: "bg-gradient-to-br from-primary to-pink-500", image: categoryEducational },
   ];
 
   const pageVariants = {
@@ -240,10 +242,10 @@ const Index = () => {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-              Game Categories 🎨
+              {t('home.gameCategories')} 🎨
             </h2>
             <p className="text-xl text-muted-foreground">
-              Pick your favorite type of game!
+              {t('home.pickFavorite')}
             </p>
           </motion.div>
           

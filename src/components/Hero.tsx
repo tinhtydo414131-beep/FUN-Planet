@@ -9,8 +9,10 @@ import { FunPlanetUnifiedBoard } from "./FunPlanetUnifiedBoard";
 import { motion } from "framer-motion";
 import { MEDIA_URLS } from "@/config/media";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 export const Hero = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [backgroundVideo, setBackgroundVideo] = useState<string>(MEDIA_URLS.videos.heroBackgroundLatest);
@@ -79,7 +81,7 @@ export const Hero = () => {
           y: 0
         }} className="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-purple-600/90 via-pink-600/90 to-cyan-600/90 backdrop-blur-md rounded-full border-2 border-white/50 shadow-xl">
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 animate-pulse" />
-            <span className="font-space text-sm sm:text-lg font-black text-white">🌟 The Ultimate Kids Gaming Universe!</span>
+            <span className="font-space text-sm sm:text-lg font-black text-white">🌟 {t('hero.badge')}</span>
           </motion.div>
 
           {/* Logo with diamonds */}
@@ -119,7 +121,7 @@ export const Hero = () => {
         }} transition={{
           delay: 0.3
         }} className="text-base sm:text-xl md:text-2xl text-white font-rajdhani font-black max-w-3xl mx-auto leading-relaxed px-6 drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] bg-gradient-to-r from-purple-600/80 via-pink-600/80 to-cyan-600/80 backdrop-blur-lg rounded-3xl py-4 sm:py-6 border-2 border-white/30 shadow-2xl">
-            🚀 Build Your Planet – Play & Earn Joy! 💎✨
+            🚀 {t('hero.slogan')} 💎✨
           </motion.p>
 
 
@@ -135,9 +137,9 @@ export const Hero = () => {
         }} onSubmit={handleSearch} className="max-w-2xl mx-auto px-4">
             <div className="relative group">
               <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-purple-400 group-hover:text-cyan-400 transition-colors" />
-              <Input type="text" placeholder="Search for games... 🔍" value={search} onChange={e => setSearch(e.target.value)} className="pl-10 sm:pl-14 pr-24 sm:pr-32 py-5 sm:py-7 text-base sm:text-lg font-rajdhani font-medium bg-white/10 backdrop-blur-md border-2 border-primary/40 focus:border-cyan-400 rounded-2xl shadow-lg text-white placeholder:text-white/60 focus:ring-4 focus:ring-cyan-400/20" />
+              <Input type="text" placeholder={`${t('hero.searchPlaceholder')} 🔍`} value={search} onChange={e => setSearch(e.target.value)} className="pl-10 sm:pl-14 pr-24 sm:pr-32 py-5 sm:py-7 text-base sm:text-lg font-rajdhani font-medium bg-white/10 backdrop-blur-md border-2 border-primary/40 focus:border-cyan-400 rounded-2xl shadow-lg text-white placeholder:text-white/60 focus:ring-4 focus:ring-cyan-400/20" />
               <Button type="submit" onMouseEnter={() => playPop()} onClick={() => playClick()} className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-4 sm:px-8 py-4 sm:py-5 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 shadow-lg">
-                Search 🚀
+                {t('hero.searchButton')} 🚀
               </Button>
             </div>
           </motion.form>
@@ -170,7 +172,7 @@ export const Hero = () => {
           }
         }} className="pt-8">
             <button onClick={scrollToFeaturedGames} className="text-white/60 hover:text-white transition-colors">
-              <span className="block text-sm mb-2">Scroll to Play</span>
+              <span className="block text-sm mb-2">{t('hero.scrollToPlay')}</span>
               <span className="text-3xl">↓</span>
             </button>
           </motion.div>
