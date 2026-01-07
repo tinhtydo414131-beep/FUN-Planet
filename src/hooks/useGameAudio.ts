@@ -89,8 +89,8 @@ export const useGameAudio = () => {
     playSound(1000, 0.15, 'triangle');
   };
 
-  const startBackgroundMusic = async () => {
-    if (!isMusicEnabled || !audioContextRef.current || musicNodeRef.current) return;
+  const startBackgroundMusic = async (forceStart = false) => {
+    if ((!forceStart && !isMusicEnabled) || !audioContextRef.current || musicNodeRef.current) return;
 
     await resumeAudioContext();
 
@@ -143,7 +143,7 @@ export const useGameAudio = () => {
     const newState = !isMusicEnabled;
     setIsMusicEnabled(newState);
     if (newState) {
-      startBackgroundMusic();
+      startBackgroundMusic(true);
     } else {
       stopBackgroundMusic();
     }
