@@ -3,7 +3,7 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Float, Sparkles, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { TextureLoader } from 'three';
-import angelAvatarUrl from "@/assets/angel-ai-avatar.jpg";
+import angelFairyUrl from "@/assets/angel-fairy.png";
 
 // Glowing orb particle
 function GlowingOrb({ position, color, size = 0.05 }: { position: [number, number, number]; color: string; size?: number }) {
@@ -108,9 +108,9 @@ function createEllipseShape(radiusX: number, radiusY: number, segments: number =
   return shape;
 }
 
-// Main angel character with texture
+// Main fairy character with texture
 function AngelCharacter() {
-  const texture = useLoader(TextureLoader, angelAvatarUrl);
+  const texture = useLoader(TextureLoader, angelFairyUrl);
   const meshRef = useRef<THREE.Mesh>(null);
 
   // Configure texture
@@ -164,19 +164,15 @@ function AngelCharacter() {
         {/* Halo above */}
         <Halo />
 
-        {/* Main character image on circular plane */}
+        {/* Main fairy image - larger rounded rectangle */}
         <Billboard follow lockX={false} lockY={false} lockZ={false}>
           <mesh ref={meshRef}>
-            <circleGeometry args={[0.8, 64]} />
+            <planeGeometry args={[1.4, 1.4]} />
             <meshBasicMaterial map={texture} transparent side={THREE.DoubleSide} />
           </mesh>
         </Billboard>
 
-        {/* Glowing border */}
-        <mesh position={[0, 0, -0.01]}>
-          <ringGeometry args={[0.78, 0.85, 64]} />
-          <meshBasicMaterial color="#FFD700" transparent opacity={0.6} />
-        </mesh>
+        {/* Glowing border - removed circular ring for fairy image */}
 
         {/* Wing glow - left */}
         <mesh position={[-0.9, 0, -0.2]} rotation={[0, 0, 0.3]}>
@@ -234,20 +230,20 @@ function AngelCharacter() {
   );
 }
 
-// Exported Canvas wrapper
+// Exported Canvas wrapper - larger size for fairy
 export function Angel3DButton({ onClick }: { onClick?: () => void }) {
   return (
     <div 
-      className="w-20 h-20 cursor-pointer"
+      className="w-24 h-24 cursor-pointer"
       onClick={onClick}
     >
       <Canvas
-        camera={{ position: [0, 0, 3], fov: 50 }}
+        camera={{ position: [0, 0, 3.5], fov: 50 }}
         style={{ background: 'transparent' }}
         gl={{ alpha: true, antialias: true }}
       >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[2, 2, 2]} intensity={0.8} />
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[2, 2, 2]} intensity={0.9} />
         <AngelCharacter />
       </Canvas>
     </div>
