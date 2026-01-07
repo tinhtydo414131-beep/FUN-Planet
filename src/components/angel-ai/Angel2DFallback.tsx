@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import angelAvatar from "@/assets/angel-ai-avatar.jpg";
+import angelAvatar from "@/assets/angel-ai-avatar.png";
 
 interface Angel2DFallbackProps {
   onClick?: () => void;
