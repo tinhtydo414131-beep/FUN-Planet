@@ -503,7 +503,7 @@ export const FunPlanetUnifiedBoard = () => {
           <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ border: "2px solid rgba(255, 215, 0, 0.7)", boxShadow: "inset 0 0 25px rgba(255, 215, 0, 0.3)", zIndex: 5 }} />
 
           {/* Video Background */}
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0" style={{ opacity: 0.8 }}>
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0" style={{ opacity: 0.2 }}>
             <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
           </video>
 
