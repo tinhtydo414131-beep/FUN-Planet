@@ -723,24 +723,63 @@ export const FunPlanetUnifiedBoard = () => {
             </div>
 
             {/* =============== RIGHT COLUMN: TOP RANKING =============== */}
-            <div className="p-4 flex flex-col">
-              {/* Header */}
+            <div className="p-4 flex flex-col relative">
+              {/* Decorative sparkles */}
+              <motion.div 
+                className="absolute top-2 left-4 text-xl"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >✨</motion.div>
+              <motion.div 
+                className="absolute top-6 right-8 text-lg"
+                animate={{ scale: [1, 1.2, 1], rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+              >🌟</motion.div>
+
+              {/* Header with enhanced styling */}
               <div className="mb-4 flex items-center justify-center gap-3 relative">
-                <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }} className="text-2xl">🏆</motion.span>
-                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]">TOP RANKING</h3>
-                <motion.span animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }} className="text-2xl">⭐</motion.span>
-                <button onClick={() => fetchTopUsers(true)} disabled={refreshing} className="absolute right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-50" title="Refresh ranking">
-                  <RefreshCw className={`h-4 w-4 text-yellow-400 ${refreshing ? 'animate-spin' : ''}`} />
+                <motion.div 
+                  animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} 
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="relative"
+                >
+                  <span className="text-3xl drop-shadow-[0_0_15px_rgba(255,215,0,0.9)]">🏆</span>
+                  <motion.div 
+                    className="absolute -inset-2 bg-yellow-400/20 rounded-full blur-md"
+                    animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.div>
+                <div className="text-center">
+                  <h3 className="bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-200 bg-clip-text text-2xl sm:text-3xl font-black text-transparent drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite", textShadow: "0 0 30px rgba(255,215,0,0.5)" }}>
+                    TOP RANKING
+                  </h3>
+                  <p className="text-xs text-yellow-300/80 font-medium mt-0.5">Bảng xếp hạng CAMLY</p>
+                </div>
+                <motion.div 
+                  animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} 
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="relative"
+                >
+                  <span className="text-2xl">⭐</span>
+                  <motion.div 
+                    className="absolute -inset-1 bg-amber-400/30 rounded-full blur-sm"
+                    animate={{ opacity: [0.4, 0.8, 0.4] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                </motion.div>
+                <button onClick={() => fetchTopUsers(true)} disabled={refreshing} className="absolute right-0 p-2.5 rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20 hover:from-yellow-500/50 hover:to-amber-500/40 transition-all border border-yellow-400/40 shadow-[0_0_10px_rgba(255,215,0,0.3)] disabled:opacity-50" title="Refresh ranking">
+                  <RefreshCw className={`h-4 w-4 text-yellow-300 ${refreshing ? 'animate-spin' : ''}`} />
                 </button>
               </div>
 
               {rankingLoading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-3 rounded-xl border border-white/30 bg-white/10 p-3">
-                      <div className="h-8 w-8 animate-pulse rounded-full bg-white/20" />
-                      <div className="flex-1"><div className="h-4 w-24 animate-pulse rounded bg-white/20" /></div>
-                      <div className="h-4 w-16 animate-pulse rounded bg-white/20" />
+                    <div key={index} className="flex items-center gap-3 rounded-2xl border border-yellow-400/20 bg-gradient-to-r from-yellow-500/10 to-amber-500/5 p-3 backdrop-blur-sm">
+                      <div className="h-10 w-10 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/30 to-amber-400/20" />
+                      <div className="flex-1"><div className="h-4 w-24 animate-pulse rounded-full bg-yellow-400/20" /></div>
+                      <div className="h-6 w-20 animate-pulse rounded-full bg-yellow-400/20" />
                     </div>
                   ))}
                 </div>
@@ -755,64 +794,114 @@ export const FunPlanetUnifiedBoard = () => {
 
                   {/* Empty State */}
                   {topUsers.length === 0 && (
-                    <div className="text-center py-8">
-                      <motion.span animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="text-5xl block mb-3">🏆</motion.span>
-                      <p className="text-white/80 text-lg font-semibold">Chưa có ai trong bảng xếp hạng</p>
-                      <p className="text-yellow-300/70 text-sm mt-1">Hãy là người đầu tiên!</p>
+                    <div className="text-center py-8 px-4 rounded-2xl bg-gradient-to-br from-yellow-500/10 to-amber-500/5 border border-yellow-400/20">
+                      <motion.span animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="text-6xl block mb-3 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]">🏆</motion.span>
+                      <p className="text-white text-lg font-bold">Chưa có ai trong bảng xếp hạng</p>
+                      <p className="text-yellow-300/80 text-sm mt-1">✨ Hãy là người đầu tiên! ✨</p>
                     </div>
                   )}
 
-                  {/* Remaining Rankings with ScrollArea */}
+                  {/* Remaining Rankings with enhanced ScrollArea */}
                   {remainingUsers.length > 0 && (
                     <ScrollArea className="flex-1 max-h-[400px] pr-2 ranking-scrollbar">
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         {remainingUsers.map((rankedUser, index) => {
                           const rank = index + 4;
                           const isCurrentUser = user?.id === rankedUser.id;
+                          const rankGradient = rank <= 6 
+                            ? "from-purple-500/20 via-pink-500/15 to-rose-500/10" 
+                            : rank <= 10 
+                            ? "from-blue-500/15 via-cyan-500/10 to-teal-500/10"
+                            : "from-white/10 to-white/5";
 
                           return (
                             <HoverCard key={rankedUser.id} openDelay={200}>
                               <HoverCardTrigger asChild>
                                 <motion.div
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.1 + 0.5 }}
-                                  whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
-                                  className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
+                                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                                  transition={{ delay: index * 0.08 + 0.3, type: "spring", stiffness: 100 }}
+                                  whileHover={{ scale: 1.03, y: -2, boxShadow: "0 8px 30px rgba(255, 215, 0, 0.35)" }}
+                                  className={`flex items-center gap-3 rounded-2xl border p-3 backdrop-blur-md cursor-pointer transition-all duration-300 ${
+                                    isCurrentUser 
+                                      ? "border-yellow-400/70 bg-gradient-to-r from-yellow-500/25 to-amber-500/20 ring-2 ring-yellow-400/50 shadow-[0_0_20px_rgba(255,215,0,0.4)]" 
+                                      : `border-white/20 bg-gradient-to-r ${rankGradient}`
+                                  }`}
                                 >
-                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
-                                    <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
+                                  {/* Rank Badge */}
+                                  <motion.div 
+                                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400/40 to-amber-500/30 border border-yellow-400/50 shadow-[0_0_10px_rgba(255,215,0,0.4)]"
+                                    whileHover={{ rotate: [0, -5, 5, 0] }}
+                                    transition={{ duration: 0.5 }}
+                                  >
+                                    <span className="text-base font-black bg-gradient-to-b from-yellow-200 to-amber-400 bg-clip-text text-transparent">#{rank}</span>
+                                  </motion.div>
+
+                                  {/* Avatar with glow */}
+                                  <div className="relative">
+                                    <motion.div 
+                                      className="absolute -inset-1 bg-gradient-to-r from-purple-400/40 to-pink-400/40 rounded-full blur-sm"
+                                      animate={{ opacity: [0.4, 0.7, 0.4] }}
+                                      transition={{ duration: 2, repeat: Infinity }}
+                                    />
+                                    <Avatar className="relative h-11 w-11 border-2 border-white/50 shadow-lg">
+                                      <AvatarImage src={rankedUser.avatar_url || undefined} />
+                                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
+                                    </Avatar>
                                   </div>
-                                  <Avatar className="h-9 w-9 border-2 border-white/40">
-                                    <AvatarImage src={rankedUser.avatar_url || undefined} />
-                                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-                                  </Avatar>
+
+                                  {/* User Info */}
                                   <div className="flex-1 min-w-0">
-                                    <p className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
-                                      {rankedUser.username}{isCurrentUser && <span className="ml-1 text-xs text-yellow-300/80">(Bạn)</span>}
-                                    </p>
+                                    <div className="flex items-center gap-1.5">
+                                      <p className={`truncate max-w-[130px] text-base font-bold ${isCurrentUser ? "text-yellow-200" : "text-white"}`}>
+                                        {rankedUser.username}
+                                      </p>
+                                      {isCurrentUser && (
+                                        <motion.span 
+                                          className="text-xs px-1.5 py-0.5 rounded-full bg-yellow-400/30 text-yellow-200 font-medium border border-yellow-400/40"
+                                          animate={{ scale: [1, 1.05, 1] }}
+                                          transition={{ duration: 2, repeat: Infinity }}
+                                        >Bạn</motion.span>
+                                      )}
+                                    </div>
                                     <ProgressBar value={rankedUser.wallet_balance || 0} maxValue={maxBalance} />
                                   </div>
-                                  <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
-                                    <Gem className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
-                                    <span className="text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"><AnimatedCounter value={rankedUser.wallet_balance || 0} /></span>
-                                  </div>
+
+                                  {/* CAMLY Balance Badge */}
+                                  <motion.div 
+                                    className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-2 border border-yellow-400/60 shadow-[0_4px_15px_rgba(255,215,0,0.4)]"
+                                    whileHover={{ scale: 1.05 }}
+                                  >
+                                    <Gem className="h-4 w-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,1)]" />
+                                    <span className="text-sm font-black text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+                                      <AnimatedCounter value={rankedUser.wallet_balance || 0} />
+                                    </span>
+                                  </motion.div>
                                 </motion.div>
                               </HoverCardTrigger>
-                              <HoverCardContent className="w-64 bg-gradient-to-br from-purple-500/95 via-pink-500/90 to-yellow-400/95 border-pink-400/50 backdrop-blur-xl" side="top">
-                                <div className="flex items-center gap-3">
-                                  <Avatar className="h-14 w-14 border-2 border-yellow-400/50">
-                                    <AvatarImage src={rankedUser.avatar_url || undefined} />
-                                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-                                  </Avatar>
+                              <HoverCardContent className="w-72 bg-gradient-to-br from-indigo-600/95 via-purple-600/95 to-pink-500/95 border-2 border-pink-400/50 backdrop-blur-xl shadow-2xl" side="top">
+                                <div className="flex items-center gap-4">
+                                  <div className="relative">
+                                    <motion.div 
+                                      className="absolute -inset-2 bg-gradient-to-r from-yellow-400/50 to-pink-400/50 rounded-full blur-md"
+                                      animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                                      transition={{ duration: 2, repeat: Infinity }}
+                                    />
+                                    <Avatar className="relative h-16 w-16 border-3 border-yellow-400/70 shadow-xl">
+                                      <AvatarImage src={rankedUser.avatar_url || undefined} />
+                                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
+                                    </Avatar>
+                                  </div>
                                   <div className="flex-1">
-                                    <p className="font-bold text-white">{rankedUser.username}</p>
-                                    <div className="flex items-center gap-1 mt-1">
-                                      <Gem className="h-4 w-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.7)]" />
-                                      <span className="text-sm font-bold text-white">{(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY</span>
+                                    <p className="font-black text-lg text-white">{rankedUser.username}</p>
+                                    <div className="flex items-center gap-1.5 mt-1.5 px-2 py-1 rounded-lg bg-yellow-500/30 w-fit">
+                                      <Gem className="h-4 w-4 text-yellow-300" />
+                                      <span className="text-sm font-bold text-yellow-100">{(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY</span>
                                     </div>
-                                    <p className="text-xs text-white mt-1">🏆 Xếp hạng: #{rank}</p>
-                                    <p className="text-xs text-white">📊 {Math.round(((rankedUser.wallet_balance || 0) / maxBalance) * 100)}% so với #1</p>
+                                    <div className="flex gap-3 mt-2 text-xs text-white/90">
+                                      <span>🏆 Hạng #{rank}</span>
+                                      <span>📊 {Math.round(((rankedUser.wallet_balance || 0) / maxBalance) * 100)}%</span>
+                                    </div>
                                   </div>
                                 </div>
                               </HoverCardContent>
@@ -825,10 +914,15 @@ export const FunPlanetUnifiedBoard = () => {
                 </>
               )}
 
-              {/* View All Button */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="mt-auto pt-2">
-                <Button onClick={() => navigate("/full-ranking")} variant="outline" className="w-full rounded-xl border-2 border-yellow-400/60 bg-gradient-to-r from-yellow-500/30 to-amber-500/30 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/40 hover:to-amber-500/40 hover:text-white transition-all shadow-[0_0_15px_rgba(255,215,0,0.3)]">
-                  Xem Tất Cả<ChevronRight className="ml-2 h-4 w-4" />
+              {/* View All Button - Enhanced */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="mt-auto pt-3">
+                <Button 
+                  onClick={() => navigate("/full-ranking")} 
+                  className="w-full rounded-2xl border-2 border-yellow-400/70 bg-gradient-to-r from-yellow-500/40 via-amber-500/35 to-yellow-500/40 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/60 hover:to-amber-500/60 hover:text-white transition-all shadow-[0_4px_20px_rgba(255,215,0,0.4)] hover:shadow-[0_6px_30px_rgba(255,215,0,0.6)] py-3"
+                >
+                  <span className="mr-2">🏅</span>
+                  Xem Tất Cả Bảng Xếp Hạng
+                  <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </motion.div>
             </div>
