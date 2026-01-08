@@ -195,30 +195,13 @@ const AppContent = () => {
   const { 
     showRewardPopup, 
     claimedAmount, 
-    closeRewardPopup, 
-    autoClaimOnLogin 
+    closeRewardPopup
   } = useDailyLoginReward();
   const {
     showPopup: showBirthYearPopup,
     closePopup: closeBirthYearPopup,
     onBirthYearSaved,
   } = useBirthYearPopup();
-  
-  const hasAutoClaimedRef = useRef(false);
-
-  // Auto-claim daily login reward when user logs in
-  useEffect(() => {
-    if (user && !hasAutoClaimedRef.current) {
-      hasAutoClaimedRef.current = true;
-      const timer = setTimeout(() => {
-        autoClaimOnLogin();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-    if (!user) {
-      hasAutoClaimedRef.current = false;
-    }
-  }, [user, autoClaimOnLogin]);
 
   return (
     <>
