@@ -548,105 +548,44 @@ export const FunPlanetUnifiedBoard = () => {
           {/* =============== MAIN GRID LAYOUT =============== */}
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-0">
             {/* =============== LEFT COLUMN: HONOR + LEGENDS =============== */}
-            <div className="p-4 flex flex-col relative">
-              {/* Decorative elements */}
-              <motion.div 
-                className="absolute top-3 left-6 text-lg"
-                animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >🌍</motion.div>
-              <motion.div 
-                className="absolute top-4 right-6 text-sm"
-                animate={{ opacity: [0.5, 1, 0.5], y: [0, -3, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-              >✨</motion.div>
-
-              {/* Honor Board Header - Enhanced */}
-              <div className="mb-4 flex items-center justify-center gap-3">
-                <motion.div
-                  className="relative"
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  <span className="text-2xl drop-shadow-[0_0_12px_rgba(255,215,0,0.9)]">🏆</span>
-                  <motion.div 
-                    className="absolute -inset-1 bg-yellow-400/20 rounded-full blur-md"
-                    animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </motion.div>
-                <div className="text-center">
-                  <h3 className="bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-200 bg-clip-text text-2xl sm:text-3xl font-black text-transparent" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite", textShadow: "0 0 30px rgba(255,215,0,0.5)" }}>
-                    HONOR BOARD
-                  </h3>
-                  <p className="text-xs text-yellow-300/80 font-medium">Vinh danh Fun Planet</p>
-                </div>
-                <motion.div
-                  className="relative"
-                  animate={{ scale: [1, 1.15, 1] }}
-                  transition={{ duration: 2.5, repeat: Infinity }}
-                >
-                  <span className="text-xl">🌟</span>
-                  <motion.div 
-                    className="absolute -inset-1 bg-amber-400/20 rounded-full blur-sm"
-                    animate={{ opacity: [0.3, 0.6, 0.3] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  />
-                </motion.div>
+            <div className="p-4 flex flex-col">
+              {/* Honor Board Header */}
+              <div className="mb-2 flex items-center justify-center gap-2">
+                <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>🌍</motion.span>
+                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>HONOR BOARD</h3>
+                <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>🏆</motion.span>
               </div>
 
-              {/* Stats Grid - Enhanced Cards */}
-              <div className="grid grid-cols-2 gap-2 mb-4">
+              {/* Stats Bars */}
+              <div className="flex flex-col gap-1.5">
                 {statItems.map((item, index) => {
+                  const progressPercent = Math.min((item.value / maxStatValue) * 100, 100);
                   const isCamly = item.label === "CAMLY";
                   
                   return (
                     <motion.div
                       key={item.label}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1, type: "spring" }}
-                      whileHover={{ scale: 1.05, y: -3 }}
-                      className={`relative overflow-hidden rounded-2xl p-3 cursor-pointer transition-all duration-300 ${
-                        isCamly 
-                          ? "col-span-2 bg-gradient-to-r from-rose-500/30 via-pink-500/25 to-rose-500/30 border-2 border-rose-400/50"
-                          : "bg-gradient-to-br from-white/15 to-white/5 border border-white/20"
-                      }`}
-                      style={{ 
-                        boxShadow: isCamly 
-                          ? "0 4px 20px rgba(244,63,94,0.4), inset 0 1px 0 rgba(255,255,255,0.1)" 
-                          : `0 4px 15px ${item.accentColor}30, inset 0 1px 0 rgba(255,255,255,0.1)`
-                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02, y: -2, boxShadow: `0 0 25px ${item.accentColor}50` }}
+                      className="relative flex items-center gap-2 rounded-xl p-1.5 px-2.5 overflow-hidden cursor-pointer transition-all duration-300"
+                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,215,0,0.05) 100%)", borderLeft: `4px solid ${item.accentColor}`, ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
                     >
-                      {/* Glow effect */}
-                      <motion.div 
-                        className="absolute -top-4 -right-4 w-16 h-16 rounded-full blur-xl"
-                        style={{ background: item.accentColor }}
-                        animate={{ opacity: [0.2, 0.4, 0.2], scale: [1, 1.2, 1] }}
-                        transition={{ duration: 3, repeat: Infinity, delay: index * 0.2 }}
-                      />
-
-                      <div className="relative z-10 flex items-center gap-3">
-                        {/* Icon Container */}
-                        <motion.div 
-                          className={`rounded-xl ${item.bgColor} p-2.5 shadow-lg`}
-                          style={{ boxShadow: `0 0 20px ${item.accentColor}60` }}
-                          animate={{ rotate: [0, 5, -5, 0] }}
-                          transition={{ duration: 4, repeat: Infinity, delay: index * 0.3 }}
-                        >
-                          <item.icon className="h-5 w-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,1)]" />
-                        </motion.div>
-
-                        {/* Stats Content */}
-                        <div className="flex-1">
-                          <p className="text-xs font-semibold text-yellow-200/90 uppercase tracking-wide">{item.label}</p>
-                          <div className="flex items-baseline gap-1">
-                            {isCamly && <Gem className="h-4 w-4 text-rose-300 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
-                            <span className="text-xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 8px #fff' }}>
-                              {statsLoading ? <span className="animate-pulse">...</span> : <AnimatedCounter value={item.value} />}
-                            </span>
-                            <span className="text-xs text-white/70 font-medium">{item.suffix}</span>
-                          </div>
+                      <div className="absolute inset-0 rounded-xl overflow-hidden">
+                        <motion.div className="h-full" style={{ background: `linear-gradient(90deg, ${item.accentColor}50 0%, ${item.accentColor}20 50%, transparent 100%)` }} initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1.5, delay: index * 0.15, ease: "easeOut" }} />
+                      </div>
+                      <motion.div className={`relative z-10 rounded-lg ${item.bgColor} p-2 flex-shrink-0`} style={{ boxShadow: `0 0 20px ${item.accentColor}80` }} animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity, delay: index * 0.2, ease: "easeInOut" }}>
+                        <item.icon className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
+                      </motion.div>
+                      <div className="relative z-10 flex-1 flex items-center justify-between min-w-0">
+                        <span className="text-base font-bold text-yellow-200">{item.label}</span>
+                        <div className="flex items-center gap-1">
+                          {isCamly && <Gem className="h-3.5 w-3.5 text-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
+                          <span className="relative z-20 text-lg font-black text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 8px #fff, 1px 1px 2px #000' }}>
+                            {statsLoading ? <span className="animate-pulse">...</span> : <AnimatedCounter value={item.value} />}
+                          </span>
+                          <span className="text-sm text-white font-medium drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]">{item.suffix}</span>
                         </div>
                       </div>
                     </motion.div>
@@ -654,146 +593,61 @@ export const FunPlanetUnifiedBoard = () => {
                 })}
               </div>
 
-              {/* Animated Golden Divider */}
-              <div className="my-3 relative">
-                <motion.div 
-                  className="h-0.5 rounded-full"
-                  style={{ background: "linear-gradient(90deg, transparent 0%, #FFD700 20%, #FFFACD 50%, #FFD700 80%, transparent 100%)" }}
-                  animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.div 
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                  animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  <span className="text-sm">💎</span>
-                </motion.div>
+              {/* Golden Horizontal Divider */}
+              <div className="my-4">
+                <div className="h-1 rounded-full" style={{ background: "linear-gradient(90deg, transparent 0%, #FFD700 15%, #FFFACD 30%, #FFD700 50%, #FFFACD 70%, #FFD700 85%, transparent 100%)", boxShadow: "0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3)" }} />
               </div>
 
-              {/* Legends Board - Enhanced */}
+              {/* Legends Board */}
               <div className="flex-1 flex flex-col min-h-0">
                 {/* Legends Header */}
                 <div className="mb-3 flex items-center justify-center gap-2">
-                  <motion.span 
-                    className="text-xl"
-                    animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >👑</motion.span>
-                  <h3 className="bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-200 bg-clip-text text-xl font-black text-transparent" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>
-                    FUN PLANET LEGENDS
-                  </h3>
-                  <motion.span 
-                    className="text-xl"
-                    animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }}
-                    transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-                  >👑</motion.span>
+                  <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>👑</motion.span>
+                  <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>FUN PLANET LEGENDS</h3>
+                  <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>👑</motion.span>
                 </div>
 
-                {/* Enhanced Tabs */}
+                {/* Tabs */}
                 <div className="flex gap-2 mb-3">
-                  <motion.button 
-                    onClick={() => setActiveTab("donors")} 
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl font-bold transition-all duration-300 ${
-                      activeTab === "donors" 
-                        ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50 border-2 border-rose-300/50" 
-                        : "bg-white/10 text-yellow-300 hover:bg-white/20 border border-white/20"
-                    }`}
-                  >
-                    <Heart className={`h-4 w-4 ${activeTab === "donors" ? "text-white" : "text-rose-400"}`} />
-                    <span className="text-sm">Donate & Sponsor</span>
-                  </motion.button>
-                  <motion.button 
-                    onClick={() => setActiveTab("creators")} 
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl font-bold transition-all duration-300 ${
-                      activeTab === "creators" 
-                        ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50 border-2 border-teal-300/50" 
-                        : "bg-white/10 text-yellow-300 hover:bg-white/20 border border-white/20"
-                    }`}
-                  >
-                    <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "text-white" : "text-teal-400"}`} />
-                    <span className="text-sm">Top Creators</span>
-                  </motion.button>
+                  <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50" : "bg-white/10 !text-white hover:bg-white/20"}`}>
+                    <Gem className={`h-4 w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
+                    <span className={`text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Donate & Sponsor</span>
+                  </button>
+                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/10 !text-white hover:bg-white/20"}`}>
+                    <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
+                    <span className={`text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
+                  </button>
                 </div>
 
-                {/* Enhanced Content */}
-                <div className="overflow-y-auto overflow-x-hidden space-y-2 h-[200px] pr-1">
+                {/* Content */}
+                <div className="overflow-y-auto overflow-x-hidden space-y-1.5 h-[200px]">
                   <AnimatePresence mode="wait">
                     {legendsLoading ? (
-                      <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center h-32 gap-2">
-                        <motion.div 
-                          className="w-8 h-8 border-3 border-yellow-400/30 border-t-yellow-400 rounded-full"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        />
-                        <span className="text-yellow-300/70 text-sm">Đang tải...</span>
+                      <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center h-32">
+                        <div className="animate-pulse text-white/70">Loading...</div>
                       </motion.div>
                     ) : activeTab === "creators" ? (
                       <motion.div key="creators" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-2">
                         {creators.length === 0 ? (
-                          <div className="text-center py-6 px-4 rounded-2xl bg-gradient-to-br from-teal-500/10 to-cyan-500/5 border border-teal-400/20">
-                            <motion.span animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="text-4xl block mb-2">🎮</motion.span>
-                            <p className="text-white font-medium">Chưa có creator nào</p>
-                            <p className="text-teal-300/70 text-sm">✨ Hãy là người đầu tiên! ✨</p>
-                          </div>
+                          <div className="text-center text-white/60 py-4">Chưa có creator nào. Hãy là người đầu tiên!</div>
                         ) : (
                           creators.map((creator, index) => {
                             const badge = getCreatorBadge(creator.games_count);
                             const rank = index + 1;
                             return (
-                              <motion.div 
-                                key={creator.id} 
-                                initial={{ opacity: 0, y: 10 }} 
-                                animate={{ opacity: 1, y: 0 }} 
-                                transition={{ delay: index * 0.08 }}
-                                whileHover={{ scale: 1.02, y: -2, boxShadow: "0 8px 25px rgba(20, 184, 166, 0.3)" }}
-                                className={`flex items-center gap-3 p-2.5 rounded-2xl backdrop-blur-sm cursor-pointer transition-all duration-300 ${
-                                  rank === 1 
-                                    ? "bg-gradient-to-r from-yellow-500/25 to-amber-500/20 border border-yellow-400/50" 
-                                    : rank === 2 
-                                    ? "bg-gradient-to-r from-slate-400/20 to-slate-300/15 border border-slate-300/40"
-                                    : rank === 3
-                                    ? "bg-gradient-to-r from-orange-500/20 to-amber-500/15 border border-orange-400/40"
-                                    : "bg-white/10 border border-white/15 hover:bg-white/15"
-                                }`}
-                              >
-                                <motion.span 
-                                  className="text-xl w-8 text-center font-bold drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"
-                                  animate={rank <= 3 ? { scale: [1, 1.1, 1] } : {}}
-                                  transition={{ duration: 2, repeat: Infinity }}
-                                >{getRankIcon(rank)}</motion.span>
-                                <div className="relative">
-                                  <Avatar className="h-10 w-10 border-2 border-teal-400/50 shadow-lg">
-                                    <AvatarImage src={creator.avatar_url || undefined} />
-                                    <AvatarFallback className="bg-gradient-to-br from-teal-500 to-cyan-500 text-white font-bold">{creator.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-                                  </Avatar>
-                                  {rank === 1 && (
-                                    <motion.div 
-                                      className="absolute -top-1 -right-1"
-                                      animate={{ rotate: [0, 10, -10, 0] }}
-                                      transition={{ duration: 2, repeat: Infinity }}
-                                    >
-                                      <Crown className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,1)]" />
-                                    </motion.div>
-                                  )}
-                                </div>
+                              <motion.div key={creator.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
+                                <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{getRankIcon(rank)}</span>
+                                <Avatar className="h-10 w-10 border-2 border-white/30">
+                                  <AvatarImage src={creator.avatar_url || undefined} />
+                                  <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500"><User className="h-5 w-5 text-white" /></AvatarFallback>
+                                </Avatar>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-bold truncate text-white text-sm">{creator.username}</div>
-                                  <div className={`text-xs font-medium ${badge.color}`}>{badge.label}</div>
+                                  <div className="font-semibold truncate !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{creator.username}</div>
+                                  <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                                 </div>
-                                <div className="text-right flex flex-col items-end gap-0.5">
-                                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-500/30 border border-teal-400/40">
-                                    <Gamepad2 className="h-3 w-3 text-teal-300" />
-                                    <span className="text-xs font-bold text-white">{creator.games_count}</span>
-                                  </div>
-                                  <div className="flex items-center gap-1 text-xs text-white/70">
-                                    <Play className="h-2.5 w-2.5" />
-                                    <span>{creator.total_plays}</span>
-                                  </div>
+                                <div className="text-right">
+                                  <div className="flex items-center gap-1 text-sm !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"><Gamepad2 className="h-3 w-3 text-teal-400" /><span className="!text-white">{creator.games_count}</span></div>
+                                  <div className="flex items-center gap-1 text-xs !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"><Play className="h-3 w-3 !text-white" /><span className="!text-white">{creator.total_plays}</span></div>
                                 </div>
                               </motion.div>
                             );
@@ -803,70 +657,24 @@ export const FunPlanetUnifiedBoard = () => {
                     ) : (
                       <motion.div key="donors" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-2">
                         {donors.length === 0 ? (
-                          <div className="text-center py-6 px-4 rounded-2xl bg-gradient-to-br from-rose-500/10 to-pink-500/5 border border-rose-400/20">
-                            <motion.span animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 2, repeat: Infinity }} className="text-4xl block mb-2">💖</motion.span>
-                            <p className="text-white font-medium">Chưa có ai ủng hộ</p>
-                            <p className="text-rose-300/70 text-sm">✨ Hãy là người đầu tiên! ✨</p>
-                          </div>
+                          <div className="text-center py-4" style={{ color: 'white' }}><Heart className="h-8 w-8 mx-auto mb-2 text-rose-400" /><p>Chưa có ai ủng hộ. Hãy là người đầu tiên!</p></div>
                         ) : (
                           donors.map((donor, index) => {
                             const badge = getDonorBadge(donor.total_donated);
                             const rank = index + 1;
                             return (
-                              <motion.div 
-                                key={donor.id} 
-                                initial={{ opacity: 0, y: 10 }} 
-                                animate={{ opacity: 1, y: 0 }} 
-                                transition={{ delay: index * 0.08 }}
-                                whileHover={{ scale: 1.02, y: -2, boxShadow: "0 8px 25px rgba(244, 63, 94, 0.3)" }}
-                                className={`flex items-center gap-3 p-2.5 rounded-2xl backdrop-blur-sm cursor-pointer transition-all duration-300 ${
-                                  rank === 1 
-                                    ? "bg-gradient-to-r from-yellow-500/25 to-amber-500/20 border border-yellow-400/50" 
-                                    : rank === 2 
-                                    ? "bg-gradient-to-r from-slate-400/20 to-slate-300/15 border border-slate-300/40"
-                                    : rank === 3
-                                    ? "bg-gradient-to-r from-orange-500/20 to-amber-500/15 border border-orange-400/40"
-                                    : "bg-white/10 border border-white/15 hover:bg-white/15"
-                                }`}
-                              >
-                                <motion.span 
-                                  className="text-xl w-8 text-center font-bold drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"
-                                  animate={rank <= 3 ? { scale: [1, 1.1, 1] } : {}}
-                                  transition={{ duration: 2, repeat: Infinity }}
-                                >{getRankIcon(rank)}</motion.span>
-                                <div className="relative">
-                                  <Avatar className="h-10 w-10 border-2 border-rose-400/50 shadow-lg">
-                                    {donor.is_anonymous ? (
-                                      <AvatarFallback className="bg-gradient-to-br from-gray-600 to-gray-800">
-                                        <span className="text-lg">🎭</span>
-                                      </AvatarFallback>
-                                    ) : (
-                                      <>
-                                        <AvatarImage src={donor.avatar_url || undefined} />
-                                        <AvatarFallback className="bg-gradient-to-br from-rose-500 to-pink-500 text-white font-bold">{donor.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-                                      </>
-                                    )}
-                                  </Avatar>
-                                  {rank === 1 && (
-                                    <motion.div 
-                                      className="absolute -top-1 -right-1"
-                                      animate={{ rotate: [0, 10, -10, 0] }}
-                                      transition={{ duration: 2, repeat: Infinity }}
-                                    >
-                                      <Crown className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,1)]" />
-                                    </motion.div>
-                                  )}
-                                </div>
+                              <motion.div key={donor.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
+                                <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{getRankIcon(rank)}</span>
+                                <Avatar className="h-10 w-10 border-2 border-white/30">
+                                  {donor.is_anonymous ? <AvatarFallback className="bg-gradient-to-br from-gray-500 to-gray-700"><span className="text-lg">🎭</span></AvatarFallback> : <><AvatarImage src={donor.avatar_url || undefined} /><AvatarFallback className="bg-gradient-to-br from-rose-500 to-pink-500"><User className="h-5 w-5 text-white" /></AvatarFallback></>}
+                                </Avatar>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-bold truncate text-white text-sm">{donor.username}</div>
-                                  <div className={`text-xs font-medium ${badge.color}`}>{badge.label}</div>
+                                  <div className="font-semibold !text-white truncate drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{donor.username}</div>
+                                  <div className={`text-xs ${badge.color}`}>{badge.label}</div>
                                 </div>
                                 <div className="text-right">
-                                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/30 border border-rose-400/40">
-                                    <Gem className="h-3 w-3 text-rose-300" />
-                                    <span className="text-xs font-bold text-white">{donor.total_donated.toLocaleString()}</span>
-                                  </div>
-                                  <div className="text-[10px] text-white/60 mt-0.5">CAMLY</div>
+                                  <div className="flex items-center gap-1 text-sm font-bold text-rose-300 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"><Gem className="h-3 w-3" /><span className="!text-white">{donor.total_donated.toLocaleString()}</span></div>
+                                  <div className="text-[10px] !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">CAMLY</div>
                                 </div>
                               </motion.div>
                             );
@@ -877,22 +685,12 @@ export const FunPlanetUnifiedBoard = () => {
                   </AnimatePresence>
                 </div>
 
-                {/* Enhanced Donate Button */}
-                <motion.div 
-                  className="mt-auto pt-3"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <Button 
-                    onClick={() => setShowDonateModal(true)} 
-                    className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 text-white font-bold py-3 rounded-2xl shadow-lg transition-all border-2 border-rose-300/50 hover:shadow-[0_6px_30px_rgba(244,63,94,0.5)]"
-                    style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}
-                  >
-                    <Heart className="h-5 w-5 mr-2" />
-                    💖 Donate CAMLY
+                {/* Donate Button */}
+                <div className="mt-auto pt-2">
+                  <Button onClick={() => setShowDonateModal(true)} className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold py-2 rounded-xl shadow-lg shadow-rose-500/30 transition-all hover:shadow-rose-500/50">
+                    <Heart className="h-4 w-4 mr-2" />Donate CAMLY
                   </Button>
-                </motion.div>
+                </div>
               </div>
             </div>
 
@@ -925,63 +723,24 @@ export const FunPlanetUnifiedBoard = () => {
             </div>
 
             {/* =============== RIGHT COLUMN: TOP RANKING =============== */}
-            <div className="p-4 flex flex-col relative">
-              {/* Decorative sparkles */}
-              <motion.div 
-                className="absolute top-2 left-4 text-xl"
-                animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >✨</motion.div>
-              <motion.div 
-                className="absolute top-6 right-8 text-lg"
-                animate={{ scale: [1, 1.2, 1], rotate: [0, 15, -15, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-              >🌟</motion.div>
-
-              {/* Header with enhanced styling */}
+            <div className="p-4 flex flex-col">
+              {/* Header */}
               <div className="mb-4 flex items-center justify-center gap-3 relative">
-                <motion.div 
-                  animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} 
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="relative"
-                >
-                  <span className="text-3xl drop-shadow-[0_0_15px_rgba(255,215,0,0.9)]">🏆</span>
-                  <motion.div 
-                    className="absolute -inset-2 bg-yellow-400/20 rounded-full blur-md"
-                    animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </motion.div>
-                <div className="text-center">
-                  <h3 className="bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-200 bg-clip-text text-2xl sm:text-3xl font-black text-transparent drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite", textShadow: "0 0 30px rgba(255,215,0,0.5)" }}>
-                    TOP RANKING
-                  </h3>
-                  <p className="text-xs text-yellow-300/80 font-medium mt-0.5">Bảng xếp hạng CAMLY</p>
-                </div>
-                <motion.div 
-                  animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} 
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                  className="relative"
-                >
-                  <span className="text-2xl">⭐</span>
-                  <motion.div 
-                    className="absolute -inset-1 bg-amber-400/30 rounded-full blur-sm"
-                    animate={{ opacity: [0.4, 0.8, 0.4] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  />
-                </motion.div>
-                <button onClick={() => fetchTopUsers(true)} disabled={refreshing} className="absolute right-0 p-2.5 rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20 hover:from-yellow-500/50 hover:to-amber-500/40 transition-all border border-yellow-400/40 shadow-[0_0_10px_rgba(255,215,0,0.3)] disabled:opacity-50" title="Refresh ranking">
-                  <RefreshCw className={`h-4 w-4 text-yellow-300 ${refreshing ? 'animate-spin' : ''}`} />
+                <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }} className="text-2xl">🏆</motion.span>
+                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]">TOP RANKING</h3>
+                <motion.span animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }} className="text-2xl">⭐</motion.span>
+                <button onClick={() => fetchTopUsers(true)} disabled={refreshing} className="absolute right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-50" title="Refresh ranking">
+                  <RefreshCw className={`h-4 w-4 text-yellow-400 ${refreshing ? 'animate-spin' : ''}`} />
                 </button>
               </div>
 
               {rankingLoading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-3 rounded-2xl border border-yellow-400/20 bg-gradient-to-r from-yellow-500/10 to-amber-500/5 p-3 backdrop-blur-sm">
-                      <div className="h-10 w-10 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/30 to-amber-400/20" />
-                      <div className="flex-1"><div className="h-4 w-24 animate-pulse rounded-full bg-yellow-400/20" /></div>
-                      <div className="h-6 w-20 animate-pulse rounded-full bg-yellow-400/20" />
+                    <div key={index} className="flex items-center gap-3 rounded-xl border border-white/30 bg-white/10 p-3">
+                      <div className="h-8 w-8 animate-pulse rounded-full bg-white/20" />
+                      <div className="flex-1"><div className="h-4 w-24 animate-pulse rounded bg-white/20" /></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-white/20" />
                     </div>
                   ))}
                 </div>
@@ -996,114 +755,64 @@ export const FunPlanetUnifiedBoard = () => {
 
                   {/* Empty State */}
                   {topUsers.length === 0 && (
-                    <div className="text-center py-8 px-4 rounded-2xl bg-gradient-to-br from-yellow-500/10 to-amber-500/5 border border-yellow-400/20">
-                      <motion.span animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="text-6xl block mb-3 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]">🏆</motion.span>
-                      <p className="text-white text-lg font-bold">Chưa có ai trong bảng xếp hạng</p>
-                      <p className="text-yellow-300/80 text-sm mt-1">✨ Hãy là người đầu tiên! ✨</p>
+                    <div className="text-center py-8">
+                      <motion.span animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="text-5xl block mb-3">🏆</motion.span>
+                      <p className="text-white/80 text-lg font-semibold">Chưa có ai trong bảng xếp hạng</p>
+                      <p className="text-yellow-300/70 text-sm mt-1">Hãy là người đầu tiên!</p>
                     </div>
                   )}
 
-                  {/* Remaining Rankings with enhanced ScrollArea */}
+                  {/* Remaining Rankings with ScrollArea */}
                   {remainingUsers.length > 0 && (
                     <ScrollArea className="flex-1 max-h-[400px] pr-2 ranking-scrollbar">
-                      <div className="space-y-2.5">
+                      <div className="space-y-2">
                         {remainingUsers.map((rankedUser, index) => {
                           const rank = index + 4;
                           const isCurrentUser = user?.id === rankedUser.id;
-                          const rankGradient = rank <= 6 
-                            ? "from-purple-500/20 via-pink-500/15 to-rose-500/10" 
-                            : rank <= 10 
-                            ? "from-blue-500/15 via-cyan-500/10 to-teal-500/10"
-                            : "from-white/10 to-white/5";
 
                           return (
                             <HoverCard key={rankedUser.id} openDelay={200}>
                               <HoverCardTrigger asChild>
                                 <motion.div
-                                  initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                                  transition={{ delay: index * 0.08 + 0.3, type: "spring", stiffness: 100 }}
-                                  whileHover={{ scale: 1.03, y: -2, boxShadow: "0 8px 30px rgba(255, 215, 0, 0.35)" }}
-                                  className={`flex items-center gap-3 rounded-2xl border p-3 backdrop-blur-md cursor-pointer transition-all duration-300 ${
-                                    isCurrentUser 
-                                      ? "border-yellow-400/70 bg-gradient-to-r from-yellow-500/25 to-amber-500/20 ring-2 ring-yellow-400/50 shadow-[0_0_20px_rgba(255,215,0,0.4)]" 
-                                      : `border-white/20 bg-gradient-to-r ${rankGradient}`
-                                  }`}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: index * 0.1 + 0.5 }}
+                                  whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
+                                  className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
                                 >
-                                  {/* Rank Badge */}
-                                  <motion.div 
-                                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400/40 to-amber-500/30 border border-yellow-400/50 shadow-[0_0_10px_rgba(255,215,0,0.4)]"
-                                    whileHover={{ rotate: [0, -5, 5, 0] }}
-                                    transition={{ duration: 0.5 }}
-                                  >
-                                    <span className="text-base font-black bg-gradient-to-b from-yellow-200 to-amber-400 bg-clip-text text-transparent">#{rank}</span>
-                                  </motion.div>
-
-                                  {/* Avatar with glow */}
-                                  <div className="relative">
-                                    <motion.div 
-                                      className="absolute -inset-1 bg-gradient-to-r from-purple-400/40 to-pink-400/40 rounded-full blur-sm"
-                                      animate={{ opacity: [0.4, 0.7, 0.4] }}
-                                      transition={{ duration: 2, repeat: Infinity }}
-                                    />
-                                    <Avatar className="relative h-11 w-11 border-2 border-white/50 shadow-lg">
-                                      <AvatarImage src={rankedUser.avatar_url || undefined} />
-                                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-                                    </Avatar>
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
+                                    <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
                                   </div>
-
-                                  {/* User Info */}
+                                  <Avatar className="h-9 w-9 border-2 border-white/40">
+                                    <AvatarImage src={rankedUser.avatar_url || undefined} />
+                                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
+                                  </Avatar>
                                   <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-1.5">
-                                      <p className={`truncate max-w-[130px] text-base font-bold ${isCurrentUser ? "text-yellow-200" : "text-white"}`}>
-                                        {rankedUser.username}
-                                      </p>
-                                      {isCurrentUser && (
-                                        <motion.span 
-                                          className="text-xs px-1.5 py-0.5 rounded-full bg-yellow-400/30 text-yellow-200 font-medium border border-yellow-400/40"
-                                          animate={{ scale: [1, 1.05, 1] }}
-                                          transition={{ duration: 2, repeat: Infinity }}
-                                        >Bạn</motion.span>
-                                      )}
-                                    </div>
+                                    <p className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+                                      {rankedUser.username}{isCurrentUser && <span className="ml-1 text-xs text-yellow-300/80">(Bạn)</span>}
+                                    </p>
                                     <ProgressBar value={rankedUser.wallet_balance || 0} maxValue={maxBalance} />
                                   </div>
-
-                                  {/* CAMLY Balance Badge */}
-                                  <motion.div 
-                                    className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-2 border border-yellow-400/60 shadow-[0_4px_15px_rgba(255,215,0,0.4)]"
-                                    whileHover={{ scale: 1.05 }}
-                                  >
-                                    <Gem className="h-4 w-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,1)]" />
-                                    <span className="text-sm font-black text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
-                                      <AnimatedCounter value={rankedUser.wallet_balance || 0} />
-                                    </span>
-                                  </motion.div>
+                                  <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
+                                    <Gem className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
+                                    <span className="text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"><AnimatedCounter value={rankedUser.wallet_balance || 0} /></span>
+                                  </div>
                                 </motion.div>
                               </HoverCardTrigger>
-                              <HoverCardContent className="w-72 bg-gradient-to-br from-indigo-600/95 via-purple-600/95 to-pink-500/95 border-2 border-pink-400/50 backdrop-blur-xl shadow-2xl" side="top">
-                                <div className="flex items-center gap-4">
-                                  <div className="relative">
-                                    <motion.div 
-                                      className="absolute -inset-2 bg-gradient-to-r from-yellow-400/50 to-pink-400/50 rounded-full blur-md"
-                                      animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-                                      transition={{ duration: 2, repeat: Infinity }}
-                                    />
-                                    <Avatar className="relative h-16 w-16 border-3 border-yellow-400/70 shadow-xl">
-                                      <AvatarImage src={rankedUser.avatar_url || undefined} />
-                                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-                                    </Avatar>
-                                  </div>
+                              <HoverCardContent className="w-64 bg-gradient-to-br from-purple-500/95 via-pink-500/90 to-yellow-400/95 border-pink-400/50 backdrop-blur-xl" side="top">
+                                <div className="flex items-center gap-3">
+                                  <Avatar className="h-14 w-14 border-2 border-yellow-400/50">
+                                    <AvatarImage src={rankedUser.avatar_url || undefined} />
+                                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
+                                  </Avatar>
                                   <div className="flex-1">
-                                    <p className="font-black text-lg text-white">{rankedUser.username}</p>
-                                    <div className="flex items-center gap-1.5 mt-1.5 px-2 py-1 rounded-lg bg-yellow-500/30 w-fit">
-                                      <Gem className="h-4 w-4 text-yellow-300" />
-                                      <span className="text-sm font-bold text-yellow-100">{(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY</span>
+                                    <p className="font-bold text-white">{rankedUser.username}</p>
+                                    <div className="flex items-center gap-1 mt-1">
+                                      <Gem className="h-4 w-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.7)]" />
+                                      <span className="text-sm font-bold text-white">{(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY</span>
                                     </div>
-                                    <div className="flex gap-3 mt-2 text-xs text-white/90">
-                                      <span>🏆 Hạng #{rank}</span>
-                                      <span>📊 {Math.round(((rankedUser.wallet_balance || 0) / maxBalance) * 100)}%</span>
-                                    </div>
+                                    <p className="text-xs text-white mt-1">🏆 Xếp hạng: #{rank}</p>
+                                    <p className="text-xs text-white">📊 {Math.round(((rankedUser.wallet_balance || 0) / maxBalance) * 100)}% so với #1</p>
                                   </div>
                                 </div>
                               </HoverCardContent>
@@ -1116,15 +825,10 @@ export const FunPlanetUnifiedBoard = () => {
                 </>
               )}
 
-              {/* View All Button - Enhanced */}
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="mt-auto pt-3">
-                <Button 
-                  onClick={() => navigate("/full-ranking")} 
-                  className="w-full rounded-2xl border-2 border-yellow-400/70 bg-gradient-to-r from-yellow-500/40 via-amber-500/35 to-yellow-500/40 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/60 hover:to-amber-500/60 hover:text-white transition-all shadow-[0_4px_20px_rgba(255,215,0,0.4)] hover:shadow-[0_6px_30px_rgba(255,215,0,0.6)] py-3"
-                >
-                  <span className="mr-2">🏅</span>
-                  Xem Tất Cả Bảng Xếp Hạng
-                  <ChevronRight className="ml-2 h-5 w-5" />
+              {/* View All Button */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="mt-auto pt-2">
+                <Button onClick={() => navigate("/full-ranking")} variant="outline" className="w-full rounded-xl border-2 border-yellow-400/60 bg-gradient-to-r from-yellow-500/30 to-amber-500/30 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/40 hover:to-amber-500/40 hover:text-white transition-all shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+                  Xem Tất Cả<ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </motion.div>
             </div>
