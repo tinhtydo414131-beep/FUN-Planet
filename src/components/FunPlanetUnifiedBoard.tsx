@@ -371,13 +371,29 @@ export const FunPlanetUnifiedBoard = () => {
 
       if (donationsData) {
         const donorMap = new Map<string, Donor>();
+
         for (const donation of donationsData) {
           const profile = donation.profiles as any;
-          if (!profile) continue;
-          const existing = donorMap.get(profile.id);
-          if (existing) existing.total_donated += donation.amount;
-          else donorMap.set(profile.id, { id: profile.id, username: donation.is_anonymous ? "Anonymous" : profile.username, avatar_url: donation.is_anonymous ? null : profile.avatar_url, total_donated: donation.amount, is_anonymous: donation.is_anonymous });
+          // Some profiles may not be publicly readable due to RLS.
+          // In that case, still show the donor using user_id with a safe fallback.
+          const donorId = profile?.id ?? donation.user_id;
+          if (!donorId) continue;
+
+          const existing = donorMap.get(donorId);
+          if (existing) {
+            existing.total_donated += donation.amount;
+          } else {
+            const isAnonymous = !!donation.is_anonymous;
+            donorMap.set(donorId, {
+              id: donorId,
+              username: isAnonymous ? "Anonymous" : (profile?.username ?? "Unknown"),
+              avatar_url: isAnonymous ? null : (profile?.avatar_url ?? null),
+              total_donated: donation.amount,
+              is_anonymous: isAnonymous,
+            });
+          }
         }
+
         setDonors(Array.from(donorMap.values()).sort((a, b) => b.total_donated - a.total_donated).slice(0, 5));
       }
     } catch (error) {
