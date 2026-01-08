@@ -407,7 +407,7 @@ export const FunPlanetUnifiedBoard = () => {
   const fetchTopUsers = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
-      const { data } = await supabase.from("profiles").select("id, username, avatar_url, wallet_balance, created_at").order("wallet_balance", { ascending: false, nullsFirst: false }).limit(10);
+      const { data } = await supabase.from("profiles").select("id, username, avatar_url, wallet_balance, created_at").order("wallet_balance", { ascending: false, nullsFirst: false }).limit(15);
       setTopUsers(data || []);
     } catch (error) {
       console.error("Error fetching top users:", error);
@@ -764,7 +764,7 @@ export const FunPlanetUnifiedBoard = () => {
 
                   {/* Remaining Rankings with ScrollArea */}
                   {remainingUsers.length > 0 && (
-                    <ScrollArea className="h-[200px] pr-2 ranking-scrollbar">
+                    <ScrollArea className="h-[300px] pr-2 ranking-scrollbar">
                       <div className="space-y-2">
                         {remainingUsers.map((rankedUser, index) => {
                           const rank = index + 4;
