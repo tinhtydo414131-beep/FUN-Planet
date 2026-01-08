@@ -364,7 +364,7 @@ export const FunPlanetUnifiedBoard = () => {
           }
         }
 
-        setCreators(Array.from(creatorMap.values()).sort((a, b) => b.games_count - a.games_count || b.total_plays - a.total_plays).slice(0, 5));
+        setCreators(Array.from(creatorMap.values()).sort((a, b) => b.games_count - a.games_count || b.total_plays - a.total_plays).slice(0, 3));
       }
 
       const { data: donationsData } = await supabase.from("platform_donations").select("user_id, amount, is_anonymous, profiles!platform_donations_user_id_fkey(id, username, avatar_url)").order("created_at", { ascending: false });
@@ -394,7 +394,7 @@ export const FunPlanetUnifiedBoard = () => {
           }
         }
 
-        setDonors(Array.from(donorMap.values()).sort((a, b) => b.total_donated - a.total_donated).slice(0, 5));
+        setDonors(Array.from(donorMap.values()).sort((a, b) => b.total_donated - a.total_donated).slice(0, 3));
       }
     } catch (error) {
       console.error("Error fetching legends data:", error);
@@ -620,7 +620,7 @@ export const FunPlanetUnifiedBoard = () => {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-1.5">
+                <div className="overflow-y-auto overflow-x-hidden space-y-1.5 max-h-[160px]">
                   <AnimatePresence mode="wait">
                     {legendsLoading ? (
                       <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center h-32">
