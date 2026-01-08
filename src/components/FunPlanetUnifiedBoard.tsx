@@ -364,7 +364,7 @@ export const FunPlanetUnifiedBoard = () => {
           }
         }
 
-        setCreators(Array.from(creatorMap.values()).sort((a, b) => b.games_count - a.games_count || b.total_plays - a.total_plays).slice(0, 5));
+        setCreators(Array.from(creatorMap.values()).sort((a, b) => b.games_count - a.games_count || b.total_plays - a.total_plays).slice(0, 8));
       }
 
       const { data: donationsData } = await supabase.from("platform_donations").select("user_id, amount, is_anonymous, profiles!platform_donations_user_id_fkey(id, username, avatar_url)").order("created_at", { ascending: false });
@@ -378,7 +378,7 @@ export const FunPlanetUnifiedBoard = () => {
           if (existing) existing.total_donated += donation.amount;
           else donorMap.set(profile.id, { id: profile.id, username: donation.is_anonymous ? "Anonymous" : profile.username, avatar_url: donation.is_anonymous ? null : profile.avatar_url, total_donated: donation.amount, is_anonymous: donation.is_anonymous });
         }
-        setDonors(Array.from(donorMap.values()).sort((a, b) => b.total_donated - a.total_donated).slice(0, 5));
+        setDonors(Array.from(donorMap.values()).sort((a, b) => b.total_donated - a.total_donated).slice(0, 8));
       }
     } catch (error) {
       console.error("Error fetching legends data:", error);
@@ -391,7 +391,7 @@ export const FunPlanetUnifiedBoard = () => {
   const fetchTopUsers = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
-      const { data } = await supabase.from("profiles").select("id, username, avatar_url, wallet_balance, created_at").order("wallet_balance", { ascending: false, nullsFirst: false }).limit(10);
+      const { data } = await supabase.from("profiles").select("id, username, avatar_url, wallet_balance, created_at").order("wallet_balance", { ascending: false, nullsFirst: false }).limit(15);
       setTopUsers(data || []);
     } catch (error) {
       console.error("Error fetching top users:", error);
@@ -669,10 +669,13 @@ export const FunPlanetUnifiedBoard = () => {
                   </AnimatePresence>
                 </div>
 
-                {/* Donate Button */}
-                <div className="mt-3 pt-2">
-                  <Button onClick={() => setShowDonateModal(true)} className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold py-2 rounded-xl shadow-lg shadow-rose-500/30 transition-all hover:shadow-rose-500/50">
+                {/* Donate Button & View All */}
+                <div className="mt-3 pt-2 flex gap-2">
+                  <Button onClick={() => setShowDonateModal(true)} className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold py-2 rounded-xl shadow-lg shadow-rose-500/30 transition-all hover:shadow-rose-500/50">
                     <Heart className="h-4 w-4 mr-2" />Donate CAMLY
+                  </Button>
+                  <Button onClick={() => navigate("/full-ranking")} variant="outline" className="flex-1 rounded-xl border-2 border-yellow-400/60 bg-gradient-to-r from-yellow-500/30 to-amber-500/30 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/40 hover:to-amber-500/40 hover:text-white transition-all">
+                    Xem Tất Cả<ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -748,7 +751,7 @@ export const FunPlanetUnifiedBoard = () => {
 
                   {/* Remaining Rankings with ScrollArea */}
                   {remainingUsers.length > 0 && (
-                    <ScrollArea className="h-[350px] pr-2 ranking-scrollbar">
+                    <ScrollArea className="h-[450px] pr-2 ranking-scrollbar">
                       <div className="space-y-2">
                         {remainingUsers.map((rankedUser, index) => {
                           const rank = index + 4;
@@ -809,12 +812,6 @@ export const FunPlanetUnifiedBoard = () => {
                 </>
               )}
 
-              {/* View All Button */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="mt-4">
-                <Button onClick={() => navigate("/full-ranking")} variant="outline" className="w-full rounded-xl border-2 border-yellow-400/60 bg-gradient-to-r from-yellow-500/30 to-amber-500/30 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/40 hover:to-amber-500/40 hover:text-white transition-all shadow-[0_0_15px_rgba(255,215,0,0.3)]">
-                  Xem Tất Cả<ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </motion.div>
             </div>
           </div>
         </motion.div>
