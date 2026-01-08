@@ -573,7 +573,7 @@ export const FunPlanetUnifiedBoard = () => {
                       transition={{ delay: index * 0.1 }}
                       whileHover={{ scale: 1.02, y: -2, boxShadow: `0 0 25px ${item.accentColor}50` }}
                       className="relative flex items-center gap-2 rounded-xl p-1.5 px-2.5 overflow-hidden cursor-pointer transition-all duration-300"
-                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.25) 0%, rgba(255,215,0,0.15) 100%)", borderLeft: `4px solid ${item.accentColor}`, ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
+                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.40) 0%, rgba(255,215,0,0.25) 100%)", borderLeft: `4px solid ${item.accentColor}`, ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
                     >
                       <div className="absolute inset-0 rounded-xl overflow-hidden">
                         <motion.div className="h-full" style={{ background: `linear-gradient(90deg, ${item.accentColor}50 0%, ${item.accentColor}20 50%, transparent 100%)` }} initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1.5, delay: index * 0.15, ease: "easeOut" }} />
