@@ -509,7 +509,7 @@ export const FunPlanetUnifiedBoard = () => {
             muted 
             playsInline 
             className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0" 
-            style={{ opacity: 0.1, willChange: 'auto', transform: 'translateZ(0)' }}
+            style={{ opacity: 0.9, willChange: 'auto', transform: 'translateZ(0)' }}
           >
             <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
           </video>
