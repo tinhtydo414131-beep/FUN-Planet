@@ -686,7 +686,7 @@ export const FunPlanetUnifiedBoard = () => {
                 </div>
 
                 {/* Donate Button */}
-                <div className="mt-3 pt-2">
+                <div className="mt-auto pt-2">
                   <Button onClick={() => setShowDonateModal(true)} className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold py-2 rounded-xl shadow-lg shadow-rose-500/30 transition-all hover:shadow-rose-500/50">
                     <Heart className="h-4 w-4 mr-2" />Donate CAMLY
                   </Button>
@@ -826,7 +826,7 @@ export const FunPlanetUnifiedBoard = () => {
               )}
 
               {/* View All Button */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="mt-4">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="mt-auto pt-2">
                 <Button onClick={() => navigate("/full-ranking")} variant="outline" className="w-full rounded-xl border-2 border-yellow-400/60 bg-gradient-to-r from-yellow-500/30 to-amber-500/30 font-bold text-yellow-100 hover:border-yellow-300 hover:from-yellow-500/40 hover:to-amber-500/40 hover:text-white transition-all shadow-[0_0_15px_rgba(255,215,0,0.3)]">
                   Xem Tất Cả<ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
