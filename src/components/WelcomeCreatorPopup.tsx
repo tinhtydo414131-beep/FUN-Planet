@@ -9,10 +9,12 @@ const WELCOME_POPUP_KEY = "fun_planet_welcome_popup_shown";
 
 export const WelcomeCreatorPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Wait for auth to finish loading, then only show for logged-in users
+    if (loading) return;
     if (!user) return;
 
     // Check if popup was already shown
@@ -25,7 +27,7 @@ export const WelcomeCreatorPopup = () => {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [user]);
+  }, [user, loading]);
 
   const handleClose = () => {
     localStorage.setItem(WELCOME_POPUP_KEY, "true");
