@@ -515,8 +515,6 @@ export const FunPlanetUnifiedBoard = () => {
           </video>
 
 
-          {/* Dot pattern */}
-          <div className="absolute inset-0 opacity-10 rounded-3xl" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "8px 8px" }} />
 
           {/* Floating Particles */}
           {floatingParticles.map((particle, index) => (
