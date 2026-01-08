@@ -507,8 +507,8 @@ export const FunPlanetUnifiedBoard = () => {
             <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
           </video>
 
-          {/* White overlay */}
-          <div className="absolute inset-0 bg-white/50 rounded-3xl z-[1]" />
+          {/* Subtle white overlay */}
+          <div className="absolute inset-0 bg-white/20 rounded-3xl z-[1]" />
 
           {/* Dot pattern */}
           <div className="absolute inset-0 opacity-10 rounded-3xl" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "8px 8px" }} />
