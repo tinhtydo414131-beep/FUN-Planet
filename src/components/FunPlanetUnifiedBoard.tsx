@@ -503,18 +503,15 @@ export const FunPlanetUnifiedBoard = () => {
           <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ border: "2px solid rgba(255, 215, 0, 0.7)", boxShadow: "inset 0 0 25px rgba(255, 215, 0, 0.3)", zIndex: 5 }} />
 
           {/* Video Background */}
-          <video 
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
-            className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0" 
-            style={{ opacity: 0.6, willChange: 'auto', transform: 'translateZ(0)' }}
-          >
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0" style={{ opacity: 0.4 }}>
             <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
           </video>
 
+          {/* Subtle white overlay */}
+          <div className="absolute inset-0 bg-white/5 rounded-3xl z-[1]" />
 
+          {/* Dot pattern */}
+          <div className="absolute inset-0 opacity-10 rounded-3xl" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "8px 8px" }} />
 
           {/* Floating Particles */}
           {floatingParticles.map((particle, index) => (
@@ -573,7 +570,7 @@ export const FunPlanetUnifiedBoard = () => {
                       transition={{ delay: index * 0.1 }}
                       whileHover={{ scale: 1.02, y: -2, boxShadow: `0 0 25px ${item.accentColor}50` }}
                       className="relative flex items-center gap-2 rounded-xl p-1.5 px-2.5 overflow-hidden cursor-pointer transition-all duration-300"
-                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.40) 0%, rgba(255,215,0,0.25) 100%)", borderLeft: `4px solid ${item.accentColor}`, ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
+                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.12) 0%, rgba(255,215,0,0.05) 100%)", borderLeft: `4px solid ${item.accentColor}`, ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
                     >
                       <div className="absolute inset-0 rounded-xl overflow-hidden">
                         <motion.div className="h-full" style={{ background: `linear-gradient(90deg, ${item.accentColor}50 0%, ${item.accentColor}20 50%, transparent 100%)` }} initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1.5, delay: index * 0.15, ease: "easeOut" }} />
@@ -612,11 +609,11 @@ export const FunPlanetUnifiedBoard = () => {
 
                 {/* Tabs */}
                 <div className="flex gap-2 mb-3">
-                  <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50" : "bg-white/40 !text-white hover:bg-white/50"}`}>
+                  <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50" : "bg-white/10 !text-white hover:bg-white/20"}`}>
                     <Gem className={`h-4 w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
                     <span className={`text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Donate & Sponsor</span>
                   </button>
-                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/40 !text-white hover:bg-white/50"}`}>
+                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/10 !text-white hover:bg-white/20"}`}>
                     <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
                     <span className={`text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
                   </button>
@@ -638,7 +635,7 @@ export const FunPlanetUnifiedBoard = () => {
                             const badge = getCreatorBadge(creator.games_count);
                             const rank = index + 1;
                             return (
-                              <motion.div key={creator.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/40 hover:bg-white/50 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
+                              <motion.div key={creator.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
                                 <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{getRankIcon(rank)}</span>
                                 <Avatar className="h-10 w-10 border-2 border-white/30">
                                   <AvatarImage src={creator.avatar_url || undefined} />
@@ -666,7 +663,7 @@ export const FunPlanetUnifiedBoard = () => {
                             const badge = getDonorBadge(donor.total_donated);
                             const rank = index + 1;
                             return (
-                              <motion.div key={donor.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/40 hover:bg-white/50 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
+                              <motion.div key={donor.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
                                 <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{getRankIcon(rank)}</span>
                                 <Avatar className="h-10 w-10 border-2 border-white/30">
                                   {donor.is_anonymous ? <AvatarFallback className="bg-gradient-to-br from-gray-500 to-gray-700"><span className="text-lg">🎭</span></AvatarFallback> : <><AvatarImage src={donor.avatar_url || undefined} /><AvatarFallback className="bg-gradient-to-br from-rose-500 to-pink-500"><User className="h-5 w-5 text-white" /></AvatarFallback></>}
@@ -740,7 +737,7 @@ export const FunPlanetUnifiedBoard = () => {
               {rankingLoading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-3 rounded-xl border border-white/40 bg-white/40 p-3">
+                    <div key={index} className="flex items-center gap-3 rounded-xl border border-white/30 bg-white/10 p-3">
                       <div className="h-8 w-8 animate-pulse rounded-full bg-white/20" />
                       <div className="flex-1"><div className="h-4 w-24 animate-pulse rounded bg-white/20" /></div>
                       <div className="h-4 w-16 animate-pulse rounded bg-white/20" />
@@ -781,7 +778,7 @@ export const FunPlanetUnifiedBoard = () => {
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: index * 0.1 + 0.5 }}
                                   whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
-                                  className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/50 bg-gradient-to-r from-white/40 to-white/30 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
+                                  className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
                                 >
                                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
                                     <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
