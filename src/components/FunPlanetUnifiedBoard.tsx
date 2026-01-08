@@ -507,7 +507,10 @@ export const FunPlanetUnifiedBoard = () => {
             <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
           </video>
 
-          {/* Subtle white overlay */}
+          {/* Black overlay */}
+          <div className="absolute inset-0 bg-black/5 rounded-3xl z-[1]" />
+          
+          {/* Blue overlay */}
           <div className="absolute inset-0 bg-blue-500/15 rounded-3xl z-[1]" />
 
           {/* Dot pattern */}
