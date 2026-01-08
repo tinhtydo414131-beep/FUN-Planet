@@ -260,7 +260,7 @@ export const FunPlanetUnifiedBoard = () => {
   const [statsLoading, setStatsLoading] = useState(true);
 
   // Legends Board State
-  const [activeTab, setActiveTab] = useState<TabType>("creators");
+  const [activeTab, setActiveTab] = useState<TabType>("donors");
   const [creators, setCreators] = useState<Creator[]>([]);
   const [donors, setDonors] = useState<Donor[]>([]);
   const [legendsLoading, setLegendsLoading] = useState(true);
@@ -593,18 +593,18 @@ export const FunPlanetUnifiedBoard = () => {
 
                 {/* Tabs */}
                 <div className="flex gap-2 mb-3">
-                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/10 !text-white hover:bg-white/20"}`}>
-                    <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
-                    <span className={`text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
-                  </button>
                   <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50" : "bg-white/10 !text-white hover:bg-white/20"}`}>
                     <Gem className={`h-4 w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
                     <span className={`text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Donate & Sponsor</span>
                   </button>
+                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/10 !text-white hover:bg-white/20"}`}>
+                    <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
+                    <span className={`text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
+                  </button>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto space-y-1.5">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-1.5">
                   <AnimatePresence mode="wait">
                     {legendsLoading ? (
                       <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center h-32">
