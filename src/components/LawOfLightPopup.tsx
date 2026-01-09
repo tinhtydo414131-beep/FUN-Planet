@@ -114,10 +114,10 @@ const LawOfLightPopup = ({ open, onAccept }: LawOfLightPopupProps) => {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-2xl max-h-[85vh] bg-white rounded-3xl border-2 border-yellow-400 shadow-2xl flex flex-col overflow-hidden"
+          className="relative w-full max-w-2xl h-[90vh] bg-white rounded-3xl border-2 border-yellow-400 shadow-2xl flex flex-col"
         >
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto p-6 md:p-8">
+          <div className="flex-1 overflow-y-auto p-6 md:p-8 pb-24">
             {/* Header */}
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 mb-3">
