@@ -349,10 +349,12 @@ export const FunPlanetTopRanking = () => {
     }
   }, [retryCount]);
 
-  // Initial fetch
+  // Initial fetch - clear stale data first
   useEffect(() => {
+    setTopUsers([]);
+    setLoading(true);
     fetchTopUsers();
-  }, [fetchTopUsers]);
+  }, []);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
