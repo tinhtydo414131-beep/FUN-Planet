@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Heart, Sun, Star, Check, ArrowRight, X } from "lucide-react";
+import { Sparkles, Heart, Sun, Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -82,173 +81,145 @@ const LawOfLightPopup = ({ open, onAccept }: LawOfLightPopupProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       >
-        {/* Animated stars background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(30)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                opacity: [0.2, 1, 0.2],
-                scale: [1, 1.5, 1],
-              }}
-              transition={{
-                duration: 2 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
-        </div>
-
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-2xl max-h-[90vh] bg-gradient-to-br from-purple-950 via-indigo-950 to-black rounded-3xl border border-purple-500/30 shadow-2xl overflow-hidden"
+          className="relative w-full max-w-2xl max-h-[85vh] bg-white rounded-3xl border-2 border-yellow-400 shadow-2xl flex flex-col overflow-hidden"
         >
-          {/* Glowing orbs */}
-          <div className="absolute top-0 left-0 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl" />
-
-          <ScrollArea className="h-full max-h-[90vh]">
-            <div className="relative z-10 p-6 md:p-8">
-              {/* Header */}
-              <div className="text-center mb-6">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <Sparkles className="w-6 h-6 text-yellow-400" />
-                  <Sun className="w-8 h-8 text-yellow-300" />
-                  <Sparkles className="w-6 h-6 text-yellow-400" />
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-yellow-200 via-pink-300 to-purple-300 bg-clip-text text-transparent mb-1">
-                  🌟 LUẬT ÁNH SÁNG
-                </h1>
-                <p className="text-sm text-purple-200">
-                  Hệ Sinh Thái FUN - Nền Kinh Tế Ánh Sáng 5D
-                </p>
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-6 md:p-8">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Sparkles className="w-6 h-6 text-yellow-500" />
+                <Sun className="w-8 h-8 text-yellow-500" />
+                <Sparkles className="w-6 h-6 text-yellow-500" />
               </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-yellow-600 mb-1">
+                🌟 LUẬT ÁNH SÁNG
+              </h1>
+              <p className="text-sm text-gray-600">
+                Hệ Sinh Thái FUN - Nền Kinh Tế Ánh Sáng 5D
+              </p>
+            </div>
 
-              {/* Intro */}
-              <div className="text-center mb-6 text-sm">
-                <p className="text-purple-200 italic">Hệ sinh thái FUN không dành cho tất cả mọi người.</p>
-                <p className="text-pink-300 font-medium">
-                  Chỉ dành riêng cho những linh hồn có ánh sáng hoặc đang hướng về ánh sáng.
-                </p>
-              </div>
+            {/* Intro */}
+            <div className="text-center mb-6 text-sm">
+              <p className="text-gray-600 italic">Hệ sinh thái FUN không dành cho tất cả mọi người.</p>
+              <p className="text-yellow-600 font-medium">
+                Chỉ dành riêng cho những linh hồn có ánh sáng hoặc đang hướng về ánh sáng.
+              </p>
+            </div>
 
-              {/* Core Principles */}
-              <div className="mb-6 bg-purple-800/30 rounded-2xl p-4">
-                <h2 className="text-lg font-bold text-yellow-300 mb-3 flex items-center gap-2">
-                  <Sun className="w-4 h-4" /> Nguyên tắc cốt lõi
-                </h2>
-                <ul className="space-y-2 text-sm text-purple-200">
-                  <li className="flex items-center gap-2">
-                    <Heart className="w-3 h-3 text-pink-400" /> Ánh sáng thu hút ánh sáng
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Heart className="w-3 h-3 text-pink-400" /> Tần số thấp không thể tồn tại lâu trong tần số cao
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Heart className="w-3 h-3 text-pink-400" /> Ý chí vị kỷ không thể đồng hành cùng Ý Chí Vũ Trụ
-                  </li>
-                </ul>
-              </div>
+            {/* Core Principles */}
+            <div className="mb-6 bg-yellow-50 rounded-2xl p-4 border border-yellow-200">
+              <h2 className="text-lg font-bold text-yellow-600 mb-3 flex items-center gap-2">
+                <Sun className="w-4 h-4" /> Nguyên tắc cốt lõi
+              </h2>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center gap-2">
+                  <Heart className="w-3 h-3 text-yellow-500" /> Ánh sáng thu hút ánh sáng
+                </li>
+                <li className="flex items-center gap-2">
+                  <Heart className="w-3 h-3 text-yellow-500" /> Tần số thấp không thể tồn tại lâu trong tần số cao
+                </li>
+                <li className="flex items-center gap-2">
+                  <Heart className="w-3 h-3 text-yellow-500" /> Ý chí vị kỷ không thể đồng hành cùng Ý Chí Vũ Trụ
+                </li>
+              </ul>
+            </div>
 
-              {/* 8 Mantras - Compact */}
-              <div className="mb-6 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-2xl p-4 border border-yellow-500/30">
-                <h2 className="text-lg font-bold text-yellow-300 mb-3 text-center">
-                  🌟 8 Câu Thần Chú Từ Cha Vũ Trụ
-                </h2>
-                <div className="grid gap-2">
-                  {mantras.map((mantra, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-yellow-900/20 rounded-lg p-2 text-sm"
-                    >
-                      <span className="w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center text-black font-bold text-xs flex-shrink-0">
-                        {index + 1}
-                      </span>
-                      <span className="text-yellow-100 text-xs">{mantra}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Father's Message */}
-              <div className="mb-6 text-center bg-gradient-to-r from-purple-800/40 to-pink-800/40 rounded-2xl p-4 border border-pink-500/30">
-                <p className="text-sm text-pink-200 italic mb-1">
-                  "Chỉ những ai mang ánh sáng hoặc thật lòng hướng về ánh sáng
-                  mới có thể bước đi lâu dài trong Thời Đại Hoàng Kim."
-                </p>
-                <p className="text-yellow-300 font-bold text-sm">— CHA VŨ TRỤ —</p>
-              </div>
-
-              {/* Checklist */}
-              <div className="mb-6 bg-green-900/20 rounded-2xl p-4 border border-green-500/30">
-                <h2 className="text-lg font-bold text-green-300 mb-3 text-center">
-                  🕊️ Danh sách cam kết
-                </h2>
-                <div className="space-y-2">
-                  {checklistItems.map((item, index) => (
-                    <motion.div
-                      key={index}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => handleCheckChange(index)}
-                      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
-                        checklist[index]
-                          ? "bg-green-800/40 border border-green-500/50"
-                          : "bg-green-900/20 border border-green-500/20 hover:border-green-500/40"
-                      }`}
-                    >
-                      <Checkbox
-                        checked={checklist[index]}
-                        onCheckedChange={() => handleCheckChange(index)}
-                        className="border-green-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                      />
-                      <span className={`text-sm ${checklist[index] ? "text-green-200" : "text-green-300/70"}`}>
-                        {item}
-                      </span>
-                      {checklist[index] && <Check className="w-4 h-4 text-green-400 ml-auto" />}
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Accept Button */}
-              <div className="text-center">
-                <Button
-                  onClick={handleAccept}
-                  disabled={!allChecked || isSubmitting}
-                  className={`text-base px-6 py-5 rounded-2xl transition-all duration-300 w-full ${
-                    allChecked
-                      ? "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 hover:from-yellow-300 hover:via-pink-400 hover:to-purple-400 text-white shadow-lg shadow-pink-500/30"
-                      : "bg-gray-600 text-gray-400 cursor-not-allowed"
-                  }`}
-                >
-                  {isSubmitting ? (
-                    "Đang xử lý..."
-                  ) : (
-                    <>
-                      CON ĐỒNG Ý & BƯỚC VÀO ÁNH SÁNG
-                      <ArrowRight className="ml-2 w-5 h-5" />
-                    </>
-                  )}
-                </Button>
-                {!allChecked && (
-                  <p className="mt-2 text-purple-300/60 text-xs">
-                    Vui lòng tích chọn tất cả các mục để tiếp tục
-                  </p>
-                )}
+            {/* 8 Mantras */}
+            <div className="mb-6 bg-yellow-50 rounded-2xl p-4 border border-yellow-300">
+              <h2 className="text-lg font-bold text-yellow-600 mb-3 text-center">
+                🌟 8 Câu Thần Chú Từ Cha Vũ Trụ
+              </h2>
+              <div className="grid gap-2">
+                {mantras.map((mantra, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 bg-white rounded-lg p-2 text-sm border border-yellow-200"
+                  >
+                    <span className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                      {index + 1}
+                    </span>
+                    <span className="text-gray-700 text-xs">{mantra}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </ScrollArea>
+
+            {/* Father's Message */}
+            <div className="mb-6 text-center bg-yellow-50 rounded-2xl p-4 border border-yellow-300">
+              <p className="text-sm text-gray-700 italic mb-1">
+                "Chỉ những ai mang ánh sáng hoặc thật lòng hướng về ánh sáng
+                mới có thể bước đi lâu dài trong Thời Đại Hoàng Kim."
+              </p>
+              <p className="text-yellow-600 font-bold text-sm">— CHA VŨ TRỤ —</p>
+            </div>
+
+            {/* Checklist */}
+            <div className="mb-6 bg-green-50 rounded-2xl p-4 border border-green-300">
+              <h2 className="text-lg font-bold text-green-600 mb-3 text-center">
+                🕊️ Danh sách cam kết
+              </h2>
+              <div className="space-y-2">
+                {checklistItems.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => handleCheckChange(index)}
+                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                      checklist[index]
+                        ? "bg-green-100 border border-green-400"
+                        : "bg-white border border-green-200 hover:border-green-400"
+                    }`}
+                  >
+                    <Checkbox
+                      checked={checklist[index]}
+                      onCheckedChange={() => handleCheckChange(index)}
+                      className="border-green-500 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                    />
+                    <span className={`text-sm ${checklist[index] ? "text-green-700" : "text-gray-600"}`}>
+                      {item}
+                    </span>
+                    {checklist[index] && <Check className="w-4 h-4 text-green-500 ml-auto" />}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Fixed Accept Button */}
+          <div className="p-4 bg-white border-t border-yellow-200">
+            <Button
+              onClick={handleAccept}
+              disabled={!allChecked || isSubmitting}
+              className={`text-base px-6 py-5 rounded-2xl transition-all duration-300 w-full ${
+                allChecked
+                  ? "bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white shadow-lg"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              {isSubmitting ? (
+                "Đang xử lý..."
+              ) : (
+                <>
+                  CON ĐỒNG Ý & BƯỚC VÀO ÁNH SÁNG
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </>
+              )}
+            </Button>
+            {!allChecked && (
+              <p className="mt-2 text-gray-500 text-xs text-center">
+                Vui lòng tích chọn tất cả các mục để tiếp tục
+              </p>
+            )}
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
