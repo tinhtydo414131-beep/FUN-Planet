@@ -65,6 +65,9 @@ interface RankedUser {
   username: string;
   avatar_url: string | null;
   wallet_balance: number | null;
+  pending_amount: number;
+  claimed_amount: number;
+  total_camly: number;
   created_at?: string | null;
 }
 
@@ -216,9 +219,9 @@ const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: num
       </p>
 
       <div className="flex items-center gap-1 mt-1">
-        <Gem className="h-3.5 w-3.5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
-        <span className="text-sm font-extrabold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
-          <AnimatedCounter value={user.wallet_balance || 0} duration={2000} />
+        <Gem className="h-3.5 w-3.5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
+        <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
+          <AnimatedCounter value={user.total_camly || 0} duration={2000} />
         </span>
       </div>
 
@@ -405,12 +408,48 @@ export const FunPlanetUnifiedBoard = () => {
     }
   }, []);
 
-  // Fetch Top Users
+  // Fetch Top Users - Using total_camly = pending_amount + claimed_amount
   const fetchTopUsers = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
-      const { data } = await supabase.from("profiles").select("id, username, avatar_url, wallet_balance, created_at").order("wallet_balance", { ascending: false, nullsFirst: false }).limit(20);
-      setTopUsers(data || []);
+      
+      // Fetch profiles
+      const { data: profilesData } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url, wallet_balance, created_at");
+
+      // Fetch user_rewards
+      const { data: rewardsData } = await supabase
+        .from("user_rewards")
+        .select("user_id, pending_amount, claimed_amount");
+
+      // Create rewards map
+      const rewardsMap = new Map<string, { pending_amount: number; claimed_amount: number }>();
+      rewardsData?.forEach(reward => {
+        rewardsMap.set(reward.user_id, {
+          pending_amount: Math.max(0, Number(reward.pending_amount) || 0),
+          claimed_amount: Number(reward.claimed_amount) || 0,
+        });
+      });
+
+      // Merge and calculate total_camly
+      const mergedUsers: RankedUser[] = (profilesData || []).map(profile => {
+        const rewards = rewardsMap.get(profile.id) || { pending_amount: 0, claimed_amount: 0 };
+        return {
+          id: profile.id,
+          username: profile.username || 'Unknown',
+          avatar_url: profile.avatar_url,
+          wallet_balance: profile.wallet_balance,
+          pending_amount: rewards.pending_amount,
+          claimed_amount: rewards.claimed_amount,
+          total_camly: rewards.pending_amount + rewards.claimed_amount,
+          created_at: profile.created_at,
+        };
+      });
+
+      // Sort by total_camly DESC and take top 20
+      mergedUsers.sort((a, b) => b.total_camly - a.total_camly);
+      setTopUsers(mergedUsers.slice(0, 20));
     } catch (error) {
       console.error("Error fetching top users:", error);
     } finally {
