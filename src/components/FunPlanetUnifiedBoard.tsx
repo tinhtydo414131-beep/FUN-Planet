@@ -324,11 +324,15 @@ export const FunPlanetUnifiedBoard = () => {
         supabase.from("uploaded_games").select("*", { count: "exact", head: true }).eq("status", "approved"),
         supabase.from("lovable_games").select("*", { count: "exact", head: true }).eq("approved", true),
         supabase.from("uploaded_games").select("*", { count: "exact", head: true }),
-        supabase.from("profiles").select("wallet_balance"),
+        supabase.from("user_rewards").select("pending_amount, claimed_amount"),
       ]);
 
       const totalGames = (uploadedGamesResult.count || 0) + (lovableGamesResult.count || 0);
-      const totalCamly = camlyResult.data?.reduce((sum, profile) => sum + (profile.wallet_balance || 0), 0) || 0;
+      // Calculate totalCamly from user_rewards (pending_amount + claimed_amount)
+      const totalCamly = camlyResult.data?.reduce((sum, reward) => 
+        sum + (Number(reward.pending_amount) || 0) + (Number(reward.claimed_amount) || 0), 0) || 0;
+
+      console.log("📊 Honor Board Stats - Total CAMLY:", totalCamly);
 
       setStats({
         totalUsers: usersResult.count || 0,
