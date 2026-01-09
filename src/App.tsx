@@ -58,6 +58,7 @@ const SampleGames = lazy(() => import("./pages/SampleGames"));
 const RewardGalaxy = lazy(() => import("./pages/RewardGalaxy"));
 const AngelAIHubPage = lazy(() => import("./pages/AngelAIHubPage"));
 const GlobalAirdrop = lazy(() => import("./pages/GlobalAirdrop"));
+const LawOfLight = lazy(() => import("./pages/LawOfLight"));
 
 // Lazy load heavy components
 const BackgroundMusicPlayer = lazy(() => import("@/components/BackgroundMusicPlayer").then(m => ({ default: m.BackgroundMusicPlayer })));
@@ -69,6 +70,7 @@ const GameCompleteClaimPopup = lazy(() => import("@/components/GameCompleteClaim
 const DailyLoginRewardPopup = lazy(() => import("@/components/reward-galaxy/DailyLoginRewardPopup").then(m => ({ default: m.DailyLoginRewardPopup })));
 const MobileBottomNavEnhanced = lazy(() => import("@/components/MobileBottomNavEnhanced").then(m => ({ default: m.MobileBottomNavEnhanced })));
 const BirthYearPopup = lazy(() => import("@/components/BirthYearPopup").then(m => ({ default: m.BirthYearPopup })));
+const LawOfLightPopup = lazy(() => import("@/components/LawOfLightPopup"));
 
 // Lazy load private chat components
 const FloatingChatWindows = lazy(() => import("@/components/private-chat/FloatingChatWindows").then(m => ({ default: m.FloatingChatWindows })));
@@ -79,6 +81,7 @@ import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
 import { useGameCompletePopup } from "@/hooks/useGameCompletePopup";
 import { useDailyLoginReward } from "@/hooks/useDailyLoginReward";
 import { useBirthYearPopup } from "@/hooks/useBirthYearPopup";
+import { useLawOfLight } from "@/hooks/useLawOfLight";
 
 const queryClient = new QueryClient();
 
@@ -158,6 +161,7 @@ const AnimatedRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/planet-explorer" element={<PlanetExplorer />} />
           <Route path="/angel-ai" element={<AngelAIHubPage />} />
+          <Route path="/law-of-light" element={<LawOfLight />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/install" element={<Install />} />
           
@@ -202,6 +206,10 @@ const AppContent = () => {
     closePopup: closeBirthYearPopup,
     onBirthYearSaved,
   } = useBirthYearPopup();
+  const {
+    showPopup: showLawOfLightPopup,
+    handleAccept: handleLawOfLightAccept,
+  } = useLawOfLight();
 
   return (
     <>
@@ -280,6 +288,16 @@ const AppContent = () => {
               open={showBirthYearPopup}
               onOpenChange={closeBirthYearPopup}
               onBirthYearSaved={onBirthYearSaved}
+            />
+          </Suspense>
+        )}
+        
+        {/* Law of Light Popup - Shows for new users who haven't accepted */}
+        {showLawOfLightPopup && (
+          <Suspense fallback={null}>
+            <LawOfLightPopup
+              open={showLawOfLightPopup}
+              onAccept={handleLawOfLightAccept}
             />
           </Suspense>
         )}
