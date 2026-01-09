@@ -536,7 +536,7 @@ export const FunPlanetUnifiedBoard = () => {
   }, [rankingLoading, topUsers, confettiFired]);
 
   const maxStatValue = Math.max(stats.totalUsers, stats.totalGames, stats.treasuryBalance, stats.totalUploads, stats.totalCamly, 1);
-  const maxBalance = topUsers[0]?.wallet_balance || 1;
+  const maxBalance = topUsers[0]?.total_camly || 1;
   const top3Users = topUsers.slice(0, 3);
   const remainingUsers = topUsers.slice(3);
 
@@ -868,11 +868,11 @@ export const FunPlanetUnifiedBoard = () => {
                                     <p className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
                                       {rankedUser.username}{isCurrentUser && <span className="ml-1 text-xs text-yellow-300/80">(Bạn)</span>}
                                     </p>
-                                    <ProgressBar value={rankedUser.wallet_balance || 0} maxValue={maxBalance} />
+                                    <ProgressBar value={rankedUser.total_camly || 0} maxValue={maxBalance} />
                                   </div>
                                   <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
                                     <Gem className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
-                                    <span className="text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"><AnimatedCounter value={rankedUser.wallet_balance || 0} /></span>
+                                    <span className="text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"><AnimatedCounter value={rankedUser.total_camly || 0} /></span>
                                   </div>
                                 </motion.div>
                               </HoverCardTrigger>
@@ -886,10 +886,10 @@ export const FunPlanetUnifiedBoard = () => {
                                     <p className="font-bold text-white">{rankedUser.username}</p>
                                     <div className="flex items-center gap-1 mt-1">
                                       <Gem className="h-4 w-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.7)]" />
-                                      <span className="text-sm font-bold text-white">{(rankedUser.wallet_balance || 0).toLocaleString()} CAMLY</span>
+                                      <span className="text-sm font-bold text-white">{(rankedUser.total_camly || 0).toLocaleString()} CAMLY</span>
                                     </div>
                                     <p className="text-xs text-white mt-1">🏆 Xếp hạng: #{rank}</p>
-                                    <p className="text-xs text-white">📊 {Math.round(((rankedUser.wallet_balance || 0) / maxBalance) * 100)}% so với #1</p>
+                                    <p className="text-xs text-white">📊 {Math.round(((rankedUser.total_camly || 0) / maxBalance) * 100)}% so với #1</p>
                                   </div>
                                 </div>
                               </HoverCardContent>
