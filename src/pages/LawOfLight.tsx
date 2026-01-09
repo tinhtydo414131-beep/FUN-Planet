@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 const LawOfLight = () => {
   const navigate = useNavigate();
@@ -40,9 +41,36 @@ const LawOfLight = () => {
           .eq("id", user.id);
 
         if (error) throw error;
+        
+        // Celebration confetti
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.6 },
+          colors: ['#FFD700', '#FFA500', '#FF69B4', '#9370DB', '#00CED1']
+        });
+        
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ['#FFD700', '#FFA500', '#FFFF00']
+          });
+          confetti({
+            particleCount: 80,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ['#FFD700', '#FFA500', '#FFFF00']
+          });
+        }, 250);
+        
         toast.success("Chào mừng bạn đến với Ánh Sáng! ✨");
       }
-      navigate("/");
+      
+      setTimeout(() => navigate("/"), 1500);
     } catch (error) {
       console.error("Error accepting law of light:", error);
       toast.error("Có lỗi xảy ra, vui lòng thử lại");
