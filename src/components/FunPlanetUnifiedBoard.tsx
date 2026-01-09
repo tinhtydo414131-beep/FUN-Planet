@@ -16,6 +16,7 @@ import {
   HoverCardTrigger,
 } from "./ui/hover-card";
 import confetti from "canvas-confetti";
+import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 
 // Treasury wallet address and BSC RPC (with backup URLs)
 const FUN_PLANET_TREASURY = "0xDb792AF6a426E1c2AbF4A2A1F8716775b7145C69";
@@ -254,6 +255,7 @@ const floatingParticles = [
 export const FunPlanetUnifiedBoard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { shouldReduceAnimations, isMobile } = usePerformanceMode();
 
   // Honor Board State
   const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalGames: 0, treasuryBalance: 0, totalUploads: 0, totalCamly: 0 });
@@ -417,14 +419,14 @@ export const FunPlanetUnifiedBoard = () => {
     }
   }, []);
 
-  // Debounced fetch with 500ms delay
+  // Debounced fetch with longer delay on mobile (1000ms vs 500ms)
   const debouncedFetchAllData = useMemo(
     () => debounce(() => {
       fetchStats();
       fetchLegends();
       fetchTopUsers();
-    }, 500),
-    [fetchStats, fetchLegends, fetchTopUsers]
+    }, isMobile ? 1000 : 500),
+    [fetchStats, fetchLegends, fetchTopUsers, isMobile]
   );
 
   // Single unified realtime subscription (merged from 5 channels)
@@ -516,8 +518,8 @@ export const FunPlanetUnifiedBoard = () => {
           {/* Dot pattern */}
           <div className="absolute inset-0 opacity-0 rounded-3xl" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "8px 8px" }} />
 
-          {/* Floating Particles */}
-          {floatingParticles.map((particle, index) => (
+          {/* Floating Particles - Disabled on mobile/reduced motion for performance */}
+          {!shouldReduceAnimations && floatingParticles.map((particle, index) => (
             <motion.div
               key={index}
               className="absolute text-sm pointer-events-none z-20"

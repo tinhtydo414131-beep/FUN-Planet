@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 
 // 🎀 FUN PLANET PASTEL CUTE BOTTOM NAV - Kids Gaming 2025
 export const MobileBottomNavEnhanced = () => {
@@ -12,6 +13,7 @@ export const MobileBottomNavEnhanced = () => {
   const { user } = useAuth();
   const { isDev } = useUserRole();
   const { t } = useTranslation();
+  const { shouldReduceAnimations } = usePerformanceMode();
 
   // Hide bottom nav on game play pages for immersive experience
   const hideOnPaths = ['/game/'];
@@ -47,12 +49,12 @@ export const MobileBottomNavEnhanced = () => {
 
   return (
     <motion.nav 
-      initial={{ y: 100 }}
+      initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-card/98 via-card/95 to-card/90 backdrop-blur-xl border-t-2 border-primary/30 shadow-[0_-8px_40px_hsla(280,65%,65%,0.15),0_-2px_16px_hsla(340,70%,75%,0.1)]"
       style={{ 
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom), 8px)',
       }}
     >
       {/* ✨ Sparkle decoration */}
@@ -95,8 +97,8 @@ export const MobileBottomNavEnhanced = () => {
                   "relative p-2.5 rounded-2xl transition-all duration-300",
                   active && "bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/10 shadow-[0_0_20px_hsla(280,65%,65%,0.3)]"
                 )}
-                whileTap={{ scale: 0.85 }}
-                whileHover={{ scale: 1.1 }}
+                whileTap={shouldReduceAnimations ? undefined : { scale: 0.85 }}
+                whileHover={shouldReduceAnimations ? undefined : { scale: 1.1 }}
               >
                 <Icon 
                   className={cn(
