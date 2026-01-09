@@ -3731,6 +3731,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          accepted_law_of_light: boolean | null
+          accepted_law_of_light_at: string | null
           avatar_url: string | null
           bio: string | null
           bio_full: string | null
@@ -3758,6 +3760,8 @@ export type Database = {
           workplace: string | null
         }
         Insert: {
+          accepted_law_of_light?: boolean | null
+          accepted_law_of_light_at?: string | null
           avatar_url?: string | null
           bio?: string | null
           bio_full?: string | null
@@ -3785,6 +3789,8 @@ export type Database = {
           workplace?: string | null
         }
         Update: {
+          accepted_law_of_light?: boolean | null
+          accepted_law_of_light_at?: string | null
           avatar_url?: string | null
           bio?: string | null
           bio_full?: string | null
