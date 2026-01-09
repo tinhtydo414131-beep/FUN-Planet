@@ -189,44 +189,8 @@ const PodiumCard = memo(({
         {user.username}
       </p>
 
-      {/* Pending Amount (White) */}
-      <div className="flex items-center gap-1 mt-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Clock className="h-3 w-3 text-white/70 cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="bg-black/90 backdrop-blur-sm border-white/50 max-w-xs">
-              <div className="text-white font-bold mb-1">⏳ Chờ claim</div>
-              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng, có thể rút về blockchain.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <span className="text-xs text-white/80">
-          {(user.pending_amount || 0).toLocaleString()}
-        </span>
-      </div>
-
-      {/* Claimed Amount (Green) */}
-      <div className="flex items-center gap-1 mt-1">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Gift className="h-3 w-3 text-green-400 cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="bg-black/90 backdrop-blur-sm border-green-400/50 max-w-xs">
-              <div className="text-green-400 font-bold mb-1">🎁 Đã nhận</div>
-              <p className="text-white/90 text-xs">Tổng CAMLY đã rút thành công về ví blockchain.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <span className="text-xs text-green-300">
-          {(user.claimed_amount || 0).toLocaleString()}
-        </span>
-      </div>
-
       {/* Total CAMLY (Yellow - Main ranking value) */}
-      <div className="flex items-center gap-1.5 mt-1">
+      <div className="flex items-center gap-1.5 mt-2">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -359,42 +323,6 @@ const UserRow = memo(({
           {user.username || "Anonymous"}
           {isCurrentUser && <span className="text-yellow-400 ml-1.5">(Bạn)</span>}
         </p>
-      </div>
-
-      {/* Pending Amount (White) */}
-      <div className="flex items-center gap-1 shrink-0">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Clock className="w-3 h-3 text-white/60 cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="bg-black/90 backdrop-blur-sm border-white/50 max-w-xs">
-              <div className="text-white font-bold mb-1">⏳ Chờ claim</div>
-              <p className="text-white/90 text-xs">CAMLY đang có trong ví nền tảng, có thể rút về blockchain.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <span className="text-xs text-white/80">
-          {(user.pending_amount || 0).toLocaleString()}
-        </span>
-      </div>
-
-      {/* Claimed Amount (Green) */}
-      <div className="flex items-center gap-1 shrink-0">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Gift className="w-3 h-3 text-green-400 cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="bg-black/90 backdrop-blur-sm border-green-400/50 max-w-xs">
-              <div className="text-green-400 font-bold mb-1">🎁 Đã nhận</div>
-              <p className="text-white/90 text-xs">Tổng CAMLY đã rút thành công về ví blockchain.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <span className="text-xs text-green-300">
-          {(user.claimed_amount || 0).toLocaleString()}
-        </span>
       </div>
 
       {/* Total CAMLY (Yellow - Main ranking value) */}
