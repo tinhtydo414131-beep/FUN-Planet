@@ -418,42 +418,63 @@ export const FunPlanetUnifiedBoard = () => {
       if (isRefresh) setRefreshing(true);
       
       // Fetch profiles
-      const { data: profilesData } = await supabase
+      const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("id, username, avatar_url, wallet_balance, created_at");
 
-      // Fetch user_rewards
-      const { data: rewardsData } = await supabase
+      if (profilesError) {
+        console.error("[UnifiedBoard] Error fetching profiles:", profilesError);
+        return;
+      }
+
+      // Fetch user_rewards - this is the source of truth for CAMLY
+      const { data: rewardsData, error: rewardsError } = await supabase
         .from("user_rewards")
         .select("user_id, pending_amount, claimed_amount");
 
-      // Create rewards map
+      if (rewardsError) {
+        console.error("[UnifiedBoard] Error fetching user_rewards:", rewardsError);
+        return;
+      }
+
+      console.log("[UnifiedBoard] Rewards data count:", rewardsData?.length || 0);
+
+      // Create rewards map - parse numeric values carefully
       const rewardsMap = new Map<string, { pending_amount: number; claimed_amount: number }>();
       rewardsData?.forEach(reward => {
-        rewardsMap.set(reward.user_id, {
-          pending_amount: Math.max(0, Number(reward.pending_amount) || 0),
-          claimed_amount: Number(reward.claimed_amount) || 0,
-        });
+        const pending = Math.max(0, Number(reward.pending_amount) || 0);
+        const claimed = Number(reward.claimed_amount) || 0;
+        rewardsMap.set(reward.user_id, { pending_amount: pending, claimed_amount: claimed });
       });
 
       // Merge and calculate total_camly
       const mergedUsers: RankedUser[] = (profilesData || []).map(profile => {
         const rewards = rewardsMap.get(profile.id) || { pending_amount: 0, claimed_amount: 0 };
+        const total = rewards.pending_amount + rewards.claimed_amount;
         return {
           id: profile.id,
-          username: profile.username || 'Unknown',
+          username: (profile.username || 'Unknown').trim(),
           avatar_url: profile.avatar_url,
           wallet_balance: profile.wallet_balance,
           pending_amount: rewards.pending_amount,
           claimed_amount: rewards.claimed_amount,
-          total_camly: rewards.pending_amount + rewards.claimed_amount,
+          total_camly: total,
           created_at: profile.created_at,
         };
       });
 
       // Sort by total_camly DESC and take top 20
       mergedUsers.sort((a, b) => b.total_camly - a.total_camly);
-      setTopUsers(mergedUsers.slice(0, 20));
+      const top20 = mergedUsers.slice(0, 20);
+      
+      console.log("[UnifiedBoard] Top 5 users:", top20.slice(0, 5).map(u => ({
+        username: u.username,
+        total_camly: u.total_camly,
+        pending: u.pending_amount,
+        claimed: u.claimed_amount
+      })));
+
+      setTopUsers(top20);
     } catch (error) {
       console.error("Error fetching top users:", error);
     } finally {
@@ -472,21 +493,29 @@ export const FunPlanetUnifiedBoard = () => {
     [fetchStats, fetchLegends, fetchTopUsers, isMobile]
   );
 
-  // Single unified realtime subscription (merged from 5 channels)
+  // Single unified realtime subscription (merged from 6 channels - includes user_rewards)
   useEffect(() => {
+    // Clear stale data first, then fetch fresh
+    setTopUsers([]);
+    setRankingLoading(true);
+    
     // Initial fetch
     fetchStats();
     fetchLegends();
     fetchTopUsers();
 
-    // Single channel for all tables
+    // Single channel for all tables - CRITICAL: includes user_rewards for ranking updates
     const unifiedChannel = supabase
-      .channel('unified_board_changes')
+      .channel('unified_board_changes_v2')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => debouncedFetchAllData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'uploaded_games' }, () => debouncedFetchAllData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_plays' }, () => debouncedFetchAllData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'lovable_games' }, () => debouncedFetchAllData())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'platform_donations' }, () => debouncedFetchAllData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_rewards' }, () => {
+        console.log('[UnifiedBoard] user_rewards changed - refreshing ranking');
+        debouncedFetchAllData();
+      })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') setIsLive(true);
       });
