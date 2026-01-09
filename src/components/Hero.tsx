@@ -10,12 +10,15 @@ import { motion } from "framer-motion";
 import { MEDIA_URLS } from "@/config/media";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import { usePerformanceMode } from "@/hooks/usePerformanceMode";
 
 export const Hero = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { shouldReduceAnimations, isMobile } = usePerformanceMode();
   const [search, setSearch] = useState("");
   const [backgroundVideo, setBackgroundVideo] = useState<string>(MEDIA_URLS.videos.heroBackgroundLatest);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const navigate = useNavigate();
   const {
     playClick,
@@ -44,21 +47,39 @@ export const Hero = () => {
   };
 
   return <section className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-center">
-      {/* Background video */}
-      <video 
-        key={backgroundVideo}
-        autoPlay 
-        loop 
-        muted 
-        playsInline 
-        poster="/images/games/dream-world.jpg" 
-        className="absolute inset-0 w-full h-full object-cover contrast-100 brightness-100 saturate-115 z-0 opacity-100" 
-        style={{ minHeight: "100%" }}
-      >
-        <source src={backgroundVideo} type="video/mp4" />
-        {/* Local fallback so the background always works even if CDN is slow */}
-        <source src="/videos/hero-background-latest.mp4" type="video/mp4" />
-      </video>
+      {/* Background - Video on desktop, static poster on mobile with reduced motion */}
+      {shouldReduceAnimations ? (
+        <img 
+          src="/images/games/dream-world.jpg" 
+          alt="Background"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          loading="eager"
+        />
+      ) : (
+        <video 
+          key={backgroundVideo}
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          poster="/images/games/dream-world.jpg" 
+          className={`absolute inset-0 w-full h-full object-cover contrast-100 brightness-100 saturate-115 z-0 transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          style={{ minHeight: "100%" }}
+          onLoadedData={() => setVideoLoaded(true)}
+        >
+          <source src={backgroundVideo} type="video/mp4" />
+          <source src="/videos/hero-background-latest.mp4" type="video/mp4" />
+        </video>
+      )}
+      {/* Poster fallback while video loads */}
+      {!shouldReduceAnimations && !videoLoaded && (
+        <img 
+          src="/images/games/dream-world.jpg" 
+          alt="Background"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          loading="eager"
+        />
+      )}
       
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/30" />
