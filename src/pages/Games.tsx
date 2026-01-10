@@ -19,20 +19,16 @@ import { useLegendStatus } from "@/hooks/useLegendStatus";
 import LegendParticleEffect from "@/components/LegendParticleEffect";
 import { AIGameSuggestions } from "@/components/AIGameSuggestions";
 
-// Sample game cover imports
-import cover2048 from "@/assets/sample-games/cover-2048.png";
-import coverDrawingCanvas from "@/assets/sample-games/cover-drawing-canvas.png";
-import coverEcoBuilder from "@/assets/sample-games/cover-eco-builder.png";
-import coverGratitudeJournal from "@/assets/sample-games/cover-gratitude-journal.png";
-import coverStarExplorer from "@/assets/sample-games/cover-star-explorer.png";
+// Placeholder for sample game covers (original assets removed for performance)
+const placeholderCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23667eea' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='24' font-family='sans-serif'%3E🎮%3C/text%3E%3C/svg%3E";
 
 // Sample games data
 const SAMPLE_GAMES = [
-  { id: "2048-puzzle", title: "2048 Puzzle", icon: "🧩", gradient: "from-purple-500 to-indigo-600", coverImage: cover2048, path: "/games/2048-puzzle.html", category: "Brain" },
-  { id: "drawing-canvas", title: "Drawing Canvas", icon: "🎨", gradient: "from-pink-500 to-rose-600", coverImage: coverDrawingCanvas, path: "/games/drawing-canvas.html", category: "Creative" },
-  { id: "eco-builder", title: "Eco Builder 3D", icon: "🌍", gradient: "from-green-500 to-emerald-600", coverImage: coverEcoBuilder, path: "/games/eco-builder.html", category: "3D Builder" },
-  { id: "gratitude-journal", title: "Gratitude Journal", icon: "💖", gradient: "from-amber-500 to-orange-600", coverImage: coverGratitudeJournal, path: "/games/gratitude-journal.html", category: "Mindfulness" },
-  { id: "star-explorer", title: "Star Explorer", icon: "🚀", gradient: "from-blue-500 to-cyan-600", coverImage: coverStarExplorer, path: "/games/star-explorer.html", category: "Adventure" },
+  { id: "2048-puzzle", title: "2048 Puzzle", icon: "🧩", gradient: "from-purple-500 to-indigo-600", coverImage: placeholderCover, path: "/games/2048-puzzle.html", category: "Brain" },
+  { id: "drawing-canvas", title: "Drawing Canvas", icon: "🎨", gradient: "from-pink-500 to-rose-600", coverImage: placeholderCover, path: "/games/drawing-canvas.html", category: "Creative" },
+  { id: "eco-builder", title: "Eco Builder 3D", icon: "🌍", gradient: "from-green-500 to-emerald-600", coverImage: placeholderCover, path: "/games/eco-builder.html", category: "3D Builder" },
+  { id: "gratitude-journal", title: "Gratitude Journal", icon: "💖", gradient: "from-amber-500 to-orange-600", coverImage: placeholderCover, path: "/games/gratitude-journal.html", category: "Mindfulness" },
+  { id: "star-explorer", title: "Star Explorer", icon: "🚀", gradient: "from-blue-500 to-cyan-600", coverImage: placeholderCover, path: "/games/star-explorer.html", category: "Adventure" },
 ];
 
 interface UploadedGame {
