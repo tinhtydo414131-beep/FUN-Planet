@@ -551,17 +551,14 @@ export const FunPlanetTopRanking = () => {
         }}
       />
 
-      {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0"
-        style={{ opacity: 0.7 }}
-      >
-        <source src="/videos/ranking-bg.mp4" type="video/mp4" />
-      </video>
+      {/* Gradient Background - replaces video for performance */}
+      <div 
+        className="absolute inset-0 rounded-3xl z-0"
+        style={{ 
+          background: 'radial-gradient(ellipse at top right, rgba(168, 85, 247, 0.5) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(59, 130, 246, 0.4) 0%, transparent 50%)',
+          opacity: 0.7 
+        }} 
+      />
 
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 rounded-3xl bg-black/50 z-0" />

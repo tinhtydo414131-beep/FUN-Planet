@@ -576,10 +576,11 @@ export const FunPlanetUnifiedBoard = () => {
           {/* Inner Border */}
           <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ border: "2px solid rgba(255, 215, 0, 0.7)", boxShadow: "inset 0 0 25px rgba(255, 215, 0, 0.3)", zIndex: 5 }} />
 
-          {/* Video Background */}
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0" style={{ opacity: 0.4 }}>
-            <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
-          </video>
+          {/* Gradient Background - replaces video for performance */}
+          <div className="absolute inset-0 rounded-3xl z-0" style={{ 
+            background: 'radial-gradient(ellipse at top right, rgba(168, 85, 247, 0.4) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(59, 130, 246, 0.3) 0%, transparent 50%)',
+            opacity: 0.6 
+          }} />
 
           {/* Black overlay */}
           <div className="absolute inset-0 bg-black/5 rounded-3xl z-[1]" />

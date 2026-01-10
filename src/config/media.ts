@@ -94,11 +94,6 @@ export const MEDIA_URLS = {
     radiantDreamland: `${R2_CDN_BASE}/audio/radiant-dreamland.mp3`,
     angelOfTheStars: `${R2_CDN_BASE}/audio/angel-of-the-stars.mp3`,
   },
-  // Video files
-  videos: {
-    heroBackground: `${R2_CDN_BASE}/videos/hero-background.mp4`,
-    heroBackgroundLatest: `${R2_CDN_BASE}/videos/hero-background-latest.mp4`,
-  },
   // Game images
   games: {
     platformer: `${R2_CDN_BASE}/images/games/platformer.jpg`,
