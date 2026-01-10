@@ -123,33 +123,33 @@ export const Hero = () => {
             </motion.div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
-              {/* 3D depth shadow - bright colors only */}
+              {/* Strong dark shadow for clarity */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    0 2px 0 #FF90D0,
-                    0 4px 0 #E080C0,
-                    0 6px 0 #C090E0,
-                    0 8px 0 #A0A0F0,
-                    0 10px 20px rgba(200,150,255,0.5),
-                    0 15px 40px rgba(255,180,220,0.3)
+                    2px 2px 0 rgba(80,40,100,0.9),
+                    4px 4px 0 rgba(60,30,80,0.8),
+                    6px 6px 0 rgba(40,20,60,0.7),
+                    8px 8px 0 rgba(30,15,50,0.6),
+                    3px 3px 8px rgba(0,0,0,0.8),
+                    6px 6px 20px rgba(0,0,0,0.6),
+                    10px 10px 40px rgba(0,0,0,0.4)
                   `,
-                  WebkitTextStroke: '2px #FFB0E0',
+                  WebkitTextStroke: '1px rgba(60,30,80,0.5)',
                 }}
                 aria-hidden="true"
               >
                 FUN PLANET
               </span>
-              {/* Main animated gradient with yellow */}
+              {/* Main animated gradient with yellow - no glow */}
               <span 
                 className="relative bg-clip-text text-transparent"
                 style={{ 
                   backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FFC000 8%, #FFB000 15%, #FF6BD6 25%, #E040A0 35%, #D050C0 45%, #9070E0 55%, #7090F0 65%, #50B0FF 75%, #40D0FF 85%, #FFE066 95%, #FFD700 100%)',
                   backgroundSize: '200% 200%',
                   animation: 'gradient-shift 8s ease infinite',
-                  filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.6)) drop-shadow(0 0 20px rgba(255,107,214,0.5)) drop-shadow(0 0 30px rgba(80,176,255,0.4))',
                   WebkitBackgroundClip: 'text',
                 }}
               >
