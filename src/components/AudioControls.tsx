@@ -22,7 +22,7 @@ export const AudioControls = ({
         variant="outline"
         size="icon"
         onClick={handleMusicClick}
-        className="flex items-center justify-center"
+        className="flex items-center justify-center w-10 h-10 p-0"
         title="Mở nhạc nền"
       >
         <Music className="h-5 w-5 text-purple-500" />
@@ -32,7 +32,7 @@ export const AudioControls = ({
         variant="outline"
         size="icon"
         onClick={onToggleSound}
-        className="flex items-center justify-center"
+        className="flex items-center justify-center w-10 h-10 p-0"
         title={isSoundEnabled ? "Tắt hiệu ứng âm thanh" : "Bật hiệu ứng âm thanh"}
       >
         {isSoundEnabled ? (
