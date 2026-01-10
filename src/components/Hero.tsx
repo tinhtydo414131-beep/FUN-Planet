@@ -78,10 +78,10 @@ export const Hero = () => {
         />
       )}
       
-      {/* Enhanced gradient overlay - lighter for video visibility */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60 z-[1]" />
-      {/* Side vignette effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-900/30 via-transparent to-purple-900/30 z-[1]" />
+      {/* Minimal gradient overlay - video fully visible */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-[1]" />
+      {/* Subtle side vignette */}
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 via-transparent to-purple-900/10 z-[1]" />
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center space-y-6 sm:space-y-8">
