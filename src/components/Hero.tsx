@@ -49,7 +49,7 @@ export const Hero = () => {
     });
   };
 
-  return <section className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-center">
+  return <section className="relative pt-32 sm:pt-40 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-start">
       {/* Video background for desktop, image fallback for mobile */}
       {!isMobile && !prefersReducedMotion ? (
         <video 
@@ -59,7 +59,7 @@ export const Hero = () => {
           playsInline
           className="absolute inset-0 w-full h-full object-cover z-0"
           style={{ 
-            objectPosition: 'center center',
+            objectPosition: 'center top',
             filter: 'contrast(1.1) saturate(1.15) brightness(1.0)',
           }}
         >
