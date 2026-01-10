@@ -122,8 +122,26 @@ export const Hero = () => {
               
             </motion.div>
             
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider drop-shadow-[0_0_50px_rgba(255,215,0,0.8)]">
-              <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent animate-gradient-shift bg-[length:200%_200%]" style={{ textShadow: '0 0 60px rgba(255,215,0,0.6)' }}>
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider">
+              <span 
+                className="bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent animate-gradient-shift bg-[length:200%_200%]"
+                style={{ 
+                  textShadow: `
+                    0 1px 0 rgba(255,180,220,0.9),
+                    0 2px 0 rgba(255,160,200,0.85),
+                    0 3px 0 rgba(255,140,180,0.8),
+                    0 4px 0 rgba(255,120,160,0.75),
+                    0 5px 0 rgba(240,100,140,0.7),
+                    0 6px 0 rgba(220,80,120,0.65),
+                    0 7px 0 rgba(200,60,100,0.6),
+                    0 8px 0 rgba(180,40,80,0.5),
+                    0 10px 15px rgba(0,0,0,0.4),
+                    0 15px 30px rgba(255,105,180,0.3),
+                    0 0 60px rgba(255,215,0,0.5)
+                  `,
+                  WebkitTextStroke: '1px rgba(255,255,255,0.2)',
+                }}
+              >
                 FUN PLANET
               </span>
             </h1>
