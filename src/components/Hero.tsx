@@ -123,17 +123,17 @@ export const Hero = () => {
             </motion.div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
-              {/* Subtle dark shadow for clarity */}
+              {/* Metallic gold shadow for clarity */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    1px 1px 0 rgba(80,40,100,0.6),
-                    2px 2px 0 rgba(60,30,80,0.5),
-                    3px 3px 0 rgba(40,20,60,0.4),
-                    2px 2px 6px rgba(0,0,0,0.5),
-                    4px 4px 12px rgba(0,0,0,0.3)
+                    1px 1px 0 rgba(218,165,32,0.8),
+                    2px 2px 0 rgba(184,134,11,0.7),
+                    3px 3px 0 rgba(139,101,8,0.6),
+                    2px 2px 8px rgba(218,165,32,0.5),
+                    4px 4px 16px rgba(184,134,11,0.4)
                   `,
                 }}
                 aria-hidden="true"
@@ -209,7 +209,7 @@ export const Hero = () => {
                 <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 z-10" strokeWidth={1.5} />
                 <Input 
                   type="text" 
-                  placeholder={`${t('hero.searchPlaceholder')} 🔍`} 
+                  placeholder={t('hero.searchPlaceholder')} 
                   value={search} 
                   onChange={e => setSearch(e.target.value)} 
                   className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-rajdhani font-medium bg-transparent border-0 rounded-xl shadow-none focus:ring-0 focus:border-0"
