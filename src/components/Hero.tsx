@@ -122,25 +122,31 @@ export const Hero = () => {
               
             </motion.div>
             
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
+              {/* 3D shadow layer */}
               <span 
-                className="bg-clip-text text-transparent"
+                className="absolute inset-0"
                 style={{ 
-                  backgroundImage: 'linear-gradient(to bottom, #FF69B4, #FF8DC7, #87CEEB, #40E0D0, #FFD700)',
+                  color: 'transparent',
                   textShadow: `
-                    0 1px 0 rgba(255,180,220,0.9),
-                    0 2px 0 rgba(255,160,200,0.85),
-                    0 3px 0 rgba(255,140,180,0.8),
-                    0 4px 0 rgba(255,120,160,0.75),
-                    0 5px 0 rgba(240,100,140,0.7),
-                    0 6px 0 rgba(220,80,120,0.65),
-                    0 7px 0 rgba(200,60,100,0.6),
-                    0 8px 0 rgba(180,40,80,0.5),
-                    0 10px 15px rgba(0,0,0,0.4),
-                    0 15px 30px rgba(255,105,180,0.3),
-                    0 0 60px rgba(255,215,0,0.5)
+                    0 2px 0 #FF8DC7,
+                    0 4px 0 #FF69B4,
+                    0 6px 0 #E75480,
+                    0 8px 0 #C71585,
+                    0 10px 15px rgba(0,0,0,0.5),
+                    0 15px 30px rgba(255,105,180,0.4)
                   `,
-                  WebkitTextStroke: '1px rgba(255,255,255,0.2)',
+                  WebkitTextStroke: '2px #FF8DC7',
+                }}
+                aria-hidden="true"
+              >
+                FUN PLANET
+              </span>
+              {/* Gradient text layer */}
+              <span 
+                className="relative bg-clip-text text-transparent"
+                style={{ 
+                  backgroundImage: 'linear-gradient(to bottom, #FFB6C1, #FF69B4, #87CEEB, #40E0D0, #FFD700)',
                 }}
               >
                 FUN PLANET
