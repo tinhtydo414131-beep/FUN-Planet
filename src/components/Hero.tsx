@@ -35,13 +35,17 @@ export const Hero = () => {
   };
 
   return <section className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-center">
-      {/* Static background image - Fantasy Castle */}
+      {/* Static background image - Fantasy Tower */}
       <img 
-        src="/images/backgrounds/lau_dai.jpg" 
-        alt="Fantasy Castle Background"
+        src="/images/backgrounds/toa_thap.jpg" 
+        alt="Fantasy Tower Background"
         className="absolute inset-0 w-full h-full object-cover z-0"
         loading="eager"
-        style={{ objectPosition: 'center 40%' }}
+        style={{ 
+          objectPosition: 'center 35%',
+          filter: 'contrast(1.08) saturate(1.15) brightness(1.02)',
+          imageRendering: 'auto'
+        }}
       />
       
       {/* Gradient overlay */}
