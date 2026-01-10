@@ -1,7 +1,7 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Search, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
@@ -22,6 +22,21 @@ export const Hero = () => {
     toggleSound
   } = useGameAudio();
 
+  // Mobile and reduced motion detection for video optimization
+  const [isMobile, setIsMobile] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
@@ -35,36 +50,36 @@ export const Hero = () => {
   };
 
   return <section className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-center">
-      {/* Static background image - Fantasy Tower */}
-      <img 
-        src="/images/backgrounds/toa_thap.jpg" 
-        alt="Fantasy Tower Background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-        loading="eager"
-        style={{ 
-          objectPosition: 'center 35%',
-          filter: 'contrast(1.15) saturate(1.25) brightness(1.0)',
-          imageRendering: 'crisp-edges',
-          WebkitBackfaceVisibility: 'hidden',
-          backfaceVisibility: 'hidden',
-          transform: 'translateZ(0)',
-        }}
-      />
-      
-      {/* Overlay to blend out the moon in upper-left */}
-      <div 
-        className="absolute z-[1] pointer-events-none"
-        style={{
-          top: 0,
-          left: 0,
-          width: '350px',
-          height: '250px',
-          background: 'radial-gradient(ellipse at 25% 20%, rgba(135,206,235,0.95) 0%, rgba(135,206,235,0.7) 25%, rgba(135,206,235,0.4) 50%, transparent 75%)',
-        }}
-      />
+      {/* Video background for desktop, image fallback for mobile */}
+      {!isMobile && !prefersReducedMotion ? (
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{ 
+            objectPosition: 'center center',
+            filter: 'contrast(1.1) saturate(1.15) brightness(1.0)',
+          }}
+        >
+          <source src="/videos/homepage-bg.mp4" type="video/mp4" />
+        </video>
+      ) : (
+        <img 
+          src="/images/backgrounds/toa_thap.jpg" 
+          alt="Fantasy Background"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          loading="eager"
+          style={{ 
+            objectPosition: 'center 35%',
+            filter: 'contrast(1.15) saturate(1.25) brightness(1.0)',
+          }}
+        />
+      )}
       
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-sky-400/20 via-transparent to-purple-900/40 z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-black/50 z-[1]" />
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center space-y-6 sm:space-y-8">
