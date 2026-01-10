@@ -123,31 +123,46 @@ export const Hero = () => {
             </motion.div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
-              {/* 3D shadow layer - matching logo colors */}
+              {/* 3D metallic shadow layer */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    0 2px 0 #C9A0DC,
-                    0 4px 0 #B088C0,
-                    0 6px 0 #9370A8,
-                    0 8px 0 #7A5A90,
-                    0 10px 20px rgba(147,112,168,0.5)
+                    0 1px 0 #E8A4D0,
+                    0 2px 0 #D68CC0,
+                    0 3px 0 #C474B0,
+                    0 4px 0 #A85CA0,
+                    0 5px 0 #8C4490,
+                    0 6px 0 #704080,
+                    0 8px 15px rgba(140,68,144,0.6),
+                    0 12px 25px rgba(100,80,160,0.4)
                   `,
-                  WebkitTextStroke: '2px #DDA0DD',
+                  WebkitTextStroke: '1px rgba(255,180,220,0.4)',
                 }}
                 aria-hidden="true"
               >
                 FUN PLANET
               </span>
-              {/* Main gradient - pastel pink to lavender to sky blue */}
+              {/* Main metallic gradient - pink to purple to cyan */}
               <span 
                 className="relative bg-clip-text text-transparent"
                 style={{ 
-                  backgroundImage: 'linear-gradient(180deg, #E8B4D8 0%, #DDA0DD 25%, #C9A0DC 50%, #87CEEB 75%, #6BB3D9 100%)',
-                  filter: 'drop-shadow(0 0 15px rgba(221,160,221,0.5)) drop-shadow(0 0 30px rgba(135,206,235,0.3))',
+                  backgroundImage: 'linear-gradient(180deg, #F5A0D8 0%, #E88CC8 15%, #D078B8 30%, #B070C0 45%, #9080D0 55%, #70A0E0 70%, #60C0F0 85%, #50D4FF 100%)',
+                  filter: 'drop-shadow(0 0 8px rgba(240,160,216,0.7)) drop-shadow(0 0 20px rgba(80,180,255,0.5))',
+                  WebkitBackgroundClip: 'text',
                 }}
+              >
+                FUN PLANET
+              </span>
+              {/* Highlight shine overlay */}
+              <span 
+                className="absolute inset-0 bg-clip-text text-transparent pointer-events-none"
+                style={{ 
+                  backgroundImage: 'linear-gradient(160deg, rgba(255,255,255,0.6) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.3) 100%)',
+                  mixBlendMode: 'overlay',
+                }}
+                aria-hidden="true"
               >
                 FUN PLANET
               </span>
