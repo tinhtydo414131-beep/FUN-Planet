@@ -122,7 +122,7 @@ export const Hero = () => {
               
             </motion.div>
             
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider relative">
               {/* Metallic gold shadow with enhanced depth */}
               <span 
                 className="absolute inset-0"
@@ -141,11 +141,11 @@ export const Hero = () => {
               >
                 FUN PLANET
               </span>
-              {/* Main animated gradient with yellow - no glow */}
+              {/* Main animated gradient with extended yellow range */}
               <span 
                 className="relative bg-clip-text text-transparent"
                 style={{ 
-                  backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FFC000 8%, #FFB000 15%, #FF6BD6 25%, #E040A0 35%, #D050C0 45%, #9070E0 55%, #7090F0 65%, #50B0FF 75%, #40D0FF 85%, #FFE066 95%, #FFD700 100%)',
+                  backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FFDC00 10%, #FFC800 18%, #FFB000 25%, #FF6BD6 35%, #E040A0 45%, #D050C0 55%, #9070E0 65%, #7090F0 72%, #FFE066 82%, #FFCC00 90%, #FFD700 100%)',
                   backgroundSize: '200% 200%',
                   animation: 'gradient-shift 8s ease infinite',
                   WebkitBackgroundClip: 'text',
