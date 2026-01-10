@@ -123,20 +123,20 @@ export const Hero = () => {
             </motion.div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
-              {/* 3D depth shadow */}
+              {/* 3D depth shadow - bright colors only */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    0 2px 0 #D070B0,
-                    0 4px 0 #A060A0,
-                    0 6px 0 #7050A0,
-                    0 8px 0 #5060B0,
-                    0 10px 20px rgba(80,80,160,0.5),
-                    0 15px 40px rgba(100,50,150,0.3)
+                    0 2px 0 #FF90D0,
+                    0 4px 0 #E080C0,
+                    0 6px 0 #C090E0,
+                    0 8px 0 #A0A0F0,
+                    0 10px 20px rgba(200,150,255,0.5),
+                    0 15px 40px rgba(255,180,220,0.3)
                   `,
-                  WebkitTextStroke: '2px #E090C0',
+                  WebkitTextStroke: '2px #FFB0E0',
                 }}
                 aria-hidden="true"
               >
