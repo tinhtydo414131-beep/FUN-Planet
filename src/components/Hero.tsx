@@ -148,7 +148,7 @@ export const Hero = () => {
                 style={{ 
                   backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FFC000 8%, #FFB000 15%, #FF6BD6 25%, #E040A0 35%, #D050C0 45%, #9070E0 55%, #7090F0 65%, #50B0FF 75%, #40D0FF 85%, #FFE066 95%, #FFD700 100%)',
                   backgroundSize: '200% 200%',
-                  animation: 'gradient-shift 4s ease infinite',
+                  animation: 'gradient-shift 8s ease infinite',
                   filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.6)) drop-shadow(0 0 20px rgba(255,107,214,0.5)) drop-shadow(0 0 30px rgba(80,176,255,0.4))',
                   WebkitBackgroundClip: 'text',
                 }}
