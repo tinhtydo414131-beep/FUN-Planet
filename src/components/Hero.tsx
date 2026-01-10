@@ -124,8 +124,9 @@ export const Hero = () => {
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider">
               <span 
-                className="bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent animate-gradient-shift bg-[length:200%_200%]"
+                className="bg-clip-text text-transparent"
                 style={{ 
+                  backgroundImage: 'linear-gradient(to bottom, #FF69B4, #FF8DC7, #87CEEB, #40E0D0, #FFD700)',
                   textShadow: `
                     0 1px 0 rgba(255,180,220,0.9),
                     0 2px 0 rgba(255,160,200,0.85),
