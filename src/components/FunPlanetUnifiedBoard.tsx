@@ -170,8 +170,8 @@ const GlowingRing = ({ rank }: { rank: number }) => {
 
 // Podium Card
 const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: number; maxBalance: number; isCurrentUser: boolean }) => {
-  const heights = { 1: "h-20", 2: "h-14", 3: "h-12" };
-  const avatarSizes = { 1: "h-16 w-16", 2: "h-16 w-16", 3: "h-16 w-16" };
+  const heights = { 1: "h-16 sm:h-20", 2: "h-12 sm:h-14", 3: "h-10 sm:h-12" };
+  const avatarSizes = { 1: "h-12 w-12 sm:h-16 sm:w-16", 2: "h-11 w-11 sm:h-14 sm:w-14", 3: "h-10 w-10 sm:h-12 sm:w-12" };
   const ringColors = {
     1: "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)]",
     2: "border-slate-300 shadow-[0_0_15px_rgba(192,192,192,0.6)]",
@@ -196,31 +196,31 @@ const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: num
         />
         <div className="relative">
           <GlowingRing rank={rank} />
-          <Avatar className={`relative z-10 ${avatarSizes[rank as keyof typeof avatarSizes]} border-3 ${ringColors[rank as keyof typeof ringColors]}`}>
+          <Avatar className={`relative z-10 ${avatarSizes[rank as keyof typeof avatarSizes]} border-2 sm:border-3 ${ringColors[rank as keyof typeof ringColors]}`}>
             <AvatarImage src={user.avatar_url || undefined} />
-            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">
+            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-sm sm:text-lg">
               {user.username?.charAt(0).toUpperCase() || "?"}
             </AvatarFallback>
           </Avatar>
         </div>
         {rank === 1 && (
-          <motion.div
-            animate={{ y: [0, -3, 0], rotate: [-5, 5, -5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute -top-4 left-1/2 -translate-x-1/2"
-          >
-            <Crown className="h-6 w-6 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,215,0,1)]" />
+            <motion.div
+              animate={{ y: [0, -3, 0], rotate: [-5, 5, -5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2"
+            >
+              <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,215,0,1)]" />
           </motion.div>
         )}
       </div>
 
-      <p className={`text-sm font-bold truncate max-w-[120px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+      <p className={`text-xs sm:text-sm font-bold truncate max-w-[80px] sm:max-w-[120px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
         {user.username}
       </p>
 
-      <div className="flex items-center gap-1 mt-1">
-        <Gem className="h-3.5 w-3.5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
-        <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
+      <div className="flex items-center gap-0.5 sm:gap-1 mt-1">
+        <Gem className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
+        <span className="text-xs sm:text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
           <AnimatedCounter value={user.total_camly || 0} duration={2000} />
         </span>
       </div>
@@ -238,7 +238,7 @@ const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: num
         }`}
       >
         <div className="flex items-center justify-center h-full">
-          <span className="text-2xl font-black bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(255,215,0,0.9)]">
+          <span className="text-xl sm:text-2xl font-black bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(255,215,0,0.9)]">
             #{rank}
           </span>
         </div>
@@ -624,18 +624,18 @@ export const FunPlanetUnifiedBoard = () => {
           </AnimatePresence>
 
           {/* =============== MAIN GRID LAYOUT =============== */}
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-0">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-0">
             {/* =============== LEFT COLUMN: HONOR + LEGENDS =============== */}
-            <div className="p-4 flex flex-col">
+            <div className="p-3 sm:p-4 flex flex-col">
               {/* Honor Board Header */}
-              <div className="mb-2 flex items-center justify-center gap-2">
-                <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>🌍</motion.span>
-                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>HONOR BOARD</h3>
-                <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>🏆</motion.span>
+              <div className="mb-2 flex items-center justify-center gap-1.5 sm:gap-2">
+                <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>🌍</motion.span>
+                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>HONOR BOARD</h3>
+                <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>🏆</motion.span>
               </div>
 
               {/* Stats Bars */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1 sm:gap-1.5">
                 {statItems.map((item, index) => {
                   const progressPercent = Math.min((item.value / maxStatValue) * 100, 100);
                   const isCamly = item.label === "CAMLY";
@@ -647,23 +647,23 @@ export const FunPlanetUnifiedBoard = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                       whileHover={{ scale: 1.02, y: -2, boxShadow: `0 0 25px ${item.accentColor}50` }}
-                      className="relative flex items-center gap-2 rounded-xl p-1.5 px-2.5 overflow-hidden cursor-pointer transition-all duration-300"
+                      className="relative flex items-center gap-1.5 sm:gap-2 rounded-xl p-1 sm:p-1.5 px-2 sm:px-2.5 overflow-hidden cursor-pointer transition-all duration-300"
                       style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.30) 0%, rgba(255,215,0,0.15) 100%)", borderLeft: `4px solid ${item.accentColor}`, ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
                     >
                       <div className="absolute inset-0 rounded-xl overflow-hidden">
                         <motion.div className="h-full" style={{ background: `linear-gradient(90deg, ${item.accentColor}50 0%, ${item.accentColor}20 50%, transparent 100%)` }} initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1.5, delay: index * 0.15, ease: "easeOut" }} />
                       </div>
-                      <motion.div className={`relative z-10 rounded-lg ${item.bgColor} p-2 flex-shrink-0`} style={{ boxShadow: `0 0 20px ${item.accentColor}80` }} animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity, delay: index * 0.2, ease: "easeInOut" }}>
-                        <item.icon className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
+                      <motion.div className={`relative z-10 rounded-lg ${item.bgColor} p-1.5 sm:p-2 flex-shrink-0`} style={{ boxShadow: `0 0 20px ${item.accentColor}80` }} animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity, delay: index * 0.2, ease: "easeInOut" }}>
+                        <item.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
                       </motion.div>
                       <div className="relative z-10 flex-1 flex items-center justify-between min-w-0">
-                        <span className="text-base font-bold text-yellow-200">{item.label}</span>
-                        <div className="flex items-center gap-1">
-                          {isCamly && <Gem className="h-3.5 w-3.5 text-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
-                          <span className="relative z-20 text-lg font-black text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 8px #fff, 1px 1px 2px #000' }}>
+                        <span className="text-sm sm:text-base font-bold text-yellow-200">{item.label}</span>
+                        <div className="flex items-center gap-0.5 sm:gap-1">
+                          {isCamly && <Gem className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]" />}
+                          <span className="relative z-20 text-base sm:text-lg font-black text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.9)]" style={{ textShadow: '0 0 8px #fff, 1px 1px 2px #000' }}>
                             {statsLoading ? <span className="animate-pulse">...</span> : <AnimatedCounter value={item.value} />}
                           </span>
-                          <span className="text-sm text-white font-medium drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]">{item.suffix}</span>
+                          <span className="text-xs sm:text-sm text-white font-medium drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]">{item.suffix}</span>
                         </div>
                       </div>
                     </motion.div>
@@ -672,33 +672,33 @@ export const FunPlanetUnifiedBoard = () => {
               </div>
 
               {/* Golden Horizontal Divider */}
-              <div className="my-4">
-                <div className="h-1 rounded-full" style={{ background: "linear-gradient(90deg, transparent 0%, #FFD700 15%, #FFFACD 30%, #FFD700 50%, #FFFACD 70%, #FFD700 85%, transparent 100%)", boxShadow: "0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3)" }} />
+              <div className="my-3 sm:my-4">
+                <div className="h-0.5 sm:h-1 rounded-full" style={{ background: "linear-gradient(90deg, transparent 0%, #FFD700 15%, #FFFACD 30%, #FFD700 50%, #FFFACD 70%, #FFD700 85%, transparent 100%)", boxShadow: "0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3)" }} />
               </div>
 
               {/* Legends Board */}
               <div className="flex-1 flex flex-col min-h-0">
                 {/* Legends Header */}
-                <div className="mb-3 flex items-center justify-center gap-2">
-                  <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>👑</motion.span>
-                  <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-xl sm:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>FUN PLANET LEGENDS</h3>
-                  <motion.span className="text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>👑</motion.span>
+                <div className="mb-2 sm:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
+                  <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>👑</motion.span>
+                  <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>FUN PLANET LEGENDS</h3>
+                  <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>👑</motion.span>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-2 mb-3">
-                  <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50" : "bg-white/30 !text-white hover:bg-white/40"}`}>
-                    <Gem className={`h-4 w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
-                    <span className={`text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Donate & Sponsor</span>
+                <div className="flex gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                  <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50" : "bg-white/30 !text-white hover:bg-white/40"}`}>
+                    <Gem className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
+                    <span className={`text-xs sm:text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Donate & Sponsor</span>
                   </button>
-                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/30 !text-white hover:bg-white/40"}`}>
-                    <Gamepad2 className={`h-4 w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
-                    <span className={`text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
+                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/30 !text-white hover:bg-white/40"}`}>
+                    <Gamepad2 className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
+                    <span className={`text-xs sm:text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
                   </button>
                 </div>
 
                 {/* Content */}
-                <div className="overflow-y-auto overflow-x-hidden space-y-1.5 h-[200px]">
+                <div className="overflow-y-auto overflow-x-hidden space-y-1 sm:space-y-1.5 h-[160px] sm:h-[200px]">
                   <AnimatePresence mode="wait">
                     {legendsLoading ? (
                       <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center h-32">
