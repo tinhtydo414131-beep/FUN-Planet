@@ -142,14 +142,14 @@ export const Hero = () => {
               >
                 FUN PLANET
               </span>
-              {/* Main animated gradient */}
+              {/* Main animated gradient with yellow */}
               <span 
-                className="relative bg-clip-text text-transparent animate-pulse"
+                className="relative bg-clip-text text-transparent"
                 style={{ 
-                  backgroundImage: 'linear-gradient(135deg, #FF6BD6 0%, #E040A0 10%, #D050C0 20%, #B060D0 30%, #9070E0 40%, #7090F0 50%, #50B0FF 60%, #40D0FF 70%, #60E0FF 80%, #80F0FF 90%, #A0F8FF 100%)',
+                  backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FFC000 8%, #FFB000 15%, #FF6BD6 25%, #E040A0 35%, #D050C0 45%, #9070E0 55%, #7090F0 65%, #50B0FF 75%, #40D0FF 85%, #FFE066 95%, #FFD700 100%)',
                   backgroundSize: '200% 200%',
-                  animation: 'gradient-shift 3s ease infinite',
-                  filter: 'drop-shadow(0 0 10px rgba(255,107,214,0.6)) drop-shadow(0 0 25px rgba(80,176,255,0.5)) drop-shadow(0 0 40px rgba(160,80,208,0.4))',
+                  animation: 'gradient-shift 4s ease infinite',
+                  filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.6)) drop-shadow(0 0 20px rgba(255,107,214,0.5)) drop-shadow(0 0 30px rgba(80,176,255,0.4))',
                   WebkitBackgroundClip: 'text',
                 }}
               >
