@@ -123,26 +123,28 @@ export const Hero = () => {
             </motion.div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
-              {/* Soft shadow */}
+              {/* Subtle dark shadow for clarity */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    1px 1px 2px rgba(150,100,180,0.3),
-                    2px 2px 4px rgba(120,80,160,0.2),
-                    2px 2px 8px rgba(100,60,140,0.15)
+                    1px 1px 0 rgba(80,40,100,0.6),
+                    2px 2px 0 rgba(60,30,80,0.5),
+                    3px 3px 0 rgba(40,20,60,0.4),
+                    2px 2px 6px rgba(0,0,0,0.5),
+                    4px 4px 12px rgba(0,0,0,0.3)
                   `,
                 }}
                 aria-hidden="true"
               >
                 FUN PLANET
               </span>
-              {/* Soft pastel gradient */}
+              {/* Main animated gradient with yellow - no glow */}
               <span 
                 className="relative bg-clip-text text-transparent"
                 style={{ 
-                  backgroundImage: 'linear-gradient(135deg, #FFE4B5 0%, #FFCCE0 15%, #FFB0D0 30%, #E0A0E0 45%, #C0B0F0 55%, #A0D0FF 70%, #90E0FF 85%, #FFE4B5 100%)',
+                  backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FFC000 8%, #FFB000 15%, #FF6BD6 25%, #E040A0 35%, #D050C0 45%, #9070E0 55%, #7090F0 65%, #50B0FF 75%, #40D0FF 85%, #FFE066 95%, #FFD700 100%)',
                   backgroundSize: '200% 200%',
                   animation: 'gradient-shift 8s ease infinite',
                   WebkitBackgroundClip: 'text',
@@ -150,11 +152,11 @@ export const Hero = () => {
               >
                 FUN PLANET
               </span>
-              {/* Gentle shine overlay */}
+              {/* Glossy shine overlay */}
               <span 
                 className="absolute inset-0 bg-clip-text text-transparent pointer-events-none"
                 style={{ 
-                  backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 30%, transparent 60%)',
+                  backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 20%, transparent 50%, rgba(255,255,255,0.2) 80%, rgba(255,255,255,0.5) 100%)',
                   WebkitBackgroundClip: 'text',
                 }}
                 aria-hidden="true"
