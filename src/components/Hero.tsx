@@ -43,13 +43,28 @@ export const Hero = () => {
         loading="eager"
         style={{ 
           objectPosition: 'center 35%',
-          filter: 'contrast(1.08) saturate(1.15) brightness(1.02)',
-          imageRendering: 'auto'
+          filter: 'contrast(1.15) saturate(1.25) brightness(1.0)',
+          imageRendering: 'crisp-edges',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
+          transform: 'translateZ(0)',
+        }}
+      />
+      
+      {/* Overlay to blend out the moon in upper-left */}
+      <div 
+        className="absolute z-[1] pointer-events-none"
+        style={{
+          top: 0,
+          left: 0,
+          width: '350px',
+          height: '250px',
+          background: 'radial-gradient(ellipse at 25% 20%, rgba(135,206,235,0.95) 0%, rgba(135,206,235,0.7) 25%, rgba(135,206,235,0.4) 50%, transparent 75%)',
         }}
       />
       
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-sky-400/20 via-transparent to-purple-900/40 z-[1]" />
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center space-y-6 sm:space-y-8">
