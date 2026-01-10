@@ -180,7 +180,7 @@ export const Hero = () => {
           </motion.p>
 
 
-          {/* Search bar - Enhanced glow effect */}
+          {/* Search bar - Glossy white with yellow gradient border */}
           <motion.form initial={{
           opacity: 0,
           y: 20
@@ -191,11 +191,56 @@ export const Hero = () => {
           delay: 0.4
         }} onSubmit={handleSearch} className="max-w-xl mx-auto px-2 sm:px-4">
             <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 rounded-2xl blur opacity-40 group-hover:opacity-60 transition duration-300" />
-              <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-purple-400 group-hover:text-cyan-400 transition-colors z-10" />
-                <Input type="text" placeholder={`${t('hero.searchPlaceholder')} 🔍`} value={search} onChange={e => setSearch(e.target.value)} className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-rajdhani font-medium bg-black/40 backdrop-blur-xl border-2 border-white/30 focus:border-cyan-400 rounded-xl shadow-lg text-white placeholder:text-white/50 focus:ring-4 focus:ring-cyan-400/30" />
-                <Button type="submit" onMouseEnter={() => playPop()} onClick={() => playClick()} className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.7)] transition-all">
+              {/* Yellow gradient border glow */}
+              <div 
+                className="absolute -inset-[2px] rounded-2xl opacity-90 group-hover:opacity-100 transition duration-300"
+                style={{
+                  background: 'linear-gradient(90deg, #FFD700 0%, #FFA500 25%, #FFD700 50%, #FFEC8B 75%, #FFD700 100%)',
+                  filter: 'blur(1px)',
+                }}
+              />
+              <div 
+                className="relative rounded-xl overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(245,240,255,0.9) 50%, rgba(255,255,255,0.95) 100%)',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-purple-500 group-hover:text-pink-500 transition-colors z-10" />
+                <Input 
+                  type="text" 
+                  placeholder={`${t('hero.searchPlaceholder')} 🔍`} 
+                  value={search} 
+                  onChange={e => setSearch(e.target.value)} 
+                  className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-rajdhani font-medium bg-transparent border-0 rounded-xl shadow-none focus:ring-0 focus:border-0"
+                  style={{
+                    color: 'transparent',
+                    backgroundImage: 'linear-gradient(90deg, #E040A0 0%, #9070E0 50%, #50B0FF 100%)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                />
+                {/* Placeholder styling override */}
+                <style>{`
+                  .search-gradient-input::placeholder {
+                    background: linear-gradient(90deg, #E040A0 0%, #9070E0 50%, #50B0FF 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                  }
+                `}</style>
+                <Button 
+                  type="submit" 
+                  onMouseEnter={() => playPop()} 
+                  onClick={() => playClick()} 
+                  className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm rounded-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(230,220,255,0.9) 0%, rgba(200,210,255,0.85) 50%, rgba(220,230,255,0.9) 100%)',
+                    color: '#7C3AED',
+                    boxShadow: '0 2px 10px rgba(124,58,237,0.2)',
+                  }}
+                >
                   {t('hero.searchButton')} 🚀
                 </Button>
               </div>
