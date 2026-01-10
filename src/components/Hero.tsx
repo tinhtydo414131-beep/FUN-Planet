@@ -123,30 +123,30 @@ export const Hero = () => {
             </motion.div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
-              {/* 3D shadow layer - cyan/turquoise */}
+              {/* 3D shadow layer - matching logo colors */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    0 2px 0 #00CED1,
-                    0 4px 0 #20B2AA,
-                    0 6px 0 #008B8B,
-                    0 8px 0 #006666,
-                    0 10px 20px rgba(0,0,0,0.5)
+                    0 2px 0 #C9A0DC,
+                    0 4px 0 #B088C0,
+                    0 6px 0 #9370A8,
+                    0 8px 0 #7A5A90,
+                    0 10px 20px rgba(147,112,168,0.5)
                   `,
-                  WebkitTextStroke: '3px #00CED1',
+                  WebkitTextStroke: '2px #DDA0DD',
                 }}
                 aria-hidden="true"
               >
                 FUN PLANET
               </span>
-              {/* Main gradient text - pink to cyan */}
+              {/* Main gradient - pastel pink to lavender to sky blue */}
               <span 
                 className="relative bg-clip-text text-transparent"
                 style={{ 
-                  backgroundImage: 'linear-gradient(180deg, #FF1493 0%, #FF69B4 30%, #00CED1 70%, #40E0D0 100%)',
-                  filter: 'drop-shadow(0 0 10px rgba(255,20,147,0.6)) drop-shadow(0 0 20px rgba(0,206,209,0.4))',
+                  backgroundImage: 'linear-gradient(180deg, #E8B4D8 0%, #DDA0DD 25%, #C9A0DC 50%, #87CEEB 75%, #6BB3D9 100%)',
+                  filter: 'drop-shadow(0 0 15px rgba(221,160,221,0.5)) drop-shadow(0 0 30px rgba(135,206,235,0.3))',
                 }}
               >
                 FUN PLANET
