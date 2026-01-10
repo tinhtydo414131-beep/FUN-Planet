@@ -49,7 +49,7 @@ export const Hero = () => {
     });
   };
 
-  return <section className="relative pt-32 sm:pt-40 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-start bg-purple-900">
+  return <section className="relative pt-32 sm:pt-40 pb-12 sm:pb-16 px-4 overflow-hidden min-h-screen flex flex-col justify-start">
       {/* Video background for desktop, image fallback for mobile */}
       {!isMobile && !prefersReducedMotion ? (
         <video 
@@ -57,8 +57,6 @@ export const Hero = () => {
           muted 
           loop 
           playsInline
-          preload="auto"
-          poster="/images/backgrounds/toa_thap.jpg"
           className="absolute inset-0 w-full h-full object-cover z-0"
           style={{ 
             objectPosition: 'center top',
