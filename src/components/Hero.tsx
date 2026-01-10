@@ -180,7 +180,7 @@ export const Hero = () => {
           </motion.p>
 
 
-          {/* Search bar - Glossy white with yellow gradient border */}
+          {/* Search bar - Glossy white with pink-blue gradient border */}
           <motion.form initial={{
           opacity: 0,
           y: 20
@@ -191,22 +191,22 @@ export const Hero = () => {
           delay: 0.4
         }} onSubmit={handleSearch} className="max-w-xl mx-auto px-2 sm:px-4">
             <div className="relative group">
-              {/* Yellow gradient border glow */}
+              {/* Pink-blue gradient border */}
               <div 
                 className="absolute -inset-[2px] rounded-2xl opacity-90 group-hover:opacity-100 transition duration-300"
                 style={{
-                  background: 'linear-gradient(90deg, #FFD700 0%, #FFA500 25%, #FFD700 50%, #FFEC8B 75%, #FFD700 100%)',
-                  filter: 'blur(1px)',
+                  background: 'linear-gradient(90deg, #E040A0 0%, #C060C0 25%, #9070E0 50%, #70A0F0 75%, #50B0FF 100%)',
                 }}
               />
               <div 
                 className="relative rounded-xl overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(245,240,255,0.9) 50%, rgba(255,255,255,0.95) 100%)',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,245,255,0.92) 50%, rgba(255,255,255,0.95) 100%)',
                   backdropFilter: 'blur(20px)',
                 }}
               >
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-purple-500 group-hover:text-pink-500 transition-colors z-10" />
+                {/* Search icon - outline style only */}
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 z-10" strokeWidth={1.5} />
                 <Input 
                   type="text" 
                   placeholder={`${t('hero.searchPlaceholder')} 🔍`} 
@@ -236,9 +236,9 @@ export const Hero = () => {
                   onClick={() => playClick()} 
                   className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm rounded-xl"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(230,220,255,0.9) 0%, rgba(200,210,255,0.85) 50%, rgba(220,230,255,0.9) 100%)',
+                    background: 'linear-gradient(135deg, rgba(235,230,255,0.95) 0%, rgba(220,225,255,0.9) 50%, rgba(235,240,255,0.95) 100%)',
                     color: '#7C3AED',
-                    boxShadow: '0 2px 10px rgba(124,58,237,0.2)',
+                    boxShadow: '0 2px 10px rgba(124,58,237,0.15)',
                   }}
                 >
                   {t('hero.searchButton')} 🚀
