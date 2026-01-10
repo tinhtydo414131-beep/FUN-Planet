@@ -123,17 +123,18 @@ export const Hero = () => {
             </motion.div>
             
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-orbitron font-black tracking-wider relative">
-              {/* Metallic gold shadow for clarity */}
+              {/* Metallic gold mixed with black shadow */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    1px 1px 0 rgba(218,165,32,0.8),
-                    2px 2px 0 rgba(184,134,11,0.7),
-                    3px 3px 0 rgba(139,101,8,0.6),
-                    2px 2px 8px rgba(218,165,32,0.5),
-                    4px 4px 16px rgba(184,134,11,0.4)
+                    1px 1px 0 rgba(218,165,32,0.9),
+                    2px 2px 0 rgba(139,101,8,0.8),
+                    3px 3px 0 rgba(50,40,20,0.7),
+                    4px 4px 0 rgba(20,15,5,0.6),
+                    2px 2px 6px rgba(0,0,0,0.6),
+                    4px 4px 12px rgba(0,0,0,0.4)
                   `,
                 }}
                 aria-hidden="true"
