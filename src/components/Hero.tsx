@@ -234,11 +234,12 @@ export const Hero = () => {
                   type="submit" 
                   onMouseEnter={() => playPop()} 
                   onClick={() => playClick()} 
-                  className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm rounded-xl"
+                  className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm rounded-xl border-2 border-purple-300/50 hover:border-purple-400/70 transition-all"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(235,230,255,0.95) 0%, rgba(220,225,255,0.9) 50%, rgba(235,240,255,0.95) 100%)',
-                    color: '#7C3AED',
-                    boxShadow: '0 2px 10px rgba(124,58,237,0.15)',
+                    background: 'linear-gradient(135deg, rgba(200,180,255,0.95) 0%, rgba(180,160,255,0.9) 50%, rgba(200,190,255,0.95) 100%)',
+                    color: '#6D28D9',
+                    boxShadow: '0 4px 15px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
+                    fontWeight: 700,
                   }}
                 >
                   {t('hero.searchButton')} 🚀
