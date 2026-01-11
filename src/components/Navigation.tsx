@@ -1,6 +1,6 @@
 import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown } from "lucide-react";
 
-const funPlanetLogo = "/logo-header.png";
+import funPlanetCircleLogo from "@/assets/fun-planet-circle-logo.png";
 import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -127,12 +127,9 @@ export const Navigation = () => {
               className="flex items-center group"
             >
               <img 
-                src={funPlanetLogo} 
+                src={funPlanetCircleLogo} 
                 alt="FUN Planet – Cute Gaming Planet" 
-                className="h-12 md:h-14 lg:h-16 w-auto ml-2 md:ml-5 object-contain select-none transition-all duration-300 rounded-2xl drop-shadow-lg hover:scale-110 hover:rotate-3 hover:drop-shadow-[0_0_20px_rgba(168,85,247,0.6)]"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/logo-header-fallback.jpg';
-                }}
+                className="h-16 md:h-18 lg:h-20 w-auto rounded-full border-4 border-white/60 shadow-[0_0_25px_rgba(168,85,247,0.5)] hover:shadow-[0_0_35px_rgba(168,85,247,0.7)] transition-all duration-300 hover:scale-110"
               />
             </NavLink>
 
@@ -275,12 +272,9 @@ export const Navigation = () => {
             className="flex items-center group active:scale-95 transition-transform"
           >
             <img 
-              src={funPlanetLogo} 
+              src={funPlanetCircleLogo} 
               alt="FUN Planet – Cute Gaming Planet" 
-              className="h-10 w-auto ml-2 object-contain select-none transition-all duration-300 rounded-xl drop-shadow-md hover:scale-110 hover:rotate-3 hover:drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/logo-header-fallback.jpg';
-              }}
+              className="h-12 w-12 rounded-full border-2 border-white/60 shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:scale-110 transition-all"
             />
           </NavLink>
           
