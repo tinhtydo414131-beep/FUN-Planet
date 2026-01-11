@@ -4,8 +4,13 @@ import "./index.css";
 import "./i18n";
 
 // App version for cache busting - force new version
-const APP_VERSION = "2026-01-02-v1";
+const APP_VERSION = "2026-01-11-v1";
 console.log(`[FunPlanet] App starting, version: ${APP_VERSION}`);
+
+// Theme version for automatic preference reset when theme updates
+const THEME_VERSION = "2026-01-11-v1";
+const THEME_VERSION_KEY = "fun-planet-theme-version";
+const THEME_KEY = "fun-planet-theme";
 
 // Force clear ALL caches immediately
 const clearAllCaches = async () => {
@@ -45,6 +50,37 @@ const unregisterAllServiceWorkers = async () => {
   }
 };
 
+// Clear old theme when version changes - auto-reset theme preferences on updates
+const clearOldTheme = () => {
+  try {
+    const savedThemeVersion = localStorage.getItem(THEME_VERSION_KEY);
+    
+    if (savedThemeVersion !== THEME_VERSION) {
+      // Theme version has changed - clear old theme preference
+      localStorage.removeItem(THEME_KEY);
+      localStorage.setItem(THEME_VERSION_KEY, THEME_VERSION);
+      
+      // Remove dark class to ensure fresh start with light theme
+      document.documentElement.classList.remove("dark");
+      
+      console.log(`[FunPlanet] Theme version updated: ${savedThemeVersion} → ${THEME_VERSION}`);
+      console.log('[FunPlanet] Old theme preference cleared');
+    }
+  } catch (error) {
+    console.error('[FunPlanet] Theme clear error:', error);
+  }
+};
+
+// Clear old cookies including sidebar state
+const clearOldCookies = () => {
+  try {
+    document.cookie = "sidebar:state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    console.log('[FunPlanet] Old cookies cleared');
+  } catch (error) {
+    console.error('[FunPlanet] Cookie clear error:', error);
+  }
+};
+
 // Clear localStorage cache keys
 const clearLocalStorageCache = () => {
   try {
@@ -67,6 +103,8 @@ const clearLocalStorageCache = () => {
 // Run cache clearing immediately - always clear on every app start
 (async () => {
   console.log('[FunPlanet] Clearing all caches and service workers...');
+  clearOldTheme(); // Clear old theme when version changes
+  clearOldCookies(); // Clear old cookies
   clearLocalStorageCache();
   await clearAllCaches();
   await unregisterAllServiceWorkers();
