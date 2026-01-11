@@ -125,9 +125,11 @@ Hãy đánh giá game này dựa trên thông tin trên.`
           headers: { 'Accept': 'image/*' }
         })
         console.log(`[Angel AI] Fetch response status: ${imageResponse.status}`)
-        console.log(`[Angel AI] Content-Type: ${imageResponse.headers.get('content-type')}`)
+        const contentType = imageResponse.headers.get('content-type') || ''
+        console.log(`[Angel AI] Content-Type: ${contentType}`)
         
-        if (imageResponse.ok) {
+        // CRITICAL: Verify content-type is actually an image, not HTML
+        if (imageResponse.ok && contentType.startsWith('image/')) {
           const imageBuffer = await imageResponse.arrayBuffer()
           const bytes = new Uint8Array(imageBuffer)
           console.log(`[Angel AI] Image size: ${bytes.length} bytes (${(bytes.length / 1024).toFixed(2)} KB)`)
@@ -139,15 +141,7 @@ Hãy đánh giá game này dựa trên thông tin trên.`
               binary += String.fromCharCode(bytes[i])
             }
             thumbnailBase64 = btoa(binary)
-            
-            // Detect mime type from URL or content-type header
-            const contentType = imageResponse.headers.get('content-type')
-            if (contentType && contentType.includes('image/')) {
-              thumbnailMimeType = contentType.split(';')[0].trim()
-            } else {
-              const ext = thumbnail_url.toLowerCase().split('.').pop()?.split('?')[0] || 'jpeg'
-              thumbnailMimeType = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
-            }
+            thumbnailMimeType = contentType.split(';')[0].trim()
             
             userContent.push({
               type: 'image_url',
@@ -159,6 +153,8 @@ Hãy đánh giá game này dựa trên thông tin trên.`
           } else {
             console.log(`[Angel AI] ⚠️ Thumbnail too large: ${bytes.length} bytes (max 4MB)`)
           }
+        } else if (imageResponse.ok && !contentType.startsWith('image/')) {
+          console.log(`[Angel AI] ⚠️ URL returned non-image content-type: ${contentType} - skipping vision analysis`)
         } else {
           console.log(`[Angel AI] ⚠️ Failed to fetch thumbnail: HTTP ${imageResponse.status}`)
         }
