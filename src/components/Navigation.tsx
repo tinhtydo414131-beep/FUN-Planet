@@ -1,6 +1,6 @@
 import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown } from "lucide-react";
 
-const funPlanetLogo = "/logo-header.png";
+const funPlanetLogo = "/logo-header-circular.png";
 import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -121,19 +121,33 @@ export const Navigation = () => {
       <nav className="hidden md:block sticky-header">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
-            {/* Logo */}
+            {/* Logo - Circular with Image + Text */}
             <NavLink 
               to="/" 
               className="flex items-center group"
             >
-              <img 
-                src={funPlanetLogo} 
-                alt="FUN Planet – Cute Gaming Planet" 
-                className="h-12 md:h-14 lg:h-16 w-auto ml-2 md:ml-5 object-contain select-none transition-all duration-300 rounded-2xl drop-shadow-lg hover:scale-110 hover:rotate-3 hover:drop-shadow-[0_0_20px_rgba(168,85,247,0.6)]"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/logo-header-fallback.jpg';
-                }}
-              />
+              <div className="flex items-center gap-3 bg-gradient-to-r from-purple-100/80 via-pink-50/60 to-cyan-50/60 backdrop-blur-sm rounded-full px-4 py-2 border border-purple-300/40 shadow-lg hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] transition-all duration-300 hover:scale-105">
+                {/* Circular image container */}
+                <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-inner group-hover:border-purple-500/70 transition-all">
+                  <img 
+                    src={funPlanetLogo} 
+                    alt="FUN Planet Mascot" 
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/logo-header-fallback.jpg';
+                    }}
+                  />
+                </div>
+                {/* Text with gradient */}
+                <div className="flex flex-col leading-tight">
+                  <span className="font-fredoka font-bold text-lg lg:text-xl bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
+                    FUN
+                  </span>
+                  <span className="font-fredoka font-bold text-sm lg:text-base text-purple-600 -mt-1">
+                    PLANET
+                  </span>
+                </div>
+              </div>
             </NavLink>
 
             {/* Desktop Links */}
@@ -274,14 +288,23 @@ export const Navigation = () => {
             to="/" 
             className="flex items-center group active:scale-95 transition-transform"
           >
-            <img 
-              src={funPlanetLogo} 
-              alt="FUN Planet – Cute Gaming Planet" 
-              className="h-10 w-auto ml-2 object-contain select-none transition-all duration-300 rounded-xl drop-shadow-md hover:scale-110 hover:rotate-3 hover:drop-shadow-[0_0_15px_rgba(168,85,247,0.6)]"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/logo-header-fallback.jpg';
-              }}
-            />
+            <div className="flex items-center gap-2 bg-gradient-to-r from-purple-100/80 to-pink-50/60 backdrop-blur-sm rounded-full px-3 py-1.5 border border-purple-300/40 shadow-md hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all duration-300">
+              {/* Smaller circular image */}
+              <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-purple-400/50 group-hover:border-purple-500/70 transition-all">
+                <img 
+                  src={funPlanetLogo} 
+                  alt="FUN Planet" 
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/logo-header-fallback.jpg';
+                  }}
+                />
+              </div>
+              {/* Compact text */}
+              <span className="font-fredoka font-bold text-base bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                FUN PLANET
+              </span>
+            </div>
           </NavLink>
           
           <div className="flex items-center gap-2">
