@@ -50,10 +50,37 @@ export const Hero = () => {
         }}
       />
       
-      {/* Minimal gradient overlay - video fully visible */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-[1]" />
-      {/* Subtle side vignette */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 via-transparent to-purple-900/10 z-[1]" />
+      {/* Cosmic radial gradient - matching pastel theme */}
+      <div 
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 30%, rgba(168,85,247,0.12) 0%, rgba(236,72,153,0.08) 35%, rgba(34,211,238,0.06) 60%, transparent 100%)'
+        }}
+      />
+      
+      {/* Animated diamond shimmer overlay */}
+      <div 
+        className="absolute inset-0 z-[1] pointer-events-none opacity-[0.05]"
+        style={{
+          backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FF6BD6 25%, #9070E0 50%, #50B0FF 75%, #FFD700 100%)',
+          backgroundSize: '400% 400%',
+          animation: 'gradient-shift 15s ease infinite',
+        }}
+      />
+      
+      {/* Enhanced pastel vignette - pink/cyan sides */}
+      <div className="absolute inset-0 bg-gradient-to-r from-pink-600/8 via-transparent to-cyan-600/8 z-[1] pointer-events-none" />
+      
+      {/* Bottom gradient for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-purple-900/50 z-[1] pointer-events-none" />
+      
+      {/* Subtle top glow for golden title visibility */}
+      <div 
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 20%, rgba(255,215,0,0.06) 0%, transparent 45%)'
+        }}
+      />
       
       <div className="container mx-auto max-w-6xl relative z-10">
         <div className="text-center space-y-6 sm:space-y-8">
