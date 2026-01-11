@@ -143,8 +143,8 @@ export default function FunWallet() {
   
   // Refs for debouncing and deduplication
   const lastSyncedAddressRef = useRef<string | null>(null);
-  const accountChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const priceRetryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const accountChangeTimeoutRef = useRef<number | null>(null);
+  const priceRetryTimeoutRef = useRef<number | null>(null);
   const lastPriceFetchRef = useRef<number>(0);
 
   // Check for processed coin image on mount
@@ -239,7 +239,7 @@ export default function FunWallet() {
         }
         
         // Debounce: wait 500ms before processing
-        accountChangeTimeoutRef.current = setTimeout(() => {
+        accountChangeTimeoutRef.current = window.setTimeout(() => {
           if (accounts.length > 0) {
             setAccount(accounts[0]);
             getBalance(accounts[0]);
@@ -487,7 +487,7 @@ export default function FunWallet() {
       // Only retry if we haven't fetched recently (avoid infinite loops)
       const timeSinceLastFetch = Date.now() - lastPriceFetchRef.current;
       if (timeSinceLastFetch > 30000) { // At least 30s between retries
-        priceRetryTimeoutRef.current = setTimeout(fetchTokenPrices, 30000);
+        priceRetryTimeoutRef.current = window.setTimeout(fetchTokenPrices, 30000);
       }
     }
     lastPriceFetchRef.current = Date.now();
