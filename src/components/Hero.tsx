@@ -22,20 +22,6 @@ export const Hero = () => {
     toggleSound
   } = useGameAudio();
 
-  // Mobile and reduced motion detection for video optimization
-  const [isMobile, setIsMobile] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,33 +36,19 @@ export const Hero = () => {
   };
 
   return <section className="relative pt-20 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-3 sm:px-4 overflow-hidden min-h-screen flex flex-col justify-start">
-      {/* Video background for desktop, image fallback for mobile */}
-      {!isMobile && !prefersReducedMotion ? (
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          style={{ 
-            objectPosition: 'center center',
-            filter: 'contrast(1.15) saturate(1.2) brightness(1.05)',
-          }}
-        >
-          <source src="/videos/homepage-bg.mp4" type="video/mp4" />
-        </video>
-      ) : (
-        <img 
-          src="/images/backgrounds/toa_thap.jpg" 
-          alt="Fantasy Background"
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          loading="eager"
-          style={{ 
-            objectPosition: 'center 35%',
-            filter: 'contrast(1.15) saturate(1.25) brightness(1.0)',
-          }}
-        />
-      )}
+      {/* Background image */}
+      <img 
+        src="/images/backgrounds/fun-planet-bg.jpg" 
+        alt="Fun Planet Background"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+        style={{ 
+          objectPosition: 'center center',
+          filter: 'contrast(1.1) saturate(1.15) brightness(1.05)',
+        }}
+      />
       
       {/* Minimal gradient overlay - video fully visible */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 z-[1]" />
