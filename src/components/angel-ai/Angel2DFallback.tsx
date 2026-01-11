@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import angelAvatar from "@/assets/fun-planet-circle-logo.png";
+import angelAvatar from "@/assets/angel-ai-avatar.png";
 
 interface Angel2DFallbackProps {
   onClick?: () => void;
