@@ -1,3 +1,7 @@
+/**
+ * @deprecated This component is deprecated. Use MobileBottomNavEnhanced instead.
+ * Kept for reference only - not used in App.tsx
+ */
 import { Home, Gamepad2, Upload, MessageCircle, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { haptics } from "@/utils/haptics";
 import confetti from "canvas-confetti";
 
+/** @deprecated Use MobileBottomNavEnhanced instead */
 export const EnhancedMobileNav = () => {
   const { t } = useTranslation();
   const location = useLocation();

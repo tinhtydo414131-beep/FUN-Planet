@@ -1,4 +1,4 @@
-import { Home, Gamepad2, Upload, User, Trophy, Wallet, Sparkles } from "lucide-react";
+import { Home, Gamepad2, Upload, User, Gift, Wallet, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +24,7 @@ export const MobileBottomNavEnhanced = () => {
   const baseNavItems = [
     { icon: Home, label: t('nav.home'), path: "/", emoji: "🏠", color: "from-[hsl(340,70%,75%)] to-[hsl(280,65%,75%)]" },
     { icon: Gamepad2, label: t('nav.games'), path: "/games", emoji: "🎮", color: "from-[hsl(280,65%,75%)] to-[hsl(200,70%,75%)]" },
-    { icon: Trophy, label: t('nav.rank'), path: "/leaderboard", emoji: "🏆", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
+    { icon: Gift, label: t('nav.rewardGalaxy'), path: "/reward-galaxy", emoji: "🎁", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
   ];
 
   // Add upload tab for developers, wallet for others
