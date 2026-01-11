@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEffect, useRef } from "react";
 import { LoadingFallback } from "@/components/LoadingFallback";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Critical pages - load immediately
 import Index from "./pages/Index";
@@ -308,17 +309,19 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <Web3Provider>
-      <TooltipProvider>
-        <Suspense fallback={null}>
-          <CallProvider>
-            <AppContent />
-          </CallProvider>
-        </Suspense>
-      </TooltipProvider>
-    </Web3Provider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <Web3Provider>
+        <TooltipProvider>
+          <Suspense fallback={<LoadingFallback />}>
+            <CallProvider>
+              <AppContent />
+            </CallProvider>
+          </Suspense>
+        </TooltipProvider>
+      </Web3Provider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
