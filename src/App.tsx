@@ -75,7 +75,9 @@ const LawOfLightPopup = lazy(() => import("@/components/LawOfLightPopup"));
 
 // Lazy load private chat components
 const FloatingChatWindows = lazy(() => import("@/components/private-chat/FloatingChatWindows").then(m => ({ default: m.FloatingChatWindows })));
-const CallProvider = lazy(() => import("@/components/private-chat/CallProvider").then(m => ({ default: m.CallProvider })));
+
+// Import CallProvider directly - Context Providers should NOT be lazy-loaded
+import { CallProvider } from "@/components/private-chat/CallProvider";
 
 // Import hooks
 import { useChatWindows } from "@/components/private-chat/FloatingChatWindows";
@@ -313,11 +315,11 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <Web3Provider>
         <TooltipProvider>
-          <Suspense fallback={<LoadingFallback />}>
-            <CallProvider>
+          <CallProvider>
+            <Suspense fallback={<LoadingFallback />}>
               <AppContent />
-            </CallProvider>
-          </Suspense>
+            </Suspense>
+          </CallProvider>
         </TooltipProvider>
       </Web3Provider>
     </QueryClientProvider>
