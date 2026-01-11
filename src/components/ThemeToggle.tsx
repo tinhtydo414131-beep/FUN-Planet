@@ -3,6 +3,10 @@ import { Moon, Sun, Sparkles, Stars } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Theme version key - must match main.tsx
+const THEME_VERSION_KEY = "fun-planet-theme-version";
+const CURRENT_THEME_VERSION = "2026-01-11-v1";
+
 // 🌙☀️ FUN PLANET CUTE THEME TOGGLE - Kids Gaming 2025
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -42,6 +46,14 @@ export function ThemeToggle() {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     localStorage.setItem("fun-planet-theme", newTheme);
+    
+    // Update theme version when user manually changes theme
+    // This prevents auto-reset on next visit if they already have the latest version
+    const currentVersion = localStorage.getItem(THEME_VERSION_KEY);
+    if (!currentVersion) {
+      localStorage.setItem(THEME_VERSION_KEY, CURRENT_THEME_VERSION);
+    }
+    
     document.documentElement.classList.toggle("dark", newTheme === "dark");
     
     // Haptic feedback
