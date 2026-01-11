@@ -168,14 +168,14 @@ const GlowingRing = ({ rank }: { rank: number }) => {
   );
 };
 
-// Podium Card
+// Podium Card - Mobile Optimized
 const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: number; maxBalance: number; isCurrentUser: boolean }) => {
-  const heights = { 1: "h-16 sm:h-20", 2: "h-12 sm:h-14", 3: "h-10 sm:h-12" };
-  const avatarSizes = { 1: "h-12 w-12 sm:h-16 sm:w-16", 2: "h-11 w-11 sm:h-14 sm:w-14", 3: "h-10 w-10 sm:h-12 sm:w-12" };
+  const heights = { 1: "h-14 sm:h-18 md:h-20", 2: "h-10 sm:h-14 md:h-16", 3: "h-8 sm:h-12 md:h-14" };
+  const avatarSizes = { 1: "h-14 w-14 sm:h-16 sm:w-16 md:h-18 md:w-18", 2: "h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16", 3: "h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14" };
   const ringColors = {
-    1: "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)]",
-    2: "border-slate-300 shadow-[0_0_15px_rgba(192,192,192,0.6)]",
-    3: "border-orange-400 shadow-[0_0_15px_rgba(205,127,50,0.6)]",
+    1: "border-yellow-400 shadow-[0_0_15px_rgba(255,215,0,0.8)] sm:shadow-[0_0_20px_rgba(255,215,0,0.8)]",
+    2: "border-slate-300 shadow-[0_0_10px_rgba(192,192,192,0.6)] sm:shadow-[0_0_15px_rgba(192,192,192,0.6)]",
+    3: "border-orange-400 shadow-[0_0_10px_rgba(205,127,50,0.6)] sm:shadow-[0_0_15px_rgba(205,127,50,0.6)]",
   };
 
   return (
@@ -214,7 +214,7 @@ const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: num
         )}
       </div>
 
-      <p className={`text-xs sm:text-sm font-bold truncate max-w-[80px] sm:max-w-[120px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+      <p className={`text-[11px] sm:text-sm font-bold truncate max-w-[70px] xs:max-w-[85px] sm:max-w-[120px] md:max-w-[150px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
         {user.username}
       </p>
 
@@ -824,11 +824,11 @@ export const FunPlanetUnifiedBoard = () => {
                 </div>
               ) : (
                 <>
-                  {/* PODIUM FOR TOP 3 */}
-                  <div className="flex items-end justify-center gap-2 sm:gap-4 mb-4">
-                    {top3Users[1] && <div className="w-1/3 order-1"><PodiumCard user={top3Users[1]} rank={2} maxBalance={maxBalance} isCurrentUser={user?.id === top3Users[1].id} /></div>}
-                    {top3Users[0] && <div className="w-1/3 order-2"><PodiumCard user={top3Users[0]} rank={1} maxBalance={maxBalance} isCurrentUser={user?.id === top3Users[0].id} /></div>}
-                    {top3Users[2] && <div className="w-1/3 order-3"><PodiumCard user={top3Users[2]} rank={3} maxBalance={maxBalance} isCurrentUser={user?.id === top3Users[2].id} /></div>}
+                  {/* PODIUM FOR TOP 3 - Mobile Optimized */}
+                  <div className="flex items-end justify-center gap-1 xs:gap-2 sm:gap-4 mb-3 sm:mb-4 px-1">
+                    {top3Users[1] && <div className="w-[31%] sm:w-1/3 order-1"><PodiumCard user={top3Users[1]} rank={2} maxBalance={maxBalance} isCurrentUser={user?.id === top3Users[1].id} /></div>}
+                    {top3Users[0] && <div className="w-[31%] sm:w-1/3 order-2"><PodiumCard user={top3Users[0]} rank={1} maxBalance={maxBalance} isCurrentUser={user?.id === top3Users[0].id} /></div>}
+                    {top3Users[2] && <div className="w-[31%] sm:w-1/3 order-3"><PodiumCard user={top3Users[2]} rank={3} maxBalance={maxBalance} isCurrentUser={user?.id === top3Users[2].id} /></div>}
                   </div>
 
                   {/* Empty State */}
@@ -842,7 +842,7 @@ export const FunPlanetUnifiedBoard = () => {
 
                   {/* Remaining Rankings with ScrollArea */}
                   {remainingUsers.length > 0 && (
-                    <ScrollArea className="flex-1 max-h-[400px] pr-2 ranking-scrollbar">
+                    <ScrollArea className="flex-1 max-h-[280px] sm:max-h-[350px] md:max-h-[400px] pr-1 sm:pr-2 ranking-scrollbar">
                       <div className="space-y-2">
                         {remainingUsers.map((rankedUser, index) => {
                           const rank = index + 4;
@@ -856,24 +856,24 @@ export const FunPlanetUnifiedBoard = () => {
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: index * 0.1 + 0.5 }}
                                   whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
-                                  className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
+                                  className={`flex items-center gap-2 sm:gap-3 rounded-lg sm:rounded-xl border p-2 sm:p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
                                 >
-                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
-                                    <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
+                                  <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20 flex-shrink-0">
+                                    <span className="text-sm sm:text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
                                   </div>
-                                  <Avatar className="h-9 w-9 border-2 border-white/40">
+                                  <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border-2 border-white/40 flex-shrink-0">
                                     <AvatarImage src={rankedUser.avatar_url || undefined} />
-                                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
+                                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xs sm:text-sm">{rankedUser.username?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
                                   </Avatar>
                                   <div className="flex-1 min-w-0">
-                                    <p className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
-                                      {rankedUser.username}{isCurrentUser && <span className="ml-1 text-xs text-yellow-300/80">(Bạn)</span>}
+                                    <p className={`truncate max-w-[100px] sm:max-w-[140px] text-sm sm:text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+                                      {rankedUser.username}{isCurrentUser && <span className="ml-1 text-[10px] sm:text-xs text-yellow-300/80">(Bạn)</span>}
                                     </p>
                                     <ProgressBar value={rankedUser.total_camly || 0} maxValue={maxBalance} />
                                   </div>
-                                  <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
-                                    <Gem className="h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
-                                    <span className="text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"><AnimatedCounter value={rankedUser.total_camly || 0} /></span>
+                                  <div className="flex items-center gap-1 sm:gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-2 sm:px-3 py-1 sm:py-1.5 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)] flex-shrink-0">
+                                    <Gem className="h-3 w-3 sm:h-4 sm:w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]" />
+                                    <span className="text-xs sm:text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"><AnimatedCounter value={rankedUser.total_camly || 0} /></span>
                                   </div>
                                 </motion.div>
                               </HoverCardTrigger>

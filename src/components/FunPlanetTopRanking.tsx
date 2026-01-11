@@ -143,12 +143,12 @@ const PodiumCard = ({
   maxBalance: number;
   isCurrentUser: boolean;
 }) => {
-  const heights = { 1: "h-20", 2: "h-14", 3: "h-12" };
-  const avatarSizes = { 1: "h-16 w-16", 2: "h-16 w-16", 3: "h-16 w-16" };
+  const heights = { 1: "h-16 sm:h-20 md:h-24", 2: "h-12 sm:h-14 md:h-18", 3: "h-10 sm:h-12 md:h-16" };
+  const avatarSizes = { 1: "h-12 w-12 sm:h-16 sm:w-16 md:h-18 md:w-18", 2: "h-11 w-11 sm:h-14 sm:w-14 md:h-16 md:w-16", 3: "h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14" };
   const ringColors = {
-    1: "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)]",
-    2: "border-slate-300 shadow-[0_0_15px_rgba(192,192,192,0.6)]",
-    3: "border-orange-400 shadow-[0_0_15px_rgba(205,127,50,0.6)]",
+    1: "border-yellow-400 shadow-[0_0_15px_rgba(255,215,0,0.8)] sm:shadow-[0_0_20px_rgba(255,215,0,0.8)]",
+    2: "border-slate-300 shadow-[0_0_10px_rgba(192,192,192,0.6)] sm:shadow-[0_0_15px_rgba(192,192,192,0.6)]",
+    3: "border-orange-400 shadow-[0_0_10px_rgba(205,127,50,0.6)] sm:shadow-[0_0_15px_rgba(205,127,50,0.6)]",
   };
 
   return (
@@ -206,7 +206,7 @@ const PodiumCard = ({
 
       {/* Username */}
       <p
-        className={`text-sm font-bold truncate max-w-[120px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
+        className={`text-[11px] sm:text-sm font-bold truncate max-w-[70px] xs:max-w-[85px] sm:max-w-[120px] md:max-w-[150px] text-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] ${
           isCurrentUser ? "text-yellow-300" : "text-white"
         }`}
       >
@@ -217,9 +217,9 @@ const PodiumCard = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex items-center gap-1.5 mt-1 cursor-help">
-              <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
-              <span className="text-base font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
+            <div className="flex items-center gap-0.5 sm:gap-1.5 mt-1 cursor-help">
+              <Gem className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
+              <span className="text-xs sm:text-base font-extrabold text-yellow-400 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
                 <AnimatedCounter value={user.total_camly || 0} duration={2000} />
               </span>
             </div>
@@ -252,7 +252,7 @@ const PodiumCard = ({
         }}
       >
         <div className="flex items-center justify-center h-full">
-          <span className="text-2xl font-black bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(255,215,0,0.9)]">
+          <span className="text-xl sm:text-2xl font-black bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(255,215,0,0.9)]">
             #{rank}
           </span>
         </div>
@@ -688,10 +688,10 @@ export const FunPlanetTopRanking = () => {
 
           {/* PODIUM FOR TOP 3 */}
           {!error && (
-            <div className="flex items-end justify-center gap-2 sm:gap-4 mb-4 relative z-10">
+            <div className="flex items-end justify-center gap-1 xs:gap-2 sm:gap-4 mb-3 sm:mb-4 px-1 relative z-10">
               {/* #2 Silver - Left */}
               {top3Users[1] && (
-                <div className="w-1/3 order-1">
+                <div className="w-[31%] sm:w-1/3 order-1">
                   <PodiumCard
                     user={top3Users[1]}
                     rank={2}
@@ -703,7 +703,7 @@ export const FunPlanetTopRanking = () => {
 
               {/* #1 Gold - Center (highest) */}
               {top3Users[0] && (
-                <div className="w-1/3 order-2">
+                <div className="w-[31%] sm:w-1/3 order-2">
                   <PodiumCard
                     user={top3Users[0]}
                     rank={1}
@@ -715,7 +715,7 @@ export const FunPlanetTopRanking = () => {
 
               {/* #3 Bronze - Right */}
               {top3Users[2] && (
-                <div className="w-1/3 order-3">
+                <div className="w-[31%] sm:w-1/3 order-3">
                   <PodiumCard
                     user={top3Users[2]}
                     rank={3}
@@ -744,7 +744,7 @@ export const FunPlanetTopRanking = () => {
 
           {/* Remaining Rankings with HoverCard */}
           {remainingUsers.length > 0 && (
-            <ScrollArea className="h-[350px] pr-2 ranking-scrollbar">
+            <ScrollArea className="h-[280px] sm:h-[320px] md:h-[350px] pr-1 sm:pr-2 ranking-scrollbar">
               <div className="space-y-2">
                 {remainingUsers.map((rankedUser, index) => {
                   const rank = index + 4;
