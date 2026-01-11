@@ -253,11 +253,18 @@ export function ChatInterface() {
               className="text-center py-8"
             >
               <motion.div
-                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 flex items-center justify-center shadow-xl"
+                className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden shadow-xl border-3 border-yellow-400/60"
               >
-                <Sparkles className="w-10 h-10 text-white" />
+                <video 
+                  src="/angel-ai-avatar.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
               </motion.div>
               
               <p className="text-lg font-medium bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent">
