@@ -36,7 +36,7 @@ export const Hero = () => {
   };
 
   return <section className="relative pt-20 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-3 sm:px-4 overflow-hidden min-h-screen flex flex-col justify-start">
-      {/* Background image */}
+      {/* Background image - optimized for mobile */}
       <img 
         src="/images/backgrounds/fun-planet-bg.jpg" 
         alt="Fun Planet Background"
@@ -45,10 +45,13 @@ export const Hero = () => {
         decoding="async"
         fetchPriority="high"
         style={{ 
-          objectPosition: 'center center',
+          objectPosition: 'center 40%',
           filter: 'contrast(1.1) saturate(1.15) brightness(1.05)',
         }}
       />
+      
+      {/* Mobile-specific darker overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/20 sm:bg-transparent z-[0] pointer-events-none" />
       
       {/* Cosmic radial gradient - matching pastel theme */}
       <div 
