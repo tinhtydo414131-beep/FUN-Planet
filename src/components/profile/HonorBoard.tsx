@@ -311,18 +311,74 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl mx-auto px-4 py-8">
-        <div className="space-y-6">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-gradient-to-r from-purple-200 to-pink-200 dark:from-purple-800 dark:to-pink-800 rounded-3xl h-32" />
-          ))}
+      <div className="relative w-full min-h-screen overflow-hidden">
+        {/* Background Image */}
+        <img 
+          src="/images/backgrounds/fun-planet-bg.jpg" 
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{ 
+            objectPosition: 'center 40%',
+            filter: 'contrast(1.1) saturate(1.15) brightness(1.05)',
+          }}
+        />
+        {/* Cosmic radial gradient overlay */}
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 30%, rgba(168,85,247,0.12) 0%, rgba(236,72,153,0.08) 35%, rgba(34,211,238,0.06) 60%, transparent 100%)'
+          }}
+        />
+        <div className="relative z-10 w-full max-w-4xl mx-auto px-4 py-8">
+          <div className="space-y-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm rounded-3xl h-32" />
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8">
+    <div className="relative w-full min-h-screen overflow-hidden">
+      {/* Background Image */}
+      <img 
+        src="/images/backgrounds/fun-planet-bg.jpg" 
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        style={{ 
+          objectPosition: 'center 40%',
+          filter: 'contrast(1.1) saturate(1.15) brightness(1.05)',
+        }}
+      />
+      
+      {/* Cosmic radial gradient overlay */}
+      <div 
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 30%, rgba(168,85,247,0.12) 0%, rgba(236,72,153,0.08) 35%, rgba(34,211,238,0.06) 60%, transparent 100%)'
+        }}
+      />
+      
+      {/* Animated diamond shimmer overlay */}
+      <div 
+        className="absolute inset-0 z-[1] pointer-events-none opacity-[0.05]"
+        style={{
+          backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FF6BD6 25%, #9070E0 50%, #50B0FF 75%, #FFD700 100%)',
+          backgroundSize: '400% 400%',
+          animation: 'gradient-shift 15s ease infinite',
+        }}
+      />
+      
+      {/* Pastel vignette - pink/cyan sides */}
+      <div className="absolute inset-0 bg-gradient-to-r from-pink-600/8 via-transparent to-cyan-600/8 z-[1] pointer-events-none" />
+      
+      {/* Bottom gradient for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-purple-900/50 z-[1] pointer-events-none" />
+
+      {/* Content container */}
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 py-8">
       {/* Header */}
       <motion.div 
         className="text-center mb-10"
@@ -349,7 +405,7 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
           <input
             type="text"
             placeholder="Tìm tên người chơi..."
-            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-purple-200 dark:border-purple-700 bg-white dark:bg-gray-800 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 text-lg transition-all"
+            className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-purple-200 dark:border-purple-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 text-lg transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -382,7 +438,7 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
               whileHover={{ scale: 1.03, y: -5 }}
             >
               <div className={`
-                bg-white dark:bg-gray-800 rounded-2xl md:rounded-3xl shadow-xl overflow-hidden 
+                bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-xl overflow-hidden 
                 border-2 md:border-4 transition-all duration-300
                 ${pos === 1 ? 'border-yellow-400 shadow-yellow-400/30' : 
                   pos === 2 ? 'border-gray-300 dark:border-gray-500 shadow-gray-400/20' : 
@@ -462,9 +518,9 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
                 transition={{ duration: 0.3, delay: index * 0.05 }}
                 whileHover={{ scale: 1.02, x: 10 }}
                 className={`
-                  bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex items-center gap-4 
+                  bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex items-center gap-4 
                   hover:shadow-xl transition-all border-2 border-transparent
-                  ${isCurrentUser ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'hover:border-purple-200 dark:hover:border-purple-700'}
+                  ${isCurrentUser ? 'border-purple-500 bg-purple-50/80 dark:bg-purple-900/30' : 'hover:border-purple-200 dark:hover:border-purple-700'}
                 `}
               >
                 <div className="flex-shrink-0">
@@ -599,7 +655,7 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 + index * 0.1 }}
                 whileHover={{ scale: 1.03 }}
-                className="bg-white dark:bg-gray-800 rounded-xl p-2 md:p-3 shadow-md text-center"
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-2 md:p-3 shadow-md text-center"
               >
                 {/* Icon */}
                 <div className={`w-8 h-8 md:w-10 md:h-10 mx-auto mb-1 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center ${item.color}`}>
@@ -618,6 +674,7 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
           </div>
         </motion.div>
       </motion.div>
+      </div>
     </div>
   );
 }
