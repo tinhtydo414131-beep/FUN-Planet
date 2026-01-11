@@ -124,23 +124,19 @@ export const Navigation = () => {
             {/* Logo - Circular with Image + Text */}
             <NavLink 
               to="/" 
-              className="flex items-center gap-3 group ml-2 md:ml-5"
+              className="flex items-center group ml-2 md:ml-5"
             >
-              {/* Circular logo - larger size */}
-              <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-lg group-hover:border-purple-500 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300">
+              {/* Circular logo - larger size, no text */}
+              <div className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border-2 border-purple-400/50 shadow-lg group-hover:border-purple-500 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300">
                 <img 
                   src={funPlanetLogo} 
-                  alt="FUN Planet Mascot" 
+                  alt="FUN Planet" 
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = '/logo-header-fallback.jpg';
                   }}
                 />
               </div>
-              {/* Text on single horizontal line */}
-              <span className="font-fredoka font-bold text-xl lg:text-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent tracking-wide">
-                FUN PLANET
-              </span>
             </NavLink>
 
             {/* Desktop Links */}
@@ -279,10 +275,10 @@ export const Navigation = () => {
         <div className="flex items-center justify-between h-16 px-4">
           <NavLink 
             to="/" 
-            className="flex items-center gap-2 group active:scale-95 transition-transform ml-2"
+            className="flex items-center group active:scale-95 transition-transform ml-2"
           >
-            {/* Circular logo - larger for mobile */}
-            <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-md group-hover:border-purple-500 transition-all">
+            {/* Circular logo only - no text */}
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-md group-hover:border-purple-500 transition-all">
               <img 
                 src={funPlanetLogo} 
                 alt="FUN Planet" 
@@ -292,10 +288,6 @@ export const Navigation = () => {
                 }}
               />
             </div>
-            {/* Text horizontal uppercase */}
-            <span className="font-fredoka font-bold text-lg bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-              FUN PLANET
-            </span>
           </NavLink>
           
           <div className="flex items-center gap-2">
