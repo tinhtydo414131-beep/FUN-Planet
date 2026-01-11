@@ -312,12 +312,8 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                     animate={{ rotate: [0, 5, -5, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg border-2 border-yellow-400/60">
-                      <img 
-                        src="/logo-header-circular.png" 
-                        alt="Angel AI" 
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-300 via-pink-300 to-purple-400 flex items-center justify-center shadow-lg">
+                      <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     {/* Halo */}
                     <motion.div
