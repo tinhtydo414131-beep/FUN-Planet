@@ -12,19 +12,28 @@ const THEME_VERSION = "2026-01-11-v1";
 const THEME_VERSION_KEY = "fun-planet-theme-version";
 const THEME_KEY = "fun-planet-theme";
 
-// Force clear ALL caches immediately
+// Force clear ALL caches with timeout protection
 const clearAllCaches = async () => {
   if ('caches' in window) {
     try {
-      const cacheNames = await caches.keys();
-      console.log(`[FunPlanet] Found ${cacheNames.length} caches:`, cacheNames);
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<void>((_, reject) => 
+        window.setTimeout(() => reject(new Error('Cache clear timeout')), 3000)
+      );
       
-      await Promise.all(cacheNames.map(async (name) => {
-        const deleted = await caches.delete(name);
-        console.log(`[FunPlanet] Deleted cache "${name}": ${deleted}`);
-      }));
+      const clearPromise = (async () => {
+        const cacheNames = await caches.keys();
+        console.log(`[FunPlanet] Found ${cacheNames.length} caches:`, cacheNames);
+        
+        await Promise.all(cacheNames.map(async (name) => {
+          const deleted = await caches.delete(name);
+          console.log(`[FunPlanet] Deleted cache "${name}": ${deleted}`);
+        }));
+        
+        console.log('[FunPlanet] All caches cleared successfully');
+      })();
       
-      console.log('[FunPlanet] All caches cleared successfully');
+      await Promise.race([clearPromise, timeoutPromise]);
     } catch (error) {
       console.error('[FunPlanet] Cache clear error:', error);
     }
@@ -100,23 +109,33 @@ const clearLocalStorageCache = () => {
   }
 };
 
-// Run cache clearing immediately - always clear on every app start
-(async () => {
-  console.log('[FunPlanet] Clearing all caches and service workers...');
-  clearOldTheme(); // Clear old theme when version changes
-  clearOldCookies(); // Clear old cookies
-  clearLocalStorageCache();
-  await clearAllCaches();
-  await unregisterAllServiceWorkers();
-  console.log('[FunPlanet] Cache clearing complete');
-})();
+// Run synchronous operations first (non-blocking)
+clearOldTheme();
+clearOldCookies();
+clearLocalStorageCache();
 
-// Listen for SW updates and reload immediately
+// Listen for SW updates with reload protection
+let refreshing = false;
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
     console.log('[FunPlanet] SW controller changed, reloading...');
     window.location.reload();
   });
 }
 
+// Render app immediately - don't wait for async cache clearing
 createRoot(document.getElementById("root")!).render(<App />);
+
+// Clear caches and service workers asynchronously (after render)
+(async () => {
+  console.log('[FunPlanet] Clearing caches in background...');
+  try {
+    await clearAllCaches();
+    await unregisterAllServiceWorkers();
+    console.log('[FunPlanet] Background cache clearing complete');
+  } catch (error) {
+    console.error('[FunPlanet] Background cache clearing error:', error);
+  }
+})();
