@@ -32,7 +32,7 @@ export const useDraggable = ({
   const [isLongPressing, setIsLongPressing] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const elementRef = useRef<HTMLElement>(null);
-  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimerRef = useRef<number | null>(null);
   const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
   // Direct drag from handle
@@ -58,7 +58,7 @@ export const useDraggable = ({
     
     touchStartPosRef.current = { x: clientX, y: clientY };
     
-    longPressTimerRef.current = setTimeout(() => {
+    longPressTimerRef.current = window.setTimeout(() => {
       setIsLongPressing(true);
       setIsDragging(true);
       dragStartRef.current = {

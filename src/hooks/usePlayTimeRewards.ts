@@ -75,8 +75,8 @@ export const usePlayTimeRewards = () => {
     isChildFriendlyDisplay: false,
   });
   
-  const activityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const rewardTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const activityTimerRef = useRef<number | null>(null);
+  const rewardTimerRef = useRef<number | null>(null);
   const lastRewardTimeRef = useRef<number>(0);
 
   // Load daily reward state
@@ -303,7 +303,7 @@ export const usePlayTimeRewards = () => {
     }
 
     // Award rewards every minute
-    rewardTimerRef.current = setInterval(async () => {
+    rewardTimerRef.current = window.setInterval(async () => {
       if (!user) return;
 
       const now = Date.now();

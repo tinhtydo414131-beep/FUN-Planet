@@ -45,7 +45,7 @@ export function GameTestModal({
   const [crashDetected, setCrashDetected] = useState(false);
   
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const crashCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const crashCheckIntervalRef = useRef<number | null>(null);
 
   // Reset state when modal opens
   useEffect(() => {
@@ -91,7 +91,7 @@ export function GameTestModal({
   useEffect(() => {
     if (!iframeLoaded || !open || hasError) return;
 
-    crashCheckIntervalRef.current = setInterval(() => {
+    crashCheckIntervalRef.current = window.setInterval(() => {
       try {
         const iframe = iframeRef.current;
         if (!iframe) return;
