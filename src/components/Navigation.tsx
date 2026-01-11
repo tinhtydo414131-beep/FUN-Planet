@@ -387,6 +387,57 @@ export const Navigation = () => {
                             )}
                           </button>
                         </SheetClose>
+                        {/* Messages */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/messages")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <MessageCircle className="w-5 h-5 text-muted-foreground" />
+                            <span className="font-inter font-medium">{t('nav.messages')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Public Music */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/public-music")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <Music className="w-5 h-5 text-muted-foreground" />
+                            <span className="font-inter font-medium">{t('nav.music')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Education Hub */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/education")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <BookOpen className="w-5 h-5 text-muted-foreground" />
+                            <span className="font-inter font-medium">{t('nav.educationHub')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Parent Controls */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/parent-dashboard")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <Shield className="w-5 h-5 text-muted-foreground" />
+                            <span className="font-inter font-medium">{t('nav.parentControls')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Achievement Leaderboard */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/achievement-leaderboard")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <Trophy className="w-5 h-5 text-amber-500" />
+                            <span className="font-inter font-medium">{t('nav.achievementLeaderboard')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Settings */}
                         <SheetClose asChild>
                           <button
                             onClick={() => navigate("/settings")}
