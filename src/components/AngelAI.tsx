@@ -819,8 +819,11 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
 
   return (
     <div
-      className="fixed bottom-24 md:bottom-4 right-3 md:right-4 z-40 touch-none select-none"
-      style={style}
+      className="fixed z-40 touch-none select-none right-3 md:right-4"
+      style={{
+        ...style,
+        bottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))',
+      }}
     >
       {/* Drag Handle */}
       <div
