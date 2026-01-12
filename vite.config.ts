@@ -29,6 +29,12 @@ export default defineConfig(({ mode }) => ({
         }
         warn(warning);
       },
+      output: {
+        // Add content hash to filenames for cache busting
+        entryFileNames: `assets/[name]-[hash].js`,
+        chunkFileNames: `assets/[name]-[hash].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`
+      }
     },
   },
   optimizeDeps: {
@@ -76,25 +82,19 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{css,html,ico,png,svg,jpg,jpeg,webp}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-        // Exclude JS files from precaching - fetch at runtime
-        globIgnores: ['**/*.js'],
+        // Exclude ALL JS files from precaching - always fetch fresh
+        globIgnores: ['**/*.js', '**/*.mjs'],
         // Force new SW to take over immediately
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            urlPattern: /\.js$/i,
-            handler: "NetworkFirst",
+            // NEVER cache JS files - always fetch from network
+            urlPattern: /\.(?:js|mjs)$/i,
+            handler: "NetworkOnly",
             options: {
-              cacheName: "js-runtime-cache",
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 7
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
+              cacheName: "js-no-cache"
             }
           },
           {

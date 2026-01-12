@@ -4,7 +4,32 @@ import "./index.css";
 import "./i18n";
 
 // App version for cache busting - force new version
-const APP_VERSION = "2026-01-11-v1";
+const APP_VERSION = "2026-01-12-v1";
+
+// Check version mismatch and force reload if needed
+const checkVersionAndReload = (): boolean => {
+  const savedVersion = localStorage.getItem('app-version');
+  if (savedVersion && savedVersion !== APP_VERSION) {
+    console.log(`[FunPlanet] Version mismatch: ${savedVersion} → ${APP_VERSION}, forcing hard reload...`);
+    localStorage.setItem('app-version', APP_VERSION);
+    // Clear all caches before reload
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => caches.delete(name));
+      });
+    }
+    window.location.reload();
+    return true;
+  }
+  localStorage.setItem('app-version', APP_VERSION);
+  return false;
+};
+
+// Check version BEFORE anything else - if mismatch, stop and reload
+if (checkVersionAndReload()) {
+  // Prevent any further execution - page will reload
+  throw new Error('Version mismatch - reloading page');
+}
 console.log(`[FunPlanet] App starting, version: ${APP_VERSION}`);
 
 // Theme version for automatic preference reset when theme updates
