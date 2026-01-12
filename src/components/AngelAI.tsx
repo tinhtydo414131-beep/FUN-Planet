@@ -819,12 +819,12 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-40 touch-none select-none"
+      className="fixed bottom-24 md:bottom-4 right-3 md:right-4 z-40 touch-none select-none"
       style={style}
     >
       {/* Drag Handle */}
       <div
-        className={`absolute -top-4 left-1/2 -translate-x-1/2 p-1.5 rounded-full transition-all cursor-grab active:cursor-grabbing ${
+        className={`absolute -top-3 left-1/2 -translate-x-1/2 p-1 rounded-full transition-all cursor-grab active:cursor-grabbing ${
           isLongPressing || isDragging 
             ? 'bg-yellow-500/90 scale-125' 
             : 'bg-black/50 hover:bg-black/70'
@@ -836,7 +836,7 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         onMouseUp={handleLongPressEnd}
         onMouseLeave={handleLongPressEnd}
       >
-        <GripVertical className="w-4 h-4 text-white" />
+        <GripVertical className="w-3 h-3 md:w-4 md:h-4 text-white" />
       </div>
 
       <motion.div
@@ -849,12 +849,12 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         whileHover={isDragging ? {} : { scale: 1.05 }}
         whileTap={isDragging ? {} : { scale: 0.95 }}
         animate={isDragging ? {
-          filter: "drop-shadow(0 0 20px rgba(255, 215, 0, 0.8))"
+          filter: "drop-shadow(0 0 15px rgba(255, 215, 0, 0.7))"
         } : { 
           filter: [
-            "drop-shadow(0 0 10px rgba(255, 215, 0, 0.4))",
-            "drop-shadow(0 0 20px rgba(255, 215, 0, 0.7))",
-            "drop-shadow(0 0 10px rgba(255, 215, 0, 0.4))"
+            "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))",
+            "drop-shadow(0 0 12px rgba(255, 215, 0, 0.5))",
+            "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))"
           ]
         }}
         transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
@@ -864,7 +864,7 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         <Angel2DFallback onClick={handleClick} />
         
         {/* Notification dot */}
-        <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-xs flex items-center justify-center text-white font-bold z-10">
+        <span className="absolute -top-0.5 -right-0.5 w-3 h-3 md:w-4 md:h-4 bg-red-500 rounded-full border-2 border-white text-[10px] flex items-center justify-center text-white font-bold z-10">
           !
         </span>
       </motion.div>
