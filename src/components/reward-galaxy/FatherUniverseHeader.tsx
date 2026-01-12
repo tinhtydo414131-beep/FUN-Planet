@@ -166,7 +166,7 @@ export const FatherUniverseHeader = () => {
             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
           }}
         >
-          🎁 Quà Tặng Từ Cha Vũ Trụ
+          Quà Tặng Từ Cha Vũ Trụ
         </span>
         {/* Subtle glow behind text */}
         <motion.div 
