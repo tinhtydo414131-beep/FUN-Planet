@@ -1,11 +1,12 @@
-import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { useAdminSettings } from "@/hooks/useAdminSettings";
+import { toast } from "sonner";
 import { 
   Save,
   AlertTriangle,
@@ -13,7 +14,8 @@ import {
   Coins,
   Loader2,
   Play,
-  Pause
+  Pause,
+  Wallet
 } from "lucide-react";
 
 export function AdminSettingsTab() {
@@ -69,6 +71,21 @@ export function AdminSettingsTab() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Current Daily Limit Display */}
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Wallet className="h-4 w-4 text-amber-600" />
+                <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                  Giới hạn rút tiền hiện tại:
+                </span>
+              </div>
+              <Badge className="bg-amber-500 hover:bg-amber-600 text-white text-base sm:text-lg px-3 py-1 w-fit">
+                {settings.rewardSettings.dailyClaimLimit.toLocaleString()} CAMLY/ngày
+              </Badge>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="dailyLimit">Daily Claim Limit per User (CAMLY)</Label>
@@ -77,7 +94,25 @@ export function AdminSettingsTab() {
                 type="number"
                 value={settings.rewardSettings.dailyClaimLimit}
                 onChange={(e) => updateRewardSetting('dailyClaimLimit', Number(e.target.value))}
+                className="w-full"
               />
+              {/* Quick Preset Buttons */}
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
+                {[100000, 200000, 250000, 500000, 1000000].map(preset => (
+                  <Button
+                    key={preset}
+                    variant={settings.rewardSettings.dailyClaimLimit === preset ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs px-2 py-1 h-7"
+                    onClick={() => {
+                      updateRewardSetting('dailyClaimLimit', preset);
+                      toast.info(`Đã chọn ${preset.toLocaleString()} CAMLY - Nhớ bấm Save!`);
+                    }}
+                  >
+                    {preset >= 1000000 ? `${preset / 1000000}M` : `${preset / 1000}K`}
+                  </Button>
+                ))}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Maximum CAMLY a user can claim per day
               </p>
@@ -90,6 +125,7 @@ export function AdminSettingsTab() {
                 type="number"
                 value={settings.rewardSettings.approvalThreshold}
                 onChange={(e) => updateRewardSetting('approvalThreshold', Number(e.target.value))}
+                className="w-full"
               />
               <p className="text-xs text-muted-foreground">
                 Claims above this amount require manual approval
@@ -103,6 +139,7 @@ export function AdminSettingsTab() {
                 type="number"
                 value={settings.rewardSettings.maxDailyDistribution}
                 onChange={(e) => updateRewardSetting('maxDailyDistribution', Number(e.target.value))}
+                className="w-full"
               />
               <p className="text-xs text-muted-foreground">
                 Total CAMLY that can be distributed in one day
@@ -116,6 +153,7 @@ export function AdminSettingsTab() {
                 type="number"
                 value={settings.rewardSettings.minAccountAgeForClaim}
                 onChange={(e) => updateRewardSetting('minAccountAgeForClaim', Number(e.target.value))}
+                className="w-full"
               />
               <p className="text-xs text-muted-foreground">
                 Minimum account age before user can claim rewards
