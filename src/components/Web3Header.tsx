@@ -23,17 +23,17 @@ export function Web3Header() {
   const { camlyBalance, isLoading, firstWalletClaimed, loadRewards } = useWeb3Rewards();
   const { claimReward, checkCanClaim, isClaiming } = useCamlyClaim();
   const [copied, setCopied] = useState(false);
-  const [showAirdrop, setShowAirdrop] = useState(false);
+  const [showWelcomeReward, setShowWelcomeReward] = useState(false);
   const [canClaimFirstWallet, setCanClaimFirstWallet] = useState(false);
 
-  // Check for first connect airdrop - now checks on-chain claim status
+  // Check for first connect reward - now checks on-chain claim status
   useEffect(() => {
     const checkClaim = async () => {
       if (isConnected && address) {
         const result = await checkCanClaim('first_wallet');
         setCanClaimFirstWallet(result.canClaim);
         if (result.canClaim && !firstWalletClaimed) {
-          setTimeout(() => setShowAirdrop(true), 500);
+          setTimeout(() => setShowWelcomeReward(true), 500);
         }
       }
     };
@@ -67,7 +67,7 @@ export function Web3Header() {
   const handleClaimReward = async () => {
     const result = await claimReward('first_wallet');
     if (result.success && result.status === 'completed') {
-      setShowAirdrop(false);
+      setShowWelcomeReward(false);
       setCanClaimFirstWallet(false);
       loadRewards(); // Refresh balance
       toast.success(`🎉 Reward claimed! TX: ${result.txHash?.slice(0, 10)}...`);
@@ -94,13 +94,13 @@ export function Web3Header() {
     <>
       {/* Welcome Reward Modal */}
       <AnimatePresence>
-        {showAirdrop && (
+        {showWelcomeReward && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowAirdrop(false)}
+            onClick={() => setShowWelcomeReward(false)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -110,7 +110,7 @@ export function Web3Header() {
               className="relative w-full max-w-sm bg-gradient-to-br from-primary/20 via-background to-secondary/20 border-2 border-primary/30 rounded-3xl p-6 shadow-2xl"
             >
               <button
-                onClick={() => setShowAirdrop(false)}
+                onClick={() => setShowWelcomeReward(false)}
                 className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
               >
                 <X className="w-5 h-5" />

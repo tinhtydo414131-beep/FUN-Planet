@@ -141,7 +141,6 @@ export default function SampleGames() {
     switch (category) {
       case "Brain": return <Gamepad2 className="w-4 h-4" />;
       case "Creative": return <Palette className="w-4 h-4" />;
-      case "3D Builder": return <Globe className="w-4 h-4" />;
       case "Mindfulness": return <Heart className="w-4 h-4" />;
       case "Adventure": return <Star className="w-4 h-4" />;
       default: return <Gamepad2 className="w-4 h-4" />;

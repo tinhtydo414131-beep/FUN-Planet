@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, Clock, ArrowUpRight, ArrowDownLeft, Copy, ExternalLink, Check, Users, Zap } from "lucide-react";
+import { CheckCircle, XCircle, Clock, ArrowUpRight, ArrowDownLeft, Copy, ExternalLink, Check } from "lucide-react";
 import { formatDistanceToNow, format, isToday, isYesterday } from "date-fns";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ interface OnChainTransaction {
   token_type: string;
   status: 'completed' | 'pending' | 'failed';
   created_at: string;
-  transaction_type: 'transfer' | 'airdrop';
+  transaction_type: 'transfer';
   notes?: string;
   recipients_count?: number;
   gas_fee?: number;
@@ -34,7 +34,6 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
   // Calculate transaction stats
   const receivedTxs = transactions.filter(tx => currentUserId && tx.to_user_id === currentUserId);
   const sentTxs = transactions.filter(tx => currentUserId && tx.from_user_id === currentUserId);
-  const airdropTxs = transactions.filter(tx => tx.transaction_type === 'airdrop');
 
   // Format time intelligently
   const formatTime = (date: Date) => {
@@ -106,7 +105,7 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
             <li>Someone sends tokens to your wallet address</li>
           </ul>
         </div>
-        <p className="text-white/40 text-xs mt-4">Make a transfer or airdrop to see it in action! 🚀</p>
+        <p className="text-white/40 text-xs mt-4">Make a transfer to see it in action! 🚀</p>
       </motion.div>
     );
   }
@@ -117,7 +116,7 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
     <div className="space-y-4">
       {/* Transaction Stats Summary */}
       {transactions.length > 0 && (
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="grid grid-cols-2 gap-2 mb-4">
           <div className="bg-green-500/10 rounded-lg p-3 border-2 border-green-600/40 shadow-lg shadow-green-500/20">
             <div className="flex items-center gap-2 mb-1">
               <ArrowDownLeft className="w-4 h-4 text-green-400" />
@@ -131,13 +130,6 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
               <span className="text-black text-xs font-medium">Sent</span>
             </div>
             <p className="text-black font-bold text-lg">{sentTxs.length}</p>
-          </div>
-          <div className="bg-orange-500/10 rounded-lg p-3 border-2 border-orange-600/40 shadow-lg shadow-orange-500/20">
-            <div className="flex items-center gap-2 mb-1">
-              <Users className="w-4 h-4 text-orange-400" />
-              <span className="text-black text-xs font-medium">Airdrops</span>
-            </div>
-            <p className="text-black font-bold text-lg">{airdropTxs.length}</p>
           </div>
         </div>
       )}
@@ -161,15 +153,11 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                   <div className="flex items-center gap-3">
                     {/* Icon - MetaMask Style */}
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      tx.transaction_type === 'airdrop' 
-                        ? 'bg-orange-500/10'
-                        : isReceive
+                      isReceive
                         ? 'bg-green-500/10'
                         : 'bg-red-500/10'
                     }`}>
-                      {tx.transaction_type === 'airdrop' ? (
-                        <Users className="w-6 h-6 text-orange-400" />
-                      ) : isReceive ? (
+                      {isReceive ? (
                         <ArrowDownLeft className="w-6 h-6 text-green-400" />
                       ) : (
                         <ArrowUpRight className="w-6 h-6 text-red-400" />
@@ -180,7 +168,7 @@ export const OnChainTransactionHistory = ({ transactions, currentUserId }: OnCha
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-lg text-white">
-                          {tx.transaction_type === 'airdrop' ? 'Airdrop' : isReceive ? 'Receive' : 'Send'}
+                          {isReceive ? 'Receive' : 'Send'}
                         </h4>
                       </div>
 

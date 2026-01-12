@@ -37,7 +37,6 @@ import SpaceExplorer from "@/components/games/SpaceExplorer";
 
 import StarCollector from "@/components/games/StarCollector";
 import DreamWorld from "@/components/games/DreamWorld";
-import GardenBuilder from "@/components/games/GardenBuilder";
 import OceanExplorer from "@/components/games/OceanExplorer";
 import SkyCastle from "@/components/games/SkyCastle";
 import PetParadise from "@/components/games/PetParadise";
@@ -46,21 +45,18 @@ import FlowerField from "@/components/games/FlowerField";
 import LilBlockBuddy from "@/components/games/LilBlockBuddy";
 import { HappyKitchenJoy } from "@/components/games/HappyKitchenJoy";
 import { CookingMama } from "@/components/games/CookingMama";
-import SchoolBuilder from "@/components/games/SchoolBuilder";
 import HappyPark from "@/components/games/HappyPark";
 import HomeDesigner from "@/components/games/HomeDesigner";
 import CommunityHub from "@/components/games/CommunityHub";
 import EcoVillage from "@/components/games/EcoVillage";
 import { ArtStudio } from "@/components/games/ArtStudio";
 import { PetCare } from "@/components/games/PetCare";
-import { FarmBuilder } from "@/components/games/FarmBuilder";
 import { SpaceStation } from "@/components/games/SpaceStation";
 
 import { HospitalManager } from "@/components/games/HospitalManager";
 import { CinemaBoss } from "@/components/games/CinemaBoss";
 import { LibraryKeeper } from "@/components/games/LibraryKeeper";
 import { RestaurantChef } from "@/components/games/RestaurantChef";
-import { ThemeParkBuilder } from "@/components/games/ThemeParkBuilder";
 import { RockPaperScissors } from "@/components/games/RockPaperScissors";
 import { FlappyBird } from "@/components/games/FlappyBird";
 
@@ -367,16 +363,10 @@ const GamePlay = () => {
       case "SimonSays2D": return <SimonSays {...gameProps} />;
       
       // Building & Creation Games
-      case "GardenBuilder": return <GardenBuilder {...gameProps} />;
-      case "GardenBuilder2D": return <GardenBuilder {...gameProps} />;
       case "SkyCastle": return <SkyCastle3D {...gameProps} />;
       case "SkyCastle2D": return <SkyCastle {...gameProps} />;
       case "DreamWorld": return <DreamWorld3D {...gameProps} />;
       case "DreamWorld2D": return <DreamWorld {...gameProps} />;
-      case "SchoolBuilder":
-      case "school-builder":
-      case "SchoolBuilder2D": 
-        return <SchoolBuilder {...gameProps} />;
       case "HappyPark":
       case "happy-park":
         return <HappyPark3D {...gameProps} />;
@@ -401,10 +391,6 @@ const GamePlay = () => {
       case "pet-care":
         return <PetCare3D {...gameProps} />;
       case "PetCare2D": return <PetCare {...gameProps} />;
-      case "FarmBuilder":
-      case "farm-builder":
-      case "FarmBuilder2D": 
-        return <FarmBuilder {...gameProps} />;
       case "SpaceStation":
       case "space-station":
         return <SpaceStation3D {...gameProps} />;
@@ -425,10 +411,6 @@ const GamePlay = () => {
       case "restaurant-chef":
         return <RestaurantChef3D {...gameProps} />;
       case "RestaurantChef2D": return <RestaurantChef {...gameProps} />;
-      case "ThemeParkBuilder":
-      case "theme-park-builder":
-      case "ThemeParkBuilder2D": 
-        return <ThemeParkBuilder {...gameProps} />;
       
       // Exploration & Adventure Games
       case "SpaceExplorer": return <SpaceExplorer3D {...gameProps} />;
@@ -487,20 +469,17 @@ const GamePlay = () => {
   // Allow playing games that aren't in database yet
   const isDirectGame = gameId === 'cooking-mama' || 
                        gameId === 'happy-kitchen-joy' ||
-                       gameId === 'school-builder' ||
                        gameId === 'happy-park' ||
                        gameId === 'home-designer' ||
                        gameId === 'community-hub' ||
                        gameId === 'eco-village' ||
                        gameId === 'art-studio' ||
                        gameId === 'pet-care' ||
-                       gameId === 'farm-builder' ||
                        gameId === 'space-station' ||
                        gameId === 'hospital-manager' ||
                        gameId === 'cinema-boss' ||
                        gameId === 'library-keeper' ||
-                       gameId === 'restaurant-chef' ||
-                       gameId === 'theme-park-builder';
+                       gameId === 'restaurant-chef';
   
   if (!game && !isDirectGame) {
     return (
