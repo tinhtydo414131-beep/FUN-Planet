@@ -35,7 +35,7 @@ export const Hero = () => {
     });
   };
 
-  return <section className="relative pt-20 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-3 sm:px-4 overflow-hidden min-h-screen flex flex-col justify-start">
+  return <section className="relative pt-16 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-2 sm:px-4 overflow-hidden min-h-screen flex flex-col justify-start">
       {/* Background image - optimized for mobile */}
       <img 
         src="/images/backgrounds/fun-planet-bg.jpg" 
@@ -99,9 +99,9 @@ export const Hero = () => {
         }} animate={{
           opacity: 1,
           y: 0
-        }} className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 bg-gradient-to-r from-purple-600/95 via-pink-600/95 to-cyan-600/95 backdrop-blur-lg rounded-full border-2 border-white/60 shadow-[0_0_30px_rgba(168,85,247,0.5)]">
-            <Sparkles className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-yellow-300 animate-pulse drop-shadow-[0_0_10px_rgba(253,224,71,0.8)]" />
-            <span className="font-space text-xs sm:text-base font-black text-white drop-shadow-lg">🌟 {t('hero.badge')}</span>
+        }} className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1 sm:py-2.5 bg-gradient-to-r from-purple-600/95 via-pink-600/95 to-cyan-600/95 backdrop-blur-lg rounded-full border-2 border-white/60 shadow-[0_0_30px_rgba(168,85,247,0.5)]">
+            <Sparkles className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-300 animate-pulse drop-shadow-[0_0_10px_rgba(253,224,71,0.8)]" />
+            <span className="font-space text-[10px] sm:text-base font-black text-white drop-shadow-lg">🌟 {t('hero.badge')}</span>
           </motion.div>
 
           {/* Logo with diamonds */}
@@ -124,7 +124,7 @@ export const Hero = () => {
               
             </motion.div>
             
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider relative">
+            <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider relative">
               {/* Metallic gold shadow with enhanced depth */}
               <span 
                 className="absolute inset-0"
@@ -215,24 +215,8 @@ export const Hero = () => {
                   placeholder={t('hero.searchPlaceholder')} 
                   value={search} 
                   onChange={e => setSearch(e.target.value)} 
-                  className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-rajdhani font-medium bg-transparent border-0 rounded-xl shadow-none focus:ring-0 focus:border-0"
-                  style={{
-                    color: 'transparent',
-                    backgroundImage: 'linear-gradient(90deg, #E040A0 0%, #9070E0 50%, #50B0FF 100%)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
+                  className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-rajdhani font-medium bg-transparent border-0 rounded-xl shadow-none focus:ring-0 focus:border-0 text-purple-700 placeholder:text-gray-400"
                 />
-                {/* Placeholder styling override */}
-                <style>{`
-                  .search-gradient-input::placeholder {
-                    background: linear-gradient(90deg, #E040A0 0%, #9070E0 50%, #50B0FF 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                  }
-                `}</style>
                 <Button 
                   type="submit" 
                   onMouseEnter={() => playPop()} 
