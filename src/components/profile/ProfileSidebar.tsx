@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Gift, Trophy, Gamepad2, Users, MapPin, 
   Copy, Check, ArrowUpRight, ArrowDownLeft,
-  History, Pencil, Save, X, Loader2, Wallet
+  History, Pencil, Save, X, Loader2, Gem
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -156,7 +156,7 @@ export function ProfileSidebar({
           
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-muted-foreground" />
+              <Gem className="w-4 h-4 text-muted-foreground" />
               <span className="font-bold text-primary">{camlyBalance.toLocaleString()} CAMLY</span>
             </div>
             <div className="flex items-center gap-2">
@@ -254,8 +254,8 @@ export function ProfileSidebar({
               variant="outline"
               className="w-full border-yellow-500/50 hover:bg-yellow-500/10"
             >
-              <Wallet className="w-4 h-4 mr-2" />
-              Connect Wallet (+50,000 CAMLY)
+              <Gem className="w-4 h-4 mr-2" />
+              Connect for Rewards (+50,000 CAMLY)
             </Button>
           </CardContent>
         )}

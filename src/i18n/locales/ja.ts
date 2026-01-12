@@ -2,7 +2,7 @@ export default {
   nav: {
     home: 'ホーム',
     games: 'ゲーム',
-    wallet: 'ウォレット',
+    rewards: '報酬',
     profile: 'プロフィール',
     friends: '友達',
     messages: 'メッセージ',
@@ -159,7 +159,6 @@ export default {
     friends: '友達',
     messages: 'メッセージ',
     leaderboard: 'ランキング',
-    wallet: 'ウォレット',
     music: '音楽',
     listenMusic: '音楽を聴く',
     watch: '視聴',
