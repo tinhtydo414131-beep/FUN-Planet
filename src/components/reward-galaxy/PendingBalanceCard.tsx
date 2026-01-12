@@ -16,6 +16,7 @@ import {
   Zap,
   Clock
 } from 'lucide-react';
+import camlyCoinImage from '@/assets/camly-coin-rainbow-glow.png';
 import { toast } from 'sonner';
 import { fireDiamondConfetti } from '@/components/DiamondConfetti';
 
@@ -189,23 +190,20 @@ export function PendingBalanceCard({
                 transition={{ duration: 3, repeat: Infinity }}
                 className="inline-block mb-4"
               >
-                {/* Purple circle with money bag icon */}
-                <div 
-                  className="w-20 h-20 rounded-full flex items-center justify-center relative"
-                  style={{
-                    background: 'linear-gradient(135deg, #A855F7 0%, #7E22CE 50%, #581C87 100%)',
-                    boxShadow: '0 10px 40px rgba(168, 85, 247, 0.4), inset 0 3px 6px rgba(255,255,255,0.3), inset 0 -3px 6px rgba(0,0,0,0.2)',
-                  }}
+                {/* CAMLY Coin image */}
+                <motion.div
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  {/* Shine on icon */}
-                  <div 
-                    className="absolute inset-0 rounded-full"
+                  <img 
+                    src={camlyCoinImage}
+                    alt="CAMLY Coin"
+                    className="w-20 h-20 object-contain"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%)',
+                      filter: 'drop-shadow(0 0 25px rgba(255,215,0,0.7)) drop-shadow(0 0 50px rgba(255,215,0,0.4))',
                     }}
                   />
-                  <Coins className="w-10 h-10 text-white drop-shadow-lg relative z-10" />
-                </div>
+                </motion.div>
               </motion.div>
               
               <h2 

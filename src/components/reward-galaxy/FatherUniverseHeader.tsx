@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Star, Heart } from 'lucide-react';
-import camlyCoinImage from '@/assets/camly-coin-rainbow.png';
+import camlyCoinImage from '@/assets/camly-coin-rainbow-glow.png';
 
 export const FatherUniverseHeader = () => {
   return (

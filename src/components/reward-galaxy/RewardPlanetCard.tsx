@@ -66,25 +66,6 @@ export const RewardPlanetCard = ({
       
       {/* Card background with pastel gradient */}
       <div className={`relative p-4 md:p-5 rounded-[28px] bg-gradient-to-br ${bgGradient} backdrop-blur-sm border-0 overflow-hidden h-full shadow-xl shadow-[#FFD700]/15`}>
-        {/* Sparkle effects on hover */}
-        <motion.div
-          className="absolute top-5 left-5 w-3 h-3 rounded-full bg-[#FFD700]"
-          animate={{ scale: [0, 1.2, 0], opacity: [0, 1, 0] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-          style={{ boxShadow: '0 0 10px #FFD700' }}
-        />
-        <motion.div
-          className="absolute top-10 right-7 w-2 h-2 rounded-full bg-[#FF69B4]"
-          animate={{ scale: [0, 1.2, 0], opacity: [0, 1, 0] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-          style={{ boxShadow: '0 0 8px #FF69B4' }}
-        />
-        <motion.div
-          className="absolute bottom-14 left-7 w-2 h-2 rounded-full bg-[#87CEEB]"
-          animate={{ scale: [0, 1.2, 0], opacity: [0, 1, 0] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
-          style={{ boxShadow: '0 0 8px #87CEEB' }}
-        />
         
         {/* Special badge */}
         {isSpecial && (
@@ -282,28 +263,6 @@ export const RewardPlanetCard = ({
           )}
         </div>
 
-        {/* Floating particles on hover */}
-        {[...Array(5)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-3 h-3 rounded-full opacity-0 group-hover:opacity-100"
-            style={{
-              left: `${12 + i * 20}%`,
-              bottom: '12%',
-              background: i % 2 === 0 ? '#FFD700' : '#FF69B4',
-              boxShadow: i % 2 === 0 ? '0 0 10px #FFD700' : '0 0 10px #FF69B4',
-            }}
-            animate={{
-              y: [0, -50, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: i * 0.25,
-            }}
-          />
-        ))}
       </div>
     </motion.div>
   );

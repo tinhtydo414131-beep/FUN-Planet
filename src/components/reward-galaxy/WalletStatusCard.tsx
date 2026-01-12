@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Wallet, Check, Coins, Sparkles, Star } from 'lucide-react';
+import { Wallet, Check, Sparkles, Star } from 'lucide-react';
+import camlyCoinImage from '@/assets/camly-coin-rainbow-glow.png';
 
 interface WalletStatusCardProps {
   isConnected: boolean;
@@ -193,23 +194,19 @@ export const WalletStatusCard = ({
                   }}
                 />
                 
-                {/* Icon box with 3D effect */}
-                <motion.div 
-                  className="w-20 h-20 rounded-2xl flex items-center justify-center relative"
-                  style={{
-                    background: 'linear-gradient(135deg, #F59E0B, #D97706, #B45309)',
-                    boxShadow: '0 8px 30px rgba(245, 158, 11, 0.5), inset 0 3px 6px rgba(255,255,255,0.45), inset 0 -3px 6px rgba(0,0,0,0.2)',
-                  }}
-                  animate={{ rotate: [0, 6, -6, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
+                {/* CAMLY Coin image */}
+                <motion.div
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <div 
-                    className="absolute inset-0 rounded-2xl"
+                  <img 
+                    src={camlyCoinImage}
+                    alt="CAMLY Coin"
+                    className="w-16 h-16 object-contain"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%)',
+                      filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.6)) drop-shadow(0 0 40px rgba(255,215,0,0.3))',
                     }}
                   />
-                  <Coins className="w-11 h-11 text-white relative z-10" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
                 </motion.div>
                 
                 <div className="relative z-10">
