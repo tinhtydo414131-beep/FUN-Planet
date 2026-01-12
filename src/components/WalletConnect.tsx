@@ -8,11 +8,9 @@ import { ethers } from "ethers";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { CamlyCoinReward } from "./CamlyCoinReward";
-import { useWalletLinking } from "@/hooks/useWalletLinking";
 
 export const WalletConnect = () => {
   const { user } = useAuth();
-  const { linkWallet, isLinking } = useWalletLinking();
   const [account, setAccount] = useState<string | null>(null);
   const [balance, setBalance] = useState<string>("0");
   const [recipient, setRecipient] = useState("");
@@ -40,39 +38,9 @@ export const WalletConnect = () => {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
           getBalance(accounts[0]);
-          // Only sync if address changed
-          if (user && accounts[0].toLowerCase() !== lastSyncedAddressRef.current) {
-            await handleWalletLink(accounts[0]);
-          }
         }
       } catch (error) {
         console.error("Error checking connection:", error);
-      }
-    }
-  };
-
-  const handleWalletLink = async (walletAddress: string) => {
-    if (!user) return;
-    
-    const normalizedAddress = walletAddress.toLowerCase();
-    
-    // Skip if already synced this address
-    if (lastSyncedAddressRef.current === normalizedAddress) {
-      return;
-    }
-
-    const result = await linkWallet(user.id, normalizedAddress, {
-      showToasts: true,
-      source: 'metamask'
-    });
-
-    if (result.success) {
-      lastSyncedAddressRef.current = normalizedAddress;
-      
-      // Show reward animation for first connection
-      if (result.isFirstConnection) {
-        setRewardAmount(50000);
-        setShowReward(true);
       }
     }
   };
@@ -103,7 +71,6 @@ export const WalletConnect = () => {
         
         setAccount(walletAddress);
         await getBalance(walletAddress);
-        await handleWalletLink(walletAddress);
         toast.success("Wallet connected! 🎉");
       }
     } catch (error: any) {
@@ -221,11 +188,11 @@ export const WalletConnect = () => {
             </p>
             <Button
               onClick={connectWallet}
-              disabled={connecting || isLinking}
+              disabled={connecting}
               size="lg"
               className="font-fredoka font-bold text-xl px-12 py-8 bg-gradient-to-r from-accent to-secondary hover:shadow-xl transform hover:scale-110 transition-all min-h-[56px] touch-manipulation"
             >
-              {connecting || isLinking ? (
+              {connecting ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Connecting...

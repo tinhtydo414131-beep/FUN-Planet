@@ -29,10 +29,8 @@ const Friends = lazy(() => import("./pages/Friends"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Community = lazy(() => import("./pages/Community"));
 const NexusLeaderboard = lazy(() => import("./pages/NexusLeaderboard"));
-const FunWallet = lazy(() => import("./pages/FunWallet"));
 const MusicLibrary = lazy(() => import("./pages/MusicLibrary"));
 const PublicMusic = lazy(() => import("./pages/PublicMusic"));
-const WalletGuide = lazy(() => import("./pages/WalletGuide"));
 const RecentlyPlayed = lazy(() => import("./pages/RecentlyPlayed"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Install = lazy(() => import("./pages/Install"));
@@ -123,9 +121,7 @@ const AnimatedRoutes = () => {
           <Route path="/nft-gallery" element={<NFTGallery />} />
           <Route path="/nft" element={<NFTGallery />} />
           
-          {/* Wallet & Airdrop */}
-          <Route path="/wallet" element={<FunWallet />} />
-          <Route path="/wallet-guide" element={<WalletGuide />} />
+          {/* Airdrop */}
           <Route path="/airdrop" element={<GlobalAirdrop />} />
           <Route path="/global-airdrop" element={<GlobalAirdrop />} />
           <Route path="/rewards-history" element={<RewardsHistory />} />

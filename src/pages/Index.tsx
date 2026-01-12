@@ -362,7 +362,6 @@ const Index = () => {
               { path: "/nft-gallery", icon: "💎", label: t('home.nftsLabel') },
               { path: "/chat", icon: "💬", label: t('home.chatLabel') },
               { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: t('home.parentsLabel') },
-              { path: "/wallet", icon: "💰", label: t('home.walletLabel') },
               { path: "/leaderboard", icon: "🏆", label: t('home.leadersLabel') },
               { path: "/achievement-leaderboard", icon: "🏅", label: t('home.achievementsLabel') },
               { path: "/find-friends", icon: "👥", label: t('home.friendsLabel') },

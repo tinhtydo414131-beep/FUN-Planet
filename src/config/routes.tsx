@@ -17,8 +17,6 @@ export const Profile = lazy(() => import("@/pages/Profile"));
 export const PublicProfile = lazy(() => import("@/pages/PublicProfile"));
 export const Settings = lazy(() => import("@/pages/Settings"));
 export const NFTGallery = lazy(() => import("@/pages/NFTGallery"));
-export const FunWallet = lazy(() => import("@/pages/FunWallet"));
-export const WalletGuide = lazy(() => import("@/pages/WalletGuide"));
 export const GlobalAirdrop = lazy(() => import("@/pages/GlobalAirdrop"));
 export const RewardsHistory = lazy(() => import("@/pages/RewardsHistory"));
 export const RewardGalaxy = lazy(() => import("@/pages/RewardGalaxy"));
@@ -72,9 +70,7 @@ export const routeConfig = {
   nftGallery: "/nft-gallery",
   nft: "/nft",
   
-  // Wallet & Airdrop
-  wallet: "/wallet",
-  walletGuide: "/wallet-guide",
+  // Airdrop
   airdrop: "/airdrop",
   globalAirdrop: "/global-airdrop",
   rewardsHistory: "/rewards-history",
