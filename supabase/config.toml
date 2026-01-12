@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.angel-evaluate-game]
 verify_jwt = false
+
+[functions.check-reward-wallet-balance]
+verify_jwt = false
