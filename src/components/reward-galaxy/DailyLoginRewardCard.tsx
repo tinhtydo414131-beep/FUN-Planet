@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { Calendar, Check, Loader2, Star, Sparkles, CalendarCheck } from 'lucide-react';
+import { Check, Loader2, Star, Sparkles, CalendarCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { GiftBox3D } from '@/components/icons/GiftBox3D';
 
 interface DailyLoginRewardCardProps {
   canClaim: boolean;
@@ -61,29 +62,24 @@ export function DailyLoginRewardCard({
             style={{ boxShadow: '0 0 8px #87CEEB' }}
           />
 
-          {/* Planet Icon with glow */}
+          {/* Gift Box Icon with glow */}
           <motion.div
-            className="relative w-16 h-16 md:w-20 md:h-20 mx-auto mb-4"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+            className="relative w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 flex items-center justify-center"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           >
+            {/* Outer glow */}
             <div 
-              className="w-full h-full rounded-full bg-gradient-to-br from-[#3CB371] via-[#98FB98] to-[#FFD700] flex items-center justify-center"
-              style={{
-                boxShadow: '0 0 35px rgba(152, 251, 152, 0.6), 0 10px 40px rgba(0,0,0,0.2)',
-              }}
-            >
-              {/* Inner glow */}
-              <div className="absolute inset-0 rounded-full bg-white/25 blur-sm" />
-              {/* Highlight */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent" />
-              <Calendar className="w-8 h-8 md:w-10 md:h-10 text-white relative z-10" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
-            </div>
+              className="absolute inset-0 rounded-full bg-gradient-to-br from-[#FFD700]/40 to-[#FF8C00]/30 blur-xl"
+            />
+            
+            {/* 3D Gift Box */}
+            <GiftBox3D size={64} className="w-16 h-16 md:w-20 md:h-20 relative z-10" />
             
             {/* Orbiting star with sparkle */}
             <motion.div
-              className="absolute -top-2 -right-2"
-              animate={{ rotate: -360 }}
+              className="absolute -top-1 -right-1"
+              animate={{ rotate: 360 }}
               transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
             >
               <Star className="w-6 h-6 text-[#FFD700] fill-[#FFD700]" style={{ filter: 'drop-shadow(0 0 12px #FFD700)' }} />
@@ -91,11 +87,11 @@ export function DailyLoginRewardCard({
             
             {/* Additional sparkle */}
             <motion.div
-              className="absolute -bottom-2 -left-2"
-              animate={{ scale: [1, 1.4, 1], rotate: [0, 180, 360] }}
+              className="absolute -bottom-1 -left-1"
+              animate={{ scale: [1, 1.4, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <Sparkles className="w-6 h-6 text-[#FF69B4] fill-[#FF69B4]" style={{ filter: 'drop-shadow(0 0 8px #FF69B4)' }} />
+              <Sparkles className="w-5 h-5 text-[#FF69B4]" style={{ filter: 'drop-shadow(0 0 8px #FF69B4)' }} />
             </motion.div>
           </motion.div>
 
