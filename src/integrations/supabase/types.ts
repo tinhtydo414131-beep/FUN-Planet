@@ -3743,7 +3743,10 @@ export type Database = {
           email: string
           email_marketing: boolean | null
           email_weekly_summary: boolean | null
+          fraud_detected_at: string | null
+          fraud_suspect_reason: string | null
           id: string
+          is_fraud_suspect: boolean | null
           last_withdrawal_at: string | null
           leaderboard_score: number | null
           location: string | null
@@ -3772,7 +3775,10 @@ export type Database = {
           email: string
           email_marketing?: boolean | null
           email_weekly_summary?: boolean | null
+          fraud_detected_at?: string | null
+          fraud_suspect_reason?: string | null
           id: string
+          is_fraud_suspect?: boolean | null
           last_withdrawal_at?: string | null
           leaderboard_score?: number | null
           location?: string | null
@@ -3801,7 +3807,10 @@ export type Database = {
           email?: string
           email_marketing?: boolean | null
           email_weekly_summary?: boolean | null
+          fraud_detected_at?: string | null
+          fraud_suspect_reason?: string | null
           id?: string
+          is_fraud_suspect?: boolean | null
           last_withdrawal_at?: string | null
           leaderboard_score?: number | null
           location?: string | null
@@ -6270,6 +6279,10 @@ export type Database = {
         Args: { p_transaction_type: string; p_user_id: string }
         Returns: boolean
       }
+      check_and_mark_fraud_suspect: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       check_duplicate_ranking_claim: {
         Args: { p_score: number; p_user_id: string }
         Returns: boolean
@@ -6413,6 +6426,21 @@ export type Database = {
           total_affected_accounts: number
           total_affected_balance: number
           total_suspicious_ips: number
+        }[]
+      }
+      get_fraud_suspects: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          fraud_detected_at: string
+          fraud_suspect_reason: string
+          is_fraud_suspect: boolean
+          trust_score: number
+          user_id: string
+          username: string
+          wallet_address: string
+          wallet_balance: number
         }[]
       }
       get_or_create_daily_reward: {
