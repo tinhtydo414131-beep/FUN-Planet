@@ -6565,10 +6565,23 @@ export type Database = {
         }
         Returns: Json
       }
-      process_withdrawal_request: {
-        Args: { p_amount: number; p_user_id: string; p_wallet_address: string }
-        Returns: Json
-      }
+      process_withdrawal_request:
+        | {
+            Args: {
+              p_amount: number
+              p_user_id: string
+              p_wallet_address: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_amount: number
+              p_user_id: string
+              p_wallet_address: string
+            }
+            Returns: Json
+          }
       sync_all_referral_to_pending: {
         Args: never
         Returns: {
