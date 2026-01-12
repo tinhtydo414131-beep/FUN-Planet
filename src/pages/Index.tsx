@@ -32,7 +32,7 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { AngelAI, AngelAIButton } from "@/components/AngelAI";
 import { FunIDOnboarding } from "@/components/FunIDOnboarding";
 import { useFunId } from "@/hooks/useFunId";
-import { RewardGalaxyHomeBanner } from "@/components/RewardGalaxyHomeBanner";
+
 
 import { TodayRewardsCard } from "@/components/TodayRewardsCard";
 
@@ -222,8 +222,6 @@ const Index = () => {
       {/* Hero Section */}
       <Hero />
       
-      {/* Reward Galaxy Home Banner */}
-      <RewardGalaxyHomeBanner />
       
       {/* Featured Games - Play Instantly */}
       <FeaturedGamesSection />
