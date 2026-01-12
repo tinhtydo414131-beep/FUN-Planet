@@ -398,12 +398,12 @@ export default function RewardGalaxy() {
               <RewardPlanetCard
                 title="Chơi Game"
                 subtitle="First Play Bonus"
-                amount={10000}
+                amount={5000}
                 icon={<Gamepad2 className="w-8 h-8" />}
                 gradientFrom="from-[#87CEEB]"
                 gradientTo="to-[#DDA0DD]"
                 cardGradient="from-[#E0FFFF]/90 via-[#F0F8FF]/95 to-[#E6E6FA]/90"
-                description="Lần đầu chơi mỗi game + 500/phút"
+                description="Nhận thưởng lần đầu chơi mỗi game mới"
                 canClaim={canClaimGame ?? false}
                 isClaiming={isClaiming}
                 isConnected={actualIsConnected}
