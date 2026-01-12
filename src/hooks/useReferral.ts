@@ -267,11 +267,15 @@ export const useReferral = () => {
         .eq('user_id', referrer.id)
         .maybeSingle();
 
+      const newBalance = referrerRewards 
+        ? Number(referrerRewards.camly_balance) + REFERRAL_REWARD_FOR_REFERRER
+        : REFERRAL_REWARD_FOR_REFERRER;
+
       if (referrerRewards) {
         await supabase
           .from('web3_rewards')
           .update({
-            camly_balance: Number(referrerRewards.camly_balance) + REFERRAL_REWARD_FOR_REFERRER,
+            camly_balance: newBalance,
             total_referrals: (referrerRewards.total_referrals || 0) + 1,
             referral_earnings: Number(referrerRewards.referral_earnings || 0) + REFERRAL_REWARD_FOR_REFERRER,
           })
@@ -286,6 +290,17 @@ export const useReferral = () => {
             referral_earnings: REFERRAL_REWARD_FOR_REFERRER,
           });
       }
+
+      // Ensure user_rewards.pending_amount is also synced (double-check)
+      await supabase
+        .from('user_rewards')
+        .upsert({
+          user_id: referrer.id,
+          pending_amount: newBalance,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+
+      console.log('[FunPlanet] Synced pending_amount for referrer:', referrer.id, 'Amount:', newBalance);
 
       // Record the transaction for referrer
       await supabase.from('web3_reward_transactions').insert({
