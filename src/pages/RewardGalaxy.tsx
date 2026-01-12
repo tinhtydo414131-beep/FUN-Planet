@@ -52,7 +52,7 @@ import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCar
 import { DailyLoginRewardCard } from '@/components/reward-galaxy/DailyLoginRewardCard';
 import { DailyLoginRewardPopup } from '@/components/reward-galaxy/DailyLoginRewardPopup';
 import { TrustScoreCard } from '@/components/reward-galaxy/TrustScoreCard';
-import { DailyPlayProgressBar } from '@/components/reward-galaxy/DailyPlayProgressBar';
+
 
 interface ClaimHistory {
   id: string;
@@ -350,13 +350,6 @@ export default function RewardGalaxy() {
           )}
 
           {/* Daily Play Progress - Child-Friendly */}
-          {isChildFriendly && (
-            <DailyPlayProgressBar
-              totalMinutesPlayed={dailyPlayMinutes}
-              ageGroup={ageGroup}
-              isChildFriendlyDisplay={isChildFriendly}
-            />
-          )}
 
           {/* Pending Balance & Claim Section */}
           <PendingBalanceCard
