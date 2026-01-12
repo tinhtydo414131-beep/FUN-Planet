@@ -37,14 +37,14 @@ const GAME_ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlocked' | 'progress' | 
     requiredCount: 1
   },
   {
-    id: "explorer_5",
-    type: "explorer_5",
+    id: "explorer_3",
+    type: "explorer_3",
     name: "Bé Khám Phá 🌍",
-    description: "Khám phá 5 game khác nhau",
+    description: "Khám phá 3 game khác nhau",
     icon: <Compass className="w-6 h-6" />,
     color: "from-blue-400 to-cyan-500",
-    requirement: "5 games",
-    requiredCount: 5
+    requirement: "3 games",
+    requiredCount: 3
   },
   {
     id: "explorer_10",

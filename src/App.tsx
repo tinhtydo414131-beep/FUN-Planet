@@ -53,7 +53,6 @@ const ParentDashboard = lazy(() => import("./pages/ParentDashboard"));
 const AdminMasterDashboard = lazy(() => import("./pages/AdminMasterDashboard"));
 const About = lazy(() => import("./pages/About"));
 const LovableGamePlay = lazy(() => import("./pages/LovableGamePlay"));
-const SampleGames = lazy(() => import("./pages/SampleGames"));
 const RewardGalaxy = lazy(() => import("./pages/RewardGalaxy"));
 const AngelAIHubPage = lazy(() => import("./pages/AngelAIHubPage"));
 
@@ -106,7 +105,6 @@ const AnimatedRoutes = () => {
           <Route path="/recently-played" element={<RecentlyPlayed />} />
           <Route path="/my-games" element={<MyGames />} />
           <Route path="/edit-game/:id" element={<EditGame />} />
-          <Route path="/sample-games" element={<SampleGames />} />
           
           {/* Upload & Creator */}
           <Route path="/upload" element={<UploadGame />} />
