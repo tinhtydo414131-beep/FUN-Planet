@@ -4,7 +4,7 @@ import { Sparkles, Star, Gift, Heart } from 'lucide-react';
 export const FatherUniverseHeader = () => {
   return (
     <motion.div 
-      className="text-center mb-8 sm:mb-14 bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-8 md:p-12 mx-2 sm:mx-4 shadow-[0_8px_32px_rgba(168,85,247,0.15),0_0_60px_rgba(255,182,193,0.2)] border border-white/60"
+      className="text-center mb-8 sm:mb-14 bg-white rounded-3xl p-4 sm:p-8 md:p-12 mx-2 sm:mx-4 shadow-[0_8px_32px_rgba(168,85,247,0.12),0_0_40px_rgba(255,182,193,0.15)] border border-gray-200/80"
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
@@ -19,37 +19,37 @@ export const FatherUniverseHeader = () => {
         <motion.div
           className="absolute inset-0 rounded-full -m-12 sm:-m-20"
           style={{
-            background: 'radial-gradient(circle, rgba(255,215,0,0.25), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(255,215,0,0.15), transparent 70%)',
           }}
           animate={{ 
             scale: [1, 1.4, 1],
-            opacity: [0.5, 0.2, 0.5],
+            opacity: [0.4, 0.15, 0.4],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
         
         {/* Second glow ring - purple - lighter */}
         <motion.div
-          className="absolute inset-0 rounded-full -m-8 sm:-m-14 bg-purple-400/30 blur-2xl sm:blur-3xl"
+          className="absolute inset-0 rounded-full -m-8 sm:-m-14 bg-purple-300/20 blur-2xl sm:blur-3xl"
           animate={{ 
             scale: [1, 1.2, 1],
-            opacity: [0.5, 0.2, 0.5],
+            opacity: [0.4, 0.15, 0.4],
           }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         />
         
         {/* Third glow ring - pink - lighter */}
         <motion.div
-          className="absolute inset-0 rounded-full -m-6 sm:-m-10 bg-pink-300/30 blur-xl sm:blur-2xl"
+          className="absolute inset-0 rounded-full -m-6 sm:-m-10 bg-pink-200/20 blur-xl sm:blur-2xl"
           animate={{ 
             scale: [1.1, 1, 1.1],
-            opacity: [0.4, 0.6, 0.4],
+            opacity: [0.3, 0.5, 0.3],
           }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
         />
         
         {/* Inner glow - pastel for white bg */}
-        <div className="absolute inset-0 rounded-full blur-2xl sm:blur-3xl opacity-60 -m-6 sm:-m-10 bg-gradient-to-r from-yellow-300 via-pink-300 to-blue-300" />
+        <div className="absolute inset-0 rounded-full blur-2xl sm:blur-3xl opacity-40 -m-6 sm:-m-10 bg-gradient-to-r from-yellow-200 via-pink-200 to-blue-200" />
         
         {/* Main icon circle - responsive */}
         <motion.div 
