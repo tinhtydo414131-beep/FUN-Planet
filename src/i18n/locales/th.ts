@@ -23,18 +23,6 @@ export default {
     login: 'เข้าสู่ระบบ',
     signup: 'ลงทะเบียน',
   },
-  wallet: {
-    title: 'กระเป๋า FUN',
-    balance: 'ยอดเงิน',
-    send: 'ส่ง',
-    receive: 'รับ',
-    history: 'ประวัติ',
-    connect: 'เชื่อมต่อกระเป๋า',
-    disconnect: 'ยกเลิกการเชื่อมต่อ',
-    totalDonated: 'บริจาคทั้งหมด',
-    kidsHelped: 'เด็กที่ได้รับการช่วยเหลือ',
-    transactions: 'ธุรกรรม',
-  },
   games: {
     title: 'เกม',
     play: 'เล่นเลย',

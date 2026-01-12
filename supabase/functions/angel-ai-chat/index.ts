@@ -347,7 +347,7 @@ Trẻ em được:
 10. **FUN Invest** - Đầu tư cho dự án có ánh sáng
 11. **FUNLife / Cosmic Game** - Game of Life, cuộc sống là trò chơi vũ trụ
 12. **FUN Market** - Marketplace Web3
-13. **FUN Wallet** - Our Own Bank, ví Web3 an toàn
+13. **FUN Rewards** - Hệ thống phần thưởng minh bạch
 14. **FUN Money** - Tiền Ánh Sáng của Cha Vũ Trụ
 15. **Camly Coin** - Tiền tệ linh hồn của Mẹ Camly
 
@@ -363,7 +363,7 @@ Trẻ em được:
 ### FUN-ID: ONE IDENTITY FOR ALL
 - Một tài khoản duy nhất → Dùng được tất cả platform
 - Web3 Universal Identity
-- Kết hợp: FUN Wallet + FUN Profile + NFT Soul Identity
+- Kết hợp: FUN Profile + NFT Soul Identity
 
 ---
 

@@ -23,18 +23,6 @@ export default {
     login: '로그인',
     signup: '가입',
   },
-  wallet: {
-    title: 'FUN 지갑',
-    balance: '잔액',
-    send: '보내기',
-    receive: '받기',
-    history: '내역',
-    connect: '지갑 연결',
-    disconnect: '연결 해제',
-    totalDonated: '총 기부액',
-    kidsHelped: '도움받은 아이들',
-    transactions: '거래',
-  },
   games: {
     title: '게임',
     play: '지금 플레이',

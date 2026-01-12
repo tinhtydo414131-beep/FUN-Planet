@@ -4,7 +4,7 @@ import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Gamepad2, Edit2, Settings, Wallet, LogOut, Share2 } from "lucide-react";
+import { Gamepad2, Edit2, Settings, Gift, LogOut, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -329,8 +329,8 @@ export default function Profile() {
 
       {/* Action Buttons */}
       <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap gap-2 justify-end border-b border-border">
-        <Button variant="outline" onClick={() => navigate('/wallet')} className="gap-2">
-          <Wallet className="w-4 h-4" />
+        <Button variant="outline" onClick={() => navigate('/reward-galaxy')} className="gap-2">
+          <Gift className="w-4 h-4" />
         </Button>
         <Button variant="outline" onClick={() => navigate('/settings')}>
           <Settings className="w-4 h-4" />

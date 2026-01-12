@@ -23,18 +23,6 @@ export default {
     login: 'Connexion',
     signup: 'Inscription',
   },
-  wallet: {
-    title: 'Portefeuille FUN',
-    balance: 'Solde',
-    send: 'Envoyer',
-    receive: 'Recevoir',
-    history: 'Historique',
-    connect: 'Connecter portefeuille',
-    disconnect: 'Déconnecter',
-    totalDonated: 'Total donné',
-    kidsHelped: 'Enfants aidés',
-    transactions: 'Transactions',
-  },
   games: {
     title: 'Jeux',
     play: 'Jouer maintenant',

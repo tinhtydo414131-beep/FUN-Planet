@@ -23,18 +23,6 @@ export default {
     login: 'Войти',
     signup: 'Регистрация',
   },
-  wallet: {
-    title: 'FUN Кошелек',
-    balance: 'Баланс',
-    send: 'Отправить',
-    receive: 'Получить',
-    history: 'История',
-    connect: 'Подключить кошелек',
-    disconnect: 'Отключить',
-    totalDonated: 'Всего пожертвовано',
-    kidsHelped: 'Детям помогли',
-    transactions: 'Транзакции',
-  },
   games: {
     title: 'Игры',
     play: 'Играть сейчас',

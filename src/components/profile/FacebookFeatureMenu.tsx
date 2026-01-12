@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
-  Gamepad2, Users, MessageCircle, Trophy, Wallet,
-  Music, Store, PlayCircle, Gift, Bookmark, Calendar,
+  Gamepad2, Users, MessageCircle, Trophy, Gift,
+  Music, Store, PlayCircle, Bookmark, Calendar,
   Newspaper, Globe, Heart, Video, Image, Sparkles,
   Star, Zap, ShoppingBag, Bell, Settings, History,
   Crown, Award, Flame, Target, Compass, Radio,
@@ -62,12 +62,12 @@ const featureItems: FeatureItem[] = [
     route: "/camly-leaderboard",
   },
   {
-    id: "wallet",
-    icon: Wallet,
-    label: "Wallet",
-    description: "Manage your coins",
+    id: "rewards",
+    icon: Gift,
+    label: "Rewards",
+    description: "Claim your rewards",
     gradient: "from-emerald-500 to-teal-600",
-    route: "/wallet",
+    route: "/reward-galaxy",
   },
   {
     id: "music",

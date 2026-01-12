@@ -23,18 +23,6 @@ export default {
     login: 'Anmelden',
     signup: 'Registrieren',
   },
-  wallet: {
-    title: 'FUN Geldbörse',
-    balance: 'Guthaben',
-    send: 'Senden',
-    receive: 'Empfangen',
-    history: 'Verlauf',
-    connect: 'Geldbörse verbinden',
-    disconnect: 'Trennen',
-    totalDonated: 'Gesamt gespendet',
-    kidsHelped: 'Kindern geholfen',
-    transactions: 'Transaktionen',
-  },
   games: {
     title: 'Spiele',
     play: 'Jetzt spielen',
