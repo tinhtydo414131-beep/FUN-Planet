@@ -5907,6 +5907,7 @@ export type Database = {
           id: string
           last_daily_checkin: string | null
           referral_earnings: number
+          referral_synced: number | null
           total_claimed_to_wallet: number
           total_referrals: number
           updated_at: string
@@ -5922,6 +5923,7 @@ export type Database = {
           id?: string
           last_daily_checkin?: string | null
           referral_earnings?: number
+          referral_synced?: number | null
           total_claimed_to_wallet?: number
           total_referrals?: number
           updated_at?: string
@@ -5937,6 +5939,7 @@ export type Database = {
           id?: string
           last_daily_checkin?: string | null
           referral_earnings?: number
+          referral_synced?: number | null
           total_claimed_to_wallet?: number
           total_referrals?: number
           updated_at?: string
@@ -6565,6 +6568,13 @@ export type Database = {
       process_withdrawal_request: {
         Args: { p_amount: number; p_user_id: string; p_wallet_address: string }
         Returns: Json
+      }
+      sync_all_referral_to_pending: {
+        Args: never
+        Returns: {
+          total_amount: number
+          users_synced: number
+        }[]
       }
       sync_user_reward_balances: { Args: { p_user_id: string }; Returns: Json }
       update_wallet_balance: {

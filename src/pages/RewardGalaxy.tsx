@@ -354,6 +354,7 @@ export default function RewardGalaxy() {
           {/* Pending Balance & Claim Section */}
           <PendingBalanceCard
             pendingAmount={rewards?.pending_amount || 0}
+            referralEarnings={referralEarnings}
             dailyRemaining={dailyRemaining}
             dailyLimit={dailyLimit}
             walletAddress={actualWalletAddress}

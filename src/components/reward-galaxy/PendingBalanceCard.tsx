@@ -14,7 +14,8 @@ import {
   ExternalLink,
   Gift,
   Zap,
-  Clock
+  Clock,
+  Users
 } from 'lucide-react';
 import camlyCoinImage from '@/assets/camly-coin-v2.png';
 import { toast } from 'sonner';
@@ -22,6 +23,7 @@ import { fireDiamondConfetti } from '@/components/DiamondConfetti';
 
 interface PendingBalanceCardProps {
   pendingAmount: number;
+  referralEarnings?: number;
   dailyRemaining: number;
   dailyLimit: number;
   walletAddress: string | null;
@@ -33,6 +35,7 @@ interface PendingBalanceCardProps {
 
 export function PendingBalanceCard({
   pendingAmount,
+  referralEarnings = 0,
   dailyRemaining,
   dailyLimit,
   walletAddress,
@@ -292,7 +295,25 @@ export function PendingBalanceCard({
                 </motion.div>
               </div>
 
-              <div className="flex items-center justify-between relative z-10">
+              {/* Balance Breakdown - show if referralEarnings > 0 */}
+              {referralEarnings > 0 && (
+                <div className="flex flex-wrap items-center justify-center gap-3 relative z-10 mt-2">
+                  <Badge
+                    className="text-sm px-3 py-1 font-medium bg-yellow-100 text-yellow-700 border border-yellow-300 flex items-center gap-1"
+                  >
+                    <Gift className="w-3 h-3" />
+                    Rewards: {(pendingAmount - referralEarnings).toLocaleString()}
+                  </Badge>
+                  <Badge
+                    className="text-sm px-3 py-1 font-medium bg-purple-100 text-purple-700 border border-purple-300 flex items-center gap-1"
+                  >
+                    <Users className="w-3 h-3" />
+                    Referral: {referralEarnings.toLocaleString()}
+                  </Badge>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between relative z-10 mt-4">
                 <span 
                   className="text-xl md:text-2xl font-fredoka font-bold tracking-wide"
                   style={{

@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { 
   CheckCircle, XCircle, Clock, AlertTriangle, 
   Search, RefreshCw, Wallet, Shield, ExternalLink,
-  TrendingUp, TrendingDown, Send, RotateCcw, Coins
+  TrendingUp, TrendingDown, Send, RotateCcw, Coins, Users, ArrowRightLeft
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -69,6 +69,8 @@ export const AdminWithdrawalsTab = () => {
   const [walletBalance, setWalletBalance] = useState<RewardWalletBalance | null>(null);
   const [loadingBalance, setLoadingBalance] = useState(false);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+  const [syncingReferral, setSyncingReferral] = useState(false);
+  const [referralSyncStats, setReferralSyncStats] = useState<{ users_to_sync: number; amount_to_sync: number } | null>(null);
 
   const fetchWithdrawals = async () => {
     setLoading(true);
@@ -147,6 +149,7 @@ export const AdminWithdrawalsTab = () => {
   useEffect(() => {
     fetchWithdrawals();
     fetchWalletBalance();
+    fetchReferralSyncStats();
 
     // Subscribe to realtime updates
     const channel = supabase
@@ -164,6 +167,56 @@ export const AdminWithdrawalsTab = () => {
       supabase.removeChannel(channel);
     };
   }, [filter]);
+
+  const fetchReferralSyncStats = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('web3_rewards')
+        .select('referral_earnings, referral_synced')
+        .gt('referral_earnings', 0);
+      
+      if (error) throw error;
+      
+      let usersToSync = 0;
+      let amountToSync = 0;
+      
+      data?.forEach(row => {
+        const unsynced = (row.referral_earnings || 0) - (row.referral_synced || 0);
+        if (unsynced > 0) {
+          usersToSync++;
+          amountToSync += unsynced;
+        }
+      });
+      
+      setReferralSyncStats({ users_to_sync: usersToSync, amount_to_sync: amountToSync });
+    } catch (error) {
+      console.error('Error fetching referral sync stats:', error);
+    }
+  };
+
+  const handleSyncReferral = async () => {
+    setSyncingReferral(true);
+    try {
+      const { data, error } = await supabase.rpc('sync_all_referral_to_pending');
+      
+      if (error) throw error;
+      
+      const result = data as { users_synced: number; total_amount: number }[] | null;
+      if (result && result.length > 0) {
+        const { users_synced, total_amount } = result[0];
+        toast.success(`Synced ${users_synced} users with ${total_amount.toLocaleString()} CAMLY referral earnings!`);
+      } else {
+        toast.info('No referral earnings to sync');
+      }
+      
+      fetchReferralSyncStats();
+    } catch (error: any) {
+      console.error('Error syncing referral:', error);
+      toast.error(error.message || 'Failed to sync referral earnings');
+    } finally {
+      setSyncingReferral(false);
+    }
+  };
 
   const handleRetryFailed = async (withdrawal: WithdrawalRequest) => {
     setRetryingId(withdrawal.id);
@@ -383,6 +436,58 @@ export const AdminWithdrawalsTab = () => {
               {loadingBalance ? 'Loading wallet balance...' : 'Click refresh to load balance'}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Referral Sync Card */}
+      <Card className="border-2 border-purple-500/30 bg-purple-500/5">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <ArrowRightLeft className="h-5 w-5 text-purple-500" />
+              Referral → Pending Sync
+            </CardTitle>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSyncReferral} 
+              disabled={syncingReferral || (referralSyncStats?.users_to_sync === 0)}
+              className="border-purple-500/50 hover:bg-purple-500/10"
+            >
+              <RefreshCw className={`h-4 w-4 mr-1 ${syncingReferral ? 'animate-spin' : ''}`} />
+              {syncingReferral ? 'Syncing...' : 'Sync All'}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-full bg-purple-500/20">
+                <Users className="h-6 w-6 text-purple-500" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Users to Sync</p>
+                <p className="text-2xl font-bold text-purple-500">
+                  {referralSyncStats?.users_to_sync ?? '—'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-full bg-pink-500/20">
+                <Coins className="h-6 w-6 text-pink-500" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Amount to Sync</p>
+                <p className="text-2xl font-bold text-pink-500">
+                  {referralSyncStats?.amount_to_sync?.toLocaleString() ?? '—'} CAMLY
+                </p>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            This syncs referral_earnings from web3_rewards to pending_amount in user_rewards, 
+            allowing users to withdraw their referral bonuses.
+          </p>
         </CardContent>
       </Card>
 
