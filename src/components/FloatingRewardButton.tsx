@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, GripVertical } from "lucide-react";
+import { Gift, Sparkles, GripVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { useDraggable } from "@/hooks/useDraggable";
 import { cn } from "@/lib/utils";
-import { GiftBox3D } from "@/components/icons/GiftBox3D";
 
 export const FloatingRewardButton = () => {
   const navigate = useNavigate();
@@ -109,18 +108,18 @@ export const FloatingRewardButton = () => {
             )}
           </AnimatePresence>
 
-          {/* Gift icon - 3D */}
+          {/* Gift icon */}
           <motion.div
             animate={{
-              scale: isHovered && !isDragging ? [1, 1.1, 1] : 1,
-              y: [0, -2, 0],
+              rotate: isHovered && !isDragging ? [0, -10, 10, -10, 10, 0] : 0,
+              y: [0, -3, 0],
             }}
             transition={{
-              scale: { duration: 0.5 },
+              rotate: { duration: 0.5 },
               y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
             }}
           >
-            <GiftBox3D size={28} className="w-7 h-7 md:w-8 md:h-8" />
+            <Gift className="w-7 h-7 md:w-8 md:h-8 text-white drop-shadow-lg" />
           </motion.div>
 
           {/* CAMLY Balance Badge */}
