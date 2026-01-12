@@ -7,7 +7,7 @@ import { useReferral } from '@/hooks/useReferral';
 import { useCamlyClaim } from '@/hooks/useCamlyClaim';
 import { useUserRewards } from '@/hooks/useUserRewards';
 import { useDailyLoginReward } from '@/hooks/useDailyLoginReward';
-import { useTrustScore } from '@/hooks/useTrustScore';
+
 import { useAppKitSafe } from '@/hooks/useAppKitSafe';
 import { useAccount } from 'wagmi';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +51,7 @@ import { WalletStatusCard } from '@/components/reward-galaxy/WalletStatusCard';
 import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCard';
 import { DailyLoginRewardCard } from '@/components/reward-galaxy/DailyLoginRewardCard';
 import { DailyLoginRewardPopup } from '@/components/reward-galaxy/DailyLoginRewardPopup';
-import { TrustScoreCard } from '@/components/reward-galaxy/TrustScoreCard';
+
 
 
 interface ClaimHistory {
@@ -109,7 +109,7 @@ export default function RewardGalaxy() {
     closeRewardPopup,
   } = useDailyLoginReward();
 
-  const { trustInfo, loadTrustInfo } = useTrustScore();
+  
   
   const [canClaimWallet, setCanClaimWallet] = useState<boolean | null>(null);
   const [canClaimGame, setCanClaimGame] = useState<boolean | null>(null);
@@ -249,10 +249,7 @@ export default function RewardGalaxy() {
       return { success: false, error: 'Please connect your wallet first' };
     }
     const result = await claimArbitrary(amount, actualWalletAddress);
-    if (result.success) {
-      // Reload trust info after successful claim
-      loadTrustInfo();
-    }
+    // Claim completed
     return result;
   };
 
@@ -333,21 +330,6 @@ export default function RewardGalaxy() {
             onConnect={() => open()}
           />
 
-          {/* Trust Score Card */}
-          {trustInfo && (
-            <TrustScoreCard
-              trustScore={trustInfo.trust_score}
-              tier={trustInfo.auto_approve_tier}
-              cooldownRemaining={trustInfo.cooldown_remaining}
-              hourlyRequestsRemaining={trustInfo.hourly_requests_remaining}
-              accountAgeDays={trustInfo.account_age_days}
-              successfulClaims={trustInfo.successful_claims}
-              hasWallet={!!actualWalletAddress}
-              pendingAmount={rewards?.pending_amount || 0}
-              onConnectWallet={() => open()}
-              birthYear={birthYear}
-            />
-          )}
 
           {/* Daily Play Progress - Child-Friendly */}
 
