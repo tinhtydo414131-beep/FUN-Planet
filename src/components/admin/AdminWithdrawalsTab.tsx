@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { 
   CheckCircle, XCircle, Clock, AlertTriangle, 
   Search, RefreshCw, Wallet, Shield, ExternalLink,
-  TrendingUp, TrendingDown, Send
+  TrendingUp, TrendingDown, Send, RotateCcw, Coins
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -42,6 +42,13 @@ interface WithdrawalStats {
   total_sent_today: number;
 }
 
+interface RewardWalletBalance {
+  camly_balance: number;
+  bnb_balance: number;
+  wallet_address: string;
+  checked_at: string;
+}
+
 export const AdminWithdrawalsTab = () => {
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,12 +60,15 @@ export const AdminWithdrawalsTab = () => {
     completed_today: 0,
     total_sent_today: 0
   });
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'completed'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'completed' | 'failed'>('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedWithdrawal, setSelectedWithdrawal] = useState<WithdrawalRequest | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [processing, setProcessing] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<RewardWalletBalance | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(false);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
 
   const fetchWithdrawals = async () => {
     setLoading(true);
@@ -116,8 +126,27 @@ export const AdminWithdrawalsTab = () => {
     }
   };
 
+  const fetchWalletBalance = async () => {
+    setLoadingBalance(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('check-reward-wallet-balance');
+      if (error) throw error;
+      if (data?.success) {
+        setWalletBalance(data);
+      } else {
+        throw new Error(data?.error || 'Failed to fetch balance');
+      }
+    } catch (error: any) {
+      console.error('Error fetching wallet balance:', error);
+      toast.error('Failed to fetch reward wallet balance');
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
+
   useEffect(() => {
     fetchWithdrawals();
+    fetchWalletBalance();
 
     // Subscribe to realtime updates
     const channel = supabase
@@ -135,6 +164,42 @@ export const AdminWithdrawalsTab = () => {
       supabase.removeChannel(channel);
     };
   }, [filter]);
+
+  const handleRetryFailed = async (withdrawal: WithdrawalRequest) => {
+    setRetryingId(withdrawal.id);
+    try {
+      // Update status to 'approved' first
+      const { error: updateError } = await supabase
+        .from('withdrawal_requests')
+        .update({ status: 'approved' })
+        .eq('id', withdrawal.id);
+
+      if (updateError) throw updateError;
+
+      toast.info('Retrying withdrawal transfer...');
+      
+      // Call the edge function to process the transfer
+      const { data: transferResult, error: transferError } = await supabase.functions.invoke('process-approved-withdrawal', {
+        body: { withdrawal_id: withdrawal.id }
+      });
+
+      if (transferError) {
+        toast.error('Retry failed: ' + transferError.message);
+      } else if (transferResult?.success) {
+        toast.success(`Transfer complete! TX: ${transferResult.tx_hash?.slice(0, 10)}...`);
+        fetchWalletBalance(); // Refresh balance after successful transfer
+      } else {
+        toast.error('Transfer failed: ' + (transferResult?.error || 'Unknown error'));
+      }
+
+      fetchWithdrawals();
+    } catch (error: any) {
+      console.error('Error retrying withdrawal:', error);
+      toast.error(error.message || 'Failed to retry withdrawal');
+    } finally {
+      setRetryingId(null);
+    }
+  };
 
   const handleApprove = async (withdrawal: WithdrawalRequest) => {
     setProcessing(true);
@@ -237,6 +302,90 @@ export const AdminWithdrawalsTab = () => {
 
   return (
     <div className="space-y-6">
+      {/* Reward Wallet Balance Card */}
+      <Card className={`border-2 ${walletBalance && walletBalance.camly_balance < 1000000 ? 'border-red-500 bg-red-500/5' : 'border-green-500/30 bg-green-500/5'}`}>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Coins className="h-5 w-5 text-yellow-500" />
+              Reward Wallet Balance
+            </CardTitle>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={fetchWalletBalance} 
+              disabled={loadingBalance}
+            >
+              <RefreshCw className={`h-4 w-4 mr-1 ${loadingBalance ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {walletBalance ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-3 rounded-full ${walletBalance.camly_balance < 1000000 ? 'bg-red-500/20' : 'bg-green-500/20'}`}>
+                  <Coins className={`h-6 w-6 ${walletBalance.camly_balance < 1000000 ? 'text-red-500' : 'text-green-500'}`} />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">CAMLY Balance</p>
+                  <p className={`text-2xl font-bold ${walletBalance.camly_balance < 1000000 ? 'text-red-500' : 'text-green-500'}`}>
+                    {walletBalance.camly_balance.toLocaleString()}
+                  </p>
+                  {walletBalance.camly_balance < 1000000 && (
+                    <p className="text-xs text-red-500 flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" />
+                      Low balance! Please recharge
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className={`p-3 rounded-full ${walletBalance.bnb_balance < 0.01 ? 'bg-red-500/20' : 'bg-blue-500/20'}`}>
+                  <Wallet className={`h-6 w-6 ${walletBalance.bnb_balance < 0.01 ? 'text-red-500' : 'text-blue-500'}`} />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">BNB (Gas)</p>
+                  <p className={`text-2xl font-bold ${walletBalance.bnb_balance < 0.01 ? 'text-red-500' : 'text-blue-500'}`}>
+                    {walletBalance.bnb_balance.toFixed(4)}
+                  </p>
+                  {walletBalance.bnb_balance < 0.01 && (
+                    <p className="text-xs text-red-500 flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" />
+                      Low gas! Add BNB
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-full bg-purple-500/20">
+                  <ExternalLink className="h-6 w-6 text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Wallet Address</p>
+                  <a 
+                    href={`https://bscscan.com/address/${walletBalance.wallet_address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-mono text-purple-500 hover:underline"
+                  >
+                    {walletBalance.wallet_address.slice(0, 10)}...{walletBalance.wallet_address.slice(-8)}
+                  </a>
+                  <p className="text-xs text-muted-foreground">
+                    Updated: {format(new Date(walletBalance.checked_at), 'HH:mm:ss')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-4 text-muted-foreground">
+              {loadingBalance ? 'Loading wallet balance...' : 'Click refresh to load balance'}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <Card className="bg-yellow-500/10 border-yellow-500/30">
@@ -331,7 +480,7 @@ export const AdminWithdrawalsTab = () => {
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
-            {(['all', 'pending', 'approved', 'completed', 'rejected'] as const).map((f) => (
+            {(['all', 'pending', 'approved', 'completed', 'rejected', 'failed'] as const).map((f) => (
               <Button
                 key={f}
                 variant={filter === f ? 'default' : 'outline'}
@@ -417,6 +566,19 @@ export const AdminWithdrawalsTab = () => {
                           Reject
                         </Button>
                       </div>
+                    )}
+
+                    {withdrawal.status === 'failed' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRetryFailed(withdrawal)}
+                        disabled={retryingId === withdrawal.id}
+                        className="border-orange-500 text-orange-500 hover:bg-orange-500/10"
+                      >
+                        <RotateCcw className={`h-4 w-4 mr-1 ${retryingId === withdrawal.id ? 'animate-spin' : ''}`} />
+                        {retryingId === withdrawal.id ? 'Retrying...' : 'Retry'}
+                      </Button>
                     )}
 
                     {withdrawal.tx_hash && (
