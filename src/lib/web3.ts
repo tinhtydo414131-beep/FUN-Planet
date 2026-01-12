@@ -2,9 +2,9 @@ import { createConfig, http } from 'wagmi';
 import { bsc } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
 
-// WalletConnect Project ID - Optional, app works without it using only injected wallets
+// WalletConnect Project ID - This is a public/publishable key, safe to include in code
 // Get your own at https://cloud.walletconnect.com/
-const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
+const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '4c8fb50c5f84c67b97f9b5e61de9c7f5';
 
 // CAMLY Token Contract on BSC Mainnet
 export const CAMLY_CONTRACT_ADDRESS = '0x0910320181889feFDE0BB1Ca63962b0A8882e413';
@@ -165,37 +165,32 @@ export const REWARDS_CLAIM_ABI = [
 ] as const;
 
 // Create wagmi config with BSC mainnet
-// Includes injected wallets (MetaMask, Trust Wallet) and optionally WalletConnect
+// Includes both injected (MetaMask, Trust Wallet) and WalletConnect (QR code for mobile)
 export const wagmiConfig = createConfig({
   chains: [bsc],
-  connectors: walletConnectProjectId 
-    ? [
-        // Generic injected connector - works with MetaMask, Trust Wallet, Coinbase, etc.
-        injected(),
-        // WalletConnect for mobile QR code scanning (only if Project ID is configured)
-        walletConnect({
-          projectId: walletConnectProjectId,
-          showQrModal: true,
-          metadata: {
-            name: 'FUN Planet',
-            description: 'Play games, earn CAMLY tokens',
-            url: 'https://planet.fun.rich',
-            icons: ['https://planet.fun.rich/favicon.ico'],
-          },
-        }),
-      ]
-    : [
-        // Only injected connector when WalletConnect is not configured
-        injected(),
-      ],
+  connectors: [
+    // Generic injected connector - works with MetaMask, Trust Wallet, Coinbase, etc.
+    injected(),
+    // WalletConnect for mobile QR code scanning
+    walletConnect({
+      projectId: walletConnectProjectId,
+      showQrModal: true,
+      metadata: {
+        name: 'FUN Planet',
+        description: 'Play games, earn CAMLY tokens',
+        url: 'https://funplanet.lovable.app',
+        icons: ['https://funplanet.lovable.app/favicon.ico'],
+      },
+    }),
+  ],
   transports: {
     [bsc.id]: http('https://bsc-dataseed.binance.org'),
   },
 });
 
-// Check if WalletConnect QR scanning is available
+// WalletConnect is always configured (fallback project ID is included)
 export const isWalletConnectConfigured = (): boolean => {
-  return !!walletConnectProjectId;
+  return true;
 };
 
 // Helper to format CAMLY amount
