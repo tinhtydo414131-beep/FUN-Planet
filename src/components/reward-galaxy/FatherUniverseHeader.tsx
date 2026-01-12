@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Star, Heart, Globe } from 'lucide-react';
+import { Sparkles, Star, Heart } from 'lucide-react';
+import camlyCoinImage from '@/assets/camly-coin-rainbow.png';
 
 export const FatherUniverseHeader = () => {
   return (
@@ -70,21 +71,21 @@ export const FatherUniverseHeader = () => {
           {/* Shine overlay */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent" />
           
-          {/* Globe icon - responsive */}
+          {/* CAMLY Coin image - responsive */}
           <motion.div
             animate={{ 
-              scale: [1, 1.12, 1],
-              rotate: [0, 360],
+              scale: [1, 1.08, 1],
             }}
             transition={{ 
               scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-              rotate: { duration: 20, repeat: Infinity, ease: "linear" }
             }}
           >
-            <Globe 
-              className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 text-white relative z-10" 
+            <img 
+              src={camlyCoinImage}
+              alt="CAMLY Coin"
+              className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 object-contain relative z-10"
               style={{
-                filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.9)) drop-shadow(0 0 30px rgba(255,255,255,0.5))',
+                filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.8))',
               }}
             />
           </motion.div>
