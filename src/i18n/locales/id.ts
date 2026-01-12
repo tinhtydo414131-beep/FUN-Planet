@@ -23,18 +23,6 @@ export default {
     login: 'Masuk',
     signup: 'Daftar',
   },
-  wallet: {
-    title: 'Dompet FUN',
-    balance: 'Saldo',
-    send: 'Kirim',
-    receive: 'Terima',
-    history: 'Riwayat',
-    connect: 'Hubungkan Dompet',
-    disconnect: 'Putuskan',
-    totalDonated: 'Total Donasi',
-    kidsHelped: 'Anak yang Dibantu',
-    transactions: 'Transaksi',
-  },
   games: {
     title: 'Game',
     play: 'Main Sekarang',

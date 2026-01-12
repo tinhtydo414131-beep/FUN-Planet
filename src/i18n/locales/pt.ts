@@ -23,18 +23,6 @@ export default {
     login: 'Entrar',
     signup: 'Cadastrar',
   },
-  wallet: {
-    title: 'Carteira FUN',
-    balance: 'Saldo',
-    send: 'Enviar',
-    receive: 'Receber',
-    history: 'Histórico',
-    connect: 'Conectar carteira',
-    disconnect: 'Desconectar',
-    totalDonated: 'Total doado',
-    kidsHelped: 'Crianças ajudadas',
-    transactions: 'Transações',
-  },
   games: {
     title: 'Jogos',
     play: 'Jogar agora',

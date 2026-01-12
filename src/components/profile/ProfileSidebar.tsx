@@ -3,9 +3,9 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { 
-  Wallet, Trophy, Gamepad2, Users, MapPin, 
+  Gift, Trophy, Gamepad2, Users, MapPin, 
   Copy, Check, ArrowUpRight, ArrowDownLeft,
-  History, Pencil, Save, X, Loader2
+  History, Pencil, Save, X, Loader2, Wallet
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -239,18 +239,11 @@ export function ProfileSidebar({
           </div>
           <div className="flex gap-2">
             <Button 
-              onClick={() => navigate('/wallet')}
+              onClick={() => navigate('/reward-galaxy')}
               className="flex-1 bg-white/20 hover:bg-white/30 text-white border-0"
             >
-              <ArrowUpRight className="w-4 h-4 mr-2" />
-              Send
-            </Button>
-            <Button 
-              onClick={() => navigate('/wallet')}
-              className="flex-1 bg-white/20 hover:bg-white/30 text-white border-0"
-            >
-              <ArrowDownLeft className="w-4 h-4 mr-2" />
-              Receive
+              <Gift className="w-4 h-4 mr-2" />
+              Rewards
             </Button>
           </div>
         </div>

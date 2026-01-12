@@ -23,18 +23,6 @@ export default {
     login: 'लॉग इन',
     signup: 'साइन अप',
   },
-  wallet: {
-    title: 'FUN वॉलेट',
-    balance: 'बैलेंस',
-    send: 'भेजें',
-    receive: 'प्राप्त करें',
-    history: 'इतिहास',
-    connect: 'वॉलेट कनेक्ट करें',
-    disconnect: 'डिस्कनेक्ट',
-    totalDonated: 'कुल दान',
-    kidsHelped: 'बच्चों की मदद',
-    transactions: 'लेनदेन',
-  },
   games: {
     title: 'गेम्स',
     play: 'अभी खेलें',

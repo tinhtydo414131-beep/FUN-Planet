@@ -482,10 +482,10 @@ const About = () => {
                 {isVN ? 'Khám phá Games' : 'Explore Games'}
               </Button>
             </Link>
-            <Link to="/wallet">
+            <Link to="/reward-galaxy">
               <Button size="lg" variant="outline" className="gap-2">
                 <Gift className="w-5 h-5" />
-                {isVN ? 'Ví CAMLY' : 'CAMLY Wallet'}
+                {isVN ? 'Nhận Thưởng' : 'Claim Rewards'}
               </Button>
             </Link>
           </div>

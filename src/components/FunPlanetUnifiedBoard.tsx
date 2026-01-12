@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Gamepad2, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw, Wallet, Play } from "lucide-react";
+import { Users, Gamepad2, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ethers } from "ethers";
 import { CAMLY_CONTRACT_ADDRESS, CAMLY_ABI } from "@/lib/web3";
@@ -543,7 +543,7 @@ export const FunPlanetUnifiedBoard = () => {
   const statItems = [
     { icon: Users, label: "Users", value: stats.totalUsers, bgColor: "bg-purple-500", accentColor: "#a855f7", suffix: "players" },
     { icon: Gamepad2, label: "Games", value: stats.totalGames, bgColor: "bg-teal-500", accentColor: "#14b8a6", suffix: "titles" },
-    { icon: Wallet, label: "Quỹ FP", value: stats.treasuryBalance, bgColor: "bg-amber-500", accentColor: "#f59e0b", suffix: "💰" },
+    { icon: Gem, label: "Quỹ FP", value: stats.treasuryBalance, bgColor: "bg-amber-500", accentColor: "#f59e0b", suffix: "💰" },
     { icon: Upload, label: "Uploads", value: stats.totalUploads, bgColor: "bg-green-500", accentColor: "#22c55e", suffix: "games" },
     { icon: Gem, label: "CAMLY", value: stats.totalCamly, bgColor: "bg-rose-500", accentColor: "#f43f5e", suffix: "💎" },
   ];
