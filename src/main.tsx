@@ -4,7 +4,7 @@ import "./index.css";
 import "./i18n";
 
 // App version for cache busting - force new version
-const APP_VERSION = "2026-01-12-v1";
+const APP_VERSION = "2026-01-12-v2";
 
 // Check version mismatch and force reload if needed
 const checkVersionAndReload = (): boolean => {
