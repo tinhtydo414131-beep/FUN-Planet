@@ -21,7 +21,7 @@ interface MultiplayerTeaserProps {
   variant?: "card" | "banner";
 }
 
-export function MultiplayerTeaser({ gameId = "3d-builder", variant = "card" }: MultiplayerTeaserProps) {
+export function MultiplayerTeaser({ gameId = "puzzle-game", variant = "card" }: MultiplayerTeaserProps) {
   const { user } = useAuth();
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
   const [isJoining, setIsJoining] = useState(false);
