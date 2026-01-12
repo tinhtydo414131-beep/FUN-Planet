@@ -34,8 +34,6 @@ import { FunIDOnboarding } from "@/components/FunIDOnboarding";
 import { useFunId } from "@/hooks/useFunId";
 
 
-import { TodayRewardsCard } from "@/components/TodayRewardsCard";
-
 const Index = () => {
   const { t } = useTranslation();
   const { user, loading } = useAuth();
@@ -226,8 +224,6 @@ const Index = () => {
       {/* Featured Games - Play Instantly */}
       <FeaturedGamesSection />
       
-      {/* Today's Rewards Card */}
-      <TodayRewardsCard />
       
 
       {/* Full Games Gallery */}

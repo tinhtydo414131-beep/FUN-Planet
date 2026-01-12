@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wallet, Coins, Calendar, Loader2, History, Flame, Trophy } from 'lucide-react';
+import { Wallet, Coins, Calendar, Loader2, History, Trophy } from 'lucide-react';
 import { useWeb3Rewards } from '@/hooks/useWeb3Rewards';
 import { WalletConnectModal } from './WalletConnectModal';
 import { Web3RewardNotification } from './Web3RewardNotification';
@@ -15,14 +15,12 @@ export const Web3RewardsPanel = () => {
     walletAddress,
     isConnected,
     isLoading,
-    dailyStreak,
     pendingReward,
     connectWallet,
     claimDailyCheckin,
     canClaimDailyCheckin,
     clearPendingReward,
     REWARDS,
-    getStreakMultiplier,
   } = useWeb3Rewards();
 
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -96,36 +94,23 @@ export const Web3RewardsPanel = () => {
             </Button>
           )}
 
-          {/* Daily Check-in with Streak */}
-          <div className="space-y-2">
-            {dailyStreak > 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <Flame className="w-4 h-4 text-orange-500" />
-                <span className="font-semibold">{dailyStreak}-day streak</span>
-                {getStreakMultiplier(dailyStreak) > 1 && (
-                  <span className="text-xs bg-orange-500/20 text-orange-500 px-2 py-0.5 rounded-full">
-                    {getStreakMultiplier(dailyStreak)}x bonus
-                  </span>
-                )}
-              </div>
+          {/* Daily Check-in */}
+          <Button
+            onClick={handleDailyCheckin}
+            disabled={!canClaimDailyCheckin || isCheckingIn}
+            variant="outline"
+            className="w-full border-yellow-500/30 hover:bg-yellow-500/10"
+          >
+            {isCheckingIn ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Calendar className="w-4 h-4 mr-2" />
             )}
-            <Button
-              onClick={handleDailyCheckin}
-              disabled={!canClaimDailyCheckin || isCheckingIn}
-              variant="outline"
-              className="w-full border-yellow-500/30 hover:bg-yellow-500/10"
-            >
-              {isCheckingIn ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Calendar className="w-4 h-4 mr-2" />
-              )}
-              Daily Check-in
-              <span className="ml-auto text-xs text-yellow-500">
-                +{Math.floor(REWARDS.DAILY_CHECKIN * getStreakMultiplier(dailyStreak + 1)).toLocaleString()} CAMLY
-              </span>
-            </Button>
-          </div>
+            Daily Check-in
+            <span className="ml-auto text-xs text-yellow-500">
+              +{REWARDS.DAILY_CHECKIN.toLocaleString()} CAMLY
+            </span>
+          </Button>
 
           {/* Leaderboard */}
           <Button
