@@ -178,7 +178,7 @@ export const Hero = () => {
           opacity: 1
         }} transition={{
           delay: 0.3
-        }} className="text-sm sm:text-lg md:text-xl text-white font-rajdhani font-black max-w-2xl mx-auto leading-relaxed px-4 sm:px-6 drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] bg-gradient-to-r from-purple-600/85 via-pink-600/85 to-cyan-600/85 backdrop-blur-xl rounded-2xl py-3 sm:py-5 border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.3),0_0_60px_rgba(168,85,247,0.3)]">
+        }} className="text-xs sm:text-base md:text-lg text-white font-rajdhani font-black max-w-[90vw] sm:max-w-2xl mx-auto leading-relaxed px-3 sm:px-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] bg-gradient-to-r from-purple-600/70 via-pink-600/70 to-cyan-600/70 backdrop-blur-xl rounded-2xl py-2.5 sm:py-4 border border-white/50 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_0_40px_rgba(168,85,247,0.25)]">
             🚀 {t('hero.slogan')} 💎✨
           </motion.p>
 
