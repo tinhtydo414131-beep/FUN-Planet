@@ -133,7 +133,7 @@ export const WalletStatusCard = ({
                     filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.15))',
                   }}
                 >
-                  {isConnected ? '✨ Ví Ánh Sáng Của Con ✨' : 'Kết nối ví để nhận thưởng'}
+                  {isConnected ? 'Ví Ánh Sáng Của Con' : 'Kết nối ví để nhận thưởng'}
                 </p>
                 {isConnected && walletAddress ? (
                   <motion.p 

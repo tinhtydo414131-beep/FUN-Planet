@@ -95,7 +95,7 @@ export function TrustScoreCard({
                 </motion.div>
                 <div>
                   <h3 className="text-lg font-fredoka font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                    Trust Score ✨
+                    Trust Score
                   </h3>
                   <Badge 
                     className={`bg-gradient-to-r ${getTierColor()} text-white border-0 shadow-md`}
@@ -199,7 +199,7 @@ export function TrustScoreCard({
                   <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm font-bold text-orange-700 mb-1 font-fredoka">
-                      ⚠️ Cần kết nối ví để rút CAMLY!
+                      Cần kết nối ví để rút CAMLY!
                     </p>
                     <p className="text-xs text-orange-600/80 mb-3 font-fredoka">
                       {isChildFriendly 
