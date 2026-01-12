@@ -6,32 +6,8 @@ import "./i18n";
 // App version for cache busting - force new version
 const APP_VERSION = "2026-01-12-v2";
 
-// Check version mismatch and force reload if needed
-const checkVersionAndReload = (): boolean => {
-  const savedVersion = localStorage.getItem('app-version');
-  if (savedVersion && savedVersion !== APP_VERSION) {
-    console.log(`[FunPlanet] Version mismatch: ${savedVersion} → ${APP_VERSION}, forcing hard reload...`);
-    localStorage.setItem('app-version', APP_VERSION);
-    // Clear all caches before reload
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => caches.delete(name));
-      });
-    }
-    window.location.reload();
-    return true;
-  }
-  localStorage.setItem('app-version', APP_VERSION);
-  return false;
-};
 
-// Check version BEFORE anything else - if mismatch, stop and reload
-const isReloading = checkVersionAndReload();
-
-// If reloading, show a friendly loading state instead of throwing an error
-if (!isReloading) {
-  console.log(`[FunPlanet] App starting, version: ${APP_VERSION}`);
-}
+console.log(`[FunPlanet] App starting, version: ${APP_VERSION}`);
 
 // Theme version for automatic preference reset when theme updates
 const THEME_VERSION = "2026-01-11-v1";
