@@ -2,7 +2,7 @@
 export { CamlyCoinReward } from "../CamlyCoinReward";
 export { FloatingRewardButton } from "../FloatingRewardButton";
 export { RewardGalaxyFloatingButton } from "../RewardGalaxyFloatingButton";
-export { RewardGalaxyHomeBanner } from "../RewardGalaxyHomeBanner";
+
 export { RewardNotificationSettings } from "../RewardNotificationSettings";
 export { RewardsDashboard } from "../RewardsDashboard";
 export { TodayRewardsCard } from "../TodayRewardsCard";
