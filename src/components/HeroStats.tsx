@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Gamepad2, Users, Coins } from "lucide-react";
 import { games } from "@/data/games";
 
-// Built-in games count: games.ts (9) + sample games (5) = 14
-const BUILT_IN_GAMES_COUNT = games.length + 5;
+// Built-in games count: games.ts only (no sample games)
+const BUILT_IN_GAMES_COUNT = games.length;
 
 export function HeroStats() {
   const [stats, setStats] = useState({

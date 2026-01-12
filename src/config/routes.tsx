@@ -9,7 +9,6 @@ export const LovableGamePlay = lazy(() => import("@/pages/LovableGamePlay"));
 export const RecentlyPlayed = lazy(() => import("@/pages/RecentlyPlayed"));
 export const MyGames = lazy(() => import("@/pages/MyGames"));
 export const EditGame = lazy(() => import("@/pages/EditGame"));
-export const SampleGames = lazy(() => import("@/pages/SampleGames"));
 export const UploadGame = lazy(() => import("@/pages/UploadGame"));
 
 export const Auth = lazy(() => import("@/pages/Auth"));
@@ -53,7 +52,6 @@ export const routeConfig = {
   recentlyPlayed: "/recently-played",
   myGames: "/my-games",
   editGame: "/edit-game/:id",
-  sampleGames: "/sample-games",
   
   // Upload & Creator
   upload: "/upload",
