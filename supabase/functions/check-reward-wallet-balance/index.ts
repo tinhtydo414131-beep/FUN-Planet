@@ -44,9 +44,15 @@ serve(async (req) => {
       );
     }
 
-    // Check if user is admin
-    const { data: isAdmin } = await supabase.rpc('has_role', { role_name: 'admin' });
-    if (!isAdmin) {
+    // Check if user is admin by querying user_roles table
+    const { data: adminRole } = await supabase
+      .from('user_roles')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle();
+    
+    if (!adminRole) {
       return new Response(
         JSON.stringify({ success: false, error: 'Admin access required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
