@@ -80,23 +80,6 @@ export function DailyLoginRewardCard({
               <Calendar className="w-8 h-8 md:w-10 md:h-10 text-white relative z-10" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
             </div>
             
-            {/* Orbiting star with sparkle */}
-            <motion.div
-              className="absolute -top-2 -right-2"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-            >
-              <Star className="w-6 h-6 text-[#FFD700] fill-[#FFD700]" style={{ filter: 'drop-shadow(0 0 12px #FFD700)' }} />
-            </motion.div>
-            
-            {/* Additional sparkle */}
-            <motion.div
-              className="absolute -bottom-2 -left-2"
-              animate={{ scale: [1, 1.4, 1], rotate: [0, 180, 360] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Sparkles className="w-6 h-6 text-[#FF69B4] fill-[#FF69B4]" style={{ filter: 'drop-shadow(0 0 8px #FF69B4)' }} />
-            </motion.div>
           </motion.div>
 
           {/* Title - gradient text */}

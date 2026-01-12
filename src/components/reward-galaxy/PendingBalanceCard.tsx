@@ -217,7 +217,7 @@ export function PendingBalanceCard({
                   filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                 }}
               >
-                💰 Số Dư Chờ Rút 💰
+                Số Dư Chờ Rút
               </h2>
               <p 
                 className="text-xl md:text-2xl font-fredoka font-semibold leading-relaxed"

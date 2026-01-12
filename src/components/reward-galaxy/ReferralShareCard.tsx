@@ -280,7 +280,7 @@ export const ReferralShareCard = ({
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              🔗 Link mời thần kỳ của con
+              Link mời thần kỳ của con
             </p>
             <div className="flex items-center gap-3">
               <p className="flex-1 text-base font-mono text-purple-700 truncate">

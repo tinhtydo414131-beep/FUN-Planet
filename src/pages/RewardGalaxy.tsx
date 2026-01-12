@@ -378,7 +378,7 @@ export default function RewardGalaxy() {
                   filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                 }}
               >
-                🌟 Các Hành Tinh Phần Thưởng 🌟
+                Các Hành Tinh Phần Thưởng
               </span>
             </motion.h2>
             

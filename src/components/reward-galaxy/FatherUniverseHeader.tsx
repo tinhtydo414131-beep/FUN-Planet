@@ -52,43 +52,23 @@ export const FatherUniverseHeader = () => {
         {/* Inner glow - pastel for white bg */}
         <div className="absolute inset-0 rounded-full blur-2xl sm:blur-3xl opacity-40 -m-6 sm:-m-10 bg-gradient-to-r from-yellow-200 via-pink-200 to-blue-200" />
         
-        {/* Main icon circle - responsive */}
-        <motion.div 
-          className="relative w-32 h-32 sm:w-44 sm:h-44 md:w-56 md:h-56 rounded-full flex items-center justify-center mx-auto"
-          style={{
-            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF69B4 60%, #60A5FA 100%)',
-            boxShadow: '0 15px 50px rgba(255, 165, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.3), inset 0 4px 10px rgba(255,255,255,0.5), inset 0 -4px 10px rgba(0,0,0,0.15)',
+        {/* CAMLY Coin image - standalone without circle */}
+        <motion.div
+          animate={{ 
+            scale: [1, 1.08, 1],
           }}
-          animate={{
-            boxShadow: [
-              '0 15px 50px rgba(255, 165, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.3), inset 0 4px 10px rgba(255,255,255,0.5), inset 0 -4px 10px rgba(0,0,0,0.15)',
-              '0 15px 70px rgba(255, 165, 0, 0.5), 0 0 80px rgba(255, 215, 0, 0.4), inset 0 4px 10px rgba(255,255,255,0.5), inset 0 -4px 10px rgba(0,0,0,0.15)',
-              '0 15px 50px rgba(255, 165, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.3), inset 0 4px 10px rgba(255,255,255,0.5), inset 0 -4px 10px rgba(0,0,0,0.15)',
-            ],
+          transition={{ 
+            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
           }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          {/* Shine overlay */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent" />
-          
-          {/* CAMLY Coin image - responsive */}
-          <motion.div
-            animate={{ 
-              scale: [1, 1.08, 1],
+          <img 
+            src={camlyCoinImage}
+            alt="CAMLY Coin"
+            className="w-28 h-28 sm:w-40 sm:h-40 md:w-52 md:h-52 object-contain relative z-10"
+            style={{
+              filter: 'drop-shadow(0 0 30px rgba(255,215,0,0.8)) drop-shadow(0 0 60px rgba(255,215,0,0.4))',
             }}
-            transition={{ 
-              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-            }}
-          >
-            <img 
-              src={camlyCoinImage}
-              alt="CAMLY Coin"
-              className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 object-contain relative z-10"
-              style={{
-                filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.8))',
-              }}
-            />
-          </motion.div>
+          />
         </motion.div>
 
         {/* Orbiting gold stars - reduced on mobile */}
@@ -226,7 +206,7 @@ export const FatherUniverseHeader = () => {
           transition={{ duration: 2, repeat: Infinity }}
         >
           <span className="bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
-            ✨ Đăng nhập mỗi ngày • Chơi game vui vẻ • Upload sáng tạo • Mời bạn bè ✨
+            Đăng nhập mỗi ngày • Chơi game vui vẻ • Upload sáng tạo • Mời bạn bè
           </span>
         </motion.p>
       </motion.div>
