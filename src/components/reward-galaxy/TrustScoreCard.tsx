@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,18 +30,19 @@ interface TrustScoreCardProps {
   birthYear?: number | null;
 }
 
-export function TrustScoreCard({
-  trustScore,
-  tier,
-  cooldownRemaining,
-  hourlyRequestsRemaining,
-  accountAgeDays,
-  successfulClaims,
-  hasWallet = true,
-  pendingAmount = 0,
-  onConnectWallet,
-  birthYear
-}: TrustScoreCardProps) {
+export const TrustScoreCard = React.forwardRef<HTMLDivElement, TrustScoreCardProps>(
+  ({
+    trustScore,
+    tier,
+    cooldownRemaining,
+    hourlyRequestsRemaining,
+    accountAgeDays,
+    successfulClaims,
+    hasWallet = true,
+    pendingAmount = 0,
+    onConnectWallet,
+    birthYear
+  }, ref) => {
   const isChildFriendly = birthYear && (new Date().getFullYear() - birthYear) < 12;
   const badge = getRewardBadge(pendingAmount);
   
@@ -245,4 +247,6 @@ export function TrustScoreCard({
       </div>
     </motion.div>
   );
-}
+});
+
+TrustScoreCard.displayName = 'TrustScoreCard';
