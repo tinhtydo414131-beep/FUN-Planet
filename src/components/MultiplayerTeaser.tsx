@@ -32,9 +32,9 @@ export function MultiplayerTeaser({ gameId = "puzzle-game", variant = "card" }: 
   useEffect(() => {
     // Mock online users for teaser
     const mockUsers: OnlineUser[] = [
-      { id: '1', username: 'BuilderKid2015', avatar_url: null, status: 'building' },
+      { id: '1', username: 'GamerKid2015', avatar_url: null, status: 'building' },
       { id: '2', username: 'CreativeGirl', avatar_url: null, status: 'exploring' },
-      { id: '3', username: 'StarBuilder', avatar_url: null, status: 'idle' },
+      { id: '3', username: 'StarGamer', avatar_url: null, status: 'idle' },
     ];
     setOnlineUsers(mockUsers);
 

@@ -22,7 +22,7 @@ export const REWARDS = {
   NFT_MINT_COST: 1000,
 };
 
-// CAMLY Token ABI (ERC20 + Airdrop functions)
+// CAMLY Token ABI (ERC20 Standard)
 export const CAMLY_ABI = [
   // ERC20 Standard
   {
