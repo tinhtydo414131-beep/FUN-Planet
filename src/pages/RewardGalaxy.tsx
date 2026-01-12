@@ -379,10 +379,10 @@ export default function RewardGalaxy() {
             >
               <span
                 style={{
-                  background: 'linear-gradient(135deg, #FFD700, #FF69B4, #A855F7, #FFD700)',
+                  background: 'linear-gradient(135deg, #FFD700, #FF69B4, #60A5FA, #FFD700)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                 }}
               >
                 🌟 Các Hành Tinh Phần Thưởng 🌟
