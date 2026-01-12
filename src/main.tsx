@@ -26,11 +26,12 @@ const checkVersionAndReload = (): boolean => {
 };
 
 // Check version BEFORE anything else - if mismatch, stop and reload
-if (checkVersionAndReload()) {
-  // Prevent any further execution - page will reload
-  throw new Error('Version mismatch - reloading page');
+const isReloading = checkVersionAndReload();
+
+// If reloading, show a friendly loading state instead of throwing an error
+if (!isReloading) {
+  console.log(`[FunPlanet] App starting, version: ${APP_VERSION}`);
 }
-console.log(`[FunPlanet] App starting, version: ${APP_VERSION}`);
 
 // Theme version for automatic preference reset when theme updates
 const THEME_VERSION = "2026-01-11-v1";
