@@ -49,14 +49,14 @@ const PrivateMessages = lazy(() => import("./pages/PrivateMessages"));
 const NFTGallery = lazy(() => import("./pages/NFTGallery"));
 const Education = lazy(() => import("./pages/Education"));
 const ParentDashboard = lazy(() => import("./pages/ParentDashboard"));
-const PlanetExplorer = lazy(() => import("./pages/PlanetExplorer"));
+
 const AdminMasterDashboard = lazy(() => import("./pages/AdminMasterDashboard"));
 const About = lazy(() => import("./pages/About"));
 const LovableGamePlay = lazy(() => import("./pages/LovableGamePlay"));
 const SampleGames = lazy(() => import("./pages/SampleGames"));
 const RewardGalaxy = lazy(() => import("./pages/RewardGalaxy"));
 const AngelAIHubPage = lazy(() => import("./pages/AngelAIHubPage"));
-const GlobalAirdrop = lazy(() => import("./pages/GlobalAirdrop"));
+
 const LawOfLight = lazy(() => import("./pages/LawOfLight"));
 
 // Lazy load heavy components
@@ -111,7 +111,7 @@ const AnimatedRoutes = () => {
           {/* Upload & Creator */}
           <Route path="/upload" element={<UploadGame />} />
           <Route path="/upload-game" element={<UploadGame />} />
-          <Route path="/builder" element={<PlanetExplorer />} />
+          
           
           {/* Profile */}
           <Route path="/profile" element={<Profile />} />
@@ -121,9 +121,7 @@ const AnimatedRoutes = () => {
           <Route path="/nft-gallery" element={<NFTGallery />} />
           <Route path="/nft" element={<NFTGallery />} />
           
-          {/* Airdrop */}
-          <Route path="/airdrop" element={<GlobalAirdrop />} />
-          <Route path="/global-airdrop" element={<GlobalAirdrop />} />
+          {/* Rewards */}
           <Route path="/rewards-history" element={<RewardsHistory />} />
           <Route path="/reward-galaxy" element={<RewardGalaxy />} />
           
@@ -158,7 +156,7 @@ const AnimatedRoutes = () => {
           
           {/* Other */}
           <Route path="/about" element={<About />} />
-          <Route path="/planet-explorer" element={<PlanetExplorer />} />
+          
           <Route path="/angel-ai" element={<AngelAIHubPage />} />
           <Route path="/law-of-light" element={<LawOfLight />} />
           <Route path="/reset-password" element={<ResetPassword />} />

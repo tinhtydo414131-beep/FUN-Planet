@@ -355,8 +355,7 @@ const Index = () => {
             {[
               { path: "/games", icon: "🎮", label: t('home.gamesLabel') },
               { path: "/upload-game", icon: "📤", label: t('home.uploadLabel') },
-              { path: "/global-airdrop", icon: "🎁", label: t('home.airdropLabel') },
-              { path: "/planet-explorer", icon: "🌍", label: t('home.buildLabel') },
+              { path: "/reward-galaxy", icon: "🎁", label: t('home.rewardsLabel') },
               { path: "/nft-gallery", icon: "💎", label: t('home.nftsLabel') },
               { path: "/chat", icon: "💬", label: t('home.chatLabel') },
               { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: t('home.parentsLabel') },
@@ -429,9 +428,8 @@ const Index = () => {
             <div>
               <h4 className="text-lg font-bold mb-4">{t('home.features')}</h4>
               <div className="space-y-2">
-                <p onClick={() => navigate("/global-airdrop")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.claimAirdrop')}</p>
+                <p onClick={() => navigate("/reward-galaxy")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.rewardsLabel')}</p>
                 <p onClick={() => navigate("/nft-gallery")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.nftGallery')}</p>
-                <p onClick={() => navigate("/planet-explorer")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.builder3D')}</p>
               </div>
             </div>
             <div>

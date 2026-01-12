@@ -11,13 +11,13 @@ export const MyGames = lazy(() => import("@/pages/MyGames"));
 export const EditGame = lazy(() => import("@/pages/EditGame"));
 export const SampleGames = lazy(() => import("@/pages/SampleGames"));
 export const UploadGame = lazy(() => import("@/pages/UploadGame"));
-export const PlanetExplorer = lazy(() => import("@/pages/PlanetExplorer"));
+
 export const Auth = lazy(() => import("@/pages/Auth"));
 export const Profile = lazy(() => import("@/pages/Profile"));
 export const PublicProfile = lazy(() => import("@/pages/PublicProfile"));
 export const Settings = lazy(() => import("@/pages/Settings"));
 export const NFTGallery = lazy(() => import("@/pages/NFTGallery"));
-export const GlobalAirdrop = lazy(() => import("@/pages/GlobalAirdrop"));
+
 export const RewardsHistory = lazy(() => import("@/pages/RewardsHistory"));
 export const RewardGalaxy = lazy(() => import("@/pages/RewardGalaxy"));
 export const Friends = lazy(() => import("@/pages/Friends"));
@@ -58,8 +58,6 @@ export const routeConfig = {
   // Upload & Creator
   upload: "/upload",
   uploadGame: "/upload-game",
-  builder: "/builder",
-  planetExplorer: "/planet-explorer",
   
   // Auth & Profile
   auth: "/auth",
@@ -70,9 +68,7 @@ export const routeConfig = {
   nftGallery: "/nft-gallery",
   nft: "/nft",
   
-  // Airdrop
-  airdrop: "/airdrop",
-  globalAirdrop: "/global-airdrop",
+  // Rewards
   rewardsHistory: "/rewards-history",
   rewardGalaxy: "/reward-galaxy",
   
