@@ -817,12 +817,16 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
     }
   };
 
+  // Check if desktop for positioning
+  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+
   return (
     <div
-      className="fixed z-40 touch-none select-none right-3 md:right-4"
+      className="fixed z-50 touch-none select-none"
       style={{
         ...style,
-        bottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))',
+        right: isDesktop ? '1rem' : 'max(0.75rem, env(safe-area-inset-right, 0px))',
+        bottom: isDesktop ? '1rem' : 'calc(6rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
       {/* Drag Handle */}
