@@ -2,9 +2,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Calendar, Star, Sparkles, Gift, Check, CalendarHeart } from 'lucide-react';
+import { Star, Sparkles, Check, CalendarHeart } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
+import { GiftBox3D } from '@/components/icons/GiftBox3D';
 
 interface DailyLoginRewardPopupProps {
   isOpen: boolean;
@@ -209,18 +210,11 @@ export function DailyLoginRewardPopup({ isOpen, amount, onClose }: DailyLoginRew
               
               {/* Main icon container */}
               <motion.div 
-                className="relative w-full h-full rounded-full flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #FFEC8B 30%, #FFD700 50%, #FFA500 70%, #FFD700 100%)',
-                  boxShadow: '0 10px 40px rgba(255,215,0,0.5), 0 0 60px rgba(255,215,0,0.3), inset 0 2px 20px rgba(255,255,255,0.4)',
-                }}
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                className="relative w-full h-full flex items-center justify-center"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <Gift 
-                  className="w-14 h-14 text-white drop-shadow-lg" 
-                  strokeWidth={2.5}
-                />
+                <GiftBox3D size={80} />
               </motion.div>
               
               {/* Orbiting sparkle */}
