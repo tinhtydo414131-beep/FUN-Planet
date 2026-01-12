@@ -119,7 +119,7 @@ export default {
     nftsLabel: 'NFTs',
     chatLabel: 'Chat',
     parentsLabel: 'Eltern',
-    walletLabel: 'Geldbörse',
+    rewardsLabel: 'Belohnungen',
     leadersLabel: 'Rangliste',
     achievementsLabel: 'Erfolge',
     friendsLabel: 'Freunde',

@@ -2,7 +2,7 @@ export default {
   nav: {
     home: 'หน้าแรก',
     games: 'เกม',
-    wallet: 'กระเป๋าเงิน',
+    rewards: 'รางวัล',
     profile: 'โปรไฟล์',
     friends: 'เพื่อน',
     messages: 'ข้อความ',
@@ -119,7 +119,7 @@ export default {
     nftsLabel: 'NFT',
     chatLabel: 'แชท',
     parentsLabel: 'ผู้ปกครอง',
-    walletLabel: 'กระเป๋า',
+    rewardsLabel: 'รางวัล',
     leadersLabel: 'ลีดเดอร์',
     achievementsLabel: 'ความสำเร็จ',
     friendsLabel: 'เพื่อน',

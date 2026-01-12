@@ -119,7 +119,7 @@ export default {
     nftsLabel: 'NFT',
     chatLabel: 'Chat',
     parentsLabel: 'Orang Tua',
-    walletLabel: 'Dompet',
+    rewardsLabel: 'Hadiah',
     leadersLabel: 'Pemimpin',
     achievementsLabel: 'Pencapaian',
     friendsLabel: 'Teman',

@@ -2,7 +2,7 @@ export default {
   nav: {
     home: 'Главная',
     games: 'Игры',
-    wallet: 'Кошелек',
+    rewards: 'Награды',
     profile: 'Профиль',
     friends: 'Друзья',
     messages: 'Сообщения',
@@ -119,7 +119,7 @@ export default {
     nftsLabel: 'NFT',
     chatLabel: 'Чат',
     parentsLabel: 'Родители',
-    walletLabel: 'Кошелек',
+    rewardsLabel: 'Награды',
     leadersLabel: 'Рейтинг',
     achievementsLabel: 'Достижения',
     friendsLabel: 'Друзья',
