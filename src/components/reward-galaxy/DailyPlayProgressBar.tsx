@@ -36,44 +36,25 @@ export function DailyPlayProgressBar({
     return '🌟';
   };
 
-  // Get gradient border colors based on state
-  const getBorderGradient = () => {
-    if (isAtLimit) return 'from-purple-400 via-indigo-400 to-blue-400';
-    if (isNearLimit) return 'from-amber-400 via-orange-400 to-yellow-400';
-    return 'from-emerald-400 via-teal-400 to-cyan-400';
-  };
-
-  // Get glow colors based on state
-  const getGlowGradient = () => {
-    if (isAtLimit) return 'from-purple-300/30 via-indigo-300/20 to-blue-300/30';
-    if (isNearLimit) return 'from-amber-300/30 via-orange-300/20 to-yellow-300/30';
-    return 'from-emerald-300/30 via-teal-300/20 to-cyan-300/30';
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-8"
     >
-      {/* Outer glow */}
-      <div className={`absolute -inset-1 bg-gradient-to-r ${getGlowGradient()} rounded-2xl blur-lg opacity-60`} />
-      
       <Card 
-        className="overflow-hidden border-0 relative bg-white"
+        className="overflow-hidden border-0 relative"
         style={{
-          boxShadow: isAtLimit 
-            ? '0 8px 32px rgba(147, 51, 234, 0.15), 0 4px 16px rgba(79, 70, 229, 0.1)'
+          background: isAtLimit 
+            ? 'linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(79, 70, 229, 0.3))'
             : isNearLimit
-            ? '0 8px 32px rgba(251, 191, 36, 0.15), 0 4px 16px rgba(249, 115, 22, 0.1)'
-            : '0 8px 32px rgba(52, 211, 153, 0.15), 0 4px 16px rgba(96, 165, 250, 0.1)',
+            ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(249, 115, 22, 0.3))'
+            : 'linear-gradient(135deg, rgba(52, 211, 153, 0.3), rgba(96, 165, 250, 0.3))',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
         }}
       >
-        {/* Gradient border */}
-        <div className={`absolute inset-0 bg-gradient-to-r ${getBorderGradient()} rounded-xl opacity-30`} />
-        <div className="absolute inset-[2px] bg-white rounded-xl" />
-
-        {/* Animated background particles - brighter for white bg */}
+        {/* Animated background particles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(12)].map((_, i) => (
             <motion.div
@@ -84,11 +65,10 @@ export function DailyPlayProgressBar({
                 top: `${Math.random() * 100}%`,
                 width: `${3 + Math.random() * 4}px`,
                 height: `${3 + Math.random() * 4}px`,
-                background: isAtLimit ? '#A855F7' : isNearLimit ? '#F59E0B' : '#10B981',
-                filter: 'drop-shadow(0 0 4px currentColor)',
+                background: isAtLimit ? '#A855F7' : isNearLimit ? '#FBBF24' : '#34D399',
               }}
               animate={{
-                opacity: [0.4, 0.9, 0.4],
+                opacity: [0.3, 0.8, 0.3],
                 scale: [1, 1.3, 1],
                 y: [0, -10, 0],
               }}
@@ -110,23 +90,23 @@ export function DailyPlayProgressBar({
                 transition={{ duration: 0.5, repeat: isNearLimit ? Infinity : 0 }}
                 className={`w-12 h-12 rounded-full flex items-center justify-center ${
                   isAtLimit 
-                    ? 'bg-purple-100' 
+                    ? 'bg-purple-500/30' 
                     : isNearLimit 
-                    ? 'bg-amber-100' 
-                    : 'bg-emerald-100'
+                    ? 'bg-amber-500/30' 
+                    : 'bg-emerald-500/30'
                 }`}
               >
                 {isAtLimit ? (
-                  <Moon className="w-6 h-6 text-purple-600" />
+                  <Moon className="w-6 h-6 text-purple-300" />
                 ) : (
-                  <Clock className="w-6 h-6 text-emerald-600" />
+                  <Clock className="w-6 h-6 text-white" />
                 )}
               </motion.div>
               <div>
-                <h3 className="text-lg font-fredoka font-bold bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+                <h3 className="text-lg font-fredoka font-bold text-white">
                   {isChildFriendlyDisplay ? '⏰ Thời Gian Chơi Hôm Nay' : 'Daily Play Time'}
                 </h3>
-                <p className="text-sm text-blue-700/70 font-fredoka">
+                <p className="text-sm text-white/70">
                   {isChildFriendlyDisplay 
                     ? `Độ tuổi: ${ageGroup} • Tối đa: ${maxMinutes} phút/ngày`
                     : `Age: ${ageGroup} • Max: ${maxMinutes} min/day`
@@ -154,10 +134,10 @@ export function DailyPlayProgressBar({
                 value={percentage} 
                 className={`h-6 rounded-full ${
                   isAtLimit 
-                    ? 'bg-purple-100' 
+                    ? 'bg-purple-900/50' 
                     : isNearLimit 
-                    ? 'bg-amber-100' 
-                    : 'bg-gray-200'
+                    ? 'bg-amber-900/50' 
+                    : 'bg-emerald-900/50'
                 }`}
               />
               
@@ -172,23 +152,23 @@ export function DailyPlayProgressBar({
                 transition={{ duration: 1, repeat: Infinity }}
               >
                 {isAtLimit ? (
-                  <Moon className="w-6 h-6 text-purple-600 drop-shadow-lg" />
+                  <Moon className="w-6 h-6 text-purple-200 drop-shadow-lg" />
                 ) : (
-                  <Sparkles className="w-6 h-6 text-amber-500 drop-shadow-lg" />
+                  <Sparkles className="w-6 h-6 text-yellow-300 drop-shadow-lg" />
                 )}
               </motion.div>
             </div>
             
             {/* Time labels */}
             <div className="flex justify-between items-center mt-2">
-              <span className="text-lg font-fredoka font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-lg font-fredoka font-bold text-white">
                 {isChildFriendlyDisplay ? (
                   <>
-                    Bé đã chơi: <span className="text-yellow-600">{totalMinutesPlayed}</span>/{maxMinutes} phút
+                    Bé đã chơi: <span className="text-yellow-300">{totalMinutesPlayed}</span>/{maxMinutes} phút
                   </>
                 ) : (
                   <>
-                    Played: <span className="text-yellow-600">{totalMinutesPlayed}</span>/{maxMinutes} min
+                    Played: <span className="text-yellow-300">{totalMinutesPlayed}</span>/{maxMinutes} min
                   </>
                 )}
               </span>
@@ -196,12 +176,12 @@ export function DailyPlayProgressBar({
               <motion.span
                 animate={isNearLimit ? { scale: [1, 1.1, 1] } : {}}
                 transition={{ duration: 0.5, repeat: isNearLimit ? Infinity : 0 }}
-                className={`text-sm font-bold px-3 py-1 rounded-full font-fredoka ${
+                className={`text-sm font-bold px-3 py-1 rounded-full ${
                   isAtLimit 
-                    ? 'bg-purple-100 text-purple-700 border border-purple-200' 
+                    ? 'bg-purple-500/30 text-purple-200' 
                     : isNearLimit 
-                    ? 'bg-amber-100 text-amber-700 border border-amber-200' 
-                    : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                    ? 'bg-amber-500/30 text-amber-200' 
+                    : 'bg-emerald-500/30 text-emerald-200'
                 }`}
               >
                 {isAtLimit 
@@ -216,21 +196,15 @@ export function DailyPlayProgressBar({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`p-3 rounded-xl text-center border ${
+            className={`p-3 rounded-xl text-center ${
               isAtLimit 
-                ? 'bg-purple-50 border-purple-200' 
+                ? 'bg-purple-500/20' 
                 : isNearLimit 
-                ? 'bg-amber-50 border-amber-200' 
-                : 'bg-blue-50 border-blue-200'
+                ? 'bg-amber-500/20' 
+                : 'bg-white/10'
             }`}
           >
-            <p className={`text-base font-fredoka font-medium ${
-              isAtLimit 
-                ? 'text-purple-700' 
-                : isNearLimit 
-                ? 'text-amber-700' 
-                : 'text-blue-700'
-            }`}>
+            <p className="text-base font-fredoka text-white">
               {getMessage()}
             </p>
           </motion.div>

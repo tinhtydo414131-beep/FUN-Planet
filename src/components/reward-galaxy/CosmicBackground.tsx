@@ -3,58 +3,57 @@ import camlyCoin from '@/assets/camly-coin.png';
 
 export const CosmicBackground = () => {
   // Generate random coin positions and animations
-  const flyingCoins = Array.from({ length: 12 }, (_, i) => ({
+  const flyingCoins = Array.from({ length: 15 }, (_, i) => ({
     id: i,
     initialX: Math.random() * 100,
     initialY: Math.random() * 100,
-    size: 30 + Math.random() * 30,
-    duration: 12 + Math.random() * 8,
+    size: 35 + Math.random() * 35,
+    duration: 10 + Math.random() * 8,
     delay: Math.random() * 6,
   }));
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Base gradient - Light pastel white theme */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-purple-50/50 to-pink-50/50" />
+      {/* Base gradient - Deep cosmic purple/indigo/violet */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-950 via-indigo-900 to-violet-900" />
       
-      {/* Radial center glow - soft pastel center */}
+      {/* Radial center glow - warm golden center */}
       <div 
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at 50% 30%, rgba(255,235,180,0.2) 0%, rgba(255,182,193,0.1) 30%, transparent 70%)',
+          background: 'radial-gradient(ellipse at 50% 30%, rgba(255,200,100,0.15) 0%, rgba(168,85,247,0.1) 30%, transparent 70%)',
         }}
       />
       
-      {/* Soft pastel clouds for depth */}
-      <div className="absolute inset-0 opacity-30">
+      {/* Nebula clouds for depth */}
+      <div className="absolute inset-0 opacity-40">
         <motion.div 
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-purple-200/30 rounded-full blur-[180px]"
-          animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.35, 0.2] }}
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-[180px]"
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-pink-200/25 rounded-full blur-[160px]"
-          animate={{ scale: [1.1, 1, 1.1], opacity: [0.25, 0.2, 0.25] }}
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-pink-500/25 rounded-full blur-[160px]"
+          animate={{ scale: [1.1, 1, 1.1], opacity: [0.4, 0.3, 0.4] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-yellow-200/20 rounded-full blur-[140px]"
-          animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.25, 0.15] }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber-400/20 rounded-full blur-[140px]"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.35, 0.2] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute top-0 right-1/3 w-[350px] h-[350px] bg-blue-200/15 rounded-full blur-[120px]"
+          className="absolute top-0 right-1/3 w-[350px] h-[350px] bg-cyan-400/15 rounded-full blur-[120px]"
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
       
-      {/* Twinkling stars - Yellow, Pink, Blue colors */}
-      {[...Array(80)].map((_, i) => {
-        const size = 2 + Math.random() * 4;
-        const colorIndex = i % 3;
-        const colors = ['#FFD700', '#FF69B4', '#60A5FA']; // Yellow, Pink, Blue
-        const color = colors[colorIndex];
+      {/* Twinkling stars with trails */}
+      {[...Array(120)].map((_, i) => {
+        const size = 1 + Math.random() * 3;
+        const isGold = i % 4 === 0;
+        const isPink = i % 5 === 0;
         return (
           <motion.div
             key={i}
@@ -64,15 +63,23 @@ export const CosmicBackground = () => {
               top: `${Math.random() * 100}%`,
               width: `${size}px`,
               height: `${size}px`,
-              background: color,
-              boxShadow: `0 0 ${size * 3}px ${color}40, 0 0 ${size * 6}px ${color}20`,
+              background: isGold 
+                ? '#FFD700' 
+                : isPink 
+                ? '#FF69B4' 
+                : '#FFFFFF',
+              boxShadow: isGold 
+                ? `0 0 ${size * 4}px #FFD700, 0 0 ${size * 8}px #FFD700` 
+                : isPink
+                ? `0 0 ${size * 3}px #FF69B4`
+                : `0 0 ${size * 2}px rgba(255,255,255,0.8)`,
             }}
             animate={{
-              opacity: [0.3, 0.8, 0.3],
-              scale: [1, 1.5, 1],
+              opacity: [0.2, 1, 0.2],
+              scale: [1, 1.8, 1],
             }}
             transition={{
-              duration: 2 + Math.random() * 3,
+              duration: 1 + Math.random() * 3,
               repeat: Infinity,
               delay: Math.random() * 3,
               ease: "easeInOut",
@@ -81,7 +88,7 @@ export const CosmicBackground = () => {
         );
       })}
       
-      {/* Flying Camly Coins with soft glow */}
+      {/* Flying Camly Coins with enhanced glow */}
       {flyingCoins.map((coin) => (
         <motion.div
           key={`coin-${coin.id}`}
@@ -93,10 +100,10 @@ export const CosmicBackground = () => {
             height: coin.size,
           }}
           animate={{
-            x: [0, 100, -50, 80, 0],
-            y: [0, -80, 50, -100, 0],
+            x: [0, 120, -60, 100, 0],
+            y: [0, -100, 60, -120, 0],
             rotate: [0, 360, 720, 1080, 1440],
-            scale: [1, 1.1, 0.9, 1.15, 1],
+            scale: [1, 1.15, 0.9, 1.2, 1],
           }}
           transition={{
             duration: coin.duration,
@@ -110,13 +117,13 @@ export const CosmicBackground = () => {
             alt="Camly Coin"
             className="w-full h-full object-contain"
             style={{
-              filter: 'drop-shadow(0 0 15px rgba(255,215,0,0.6)) drop-shadow(0 0 30px rgba(255,215,0,0.3))',
+              filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.9)) drop-shadow(0 0 40px rgba(255,215,0,0.5))',
             }}
             animate={{
               filter: [
-                'drop-shadow(0 0 15px rgba(255,215,0,0.6)) drop-shadow(0 0 30px rgba(255,215,0,0.3))',
-                'drop-shadow(0 0 25px rgba(255,215,0,0.8)) drop-shadow(0 0 45px rgba(255,215,0,0.5))',
-                'drop-shadow(0 0 15px rgba(255,215,0,0.6)) drop-shadow(0 0 30px rgba(255,215,0,0.3))',
+                'drop-shadow(0 0 20px rgba(255,215,0,0.9)) drop-shadow(0 0 40px rgba(255,215,0,0.5))',
+                'drop-shadow(0 0 35px rgba(255,215,0,1)) drop-shadow(0 0 60px rgba(255,215,0,0.7))',
+                'drop-shadow(0 0 20px rgba(255,215,0,0.9)) drop-shadow(0 0 40px rgba(255,215,0,0.5))',
               ],
             }}
             transition={{
@@ -128,117 +135,135 @@ export const CosmicBackground = () => {
         </motion.div>
       ))}
       
-      {/* Shooting stars with pastel trails */}
-      {[...Array(4)].map((_, i) => (
+      {/* Enhanced meteors with long sparkle trails */}
+      {[...Array(5)].map((_, i) => (
         <motion.div
-          key={`shooting-star-${i}`}
+          key={`meteor-${i}`}
           className="absolute"
           style={{
-            left: `${5 + i * 22}%`,
-            top: '-5%',
+            left: `${5 + i * 18}%`,
+            top: '-8%',
           }}
           animate={{
-            x: ['0%', '50%'],
-            y: ['0vh', '100vh'],
+            x: ['0%', '60%'],
+            y: ['0vh', '120vh'],
             opacity: [0, 1, 1, 0],
           }}
           transition={{
-            duration: 7 + i * 0.8,
+            duration: 6 + i * 0.8,
             repeat: Infinity,
-            delay: i * 5,
+            delay: i * 4,
             ease: "linear",
           }}
         >
-          {/* Star head - pastel colors */}
+          {/* Meteor head - brighter */}
           <div 
-            className="w-3 h-3 rounded-full"
+            className="w-4 h-4 rounded-full"
             style={{
-              background: i % 2 === 0 
-                ? 'radial-gradient(circle at 30% 30%, #FFD700, #FFA500)' 
-                : 'radial-gradient(circle at 30% 30%, #FF69B4, #EC4899)',
-              boxShadow: i % 2 === 0 
-                ? '0 0 15px #FFD700, 0 0 30px #FFA50060' 
-                : '0 0 15px #FF69B4, 0 0 30px #EC489960',
+              background: 'radial-gradient(circle at 30% 30%, #FFFFFF, #FFD700, #FFA500)',
+              boxShadow: '0 0 20px #FFD700, 0 0 40px #FFAA00, 0 0 60px #FF8800',
             }}
           />
-          {/* Soft tail */}
+          {/* Long sparkle tail */}
           <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 rounded-full"
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-32 rounded-full"
             style={{
-              background: i % 2 === 0 
-                ? 'linear-gradient(to bottom, #FFD70080, transparent)' 
-                : 'linear-gradient(to bottom, #FF69B480, transparent)',
+              background: 'linear-gradient(to bottom, #FFD700, #FFA500 30%, transparent)',
               filter: 'blur(2px)',
             }}
           />
+          {/* Sparkle particles along trail */}
+          {[...Array(6)].map((_, j) => (
+            <motion.div
+              key={j}
+              className="absolute rounded-full"
+              style={{
+                left: `${-2 + Math.random() * 4}px`,
+                top: `${10 + j * 15}px`,
+                width: `${2 + Math.random() * 2}px`,
+                height: `${2 + Math.random() * 2}px`,
+                background: '#FFD700',
+                boxShadow: '0 0 8px #FFD700',
+              }}
+              animate={{
+                opacity: [1, 0],
+                scale: [1, 0.5],
+              }}
+              transition={{
+                duration: 0.8,
+                repeat: Infinity,
+                delay: j * 0.1,
+              }}
+            />
+          ))}
         </motion.div>
       ))}
       
-      {/* Decorative elements - Pastel planets */}
-      {/* Planet 1 - Bottom right - Soft purple/pink */}
+      {/* Decorative planets */}
+      {/* Planet 1 - Bottom right - Purple/Gold */}
       <motion.div
-        className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-40"
+        className="absolute -bottom-20 -right-20 w-56 h-56 rounded-full opacity-60"
         style={{
-          background: 'radial-gradient(circle at 30% 30%, #F5D0FE, #E879F9, #C026D3)',
-          boxShadow: '0 0 60px rgba(232, 121, 249, 0.3), inset 0 -20px 40px rgba(192, 38, 211, 0.3)',
+          background: 'radial-gradient(circle at 30% 30%, #E9D5FF, #A855F7, #7E22CE)',
+          boxShadow: '0 0 80px rgba(168, 85, 247, 0.5), inset 0 -30px 60px rgba(126, 34, 206, 0.6)',
         }}
         animate={{ rotate: 360 }}
         transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
       >
-        {/* Planet ring - gold */}
+        {/* Planet ring */}
         <div 
-          className="absolute inset-[-15px] rounded-full border-3 border-yellow-400/40"
+          className="absolute inset-[-20px] rounded-full border-4 border-amber-400/50"
           style={{ 
             transform: 'rotateX(75deg)',
-            boxShadow: '0 0 15px rgba(255, 215, 0, 0.3)',
+            boxShadow: '0 0 20px rgba(255, 215, 0, 0.4)',
           }}
         />
       </motion.div>
       
-      {/* Planet 2 - Top left - Soft pink/blue */}
+      {/* Planet 2 - Top left - Pink/Cyan smaller */}
       <motion.div
-        className="absolute -top-8 -left-8 w-28 h-28 rounded-full opacity-30"
+        className="absolute -top-10 -left-10 w-32 h-32 rounded-full opacity-40"
         style={{
-          background: 'radial-gradient(circle at 30% 30%, #FBCFE8, #F472B6, #EC4899)',
-          boxShadow: '0 0 40px rgba(244, 114, 182, 0.3)',
+          background: 'radial-gradient(circle at 30% 30%, #FBCFE8, #EC4899, #BE185D)',
+          boxShadow: '0 0 50px rgba(236, 72, 153, 0.4)',
         }}
         animate={{ rotate: -360 }}
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
       />
       
-      {/* Ambient light rays - very soft */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-5">
-        {[...Array(6)].map((_, i) => (
+      {/* Ambient light rays */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-8">
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={`ray-${i}`}
-            className="absolute top-0 left-1/2 w-2 origin-top"
+            className="absolute top-0 left-1/2 w-3 origin-top"
             style={{
               height: '100vh',
               background: i % 3 === 0 
                 ? 'linear-gradient(to bottom, rgba(255,215,0,0.3), transparent 60%)' 
                 : i % 3 === 1
-                ? 'linear-gradient(to bottom, rgba(255,105,180,0.25), transparent 60%)'
-                : 'linear-gradient(to bottom, rgba(96,165,250,0.25), transparent 60%)',
-              transform: `rotate(${i * 60}deg) translateX(-50%)`,
-              filter: 'blur(15px)',
+                ? 'linear-gradient(to bottom, rgba(168,85,247,0.2), transparent 60%)'
+                : 'linear-gradient(to bottom, rgba(236,72,153,0.2), transparent 60%)',
+              transform: `rotate(${i * 45}deg) translateX(-50%)`,
+              filter: 'blur(12px)',
             }}
             animate={{
-              opacity: [0.05, 0.15, 0.05],
+              opacity: [0.08, 0.2, 0.08],
             }}
             transition={{
-              duration: 5,
+              duration: 4,
               repeat: Infinity,
-              delay: i * 0.8,
+              delay: i * 0.5,
             }}
           />
         ))}
       </div>
       
-      {/* Soft vignette for depth - very subtle */}
+      {/* Subtle vignette overlay */}
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 60%, rgba(255,240,245,0.3) 100%)',
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(15,5,30,0.4) 100%)',
         }}
       />
     </div>

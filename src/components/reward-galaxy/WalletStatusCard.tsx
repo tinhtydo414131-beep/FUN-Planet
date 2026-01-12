@@ -23,28 +23,33 @@ export const WalletStatusCard = ({
       whileHover={{ y: -6, transition: { duration: 0.2 } }}
       className="mb-12"
     >
-      {/* Outer glow - softer for light theme */}
+      {/* Outer glow - stronger */}
       <div className="relative">
         <motion.div 
-          className="absolute -inset-3 rounded-[36px] bg-gradient-to-r from-yellow-300/40 via-pink-300/30 to-yellow-300/40 blur-2xl"
-          animate={{ opacity: [0.4, 0.6, 0.4] }}
+          className="absolute -inset-3 rounded-[36px] bg-gradient-to-r from-amber-400/60 via-yellow-300/50 to-amber-400/60 blur-3xl"
+          animate={{ opacity: [0.5, 0.8, 0.5] }}
           transition={{ duration: 3, repeat: Infinity }}
         />
         
-        {/* White background */}
+        {/* Metallic gold border - thicker 6px */}
+        <div className="absolute -inset-[6px] rounded-[34px] bg-gradient-to-br from-yellow-400 via-amber-200 via-yellow-500 via-amber-600 to-yellow-400" />
+        <div className="absolute -inset-[5px] rounded-[33px] bg-gradient-to-tr from-amber-500 via-yellow-100 via-amber-300 to-yellow-500" />
+        
+        {/* Warm cream/gold background */}
         <motion.div 
-          className="relative p-8 rounded-[28px] overflow-hidden bg-white"
+          className="relative p-8 rounded-[28px] overflow-hidden"
           style={{
-            boxShadow: '0 15px 50px rgba(255, 182, 193, 0.25), inset 0 2px 4px rgba(255,255,255,0.9)',
+            background: 'linear-gradient(135deg, #FEF3C7 0%, #FEF9C3 25%, #FFFBEB 50%, #FDE68A 75%, #FED7AA 100%)',
+            boxShadow: '0 15px 50px rgba(251, 191, 36, 0.5), inset 0 3px 8px rgba(255,255,255,0.95)',
           }}
         >
           {/* Animated shine sweep */}
           <motion.div
-            className="absolute inset-0 opacity-50 pointer-events-none"
+            className="absolute inset-0 opacity-70 pointer-events-none"
             animate={{ x: ['-100%', '200%'] }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent)',
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)',
               width: '40%',
             }}
           />
@@ -60,7 +65,7 @@ export const WalletStatusCard = ({
               }}
               animate={{
                 y: [0, -12, 0],
-                opacity: [0.4, 0.9, 0.4],
+                opacity: [0.5, 1, 0.5],
                 scale: [0.9, 1.4, 0.9],
               }}
               transition={{
@@ -69,12 +74,10 @@ export const WalletStatusCard = ({
                 delay: i * 0.25,
               }}
             >
-              {i % 3 === 0 ? (
-                <Star className="w-5 h-5 text-yellow-500 fill-yellow-400" style={{ filter: 'drop-shadow(0 0 6px #FFD700)' }} />
-              ) : i % 3 === 1 ? (
-                <Sparkles className="w-5 h-5 text-pink-500" style={{ filter: 'drop-shadow(0 0 6px #FF69B4)' }} />
+              {i % 2 === 0 ? (
+                <Star className="w-5 h-5 text-amber-500 fill-amber-400" style={{ filter: 'drop-shadow(0 0 8px #F59E0B)' }} />
               ) : (
-                <Star className="w-4 h-4 text-blue-500 fill-blue-400" style={{ filter: 'drop-shadow(0 0 6px #60A5FA)' }} />
+                <Sparkles className="w-5 h-5 text-yellow-500" style={{ filter: 'drop-shadow(0 0 8px #EAB308)' }} />
               )}
             </motion.div>
           ))}
@@ -88,13 +91,13 @@ export const WalletStatusCard = ({
               scale: { duration: 2, repeat: Infinity }
             }}
           >
-            <Sparkles className="w-10 h-10 text-yellow-500" style={{ filter: 'drop-shadow(0 0 10px #FFD700)' }} />
+            <Sparkles className="w-10 h-10 text-amber-500" style={{ filter: 'drop-shadow(0 0 15px #F59E0B)' }} />
           </motion.div>
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
             {/* Wallet Status */}
             <div className="flex items-center gap-6">
-              {/* Circular icon with 3D effect */}
+              {/* Circular icon with 3D effect - BIGGER */}
               <motion.div 
                 className="w-20 h-20 rounded-full flex items-center justify-center relative"
                 style={{
@@ -102,8 +105,8 @@ export const WalletStatusCard = ({
                     ? 'linear-gradient(135deg, #22C55E 0%, #16A34A 40%, #15803D 100%)'
                     : 'linear-gradient(135deg, #A855F7 0%, #9333EA 40%, #7E22CE 100%)',
                   boxShadow: isConnected
-                    ? '0 10px 35px rgba(34, 197, 94, 0.5), inset 0 4px 8px rgba(255,255,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.2)'
-                    : '0 10px 35px rgba(168, 85, 247, 0.5), inset 0 4px 8px rgba(255,255,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.2)',
+                    ? '0 10px 35px rgba(34, 197, 94, 0.6), inset 0 4px 8px rgba(255,255,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.25)'
+                    : '0 10px 35px rgba(168, 85, 247, 0.6), inset 0 4px 8px rgba(255,255,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.25)',
                 }}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -123,14 +126,14 @@ export const WalletStatusCard = ({
               </motion.div>
               
               <div>
-                {/* Title with gradient - Yellow Pink Blue */}
+                {/* Title with gradient - BIGGER */}
                 <p 
                   className="text-2xl md:text-3xl font-fredoka font-bold"
                   style={{
-                    background: 'linear-gradient(135deg, #FFD700, #FF69B4, #60A5FA)',
+                    background: 'linear-gradient(135deg, #7C3AED, #EC4899, #7C3AED)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.15))',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
                   }}
                 >
                   {isConnected ? '✨ Ví Ánh Sáng Của Con ✨' : 'Kết nối ví để nhận thưởng'}
@@ -139,9 +142,9 @@ export const WalletStatusCard = ({
                   <motion.p 
                     className="text-xl md:text-2xl font-mono font-bold px-4 py-2 mt-2 rounded-full inline-block"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 105, 180, 0.1))',
-                      color: '#A855F7',
-                      border: '2px solid rgba(255, 215, 0, 0.4)',
+                      background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15))',
+                      color: '#7C3AED',
+                      border: '2px solid rgba(139, 92, 246, 0.3)',
                     }}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -158,7 +161,7 @@ export const WalletStatusCard = ({
                       className="mt-3 font-bold text-white text-xl px-8 py-4 h-auto rounded-2xl"
                       style={{
                         background: 'linear-gradient(135deg, #A855F7, #9333EA, #7E22CE)',
-                        boxShadow: '0 8px 30px rgba(168, 85, 247, 0.4), inset 0 2px 4px rgba(255,255,255,0.25)',
+                        boxShadow: '0 8px 30px rgba(168, 85, 247, 0.5), inset 0 2px 4px rgba(255,255,255,0.25)',
                       }}
                     >
                       <Wallet className="w-6 h-6 mr-2" />
@@ -169,36 +172,37 @@ export const WalletStatusCard = ({
               </div>
             </div>
 
-            {/* CAMLY Balance */}
+            {/* CAMLY Balance - enhanced BIGGER */}
             {isConnected && (
               <motion.div 
-                className="flex items-center gap-5 p-6 rounded-3xl relative overflow-hidden bg-white"
+                className="flex items-center gap-5 p-6 rounded-3xl relative overflow-hidden"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.5, type: "spring" }}
                 style={{
-                  border: '3px solid rgba(255, 215, 0, 0.6)',
-                  boxShadow: '0 8px 35px rgba(255, 215, 0, 0.2), inset 0 2px 4px rgba(255,255,255,0.5)',
+                  background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.4))',
+                  border: '4px solid rgba(251, 191, 36, 0.8)',
+                  boxShadow: '0 8px 35px rgba(251, 191, 36, 0.4), inset 0 2px 4px rgba(255,255,255,0.35)',
                 }}
                 whileHover={{ scale: 1.03 }}
               >
                 {/* Shimmer effect */}
                 <motion.div
-                  className="absolute inset-0 opacity-30"
+                  className="absolute inset-0 opacity-50"
                   animate={{ x: ['-100%', '200%'] }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
                   style={{
-                    background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.5), transparent)',
+                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)',
                     width: '50%',
                   }}
                 />
                 
-                {/* Icon box with 3D effect */}
+                {/* Icon box with 3D effect - BIGGER */}
                 <motion.div 
                   className="w-20 h-20 rounded-2xl flex items-center justify-center relative"
                   style={{
                     background: 'linear-gradient(135deg, #F59E0B, #D97706, #B45309)',
-                    boxShadow: '0 8px 30px rgba(245, 158, 11, 0.5), inset 0 3px 6px rgba(255,255,255,0.45), inset 0 -3px 6px rgba(0,0,0,0.2)',
+                    boxShadow: '0 8px 30px rgba(245, 158, 11, 0.6), inset 0 3px 6px rgba(255,255,255,0.45), inset 0 -3px 6px rgba(0,0,0,0.25)',
                   }}
                   animate={{ rotate: [0, 6, -6, 0] }}
                   transition={{ duration: 4, repeat: Infinity }}
@@ -216,9 +220,8 @@ export const WalletStatusCard = ({
                   <p 
                     className="text-xl md:text-2xl font-fredoka font-bold tracking-wide"
                     style={{
-                      background: 'linear-gradient(135deg, #FFD700, #FF69B4)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
+                      color: '#B8860B',
+                      textShadow: '0 0 15px rgba(255,215,0,0.7), 0 1px 2px rgba(255,255,255,0.5)',
                     }}
                   >
                     Số dư CAMLY
@@ -230,7 +233,7 @@ export const WalletStatusCard = ({
                       backgroundSize: '200% 200%',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.3))',
+                      filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.5))',
                     }}
                     key={camlyBalance}
                     initial={{ scale: 1.2 }}
@@ -243,7 +246,7 @@ export const WalletStatusCard = ({
                       backgroundPosition: { duration: 3, repeat: Infinity }
                     }}
                   >
-                    {camlyBalance.toLocaleString()} <span className="text-xl" style={{ background: 'linear-gradient(135deg, #FFD700, #FFA500)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>CAMLY</span>
+                    {camlyBalance.toLocaleString()} <span className="text-xl" style={{ color: '#B8860B', textShadow: '0 0 15px rgba(255,215,0,0.7)' }}>CAMLY</span>
                   </motion.p>
                 </div>
               </motion.div>

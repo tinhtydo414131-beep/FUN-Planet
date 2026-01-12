@@ -52,7 +52,7 @@ import { PendingBalanceCard } from '@/components/reward-galaxy/PendingBalanceCar
 import { DailyLoginRewardCard } from '@/components/reward-galaxy/DailyLoginRewardCard';
 import { DailyLoginRewardPopup } from '@/components/reward-galaxy/DailyLoginRewardPopup';
 import { TrustScoreCard } from '@/components/reward-galaxy/TrustScoreCard';
-
+import { DailyPlayProgressBar } from '@/components/reward-galaxy/DailyPlayProgressBar';
 
 interface ClaimHistory {
   id: string;
@@ -350,6 +350,13 @@ export default function RewardGalaxy() {
           )}
 
           {/* Daily Play Progress - Child-Friendly */}
+          {isChildFriendly && (
+            <DailyPlayProgressBar
+              totalMinutesPlayed={dailyPlayMinutes}
+              ageGroup={ageGroup}
+              isChildFriendlyDisplay={isChildFriendly}
+            />
+          )}
 
           {/* Pending Balance & Claim Section */}
           <PendingBalanceCard
@@ -372,10 +379,10 @@ export default function RewardGalaxy() {
             >
               <span
                 style={{
-                  background: 'linear-gradient(135deg, #FFD700, #FF69B4, #60A5FA, #FFD700)',
+                  background: 'linear-gradient(135deg, #FFD700, #FF69B4, #A855F7, #FFD700)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
                 }}
               >
                 🌟 Các Hành Tinh Phần Thưởng 🌟
