@@ -28,13 +28,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { UserBlockModal } from "./UserBlockModal";
-import { WalletSecurityStats } from "./WalletSecurityStats";
 import { WalletBlacklistTable } from "./WalletBlacklistTable";
-import { WalletHistoryTable } from "./WalletHistoryTable";
 import { ViolationAuditTable } from "./ViolationAuditTable";
 import { IPFraudReport } from "./IPFraudReport";
 import { IPBlacklistTable } from "./IPBlacklistTable";
-import { WalletResetRequestsTable } from "./WalletResetRequestsTable";
 import { FraudSuspectsTable } from "./FraudSuspectsTable";
 
 interface SuspiciousActivity {
@@ -336,7 +333,7 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
 
       {/* Tabs for different sections */}
       <Tabs defaultValue="suspects" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="suspects" className="flex items-center gap-2">
             <UserX className="h-4 w-4" />
             Suspects
@@ -355,10 +352,6 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
           <TabsTrigger value="violations" className="flex items-center gap-2">
             <FileWarning className="h-4 w-4" />
             Violations
-          </TabsTrigger>
-          <TabsTrigger value="wallets" className="flex items-center gap-2">
-            <Wallet className="h-4 w-4" />
-            Wallet Security
           </TabsTrigger>
           <TabsTrigger value="blacklist" className="flex items-center gap-2">
             <Ban className="h-4 w-4" />
@@ -514,13 +507,6 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
         {/* Violations Tab */}
         <TabsContent value="violations" className="space-y-4">
           <ViolationAuditTable />
-        </TabsContent>
-
-        {/* Wallet Security Tab */}
-        <TabsContent value="wallets" className="space-y-4">
-          <WalletSecurityStats />
-          <WalletResetRequestsTable onStatsUpdate={onStatsUpdate} />
-          <WalletHistoryTable />
         </TabsContent>
 
         {/* Blacklist Tab */}

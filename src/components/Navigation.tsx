@@ -193,10 +193,6 @@ export const Navigation = () => {
                       <User className="mr-3 h-5 w-5" />
                       <span className="font-medium">{t('nav.myProfile')}</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/wallet")} className="py-3">
-                      <Wallet className="mr-3 h-5 w-5" />
-                      <span className="font-medium">{t('nav.funWallet')}</span>
-                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/find-friends")} className="py-3 relative">
                       <Users className="mr-3 h-5 w-5" />
                       <span className="font-medium">{t('nav.findFriends')}</span>
@@ -348,15 +344,6 @@ export const Navigation = () => {
                           >
                             <User className="w-5 h-5 text-muted-foreground" />
                             <span className="font-inter font-medium">{t('nav.myProfile')}</span>
-                          </button>
-                        </SheetClose>
-                        <SheetClose asChild>
-                          <button
-                            onClick={() => navigate("/wallet")}
-                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
-                          >
-                            <Wallet className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-inter font-medium">{t('nav.funWallet')}</span>
                           </button>
                         </SheetClose>
                         <SheetClose asChild>

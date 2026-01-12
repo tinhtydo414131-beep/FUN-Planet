@@ -1,4 +1,4 @@
-import { Home, Gamepad2, Upload, User, Gift, Wallet, Sparkles } from "lucide-react";
+import { Home, Gamepad2, Upload, User, Gift, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,7 +37,6 @@ export const MobileBottomNavEnhanced = () => {
       ]
     : [
         ...baseNavItems,
-        { icon: Wallet, label: t('nav.wallet'), path: user ? "/wallet" : "/auth", emoji: "💰", color: "from-[hsl(45,85%,70%)] to-[hsl(340,70%,75%)]" },
         { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
       ];
 
