@@ -13,7 +13,7 @@ interface Angel2DFallbackProps {
 export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
   return (
     <motion.div
-      className="relative w-20 h-20 cursor-pointer select-none"
+      className="relative w-24 h-24 cursor-pointer select-none"
       onClick={onClick}
       whileHover={{ scale: 1.08, rotate: 5 }}
       whileTap={{ scale: 0.95 }}
@@ -55,10 +55,10 @@ export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
         <img
           src={projectLogo}
           alt="Chat AI"
-          className="w-full h-full object-contain rounded-full border-3 border-yellow-400"
+          className="w-full h-full object-cover rounded-full"
           style={{
-            filter: "drop-shadow(0 0 10px rgba(147,51,234,0.5))",
-            boxShadow: "0 0 20px rgba(147,51,234,0.4), 0 0 40px rgba(147,51,234,0.2)",
+            filter: "drop-shadow(0 0 12px rgba(147,51,234,0.6))",
+            boxShadow: "0 0 24px rgba(147,51,234,0.5), 0 0 48px rgba(147,51,234,0.3)",
           }}
         />
       </motion.div>
