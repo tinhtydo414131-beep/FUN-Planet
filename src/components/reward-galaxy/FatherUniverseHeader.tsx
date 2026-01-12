@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Star, Gift, Heart } from 'lucide-react';
+import { Sparkles, Star, Heart, Globe } from 'lucide-react';
 
 export const FatherUniverseHeader = () => {
   return (
@@ -70,15 +70,18 @@ export const FatherUniverseHeader = () => {
           {/* Shine overlay */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent" />
           
-          {/* Gift icon - responsive */}
+          {/* Globe icon - responsive */}
           <motion.div
             animate={{ 
               scale: [1, 1.12, 1],
-              rotate: [0, 6, -6, 0],
+              rotate: [0, 360],
             }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ 
+              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+              rotate: { duration: 20, repeat: Infinity, ease: "linear" }
+            }}
           >
-            <Gift 
+            <Globe 
               className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 text-white relative z-10" 
               style={{
                 filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.9)) drop-shadow(0 0 30px rgba(255,255,255,0.5))',
