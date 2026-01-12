@@ -576,22 +576,19 @@ export const FunPlanetUnifiedBoard = () => {
           {/* Inner Border */}
           <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ border: "2px solid rgba(255, 215, 0, 0.7)", boxShadow: "inset 0 0 25px rgba(255, 215, 0, 0.3)", zIndex: 5 }} />
 
-          {/* Video Background - restored */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover rounded-3xl z-0"
-            style={{ opacity: 0.6 }}
-          >
-            <source src="/videos/homepage-bg.mp4" type="video/mp4" />
-          </video>
+          {/* Cosmic Gradient Background - matches FullRanking page */}
+          <div 
+            className="absolute inset-0 rounded-3xl z-0" 
+            style={{ 
+              background: 'linear-gradient(to bottom right, #581c87 0%, #312e81 50%, #1e3a8a 100%)',
+              opacity: 0.9 
+            }} 
+          />
 
-          {/* Fallback gradient for older browsers/mobile */}
+          {/* Additional cosmic overlay for depth */}
           <div className="absolute inset-0 rounded-3xl z-0" style={{ 
-            background: 'radial-gradient(ellipse at top right, rgba(168, 85, 247, 0.4) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(59, 130, 246, 0.3) 0%, transparent 50%)',
-            opacity: 0.4 
+            background: 'radial-gradient(ellipse at top right, rgba(168, 85, 247, 0.5) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(59, 130, 246, 0.4) 0%, transparent 50%)',
+            opacity: 0.6 
           }} />
 
           {/* Black overlay */}
