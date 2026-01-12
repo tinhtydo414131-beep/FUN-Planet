@@ -46,7 +46,6 @@ const TYPE_CONFIG: Record<string, { name: string; nameEn: string; color: string;
   upload_game_approved: { name: 'Upload', nameEn: 'Upload', color: '#F59E0B', icon: Upload },
   game_upload: { name: 'Upload', nameEn: 'Upload', color: '#F59E0B', icon: Upload },
   first_wallet_connect: { name: 'Kết nối ví', nameEn: 'Wallet', color: '#EC4899', icon: Wallet },
-  airdrop_claim: { name: 'Airdrop', nameEn: 'Airdrop', color: '#FFD700', icon: Gift },
   wallet_withdrawal: { name: 'Rút tiền', nameEn: 'Withdraw', color: '#EF4444', icon: ArrowUpRight },
 };
 

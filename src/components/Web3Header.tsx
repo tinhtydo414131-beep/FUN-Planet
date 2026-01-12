@@ -64,13 +64,13 @@ export function Web3Header() {
     }
   };
 
-  const handleClaimAirdrop = async () => {
+  const handleClaimReward = async () => {
     const result = await claimReward('first_wallet');
     if (result.success && result.status === 'completed') {
       setShowAirdrop(false);
       setCanClaimFirstWallet(false);
       loadRewards(); // Refresh balance
-      toast.success(`🎉 Airdrop claimed! TX: ${result.txHash?.slice(0, 10)}...`);
+      toast.success(`🎉 Reward claimed! TX: ${result.txHash?.slice(0, 10)}...`);
     }
   };
 
@@ -92,7 +92,7 @@ export function Web3Header() {
 
   return (
     <>
-      {/* Airdrop Modal */}
+      {/* Welcome Reward Modal */}
       <AnimatePresence>
         {showAirdrop && (
           <motion.div
@@ -127,7 +127,7 @@ export function Web3Header() {
 
                 <h2 className="text-2xl font-bold text-foreground mb-2 flex items-center justify-center gap-2">
                   <Sparkles className="w-5 h-5 text-yellow-400" />
-                  Welcome Airdrop!
+                  Welcome Bonus!
                   <Sparkles className="w-5 h-5 text-yellow-400" />
                 </h2>
 
@@ -154,7 +154,7 @@ export function Web3Header() {
                 </p>
 
                 <Button
-                  onClick={handleClaimAirdrop}
+                  onClick={handleClaimReward}
                   disabled={isClaiming}
                   className="w-full h-14 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold text-lg shadow-lg"
                 >

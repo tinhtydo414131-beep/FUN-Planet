@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Gamepad2, Wallet, Upload, Globe, Sparkles, Loader2 } from "lucide-react";
+import { Gamepad2, Wallet, Upload, Sparkles, Loader2 } from "lucide-react";
 import { REWARDS, formatCamly } from "@/lib/web3";
 import { useWeb3Rewards } from "@/hooks/useWeb3Rewards";
 import { useAccount, useConnect } from "wagmi";
@@ -62,7 +62,7 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
       setIsConnecting(false);
       if (result) {
         fireConfetti();
-        toast.success(`🎉 Airdrop claimed! +${formatCamly(REWARDS.FIRST_WALLET_CONNECT)} CAMLY`);
+        toast.success(`🎉 Reward claimed! +${formatCamly(REWARDS.FIRST_WALLET_CONNECT)} CAMLY`);
       }
       return;
     }
@@ -92,7 +92,7 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
       return;
     }
 
-    toast.info("You've already claimed your airdrop!");
+    toast.info("You've already claimed your reward!");
   };
 
   const handlePlayNow = () => {
@@ -135,16 +135,6 @@ export function HeroActionButtons({ onScrollToGames }: HeroActionButtonsProps) {
       shadow: "shadow-orange-500/30",
       emoji: "🚀",
       onClick: () => navigate("/upload-game"),
-    },
-    {
-      id: "builder",
-      label: t('heroActions.planetBuilder'),
-      sublabel: t('heroActions.buildWorld'),
-      icon: Globe,
-      gradient: "from-blue-500 via-cyan-500 to-sky-500",
-      shadow: "shadow-blue-500/30",
-      emoji: "🌍",
-      onClick: () => navigate("/planet-explorer"),
     },
   ];
 

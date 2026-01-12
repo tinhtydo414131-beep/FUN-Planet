@@ -26,7 +26,6 @@ const placeholderCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
 const SAMPLE_GAMES = [
   { id: "2048-puzzle", title: "2048 Puzzle", icon: "🧩", gradient: "from-purple-500 to-indigo-600", coverImage: placeholderCover, path: "/games/2048-puzzle.html", category: "Brain" },
   { id: "drawing-canvas", title: "Drawing Canvas", icon: "🎨", gradient: "from-pink-500 to-rose-600", coverImage: placeholderCover, path: "/games/drawing-canvas.html", category: "Creative" },
-  { id: "eco-builder", title: "Eco Builder 3D", icon: "🌍", gradient: "from-green-500 to-emerald-600", coverImage: placeholderCover, path: "/games/eco-builder.html", category: "3D Builder" },
   { id: "gratitude-journal", title: "Gratitude Journal", icon: "💖", gradient: "from-amber-500 to-orange-600", coverImage: placeholderCover, path: "/games/gratitude-journal.html", category: "Mindfulness" },
   { id: "star-explorer", title: "Star Explorer", icon: "🚀", gradient: "from-blue-500 to-cyan-600", coverImage: placeholderCover, path: "/games/star-explorer.html", category: "Adventure" },
 ];
