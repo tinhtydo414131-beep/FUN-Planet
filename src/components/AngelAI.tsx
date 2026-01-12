@@ -1,9 +1,6 @@
-import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Star, Heart, Rocket, X, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft, Settings } from "lucide-react";
-import { useLocation } from "react-router-dom";
-// Lazy load 3D components to reduce initial bundle size
-const Angel3DButton = lazy(() => import("@/components/angel-ai/Angel3DCharacter").then(m => ({ default: m.Angel3DButton })));
 import { Angel2DFallback } from "@/components/angel-ai/Angel2DFallback";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -797,20 +794,8 @@ function MessageBubble({ message }: { message: ChatMessage }) {
   );
 }
 
-// Floating Angel Button for triggering Angel AI
+// Floating Angel Button for triggering Angel AI - Simplified 2D only
 export function AngelAIButton({ onClick }: { onClick: () => void }) {
-  const location = useLocation();
-  
-  // Check if user is on a 3D game page - use 2D fallback to conserve GPU
-  const use2DFallback = useMemo(() => {
-    const path = location.pathname.toLowerCase();
-    // Pages that use WebGL/Three.js heavily
-    return path.includes('/games/') || 
-           path.includes('/play/') ||
-           path.includes('/3d-') ||
-           path.includes('/game-');
-  }, [location.pathname]);
-
   const {
     position,
     isDragging,
@@ -875,13 +860,8 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
         className="relative"
       >
-        {use2DFallback ? (
-          <Angel2DFallback onClick={handleClick} />
-        ) : (
-          <Suspense fallback={<Angel2DFallback onClick={handleClick} />}>
-            <Angel3DButton onClick={handleClick} />
-          </Suspense>
-        )}
+        {/* Always use simplified 2D logo - no complex 3D effects */}
+        <Angel2DFallback onClick={handleClick} />
         
         {/* Notification dot */}
         <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-xs flex items-center justify-center text-white font-bold z-10">
