@@ -337,7 +337,7 @@ Trẻ em được:
 
 1. **FUN Profile** - Web3 Social Network, mạng xã hội ánh sáng
 2. **FUN Play** - Web3 Video Platform, sáng tạo nội dung = tạo tài sản
-3. **FUN Planet** - Game for Kids, Build Your Planet, Play & Earn Joy
+3. **FUN Planet** - Game for Kids, Play & Earn Joy
 4. **FUN Charity** - Kết nối từ thiện trong ánh sáng thuần khiết
 5. **FUN Farm** - Farm to Table, Fair & Fast, Free-Fee & Earn
 6. **FUN Academy** - Learn & Earn, học là nhận quà
