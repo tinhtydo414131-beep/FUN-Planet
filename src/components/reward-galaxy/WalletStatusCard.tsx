@@ -31,10 +31,6 @@ export const WalletStatusCard = ({
           transition={{ duration: 3, repeat: Infinity }}
         />
         
-        {/* Gradient border - Yellow to Pink */}
-        <div className="absolute -inset-[4px] rounded-[34px] bg-gradient-to-br from-yellow-400 via-pink-400 to-blue-400" />
-        <div className="absolute -inset-[3px] rounded-[33px] bg-gradient-to-tr from-yellow-300 via-pink-300 to-blue-300" />
-        
         {/* White background */}
         <motion.div 
           className="relative p-8 rounded-[28px] overflow-hidden bg-white"
