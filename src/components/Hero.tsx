@@ -46,12 +46,12 @@ export const Hero = () => {
         fetchPriority="high"
         style={{ 
           objectPosition: 'center 40%',
-          filter: 'contrast(1.1) saturate(1.15) brightness(1.05)',
+          filter: 'contrast(1.05) saturate(1.1) brightness(1.12)',
         }}
       />
       
-      {/* Mobile-specific darker overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/20 sm:bg-transparent z-[0] pointer-events-none" />
+      {/* Mobile-specific lighter overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/10 sm:bg-transparent z-[0] pointer-events-none" />
       
       {/* Cosmic radial gradient - matching pastel theme */}
       <div 
@@ -63,7 +63,7 @@ export const Hero = () => {
       
       {/* Animated diamond shimmer overlay */}
       <div 
-        className="absolute inset-0 z-[1] pointer-events-none opacity-[0.05]"
+        className="absolute inset-0 z-[1] pointer-events-none opacity-[0.08]"
         style={{
           backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FF6BD6 25%, #9070E0 50%, #50B0FF 75%, #FFD700 100%)',
           backgroundSize: '400% 400%',
@@ -75,7 +75,7 @@ export const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-pink-600/8 via-transparent to-cyan-600/8 z-[1] pointer-events-none" />
       
       {/* Bottom gradient for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-purple-900/50 z-[1] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-purple-900/30 z-[1] pointer-events-none" />
       
       {/* Subtle top glow for golden title visibility */}
       <div 
