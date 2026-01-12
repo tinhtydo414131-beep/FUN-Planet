@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Star, Heart } from 'lucide-react';
-import { GiftBox3D } from '@/components/icons/GiftBox3D';
+import { Sparkles, Star, Heart, Globe } from 'lucide-react';
 
 export const FatherUniverseHeader = () => {
   return (
@@ -71,15 +70,23 @@ export const FatherUniverseHeader = () => {
           {/* Shine overlay */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/60 via-transparent to-transparent" />
           
-          {/* Gift icon - responsive 3D */}
+          {/* Globe icon - responsive */}
           <motion.div
             animate={{ 
-              scale: [1, 1.08, 1],
+              scale: [1, 1.12, 1],
+              rotate: [0, 360],
             }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="relative z-10"
+            transition={{ 
+              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+              rotate: { duration: 20, repeat: Infinity, ease: "linear" }
+            }}
           >
-            <GiftBox3D size={64} className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28" />
+            <Globe 
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 text-white relative z-10" 
+              style={{
+                filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.9)) drop-shadow(0 0 30px rgba(255,255,255,0.5))',
+              }}
+            />
           </motion.div>
         </motion.div>
 
