@@ -16,7 +16,7 @@ import {
   Zap,
   Clock
 } from 'lucide-react';
-import camlyCoinImage from '@/assets/camly-coin-rainbow-glow.png';
+import camlyCoinImage from '@/assets/camly-coin-v2.png';
 import { toast } from 'sonner';
 import { fireDiamondConfetti } from '@/components/DiamondConfetti';
 

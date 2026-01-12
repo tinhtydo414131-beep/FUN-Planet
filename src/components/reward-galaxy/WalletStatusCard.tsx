@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Wallet, Check, Sparkles, Star } from 'lucide-react';
-import camlyCoinImage from '@/assets/camly-coin-rainbow-glow.png';
+import camlyCoinImage from '@/assets/camly-coin-v2.png';
 
 interface WalletStatusCardProps {
   isConnected: boolean;
