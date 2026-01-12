@@ -66,7 +66,7 @@ export const HeaderClaimButton = () => {
         </motion.div>
         
         <span className="font-bold text-sm text-foreground">
-          Claim Airdrop 💎
+          Claim Rewards 💎
         </span>
 
         {canClaimDailyCheckin && (

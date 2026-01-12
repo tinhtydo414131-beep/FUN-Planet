@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useConnect } from 'wagmi';
-import { Gamepad2, Wallet, Upload, Globe, Sparkles } from 'lucide-react';
+import { Gamepad2, Wallet, Upload, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
@@ -63,9 +63,6 @@ export const HeroDiamondButtons = () => {
     navigate('/upload-game');
   };
 
-  const handle3DBuilder = () => {
-    navigate('/planet-explorer');
-  };
 
   const buttons = [
     {
@@ -93,14 +90,6 @@ export const HeroDiamondButtons = () => {
       gradient: 'from-purple-500 to-violet-500',
       shadow: 'shadow-purple-500/30'
     },
-    {
-      icon: Globe,
-      label: isVN ? 'Xây hành tinh 3D' : 'Build 3D Planet',
-      sublabel: 'AR/WebXR',
-      onClick: handle3DBuilder,
-      gradient: 'from-pink-500 to-rose-500',
-      shadow: 'shadow-pink-500/30'
-    }
   ];
 
   return (

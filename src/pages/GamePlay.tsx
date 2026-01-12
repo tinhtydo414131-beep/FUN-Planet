@@ -35,7 +35,7 @@ import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
 import PlanetBuilder from "@/components/games/PlanetBuilder";
 import HappinessGarden from "@/components/games/HappinessGarden";
 import SpaceExplorer from "@/components/games/SpaceExplorer";
-import CityCreator from "@/components/games/CityCreator";
+
 import StarCollector from "@/components/games/StarCollector";
 import DreamWorld from "@/components/games/DreamWorld";
 import GardenBuilder from "@/components/games/GardenBuilder";
@@ -78,7 +78,7 @@ import { HappinessGarden3D } from "@/components/games/HappinessGarden3D";
 import { FlowerField3D } from "@/components/games/FlowerField3D";
 import { MusicCreator3D } from "@/components/games/MusicCreator3D";
 import { PlanetBuilder3D } from "@/components/games/PlanetBuilder3D";
-import { CityCreator3D } from "@/components/games/CityCreator3D";
+
 import { SpaceExplorer3D } from "@/components/games/SpaceExplorer3D";
 import { SpaceStation3D } from "@/components/games/SpaceStation3D";
 import { FarmBuilder3D } from "@/components/games/FarmBuilder3D";
@@ -376,8 +376,6 @@ const GamePlay = () => {
       // Building & Creation Games
       case "PlanetBuilder": return <PlanetBuilder3D {...gameProps} />;
       case "PlanetBuilder2D": return <PlanetBuilder {...gameProps} />;
-      case "CityCreator": return <CityCreator3D {...gameProps} />;
-      case "CityCreator2D": return <CityCreator {...gameProps} />;
       case "GardenBuilder": return <GardenBuilder3D {...gameProps} />;
       case "GardenBuilder2D": return <GardenBuilder {...gameProps} />;
       case "SkyCastle": return <SkyCastle3D {...gameProps} />;
