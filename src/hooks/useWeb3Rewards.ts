@@ -14,14 +14,6 @@ const REWARDS = {
   DAILY_CHECKIN: 5000,
 };
 
-// Streak bonus multipliers
-const STREAK_BONUSES: Record<number, number> = {
-  3: 1.5,   // 3-day streak = 1.5x
-  7: 2.0,   // 7-day streak = 2x
-  14: 2.5,  // 14-day streak = 2.5x
-  30: 3.0,  // 30-day streak = 3x
-};
-
 // ERC20 ABI for transfer
 const ERC20_ABI = [
   'function transfer(address to, uint256 amount) returns (bool)',
@@ -39,17 +31,6 @@ interface Web3RewardsState {
   lastDailyCheckin: string | null;
   dailyStreak: number;
 }
-
-// Calculate streak bonus multiplier
-const getStreakMultiplier = (streak: number): number => {
-  let multiplier = 1;
-  for (const [threshold, bonus] of Object.entries(STREAK_BONUSES)) {
-    if (streak >= parseInt(threshold)) {
-      multiplier = bonus;
-    }
-  }
-  return multiplier;
-};
 
 export const useWeb3Rewards = () => {
   const { user } = useAuth();
@@ -355,27 +336,23 @@ export const useWeb3Rewards = () => {
       }
       // If not yesterday, streak resets to 1
 
-      // Calculate bonus with streak multiplier
-      const multiplier = getStreakMultiplier(newStreak);
-      const baseReward = REWARDS.DAILY_CHECKIN;
-      const bonusReward = Math.floor(baseReward * multiplier);
+      // Fixed daily reward - no streak multiplier
+      const dailyReward = REWARDS.DAILY_CHECKIN;
 
       // ANTI-FRAUD: Use add_reward_safely function
       const { data: rewardResult, error: rewardError } = await supabase
         .rpc('add_reward_safely', {
           p_user_id: user.id,
-          p_amount: bonusReward,
+          p_amount: dailyReward,
           p_transaction_type: 'daily_checkin',
-          p_description: multiplier > 1 
-            ? `Daily Check-in (${newStreak}-day streak, ${multiplier}x bonus!)` 
-            : 'Daily check-in reward'
+          p_description: 'Daily check-in reward'
         });
 
       if (rewardError) {
         console.error('Error adding reward safely:', rewardError);
       }
 
-      const newBalance = (Number(current?.camly_balance) || 0) + bonusReward;
+      const newBalance = (Number(current?.camly_balance) || 0) + dailyReward;
 
       await supabase
         .from('web3_rewards')
@@ -386,15 +363,11 @@ export const useWeb3Rewards = () => {
           daily_streak: newStreak,
         }, { onConflict: 'user_id' });
 
-      const description = multiplier > 1 
-        ? `Daily Check-in (${newStreak}-day streak, ${multiplier}x bonus!)` 
-        : 'Daily check-in reward';
-
       await supabase.from('web3_reward_transactions').insert({
         user_id: user.id,
-        amount: bonusReward,
+        amount: dailyReward,
         reward_type: 'daily_checkin',
-        description,
+        description: 'Daily check-in reward',
       });
 
       setState(prev => ({
@@ -405,11 +378,9 @@ export const useWeb3Rewards = () => {
       }));
 
       setPendingReward({
-        amount: bonusReward,
+        amount: dailyReward,
         type: 'daily_checkin',
-        description: multiplier > 1 
-          ? `${newStreak}-Day Streak! (${multiplier}x Bonus)` 
-          : 'Daily Check-in Reward!',
+        description: 'Daily Check-in Reward!',
       });
 
       return true;
@@ -485,8 +456,6 @@ export const useWeb3Rewards = () => {
     clearPendingReward,
     loadRewards,
     REWARDS,
-    STREAK_BONUSES,
-    getStreakMultiplier,
     POINTS_TO_CAMLY_RATIO,
     CAMLY_CONTRACT_ADDRESS,
   };

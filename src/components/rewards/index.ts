@@ -5,7 +5,7 @@ export { RewardGalaxyFloatingButton } from "../RewardGalaxyFloatingButton";
 
 export { RewardNotificationSettings } from "../RewardNotificationSettings";
 export { RewardsDashboard } from "../RewardsDashboard";
-export { TodayRewardsCard } from "../TodayRewardsCard";
+
 export { Web3RewardNotification } from "../Web3RewardNotification";
 export { Web3RewardsPanel } from "../Web3RewardsPanel";
 export { DailyChallengeCard } from "../DailyChallengeCard";
