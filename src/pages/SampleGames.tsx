@@ -45,16 +45,6 @@ const SAMPLE_GAMES: SampleGame[] = [
     category: "Creative"
   },
   {
-    id: "eco-builder",
-    title: "Eco Builder 3D",
-    description: "Build a beautiful eco-friendly world in 3D!",
-    icon: "🌍",
-    gradient: "from-green-500 to-emerald-600",
-    coverImage: placeholderCover,
-    path: "/games/eco-builder.html",
-    category: "3D Builder"
-  },
-  {
     id: "gratitude-journal",
     title: "Gratitude Journal",
     description: "Write what you're thankful for and track your happiness!",

@@ -70,52 +70,6 @@ export const CAMLY_ABI = [
     outputs: [{ name: '', type: 'uint256' }],
     type: 'function',
   },
-  // Airdrop Functions
-  {
-    constant: false,
-    inputs: [],
-    name: 'claimAirdrop',
-    outputs: [],
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [{ name: 'account', type: 'address' }],
-    name: 'hasClaimedAirdrop',
-    outputs: [{ name: '', type: 'bool' }],
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [{ name: '', type: 'address' }],
-    name: 'hasClaimed',
-    outputs: [{ name: '', type: 'bool' }],
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: 'remainingAirdropPool',
-    outputs: [{ name: '', type: 'uint256' }],
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: 'AIRDROP_AMOUNT',
-    outputs: [{ name: '', type: 'uint256' }],
-    type: 'function',
-  },
-  // Events
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, name: 'recipient', type: 'address' },
-      { indexed: false, name: 'amount', type: 'uint256' },
-    ],
-    name: 'AirdropClaimed',
-    type: 'event',
-  },
 ] as const;
 
 // Rewards Claim Contract ABI

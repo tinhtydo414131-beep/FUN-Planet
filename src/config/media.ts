@@ -97,7 +97,6 @@ export const MEDIA_URLS = {
   // Game images
   games: {
     platformer: `${R2_CDN_BASE}/images/games/platformer.jpg`,
-    cityCreator: `${R2_CDN_BASE}/images/games/city-creator.jpg`,
     happyKitchenJoy: `${R2_CDN_BASE}/images/games/happy-kitchen-joy.jpg`,
   },
 } as const;

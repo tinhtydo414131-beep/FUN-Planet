@@ -714,10 +714,10 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                       size="sm"
                       variant="outline"
                       className="flex-1 border-pink-300 text-pink-600 hover:bg-pink-50 dark:border-pink-500 dark:text-pink-400 text-xs rounded-xl"
-                      onClick={() => window.location.href = '/planet-explorer'}
+                      onClick={() => window.location.href = '/reward-galaxy'}
                     >
                       <Star className="w-3 h-3 mr-1" />
-                      Xây Hành Tinh
+                      Nhận Thưởng
                     </Button>
                   </div>
                 </div>

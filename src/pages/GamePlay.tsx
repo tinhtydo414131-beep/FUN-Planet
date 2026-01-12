@@ -32,7 +32,6 @@ import { TreasureHunt } from "@/components/games/TreasureHunt";
 import { TreasureHunt3D } from "@/components/games/TreasureHunt3D";
 
 
-import PlanetBuilder from "@/components/games/PlanetBuilder";
 import HappinessGarden from "@/components/games/HappinessGarden";
 import SpaceExplorer from "@/components/games/SpaceExplorer";
 
@@ -73,17 +72,12 @@ import { PetParadise3D } from "@/components/games/PetParadise3D";
 import { DreamWorld3D } from "@/components/games/DreamWorld3D";
 import { SkyCastle3D } from "@/components/games/SkyCastle3D";
 import { OceanExplorer3D } from "@/components/games/OceanExplorer3D";
-import { GardenBuilder3D } from "@/components/games/GardenBuilder3D";
 import { HappinessGarden3D } from "@/components/games/HappinessGarden3D";
 import { FlowerField3D } from "@/components/games/FlowerField3D";
 import { MusicCreator3D } from "@/components/games/MusicCreator3D";
-import { PlanetBuilder3D } from "@/components/games/PlanetBuilder3D";
-
 import { SpaceExplorer3D } from "@/components/games/SpaceExplorer3D";
 import { SpaceStation3D } from "@/components/games/SpaceStation3D";
-import { FarmBuilder3D } from "@/components/games/FarmBuilder3D";
 import ArtStudio3D from "@/components/games/ArtStudio3D";
-import ThemeParkBuilder3D from "@/components/games/ThemeParkBuilder3D";
 import EcoVillage3D from "@/components/games/EcoVillage3D";
 import HomeDesigner3D from "@/components/games/HomeDesigner3D";
 import RockPaperScissors3D from "@/components/games/RockPaperScissors3D";
@@ -94,7 +88,6 @@ import HospitalManager3D from "@/components/games/HospitalManager3D";
 import CinemaBoss3D from "@/components/games/CinemaBoss3D";
 import LibraryKeeper3D from "@/components/games/LibraryKeeper3D";
 import RestaurantChef3D from "@/components/games/RestaurantChef3D";
-import SchoolBuilder3D from "@/components/games/SchoolBuilder3D";
 import HappyPark3D from "@/components/games/HappyPark3D";
 import CommunityHub3D from "@/components/games/CommunityHub3D";
 import LilBlockBuddy3D from "@/components/games/LilBlockBuddy3D";
@@ -374,9 +367,7 @@ const GamePlay = () => {
       case "SimonSays2D": return <SimonSays {...gameProps} />;
       
       // Building & Creation Games
-      case "PlanetBuilder": return <PlanetBuilder3D {...gameProps} />;
-      case "PlanetBuilder2D": return <PlanetBuilder {...gameProps} />;
-      case "GardenBuilder": return <GardenBuilder3D {...gameProps} />;
+      case "GardenBuilder": return <GardenBuilder {...gameProps} />;
       case "GardenBuilder2D": return <GardenBuilder {...gameProps} />;
       case "SkyCastle": return <SkyCastle3D {...gameProps} />;
       case "SkyCastle2D": return <SkyCastle {...gameProps} />;
@@ -384,8 +375,8 @@ const GamePlay = () => {
       case "DreamWorld2D": return <DreamWorld {...gameProps} />;
       case "SchoolBuilder":
       case "school-builder":
-        return <SchoolBuilder3D {...gameProps} />;
-      case "SchoolBuilder2D": return <SchoolBuilder {...gameProps} />;
+      case "SchoolBuilder2D": 
+        return <SchoolBuilder {...gameProps} />;
       case "HappyPark":
       case "happy-park":
         return <HappyPark3D {...gameProps} />;
@@ -412,8 +403,8 @@ const GamePlay = () => {
       case "PetCare2D": return <PetCare {...gameProps} />;
       case "FarmBuilder":
       case "farm-builder":
-        return <FarmBuilder3D {...gameProps} />;
-      case "FarmBuilder2D": return <FarmBuilder {...gameProps} />;
+      case "FarmBuilder2D": 
+        return <FarmBuilder {...gameProps} />;
       case "SpaceStation":
       case "space-station":
         return <SpaceStation3D {...gameProps} />;
@@ -436,8 +427,8 @@ const GamePlay = () => {
       case "RestaurantChef2D": return <RestaurantChef {...gameProps} />;
       case "ThemeParkBuilder":
       case "theme-park-builder":
-        return <ThemeParkBuilder3D {...gameProps} />;
-      case "ThemeParkBuilder2D": return <ThemeParkBuilder {...gameProps} />;
+      case "ThemeParkBuilder2D": 
+        return <ThemeParkBuilder {...gameProps} />;
       
       // Exploration & Adventure Games
       case "SpaceExplorer": return <SpaceExplorer3D {...gameProps} />;
