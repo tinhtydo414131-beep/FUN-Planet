@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { fireDiamondConfetti } from "./DiamondConfetti";
-import { playRewardSound } from "./SoundEffects528Hz";
+import { playRewardSound } from "@/utils/soundEffects";
 
 interface GameCompleteClaimPopupProps {
   isOpen: boolean;

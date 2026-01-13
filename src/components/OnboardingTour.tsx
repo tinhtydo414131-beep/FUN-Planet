@@ -61,10 +61,10 @@ const ROLE_STEPS: Record<string, OnboardingStep[]> = {
     {
       id: "music",
       title: "Listen & Relax 🎵",
-      description: "Enjoy calming 432Hz healing music while you play!",
+      description: "Enjoy relaxing music while you play!",
       icon: Music,
       color: "from-purple-500 to-pink-500",
-      tips: ["Relaxing background music", "Focus-enhancing sounds", "Create playlists"]
+      tips: ["Relaxing background music", "Community playlists", "Upload your own music"]
     }
   ],
   parent: [

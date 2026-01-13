@@ -27,6 +27,7 @@ import {
   HeartHandshake,
   Target,
   MessageSquare,
+  Music2,
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
@@ -45,6 +46,7 @@ import { AdminDonationsTab } from "@/components/admin/AdminDonationsTab";
 import { AdminWeeklySummaryStats } from "@/components/admin/AdminWeeklySummaryStats";
 import { AdminKPIDashboard } from "@/components/admin/AdminKPIDashboard";
 import { AdminAppealsTab } from "@/components/admin/AdminAppealsTab";
+import { AdminMusicTab } from "@/components/admin/AdminMusicTab";
 
 interface Stats {
   totalUsers: number;
@@ -278,7 +280,7 @@ export default function AdminMasterDashboard() {
 
         {/* Main Tabs - Responsive Grid */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" ref={tabsRef}>
-          <TabsList className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-14 w-full mb-6 h-auto gap-1">
+          <TabsList className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-16 w-full mb-6 h-auto gap-1">
             <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <BarChart3 className="h-4 w-4" />
               <span>Overview</span>
@@ -335,6 +337,10 @@ export default function AdminMasterDashboard() {
             <TabsTrigger value="appeals" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <MessageSquare className="h-4 w-4" />
               <span>Appeals</span>
+            </TabsTrigger>
+            <TabsTrigger value="music" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs relative">
+              <Music2 className="h-4 w-4" />
+              <span>Music</span>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Bell className="h-4 w-4" />
@@ -396,6 +402,10 @@ export default function AdminMasterDashboard() {
 
           <TabsContent value="appeals">
             <AdminAppealsTab />
+          </TabsContent>
+
+          <TabsContent value="music">
+            <AdminMusicTab onStatsUpdate={loadStats} />
           </TabsContent>
 
           <TabsContent value="notifications">

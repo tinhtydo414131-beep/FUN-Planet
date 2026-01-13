@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Music, Trash2, Download, Coins, AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import { Upload, Music, Trash2, Download, Coins, AlertTriangle, CheckCircle2, Info, Clock, Star, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { 
   validateMusicUpload, 
   formatCoins, 
@@ -26,8 +27,10 @@ interface MusicFile {
   artist: string | null;
   storage_path: string;
   file_size: number | null;
-  duration: string | null; // Database returns string
+  duration: string | null;
   created_at: string;
+  pending_approval?: boolean;
+  parent_approved?: boolean;
 }
 
 // ===== CẤU HÌNH HIỂN THỊ =====
@@ -50,7 +53,6 @@ export default function MusicLibrary() {
   } | null>(null);
   const [lastValidation, setLastValidation] = useState<ValidationResponse | null>(null);
 
-  // Load daily info khi component mount
   useEffect(() => {
     if (user) {
       loadDailyInfo();
@@ -92,7 +94,7 @@ export default function MusicLibrary() {
     try {
       const { data, error } = await supabase
         .from('user_music')
-        .select('id, title, artist, storage_path, file_size, duration, created_at')
+        .select('id, title, artist, storage_path, file_size, duration, created_at, pending_approval, parent_approved')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -112,10 +114,8 @@ export default function MusicLibrary() {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
-    // Reset input
     event.target.value = '';
 
-    // Supported audio formats
     const supportedTypes = [
       'audio/mpeg', 'audio/mp3',
       'audio/mp4', 'audio/m4a', 'audio/x-m4a',
@@ -134,12 +134,10 @@ export default function MusicLibrary() {
       return;
     }
 
-    // ===== BƯỚC 1: VALIDATE CHỐNG ABUSE =====
     setValidating(true);
     setLastValidation(null);
     
     try {
-      // Lấy access token
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
         toast.error("Phiên đăng nhập không hợp lệ");
@@ -149,16 +147,13 @@ export default function MusicLibrary() {
 
       toast.info("🔍 Đang kiểm tra file...");
       
-      // Gọi edge function validate
       const validation = await validateMusicUpload(file, session.access_token);
       setLastValidation(validation);
       
-      // Cập nhật daily info nếu có
       if (validation.dailyInfo) {
         setDailyInfo(validation.dailyInfo);
       }
 
-      // Nếu không được upload → dừng lại
       if (!validation.canUpload) {
         toast.error(validation.message);
         setValidating(false);
@@ -166,11 +161,9 @@ export default function MusicLibrary() {
       }
 
       setValidating(false);
-
-      // ===== BƯỚC 2: UPLOAD FILE LÊN R2 =====
       setUploading(true);
 
-      toast.info("📤 Đang tải lên Cloudflare R2...");
+      toast.info("📤 Đang tải lên...");
       
       const uploadResult = await uploadToR2(file, 'music');
 
@@ -178,20 +171,18 @@ export default function MusicLibrary() {
         throw new Error(uploadResult.error || 'Upload failed');
       }
 
-      console.log('✅ R2 Upload successful:', uploadResult.url);
-
-      // Save to user_music table
+      // Save with pending_approval = true (admin must approve)
       const { error: dbError } = await supabase
         .from('user_music')
         .insert({
           user_id: user.id,
-          title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
+          title: file.name.replace(/\.[^/.]+$/, ''),
           artist: null,
-          storage_path: uploadResult.url!, // R2 public URL
+          storage_path: uploadResult.url!,
           file_size: file.size,
           duration: null,
-          parent_approved: true,
-          pending_approval: false
+          parent_approved: false,  // Requires admin approval
+          pending_approval: true   // Pending review
         });
 
       if (dbError) {
@@ -199,19 +190,12 @@ export default function MusicLibrary() {
         toast.warning("File đã tải lên nhưng không thể lưu vào database");
       }
 
-      // Hiển thị kết quả
-      if (validation.canReceiveReward) {
-        toast.success(validation.message, {
-          duration: 5000,
-          icon: '🎉'
-        });
-      } else {
-        toast.warning(validation.message, {
-          duration: 5000
-        });
-      }
+      // Updated message - no instant reward
+      toast.success("🎵 Đã tải nhạc lên! Nhạc của bạn đang chờ Admin duyệt.", {
+        duration: 5000,
+        icon: '⏳'
+      });
 
-      // Reload data
       loadMusicFiles();
       loadDailyInfo();
 
@@ -228,7 +212,6 @@ export default function MusicLibrary() {
     if (!confirm("Bạn có chắc muốn xóa file nhạc này?")) return;
 
     try {
-      // Delete from database
       const { error } = await supabase
         .from('user_music')
         .delete()
@@ -236,9 +219,8 @@ export default function MusicLibrary() {
 
       if (error) throw error;
 
-      // Try to delete from R2 if it's an R2 URL
       if (storagePath.includes('r2.dev') || storagePath.includes('cloudflare')) {
-        const key = storagePath.split('/').slice(-2).join('/'); // Get folder/filename
+        const key = storagePath.split('/').slice(-2).join('/');
         try {
           await deleteFromR2(key);
         } catch (r2Error) {
@@ -254,48 +236,78 @@ export default function MusicLibrary() {
     }
   };
 
-  // Format duration in mm:ss
   const formatDuration = (duration: string | null) => {
     if (!duration) return '--:--';
     const seconds = parseFloat(duration);
-    if (isNaN(seconds)) return duration; // Return as-is if not a number
+    if (isNaN(seconds)) return duration;
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Format file size
   const formatFileSize = (bytes: number | null) => {
     if (!bytes) return '--';
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const getStatusBadge = (file: MusicFile) => {
+    if (file.pending_approval) {
+      return (
+        <Badge className="bg-yellow-100 text-yellow-700 border-yellow-300">
+          <Clock className="w-3 h-3 mr-1" />
+          Chờ duyệt
+        </Badge>
+      );
+    }
+    if (file.parent_approved) {
+      return (
+        <Badge className="bg-green-100 text-green-700 border-green-300">
+          <CheckCircle2 className="w-3 h-3 mr-1" />
+          Đã duyệt
+        </Badge>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-white via-pink-50/30 to-blue-50/30">
+      {/* Decorative blobs */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-80 h-80 bg-yellow-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-0 w-72 h-72 bg-pink-200/25 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl" />
+      </div>
+
       <Navigation />
       
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto">
+          {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-fredoka font-bold text-primary mb-4">
-              🎵 Thư Viện Nhạc
+            <h1 className="text-4xl md:text-5xl font-fredoka font-bold mb-4">
+              <span className="bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
+                🎵 Thư Viện Nhạc
+              </span>
             </h1>
-            <p className="text-lg text-muted-foreground font-comic">
+            <p className="text-lg text-gray-600 font-comic">
               Tải lên và quản lý các file nhạc của bạn
             </p>
           </div>
 
           {/* Daily Rewards Info */}
           {user && dailyInfo && (
-            <Card className="mb-6 border-2 border-yellow-500/30 bg-gradient-to-r from-yellow-500/10 to-orange-500/10">
+            <Card className="mb-6 bg-white border border-gray-200 shadow-sm">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Coins className="w-6 h-6 text-yellow-500" />
-                    <span className="font-fredoka text-lg">Thưởng Hôm Nay</span>
+                    <div className="p-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500">
+                      <Coins className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-fredoka text-lg text-gray-800">Thưởng Hôm Nay</span>
                   </div>
-                  <span className="font-bold text-lg">
+                  <span className="font-bold text-lg bg-gradient-to-r from-yellow-500 to-pink-500 bg-clip-text text-transparent">
                     {dailyInfo.rewardsUsed}/{dailyInfo.maxDaily} bài
                   </span>
                 </div>
@@ -305,14 +317,14 @@ export default function MusicLibrary() {
                   className="h-3 mb-2"
                 />
                 
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">
                     {dailyInfo.rewardsRemaining > 0 
                       ? `Còn ${dailyInfo.rewardsRemaining} lần nhận ${formatCoins(CONFIG.REWARD_AMOUNT)} coins`
                       : '🎯 Đã đạt giới hạn hôm nay!'
                     }
                   </span>
-                  <span className="text-yellow-600 font-semibold">
+                  <span className="font-semibold bg-gradient-to-r from-yellow-500 to-pink-500 bg-clip-text text-transparent">
                     +{formatCoins(CONFIG.REWARD_AMOUNT)} coins/bài
                   </span>
                 </div>
@@ -324,35 +336,39 @@ export default function MusicLibrary() {
           {lastValidation && !lastValidation.success && (
             <Alert 
               variant={lastValidation.canUpload ? "default" : "destructive"} 
-              className="mb-6"
+              className="mb-6 bg-white border-gray-200"
             >
               {lastValidation.canUpload ? (
                 <Info className="h-4 w-4" />
               ) : (
                 <AlertTriangle className="h-4 w-4" />
               )}
-              <AlertTitle>
+              <AlertTitle className="text-gray-800">
                 {ValidationCodeIcons[lastValidation.code] || '⚠️'} Thông báo
               </AlertTitle>
-              <AlertDescription>
+              <AlertDescription className="text-gray-600">
                 {lastValidation.message}
               </AlertDescription>
             </Alert>
           )}
 
           {/* Upload Section */}
-          <Card className="mb-8 border-4 border-primary/30">
+          <Card className="mb-8 bg-white border border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="font-fredoka text-2xl flex items-center gap-2">
-                <Upload className="w-6 h-6" />
-                Tải Nhạc Lên
+                <div className="p-2 rounded-full bg-gradient-to-r from-pink-400 to-pink-500">
+                  <Upload className="w-5 h-5 text-white" />
+                </div>
+                <span className="bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">
+                  Tải Nhạc Lên
+                </span>
                 {dailyInfo && dailyInfo.rewardsRemaining > 0 && (
-                  <span className="ml-2 px-3 py-1 bg-yellow-500/20 text-yellow-600 text-sm rounded-full">
+                  <Badge className="ml-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white border-0">
                     +{formatCoins(CONFIG.REWARD_AMOUNT)} 🪙
-                  </span>
+                  </Badge>
                 )}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-600">
                 Upload nhạc để nhận thưởng Camly coins! (Tối đa {CONFIG.MAX_DAILY_REWARDS} bài/ngày)
               </CardDescription>
             </CardHeader>
@@ -361,38 +377,38 @@ export default function MusicLibrary() {
                 <div>
                   <Label htmlFor="music-upload" className="cursor-pointer">
                     <div className={`
-                      border-4 border-dashed rounded-2xl p-8 text-center transition-all
+                      border-2 border-dashed rounded-2xl p-8 text-center transition-all
                       ${validating || uploading 
-                        ? 'border-muted cursor-not-allowed opacity-60' 
-                        : 'border-primary/30 hover:border-primary/60 hover:bg-primary/5'
+                        ? 'border-gray-300 cursor-not-allowed opacity-60 bg-gray-50' 
+                        : 'border-pink-300 hover:border-pink-500 hover:bg-pink-50/50'
                       }
                     `}>
                       {validating ? (
                         <>
-                          <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-                          <p className="font-fredoka text-lg mb-2">
+                          <div className="animate-spin w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full mx-auto mb-4" />
+                          <p className="font-fredoka text-lg mb-2 text-gray-800">
                             Đang kiểm tra file...
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-gray-500">
                             Xác minh hash & metadata chống trùng lặp
                           </p>
                         </>
                       ) : uploading ? (
                         <>
                           <div className="animate-pulse">
-                            <Upload className="w-12 h-12 mx-auto mb-4 text-primary" />
+                            <Upload className="w-12 h-12 mx-auto mb-4 text-pink-500" />
                           </div>
-                          <p className="font-fredoka text-lg mb-2">
+                          <p className="font-fredoka text-lg mb-2 text-gray-800">
                             Đang tải lên...
                           </p>
                         </>
                       ) : (
                         <>
-                          <Music className="w-12 h-12 mx-auto mb-4 text-primary" />
-                          <p className="font-fredoka text-lg mb-2">
+                          <Music className="w-12 h-12 mx-auto mb-4 text-pink-500" />
+                          <p className="font-fredoka text-lg mb-2 text-gray-800">
                             Nhấp để chọn file nhạc
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-gray-500">
                             MP3, M4A, WAV, OGG, FLAC (Tối đa 50MB)
                           </p>
                         </>
@@ -410,41 +426,59 @@ export default function MusicLibrary() {
                 </div>
                 
                 {!user && (
-                  <p className="text-center text-sm text-muted-foreground">
+                  <p className="text-center text-sm text-gray-500">
                     Vui lòng đăng nhập để tải nhạc lên và nhận thưởng
                   </p>
                 )}
 
-                {/* Anti-abuse Info */}
-                <div className="bg-muted/50 rounded-xl p-4 space-y-2">
-                  <p className="font-semibold text-sm flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Hệ thống chống abuse
-                  </p>
-                  <ul className="text-xs text-muted-foreground space-y-1 ml-6">
-                    <li>• Mỗi file được kiểm tra SHA-256 hash để phát hiện trùng lặp</li>
-                    <li>• Giới hạn {CONFIG.MAX_DAILY_REWARDS} bài được thưởng mỗi ngày</li>
-                    <li>• Phân tích metadata (duration, bitrate) chống re-encode</li>
-                  </ul>
+                {/* Info boxes */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-gradient-to-r from-yellow-50 to-yellow-100/50 rounded-xl p-4 border border-yellow-200">
+                    <p className="font-semibold text-sm flex items-center gap-2 text-yellow-700 mb-2">
+                      <Clock className="w-4 h-4" />
+                      Quy trình duyệt
+                    </p>
+                    <ul className="text-xs text-yellow-600 space-y-1">
+                      <li>• Upload → Chờ Admin duyệt</li>
+                      <li>• Duyệt → Nhận thưởng + Hiển thị public</li>
+                      <li>• Thời gian duyệt: 1-24 giờ</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-green-50 to-green-100/50 rounded-xl p-4 border border-green-200">
+                    <p className="font-semibold text-sm flex items-center gap-2 text-green-700 mb-2">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Chống abuse
+                    </p>
+                    <ul className="text-xs text-green-600 space-y-1">
+                      <li>• Kiểm tra SHA-256 hash</li>
+                      <li>• Giới hạn {CONFIG.MAX_DAILY_REWARDS} bài/ngày</li>
+                      <li>• Phân tích metadata</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Music List */}
-          <Card className="border-4 border-primary/30">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="font-fredoka text-2xl flex items-center gap-2">
-                <Music className="w-6 h-6" />
-                Nhạc Của Bạn ({musicFiles.length})
+                <div className="p-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500">
+                  <Music className="w-5 h-5 text-white" />
+                </div>
+                <span className="bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent">
+                  Nhạc Của Bạn ({musicFiles.length})
+                </span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-600">
                 <Button
                   onClick={loadMusicFiles}
                   variant="outline"
                   size="sm"
                   disabled={loading || !user}
-                  className="mt-2"
+                  className="mt-2 border-gray-300 hover:bg-gray-50"
                 >
                   {loading ? "Đang tải..." : "Làm mới danh sách"}
                 </Button>
@@ -453,9 +487,9 @@ export default function MusicLibrary() {
             <CardContent>
               <ScrollArea className="h-[400px]">
                 {musicFiles.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Music className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                    <p className="font-comic">
+                  <div className="text-center py-12">
+                    <Music className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                    <p className="font-comic text-gray-500">
                       Chưa có nhạc nào. Tải lên file đầu tiên nhé!
                     </p>
                   </div>
@@ -464,18 +498,31 @@ export default function MusicLibrary() {
                     {musicFiles.map((file) => (
                       <div
                         key={file.id}
-                        className="flex items-center justify-between p-4 border-2 border-border rounded-xl hover:bg-accent/50 transition-colors"
+                        className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl transition-all gap-3 ${
+                          file.pending_approval 
+                            ? 'bg-yellow-50 border border-yellow-200' 
+                            : 'bg-white border border-gray-200 hover:border-pink-200 hover:shadow-sm'
+                        }`}
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <Music className="w-5 h-5 text-primary shrink-0" />
+                          <div className={`p-2 rounded-full shrink-0 ${
+                            file.pending_approval 
+                              ? 'bg-yellow-200' 
+                              : 'bg-gradient-to-r from-pink-400 to-pink-500'
+                          }`}>
+                            <Music className={`w-4 h-4 ${file.pending_approval ? 'text-yellow-700' : 'text-white'}`} />
+                          </div>
                           <div className="min-w-0 flex-1">
-                            <p className="font-fredoka font-bold truncate">
-                              {file.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-fredoka font-bold truncate text-gray-800">
+                                {file.title}
+                              </p>
+                              {getStatusBadge(file)}
+                            </div>
+                            <p className="text-xs text-gray-500">
                               {file.artist || 'Unknown Artist'} • {formatDuration(file.duration)} • {formatFileSize(file.file_size)}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-gray-400">
                               {new Date(file.created_at).toLocaleDateString('vi-VN')}
                             </p>
                           </div>
@@ -484,16 +531,16 @@ export default function MusicLibrary() {
                         {/* Audio Player */}
                         <audio 
                           controls 
-                          className="h-8 w-32 md:w-48 mx-2"
+                          className="h-8 w-full sm:w-32 md:w-48"
                           src={file.storage_path}
                         />
                         
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-2 shrink-0 justify-end">
                           <Button
                             size="icon"
                             variant="outline"
                             asChild
-                            className="border-2 border-primary/30"
+                            className="border-gray-300 hover:bg-pink-50 hover:border-pink-300"
                           >
                             <a
                               href={file.storage_path}
@@ -501,7 +548,7 @@ export default function MusicLibrary() {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <Download className="w-4 h-4" />
+                              <Download className="w-4 h-4 text-pink-500" />
                             </a>
                           </Button>
                           
@@ -510,9 +557,9 @@ export default function MusicLibrary() {
                               size="icon"
                               variant="outline"
                               onClick={() => handleDelete(file.id, file.storage_path)}
-                              className="border-2 border-destructive/30 hover:bg-destructive/10"
+                              className="border-red-200 hover:bg-red-50 text-red-500"
                             >
-                              <Trash2 className="w-4 h-4 text-destructive" />
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           )}
                         </div>

@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { fireDiamondConfetti } from './DiamondConfetti';
-import { playRewardSound } from './SoundEffects528Hz';
+import { playRewardSound } from "@/utils/soundEffects";
 
 export const HeroDiamondButtons = () => {
   const navigate = useNavigate();

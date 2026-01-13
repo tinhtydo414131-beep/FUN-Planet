@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export type NotificationPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 export type NotificationTheme = 'sunset' | 'ocean' | 'forest' | 'galaxy' | 'candy' | 'golden';
-export type NotificationSound = 'rich-reward' | 'coin-bling' | '528hz-tone' | 'magic-sparkle' | 'level-up' | 'success-chime' | 'custom';
+export type NotificationSound = 'rich-reward' | 'coin-bling' | 'magic-sparkle' | 'level-up' | 'success-chime' | 'custom';
 
 export interface NotificationPreferences {
   enabled: boolean;
@@ -38,12 +38,6 @@ export const NOTIFICATION_SOUNDS: Record<NotificationSound, { name: string; name
     nameEn: 'Coin Bling',
     url: 'https://pub-cb953c014b4d44f980fbe6e051a12745.r2.dev/audio/coin-reward.mp3', 
     icon: '🪙' 
-  },
-  '528hz-tone': { 
-    name: '528Hz Healing', 
-    nameEn: '528Hz Healing',
-    url: '', // Generated via Web Audio API
-    icon: '🎵' 
   },
   'magic-sparkle': { 
     name: 'Phép thuật', 
@@ -117,10 +111,7 @@ export function useNotificationPreferences() {
 
     const soundConfig = NOTIFICATION_SOUNDS[preferences.selectedSound];
     
-    if (preferences.selectedSound === '528hz-tone') {
-      // Generate 528Hz tone using Web Audio API
-      play528HzTone(preferences.volume);
-    } else if (preferences.selectedSound === 'custom' && preferences.customSoundUrl) {
+    if (preferences.selectedSound === 'custom' && preferences.customSoundUrl) {
       const audio = new Audio(preferences.customSoundUrl);
       audio.volume = preferences.volume / 100;
       audio.play().catch(console.error);
@@ -133,9 +124,7 @@ export function useNotificationPreferences() {
 
   // Preview a sound without changing preferences
   const previewSound = (soundKey: NotificationSound, customUrl?: string) => {
-    if (soundKey === '528hz-tone') {
-      play528HzTone(preferences.volume);
-    } else if (soundKey === 'custom' && customUrl) {
+    if (soundKey === 'custom' && customUrl) {
       const audio = new Audio(customUrl);
       audio.volume = preferences.volume / 100;
       audio.play().catch(console.error);
@@ -156,42 +145,4 @@ export function useNotificationPreferences() {
     playNotificationSound,
     previewSound,
   };
-}
-
-// Helper function to play 528Hz healing tone
-function play528HzTone(volume: number) {
-  try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-
-    const ctx = new AudioContext();
-    
-    // Main tone - 528Hz
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(528, ctx.currentTime);
-    gain1.gain.setValueAtTime((volume / 100) * 0.3, ctx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
-    osc1.connect(gain1);
-    gain1.connect(ctx.destination);
-    osc1.start();
-    osc1.stop(ctx.currentTime + 1.5);
-
-    // Harmony - 660Hz
-    setTimeout(() => {
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(660, ctx.currentTime);
-      gain2.gain.setValueAtTime((volume / 100) * 0.2, ctx.currentTime);
-      gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.start();
-      osc2.stop(ctx.currentTime + 1);
-    }, 150);
-  } catch (e) {
-    console.log('Audio not available');
-  }
 }
