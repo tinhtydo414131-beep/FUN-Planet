@@ -286,7 +286,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.8, y: 50 }}
         className={`fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] transition-all duration-300 ease-out ${
-          isExpanded ? 'w-full sm:w-[500px]' : 'w-full sm:w-[380px]'
+          isExpanded ? 'w-full sm:w-[650px]' : 'w-full sm:w-[380px]'
         }`}
       >
         <motion.div className="relative">
@@ -711,28 +711,6 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                   )}
                 </div>
 
-                {/* Quick Actions */}
-                <div className="px-3 pb-3">
-                  <div className="flex gap-1.5">
-                    <Button
-                      size="sm"
-                      className="flex-1 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white text-xs rounded-xl"
-                      onClick={() => window.location.href = '/games'}
-                    >
-                      <Rocket className="w-3 h-3 mr-1" />
-                      Chơi Game
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1 border-pink-300 text-pink-600 hover:bg-pink-50 dark:border-pink-500 dark:text-pink-400 text-xs rounded-xl"
-                      onClick={() => window.location.href = '/reward-galaxy'}
-                    >
-                      <Star className="w-3 h-3 mr-1" />
-                      Nhận Thưởng
-                    </Button>
-                  </div>
-                </div>
 
                 {/* FUN-ID Badge */}
                 {funId && (
@@ -789,7 +767,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
       <div
         className={`max-w-[75%] rounded-[18px] px-3 py-2 ${
           isUser
-            ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-br-sm'
+            ? 'bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-br-sm'
             : 'bg-gradient-to-r from-yellow-100/80 to-pink-100/80 dark:from-yellow-900/30 dark:to-pink-900/30 text-foreground rounded-bl-sm'
         }`}
       >
