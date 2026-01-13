@@ -4,86 +4,86 @@ export const ButtonFacets = forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
   return (
     <div ref={ref} {...props}>
       {/* Ambient diamond glow halo - Reduced intensity */}
-      <div className="absolute inset-[-6px] rounded-2xl bg-gradient-radial from-cyan-400/15 via-purple-400/10 to-transparent blur-xl opacity-50 pointer-events-none" />
+      <div className="absolute inset-[-4px] rounded-2xl bg-gradient-radial from-cyan-400/10 via-purple-400/05 to-transparent blur-lg opacity-30 pointer-events-none" />
       
       {/* Luminous cut edges - outer ring */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top edge facet */}
         <div 
-          className="absolute top-0 left-[10%] right-[10%] h-[2px] animate-[shimmer_2s_ease-in-out_infinite]"
+          className="absolute top-0 left-[10%] right-[10%] h-[1.5px] animate-[shimmer_2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(90deg, transparent, rgba(255,255,255,1), rgba(103,232,249,0.96), rgba(255,255,255,1), transparent)",
-            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(103,232,249,0.48)",
-            filter: "blur(0.5px)"
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.8), rgba(103,232,249,0.7), rgba(255,255,255,0.8), transparent)",
+            boxShadow: "0 0 6px 1.5px rgba(255,255,255,0.5), 0 0 10px 3px rgba(103,232,249,0.3)",
+            filter: "blur(0.3px)"
           }}
         />
         {/* Bottom edge facet */}
         <div 
-          className="absolute bottom-0 left-[10%] right-[10%] h-[2px] animate-[shimmer_2s_ease-in-out_infinite]"
+          className="absolute bottom-0 left-[10%] right-[10%] h-[1.5px] animate-[shimmer_2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(90deg, transparent, rgba(196,181,253,0.96), rgba(255,255,255,1), rgba(196,181,253,0.96), transparent)",
-            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(196,181,253,0.48)",
-            filter: "blur(0.5px)",
+            background: "linear-gradient(90deg, transparent, rgba(196,181,253,0.7), rgba(255,255,255,0.8), rgba(196,181,253,0.7), transparent)",
+            boxShadow: "0 0 6px 1.5px rgba(255,255,255,0.5), 0 0 10px 3px rgba(196,181,253,0.3)",
+            filter: "blur(0.3px)",
             animationDelay: "0.5s"
           }}
         />
         {/* Left edge facet */}
         <div 
-          className="absolute left-0 top-[10%] bottom-[10%] w-[2px] animate-[shimmer_2.2s_ease-in-out_infinite]"
+          className="absolute left-0 top-[10%] bottom-[10%] w-[1.5px] animate-[shimmer_2.2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(180deg, transparent, rgba(255,255,255,1), rgba(103,232,249,0.96), rgba(255,255,255,1), transparent)",
-            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(103,232,249,0.48)",
-            filter: "blur(0.5px)",
+            background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.8), rgba(103,232,249,0.7), rgba(255,255,255,0.8), transparent)",
+            boxShadow: "0 0 6px 1.5px rgba(255,255,255,0.5), 0 0 10px 3px rgba(103,232,249,0.3)",
+            filter: "blur(0.3px)",
             animationDelay: "0.3s"
           }}
         />
         {/* Right edge facet */}
         <div 
-          className="absolute right-0 top-[10%] bottom-[10%] w-[2px] animate-[shimmer_2.2s_ease-in-out_infinite]"
+          className="absolute right-0 top-[10%] bottom-[10%] w-[1.5px] animate-[shimmer_2.2s_ease-in-out_infinite]"
           style={{ 
-            background: "linear-gradient(180deg, transparent, rgba(196,181,253,0.96), rgba(255,255,255,1), rgba(196,181,253,0.96), transparent)",
-            boxShadow: "0 0 10px 2.5px rgba(255,255,255,0.72), 0 0 18px 5px rgba(196,181,253,0.48)",
-            filter: "blur(0.5px)",
+            background: "linear-gradient(180deg, transparent, rgba(196,181,253,0.7), rgba(255,255,255,0.8), rgba(196,181,253,0.7), transparent)",
+            boxShadow: "0 0 6px 1.5px rgba(255,255,255,0.5), 0 0 10px 3px rgba(196,181,253,0.3)",
+            filter: "blur(0.3px)",
             animationDelay: "0.8s"
           }}
         />
         
-        {/* Corner cut facets - luminous diamonds (dimmed) */}
+        {/* Corner cut facets - luminous diamonds (reduced) */}
         <div 
-          className="absolute top-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          className="absolute top-0 left-0 w-3 h-3 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 100% 100%, rgba(255,255,255,0.5) 0%, rgba(103,232,249,0.35) 30%, transparent 70%)",
-            boxShadow: "2px 2px 8px rgba(255,255,255,0.3)"
+            background: "radial-gradient(circle at 100% 100%, rgba(255,255,255,0.35) 0%, rgba(103,232,249,0.25) 30%, transparent 70%)",
+            boxShadow: "1px 1px 4px rgba(255,255,255,0.2)"
           }}
         />
         <div 
-          className="absolute top-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          className="absolute top-0 right-0 w-3 h-3 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 0% 100%, rgba(255,255,255,0.5) 0%, rgba(196,181,253,0.35) 30%, transparent 70%)",
-            boxShadow: "-2px 2px 8px rgba(255,255,255,0.3)",
+            background: "radial-gradient(circle at 0% 100%, rgba(255,255,255,0.35) 0%, rgba(196,181,253,0.25) 30%, transparent 70%)",
+            boxShadow: "-1px 1px 4px rgba(255,255,255,0.2)",
             animationDelay: "0.4s"
           }}
         />
         <div 
-          className="absolute bottom-0 left-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          className="absolute bottom-0 left-0 w-3 h-3 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.5) 0%, rgba(251,207,232,0.35) 30%, transparent 70%)",
-            boxShadow: "2px -2px 8px rgba(255,255,255,0.3)",
+            background: "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.35) 0%, rgba(251,207,232,0.25) 30%, transparent 70%)",
+            boxShadow: "1px -1px 4px rgba(255,255,255,0.2)",
             animationDelay: "0.7s"
           }}
         />
         <div 
-          className="absolute bottom-0 right-0 w-4 h-4 animate-[sparkle_1.5s_ease-in-out_infinite]"
+          className="absolute bottom-0 right-0 w-3 h-3 animate-[sparkle_1.5s_ease-in-out_infinite]"
           style={{ 
-            background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.5) 0%, rgba(254,240,138,0.35) 30%, transparent 70%)",
-            boxShadow: "-2px -2px 8px rgba(255,255,255,0.3)",
+            background: "radial-gradient(circle at 0% 0%, rgba(255,255,255,0.35) 0%, rgba(254,240,138,0.25) 30%, transparent 70%)",
+            boxShadow: "-1px -1px 4px rgba(255,255,255,0.2)",
             animationDelay: "1s"
           }}
         />
       </div>
       
-      {/* Diamond brilliant cut facets at 20% visibility */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
+      {/* Diamond brilliant cut facets at 10% visibility */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
         {/* Crown facets - Upper triangular cuts radiating from center */}
         {/* Star facet - Top */}
         <div 
@@ -236,7 +236,7 @@ export const ButtonFacets = forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
       </div>
       
       {/* Diamond facet grooves - brilliant cut pattern */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
         {/* Crown star facet grooves - 8 lines radiating from center table */}
         <div 
           className="absolute top-[25%] left-1/2 w-[1px] h-[25%] -translate-x-1/2"
@@ -388,7 +388,7 @@ export const ButtonFacets = forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
       </div>
       
       {/* Diamond fire glitter - scattered prismatic sparkles */}
-      <div className="absolute inset-0 pointer-events-none opacity-20">
+      <div className="absolute inset-0 pointer-events-none opacity-10">
         {/* Central brilliance cluster */}
         <div 
           className="absolute top-[30%] left-1/2 -translate-x-1/2 w-3 h-3"

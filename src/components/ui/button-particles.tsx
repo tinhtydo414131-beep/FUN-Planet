@@ -43,7 +43,7 @@ export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 1.5, // Upward bias for magical feel
         life: 1,
-        size: 2 + Math.random() * 4,
+        size: 1.5 + Math.random() * 2.5,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     };
@@ -61,9 +61,8 @@ export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
       // Create particles when hovering
       if (isHovered) {
         particleTimer += deltaTime;
-        if (particleTimer > 40) { // Create particles every 40ms
+        if (particleTimer > 80) { // Create particles every 80ms (slower)
           createParticle();
-          createParticle(); // Double for more magic!
           particleTimer = 0;
         }
       }
@@ -79,7 +78,7 @@ export const ButtonParticles = ({ isHovered }: { isHovered: boolean }) => {
         ctx.save();
         ctx.globalAlpha = particle.life;
         ctx.fillStyle = particle.color;
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 8;
         ctx.shadowColor = particle.color;
         
         // Draw star shape for sparkle effect ✨
