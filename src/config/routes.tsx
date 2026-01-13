@@ -29,7 +29,6 @@ export const ComboLeaderboard = lazy(() => import("@/pages/ComboLeaderboard"));
 export const CamlyLeaderboard = lazy(() => import("@/pages/CamlyLeaderboard"));
 export const AchievementLeaderboard = lazy(() => import("@/pages/AchievementLeaderboard"));
 export const MusicLibrary = lazy(() => import("@/pages/MusicLibrary"));
-export const PublicMusic = lazy(() => import("@/pages/PublicMusic"));
 export const ParentDashboard = lazy(() => import("@/pages/ParentDashboard"));
 export const Education = lazy(() => import("@/pages/Education"));
 export const AdminMasterDashboard = lazy(() => import("@/pages/AdminMasterDashboard"));

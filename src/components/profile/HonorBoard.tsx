@@ -85,8 +85,10 @@ export function HonorBoard({ profile, userRank, compact = false }: HonorBoardPro
         .eq("status", "approved");
 
       const { count: musicCount } = await supabase
-        .from("healing_music_432hz")
-        .select("*", { count: "exact", head: true });
+        .from("user_music")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("parent_approved", true);
 
       const { count: playsCount } = await supabase
         .from("game_plays")

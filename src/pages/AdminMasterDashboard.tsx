@@ -75,6 +75,7 @@ export default function AdminMasterDashboard() {
   });
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [pendingMusicCount, setPendingMusicCount] = useState(0);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   // Navigate to specific tab (called from realtime bell)
@@ -141,6 +142,14 @@ export default function AdminMasterDashboard() {
         .from("profiles")
         .select("*", { count: "exact", head: true })
         .gte("created_at", today);
+
+      // Get pending music count
+      const { count: pendingMusic } = await supabase
+        .from("user_music")
+        .select("*", { count: "exact", head: true })
+        .eq("pending_approval", true);
+
+      setPendingMusicCount(pendingMusic || 0);
 
       setStats({
         totalUsers: usersCount || 0,
@@ -341,6 +350,11 @@ export default function AdminMasterDashboard() {
             <TabsTrigger value="music" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs relative">
               <Music2 className="h-4 w-4" />
               <span>Music</span>
+              {pendingMusicCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                  {pendingMusicCount}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
               <Bell className="h-4 w-4" />
