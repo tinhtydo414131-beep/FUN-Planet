@@ -562,17 +562,17 @@ export default function MusicLibrary() {
 
           {/* Tabs for My Music / Community */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full bg-white border border-gray-200 p-1 mb-4">
+            <TabsList className="w-full bg-white border border-gray-200 p-1.5 mb-4 flex flex-col sm:flex-row gap-2 sm:gap-0 h-auto sm:h-10 relative z-10">
               <TabsTrigger 
                 value="my-music" 
-                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-400 data-[state=active]:to-pink-500 data-[state=active]:text-white"
+                className="flex-1 py-3 sm:py-1.5 text-base sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-400 data-[state=active]:to-pink-500 data-[state=active]:text-white"
               >
                 <User className="w-4 h-4 mr-2" />
                 Nhạc Của Bạn ({musicFiles.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="community" 
-                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-400 data-[state=active]:to-blue-500 data-[state=active]:text-white"
+                className="flex-1 py-3 sm:py-1.5 text-base sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-400 data-[state=active]:to-blue-500 data-[state=active]:text-white"
               >
                 <Globe className="w-4 h-4 mr-2" />
                 Nhạc Cộng Đồng ({communityMusic.length})
@@ -724,7 +724,7 @@ export default function MusicLibrary() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[400px]">
+                  <ScrollArea className="h-[400px] sm:h-[500px] pb-20 sm:pb-0">
                     {loadingCommunity ? (
                       <div className="text-center py-12">
                         <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
@@ -734,10 +734,17 @@ export default function MusicLibrary() {
                       </div>
                     ) : communityMusic.length === 0 ? (
                       <div className="text-center py-12">
-                        <Music className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                        <p className="font-comic text-gray-500">
+                        <Globe className="w-16 h-16 mx-auto mb-4 text-blue-300" />
+                        <p className="font-comic text-gray-500 mb-4">
                           Chưa có nhạc nào trong thư viện cộng đồng
                         </p>
+                        <Button 
+                          onClick={loadCommunityMusic} 
+                          variant="outline" 
+                          className="border-blue-300 hover:bg-blue-50"
+                        >
+                          Thử tải lại
+                        </Button>
                       </div>
                     ) : (
                       <div className="space-y-3">
