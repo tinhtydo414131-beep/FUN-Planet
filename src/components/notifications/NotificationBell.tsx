@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Bell, Check, CheckCheck, Gamepad2, Gift, X, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +16,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
-export function NotificationBell() {
+const NotificationBell = forwardRef<HTMLButtonElement, object>((_props, ref) => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useUserNotifications();
 
   const getNotificationIcon = (type: string) => {
@@ -53,7 +54,7 @@ export function NotificationBell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button ref={ref} variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge 
@@ -126,4 +127,8 @@ export function NotificationBell() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+});
+
+NotificationBell.displayName = "NotificationBell";
+
+export { NotificationBell };
