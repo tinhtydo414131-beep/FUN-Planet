@@ -715,7 +715,7 @@ export const FunPlanetUnifiedBoard = () => {
                 </div>
 
                 {/* Content */}
-                <div className="overflow-y-auto overflow-x-hidden space-y-1.5 sm:space-y-2 h-[180px] sm:h-[200px]">
+                <div className="overflow-y-auto overflow-x-hidden scrollbar-hide-hover space-y-1.5 sm:space-y-2 h-[180px] sm:h-[200px]">
                   <AnimatePresence mode="wait">
                     {legendsLoading ? (
                       <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center h-32">
