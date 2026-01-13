@@ -609,15 +609,19 @@ export default function MusicLibrary() {
                 value="my-music" 
                 className="flex-1 py-3 sm:py-1.5 text-base sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-400 data-[state=active]:to-pink-500 data-[state=active]:text-white"
               >
-                <User className="w-4 h-4 mr-2" />
-                Nhạc Của Bạn ({musicFiles.length})
+                <span className="inline-flex items-center">
+                  <User className="w-4 h-4 mr-2" />
+                  Nhạc Của Bạn ({musicFiles.length})
+                </span>
               </TabsTrigger>
               <TabsTrigger 
                 value="community" 
                 className="flex-1 py-3 sm:py-1.5 text-base sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-400 data-[state=active]:to-blue-500 data-[state=active]:text-white"
               >
-                <Globe className="w-4 h-4 mr-2" />
-                Nhạc Cộng Đồng ({communityMusic.length})
+                <span className="inline-flex items-center">
+                  <Globe className="w-4 h-4 mr-2" />
+                  Nhạc Cộng Đồng ({communityMusic.length})
+                </span>
               </TabsTrigger>
             </TabsList>
 
@@ -704,21 +708,20 @@ export default function MusicLibrary() {
                             />
                             
                             <div className="flex items-center gap-2 shrink-0 justify-end">
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                asChild
-                                className="border-gray-300 hover:bg-pink-50 hover:border-pink-300"
+                              <a
+                                href={file.storage_path}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
                               >
-                                <a
-                                  href={file.storage_path}
-                                  download
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="border-gray-300 hover:bg-pink-50 hover:border-pink-300"
                                 >
                                   <Download className="w-4 h-4 text-pink-500" />
-                                </a>
-                              </Button>
+                                </Button>
+                              </a>
                               
                               {isAdmin && (
                                 <Button
@@ -844,21 +847,20 @@ export default function MusicLibrary() {
                             </div>
                             
                             <div className="flex items-center gap-2 shrink-0 justify-end">
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                asChild
-                                className="border-gray-300 hover:bg-blue-50 hover:border-blue-300"
+                              <a
+                                href={track.storage_path}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
                               >
-                                <a
-                                  href={track.storage_path}
-                                  download
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="border-gray-300 hover:bg-blue-50 hover:border-blue-300"
                                 >
                                   <Download className="w-4 h-4 text-blue-500" />
-                                </a>
-                              </Button>
+                                </Button>
+                              </a>
                             </div>
                           </div>
                         ))}
