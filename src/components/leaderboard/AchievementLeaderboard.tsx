@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from "react";
 import { motion } from "framer-motion";
-import { Crown, Trophy, Medal, RefreshCw, Loader2 } from "lucide-react";
+import { Crown, Trophy, Medal, RefreshCw, Loader2, Star, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -27,9 +27,9 @@ const PodiumCard = memo(({ user, rank, isCurrentUser }: {
   const heights = { 1: "h-24", 2: "h-16", 3: "h-14" };
   const avatarSizes = { 1: "h-20 w-20", 2: "h-16 w-16", 3: "h-14 w-14" };
   const ringColors = {
-    1: "border-yellow-400 shadow-[0_0_25px_rgba(255,215,0,0.9)]",
-    2: "border-slate-300 shadow-[0_0_20px_rgba(192,192,192,0.7)]",
-    3: "border-orange-400 shadow-[0_0_20px_rgba(205,127,50,0.7)]",
+    1: "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.6)]",
+    2: "border-slate-300 shadow-[0_0_15px_rgba(192,192,192,0.4)]",
+    3: "border-orange-400 shadow-[0_0_15px_rgba(205,127,50,0.4)]",
   };
 
   return (
@@ -43,17 +43,17 @@ const PodiumCard = memo(({ user, rank, isCurrentUser }: {
       {/* Avatar */}
       <div className="relative mb-3">
         <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
           className={`absolute inset-0 rounded-full blur-md ${
-            rank === 1 ? "bg-yellow-500/50" : rank === 2 ? "bg-slate-400/40" : "bg-orange-500/40"
+            rank === 1 ? "bg-yellow-400/40" : rank === 2 ? "bg-slate-300/30" : "bg-orange-400/30"
           }`}
           style={{ transform: "scale(1.2)" }}
         />
         
         <Avatar className={`relative z-10 ${avatarSizes[rank as keyof typeof avatarSizes]} border-4 ${ringColors[rank as keyof typeof ringColors]}`}>
           <AvatarImage src={user.avatar_url || undefined} />
-          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
+          <AvatarFallback className="bg-gradient-to-br from-pink-400 to-blue-400 text-white font-bold text-xl">
             {user.username?.charAt(0).toUpperCase() || "?"}
           </AvatarFallback>
         </Avatar>
@@ -64,7 +64,7 @@ const PodiumCard = memo(({ user, rank, isCurrentUser }: {
             transition={{ duration: 2, repeat: Infinity }}
             className="absolute -top-5 left-1/2 -translate-x-1/2"
           >
-            <Crown className="h-8 w-8 text-yellow-400 drop-shadow-[0_0_15px_rgba(255,215,0,1)]" />
+            <Crown className="h-8 w-8 text-yellow-500 drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]" />
           </motion.div>
         )}
       </div>
@@ -93,14 +93,14 @@ const PodiumCard = memo(({ user, rank, isCurrentUser }: {
       </div>
 
       {/* Username */}
-      <p className={`text-base font-bold truncate max-w-[140px] text-center ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+      <p className={`text-base font-bold truncate max-w-[140px] text-center ${isCurrentUser ? "text-pink-500" : "text-gray-800"}`}>
         {user.username}
       </p>
 
       {/* Achievement Count */}
       <div className="flex items-center gap-1.5 mt-2">
-        <Trophy className="h-4 w-4 text-yellow-400" />
-        <span className="text-lg font-extrabold bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent">
+        <Trophy className="h-4 w-4 text-yellow-500" />
+        <span className="text-lg font-extrabold bg-gradient-to-r from-yellow-500 via-pink-500 to-yellow-500 bg-clip-text text-transparent">
           {user.achievement_count}/{TOTAL_ACHIEVEMENTS}
         </span>
       </div>
@@ -111,13 +111,21 @@ const PodiumCard = memo(({ user, rank, isCurrentUser }: {
         animate={{ height: "auto" }}
         transition={{ delay: 0.5, duration: 0.5 }}
         className={`${heights[rank as keyof typeof heights]} w-28 mt-3 rounded-t-xl ${
-          rank === 1 ? "bg-gradient-to-t from-yellow-600/70 to-yellow-400/50 border-2 border-yellow-400/70"
-            : rank === 2 ? "bg-gradient-to-t from-slate-500/60 to-slate-300/40 border-2 border-slate-300/60"
-            : "bg-gradient-to-t from-orange-600/60 to-orange-400/40 border-2 border-orange-400/60"
+          rank === 1 ? "bg-gradient-to-t from-yellow-400/80 to-yellow-300/60 border-2 border-yellow-400"
+            : rank === 2 ? "bg-gradient-to-t from-slate-400/60 to-slate-300/40 border-2 border-slate-300"
+            : "bg-gradient-to-t from-orange-400/60 to-orange-300/40 border-2 border-orange-400"
         }`}
+        style={{
+          boxShadow:
+            rank === 1
+              ? "0 4px 20px rgba(255, 215, 0, 0.3)"
+              : rank === 2
+              ? "0 4px 15px rgba(192, 192, 192, 0.2)"
+              : "0 4px 15px rgba(205, 127, 50, 0.2)",
+        }}
       >
         <div className="flex items-center justify-center h-full">
-          <span className="text-3xl font-black bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+          <span className="text-3xl font-black bg-gradient-to-b from-yellow-500 to-pink-500 bg-clip-text text-transparent">
             #{rank}
           </span>
         </div>
@@ -141,39 +149,39 @@ const UserRow = memo(({ user, rank, isCurrentUser, index }: {
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
       onClick={() => navigate(`/profile/${user.id}`)}
-      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:scale-[1.02] ${
+      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:scale-[1.01] ${
         isCurrentUser
-          ? "bg-gradient-to-r from-yellow-500/30 to-amber-500/20 border-2 border-yellow-400/60"
-          : "bg-white/10 border border-white/20 hover:bg-white/15"
+          ? "bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-400/60 shadow-sm"
+          : "bg-white border border-gray-200 hover:border-pink-200 hover:shadow-md"
       }`}
     >
       {/* Rank */}
       <div className="w-10 flex justify-center shrink-0">
-        <span className="text-xl font-black bg-gradient-to-b from-yellow-300 to-amber-500 bg-clip-text text-transparent">
+        <span className="text-xl font-black bg-gradient-to-b from-yellow-500 to-pink-500 bg-clip-text text-transparent">
           #{rank}
         </span>
       </div>
 
       {/* Avatar */}
-      <Avatar className={`w-10 h-10 border-2 shrink-0 ${isCurrentUser ? "border-yellow-400" : "border-white/40"}`}>
+      <Avatar className={`w-10 h-10 border-2 shrink-0 ${isCurrentUser ? "border-yellow-400" : "border-gray-200"}`}>
         <AvatarImage src={user.avatar_url || undefined} />
-        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
+        <AvatarFallback className="bg-gradient-to-br from-pink-400 to-blue-400 text-white font-bold">
           {user.username?.charAt(0).toUpperCase() || "?"}
         </AvatarFallback>
       </Avatar>
 
       {/* Username */}
       <div className="flex-1 min-w-0">
-        <p className={`font-bold text-sm truncate ${isCurrentUser ? "text-yellow-300" : "text-white"}`}>
+        <p className={`font-bold text-sm truncate ${isCurrentUser ? "text-pink-600" : "text-gray-800"}`}>
           {user.username || "Anonymous"}
-          {isCurrentUser && <span className="text-yellow-400 ml-1.5">(Bạn)</span>}
+          {isCurrentUser && <span className="text-yellow-500 ml-1.5">(Bạn)</span>}
         </p>
       </div>
 
       {/* Achievement Count */}
       <div className="flex items-center gap-1.5 shrink-0">
-        <Trophy className="w-4 h-4 text-yellow-400" />
-        <span className="font-extrabold text-sm bg-gradient-to-r from-yellow-300 to-yellow-100 bg-clip-text text-transparent">
+        <Trophy className="w-4 h-4 text-yellow-500" />
+        <span className="font-extrabold text-sm bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
           {user.achievement_count}/{TOTAL_ACHIEVEMENTS}
         </span>
       </div>
@@ -257,25 +265,27 @@ export function AchievementLeaderboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-yellow-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-pink-400" />
       </div>
     );
   }
 
   return (
-    <Card className="bg-gradient-to-br from-purple-900/50 to-indigo-900/50 border-purple-500/30 backdrop-blur-sm">
+    <Card className="bg-white border border-gray-200 shadow-[0_8px_32px_rgba(168,85,247,0.08)]">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-white">
-            <Trophy className="h-5 w-5 text-yellow-400" />
-            🏆 Top Achievement Hunters
+          <CardTitle className="flex items-center gap-2 text-gray-800">
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            <span className="bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent font-bold">
+              🏆 Top Achievement Hunters
+            </span>
           </CardTitle>
           <Button
             variant="outline"
             size="sm"
             onClick={() => fetchLeaderboard(true)}
             disabled={refreshing}
-            className="border-white/20 text-white hover:bg-white/10"
+            className="border-blue-200 text-blue-500 hover:bg-blue-50 bg-white"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`} />
             Refresh
@@ -285,8 +295,8 @@ export function AchievementLeaderboard() {
       <CardContent className="space-y-6">
         {users.length === 0 ? (
           <div className="text-center py-8">
-            <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-            <p className="text-muted-foreground">Chưa có ai unlock achievement</p>
+            <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+            <p className="text-gray-500">Chưa có ai unlock achievement</p>
           </div>
         ) : (
           <>

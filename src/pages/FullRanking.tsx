@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift, Clock, Award } from "lucide-react";
+import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift, Clock, Award, Star, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -104,7 +104,7 @@ const GlowingRing = ({ rank }: { rank: number }) => {
   );
 };
 
-// Podium Card Component
+// Podium Card Component - White Theme
 const PodiumCard = memo(({
   user,
   rank,
@@ -121,9 +121,9 @@ const PodiumCard = memo(({
   const heights = { 1: "h-24", 2: "h-16", 3: "h-14" };
   const avatarSizes = { 1: "h-20 w-20", 2: "h-16 w-16", 3: "h-14 w-14" };
   const ringColors = {
-    1: "border-yellow-400 shadow-[0_0_25px_rgba(255,215,0,0.9)]",
-    2: "border-slate-300 shadow-[0_0_20px_rgba(192,192,192,0.7)]",
-    3: "border-orange-400 shadow-[0_0_20px_rgba(205,127,50,0.7)]",
+    1: "border-yellow-400 shadow-[0_0_25px_rgba(255,215,0,0.6)]",
+    2: "border-slate-300 shadow-[0_0_20px_rgba(192,192,192,0.5)]",
+    3: "border-orange-400 shadow-[0_0_20px_rgba(205,127,50,0.5)]",
   };
 
   return (
@@ -137,14 +137,14 @@ const PodiumCard = memo(({
       <div className="relative mb-3">
         {/* Pulse Glow */}
         <motion.div
-          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
           className={`absolute inset-0 rounded-full blur-md ${
             rank === 1
-              ? "bg-yellow-500/50"
+              ? "bg-yellow-400/40"
               : rank === 2
-              ? "bg-slate-400/40"
-              : "bg-orange-500/40"
+              ? "bg-slate-300/30"
+              : "bg-orange-400/30"
           }`}
           style={{ transform: "scale(1.2)" }}
         />
@@ -158,7 +158,7 @@ const PodiumCard = memo(({
             }`}
           >
             <AvatarImage src={user.avatar_url || undefined} />
-            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xl">
+            <AvatarFallback className="bg-gradient-to-br from-pink-400 to-blue-400 text-white font-bold text-xl">
               {user.username?.charAt(0).toUpperCase() || "?"}
             </AvatarFallback>
           </Avatar>
@@ -171,7 +171,7 @@ const PodiumCard = memo(({
             transition={{ duration: 2, repeat: Infinity }}
             className="absolute -top-5 left-1/2 -translate-x-1/2"
           >
-            <Crown className="h-8 w-8 text-yellow-400 drop-shadow-[0_0_15px_rgba(255,215,0,1)]" />
+            <Crown className="h-8 w-8 text-yellow-500 drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]" />
           </motion.div>
         )}
       </div>
@@ -181,31 +181,27 @@ const PodiumCard = memo(({
 
       {/* Username */}
       <p
-        className={`text-base font-bold truncate max-w-[140px] text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] ${
-          isCurrentUser ? "text-yellow-300" : "text-white"
+        className={`text-base font-bold truncate max-w-[140px] text-center ${
+          isCurrentUser ? "text-pink-500" : "text-gray-800"
         }`}
-        style={{ textShadow: "0 0 10px rgba(255,255,255,0.5)" }}
       >
         {user.username}
       </p>
 
-      {/* Total CAMLY (Yellow - Main ranking value) */}
+      {/* Total CAMLY */}
       <div className="flex items-center gap-1.5 mt-2">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_10px_rgba(255,255,0,0.9)] cursor-help" />
+              <Gem className="h-4 w-4 text-yellow-500 drop-shadow-[0_0_6px_rgba(255,255,0,0.6)] cursor-help" />
             </TooltipTrigger>
-            <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
-              <div className="text-yellow-400 font-bold mb-1">💎 Tổng CAMLY</div>
-              <p className="text-white/90 text-xs">Tổng số CAMLY (chờ claim + đã claim). Xếp hạng theo giá trị này.</p>
+            <TooltipContent className="bg-white border-pink-200 shadow-lg max-w-xs">
+              <div className="text-pink-500 font-bold mb-1">💎 Tổng CAMLY</div>
+              <p className="text-gray-600 text-xs">Tổng số CAMLY (chờ claim + đã claim). Xếp hạng theo giá trị này.</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <span 
-          className="text-lg font-extrabold bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
-          style={{ textShadow: "0 0 15px rgba(255,255,255,0.9)" }}
-        >
+        <span className="text-lg font-extrabold bg-gradient-to-r from-yellow-500 via-pink-500 to-yellow-500 bg-clip-text text-transparent">
           <AnimatedCounter value={user.total_camly || 0} duration={1500} />
         </span>
       </div>
@@ -219,7 +215,7 @@ const PodiumCard = memo(({
               e.stopPropagation();
               onTransfer(user);
             }}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs px-3 py-1 h-7"
+            className="bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white text-xs px-3 py-1 h-7 shadow-md"
           >
             <Send className="w-3 h-3 mr-1" />
             Gửi
@@ -234,22 +230,22 @@ const PodiumCard = memo(({
         transition={{ delay: 0.5, duration: 0.5 }}
         className={`${heights[rank as keyof typeof heights]} w-28 mt-3 rounded-t-xl ${
           rank === 1
-            ? "bg-gradient-to-t from-yellow-600/70 to-yellow-400/50 border-2 border-yellow-400/70"
+            ? "bg-gradient-to-t from-yellow-400/80 to-yellow-300/60 border-2 border-yellow-400"
             : rank === 2
-            ? "bg-gradient-to-t from-slate-500/60 to-slate-300/40 border-2 border-slate-300/60"
-            : "bg-gradient-to-t from-orange-600/60 to-orange-400/40 border-2 border-orange-400/60"
+            ? "bg-gradient-to-t from-slate-400/60 to-slate-300/40 border-2 border-slate-300"
+            : "bg-gradient-to-t from-orange-400/60 to-orange-300/40 border-2 border-orange-400"
         }`}
         style={{
           boxShadow:
             rank === 1
-              ? "0 0 25px rgba(255, 215, 0, 0.5)"
+              ? "0 4px 20px rgba(255, 215, 0, 0.3)"
               : rank === 2
-              ? "0 0 20px rgba(192, 192, 192, 0.4)"
-              : "0 0 20px rgba(205, 127, 50, 0.4)",
+              ? "0 4px 15px rgba(192, 192, 192, 0.25)"
+              : "0 4px 15px rgba(205, 127, 50, 0.25)",
         }}
       >
         <div className="flex items-center justify-center h-full">
-          <span className="text-3xl font-black bg-gradient-to-b from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,1)]">
+          <span className="text-3xl font-black bg-gradient-to-b from-yellow-500 to-pink-500 bg-clip-text text-transparent">
             #{rank}
           </span>
         </div>
@@ -259,7 +255,7 @@ const PodiumCard = memo(({
 });
 PodiumCard.displayName = 'PodiumCard';
 
-// User Row Component
+// User Row Component - White Theme
 const UserRow = memo(({
   user,
   rank,
@@ -283,65 +279,53 @@ const UserRow = memo(({
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
       onClick={() => navigate(`/profile/${user.id}`)}
-      className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.02] ${
+      className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.01] ${
         isCurrentUser
-          ? "bg-gradient-to-r from-yellow-500/30 to-amber-500/20 border-2 border-yellow-400/60 ring-2 ring-yellow-400/40"
-          : "bg-white/10 border border-white/20 hover:bg-white/15"
+          ? "bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-400/60 shadow-[0_0_20px_rgba(255,215,0,0.15)]"
+          : "bg-white border border-gray-200 hover:border-pink-200 hover:shadow-md"
       }`}
-      style={{
-        boxShadow: isCurrentUser ? "0 0 20px rgba(255, 215, 0, 0.3)" : "0 4px 15px rgba(0, 0, 0, 0.2)",
-      }}
     >
       {/* Rank */}
       <div className="w-10 sm:w-12 flex justify-center shrink-0">
-        <span 
-          className="text-xl sm:text-2xl font-black bg-gradient-to-b from-yellow-300 to-amber-500 bg-clip-text text-transparent"
-          style={{ textShadow: "0 0 8px rgba(255,215,0,0.5)" }}
-        >
+        <span className="text-xl sm:text-2xl font-black bg-gradient-to-b from-yellow-500 to-pink-500 bg-clip-text text-transparent">
           #{rank}
         </span>
       </div>
 
       {/* Avatar */}
       <Avatar className={`w-10 h-10 sm:w-12 sm:h-12 border-2 shrink-0 ${
-        isCurrentUser ? "border-yellow-400" : "border-white/40"
+        isCurrentUser ? "border-yellow-400" : "border-gray-200"
       }`}>
         <AvatarImage src={user.avatar_url || undefined} />
-        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
+        <AvatarFallback className="bg-gradient-to-br from-pink-400 to-blue-400 text-white font-bold">
           {user.username?.charAt(0).toUpperCase() || "?"}
         </AvatarFallback>
       </Avatar>
 
       {/* Username */}
       <div className="flex-1 min-w-0">
-        <p 
-          className={`font-bold text-sm sm:text-base truncate ${
-            isCurrentUser ? "text-yellow-300" : "text-white"
-          }`}
-          style={{ textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}
-        >
+        <p className={`font-bold text-sm sm:text-base truncate ${
+          isCurrentUser ? "text-pink-600" : "text-gray-800"
+        }`}>
           {user.username || "Anonymous"}
-          {isCurrentUser && <span className="text-yellow-400 ml-1.5">(Bạn)</span>}
+          {isCurrentUser && <span className="text-yellow-500 ml-1.5">(Bạn)</span>}
         </p>
       </div>
 
-      {/* Total CAMLY (Yellow - Main ranking value) */}
+      {/* Total CAMLY */}
       <div className="flex items-center gap-1.5 shrink-0">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Gem className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(255,255,0,0.8)] cursor-help" />
+              <Gem className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 drop-shadow-[0_0_5px_rgba(255,255,0,0.5)] cursor-help" />
             </TooltipTrigger>
-            <TooltipContent className="bg-black/90 backdrop-blur-sm border-yellow-400/50 max-w-xs">
-              <div className="text-yellow-400 font-bold mb-1">💎 Tổng CAMLY</div>
-              <p className="text-white/90 text-xs">Tổng số CAMLY (chờ claim + đã claim). Xếp hạng theo giá trị này.</p>
+            <TooltipContent className="bg-white border-pink-200 shadow-lg max-w-xs">
+              <div className="text-pink-500 font-bold mb-1">💎 Tổng CAMLY</div>
+              <p className="text-gray-600 text-xs">Tổng số CAMLY (chờ claim + đã claim). Xếp hạng theo giá trị này.</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <span 
-          className="font-extrabold text-sm sm:text-base bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
-          style={{ textShadow: "0 0 10px rgba(255,255,255,0.7)" }}
-        >
+        <span className="font-extrabold text-sm sm:text-base bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
           {(user.total_camly || 0).toLocaleString()}
         </span>
       </div>
@@ -352,7 +336,7 @@ const UserRow = memo(({
           <Button
             size="sm"
             onClick={() => onTransfer(user)}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs px-2 py-1 h-7 shrink-0"
+            className="bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white text-xs px-2 py-1 h-7 shrink-0 shadow-md"
           >
             <Send className="w-3 h-3" />
           </Button>
@@ -473,7 +457,7 @@ export default function FullRanking() {
         particleCount: 80,
         spread: 100,
         origin: { x: 0.5, y: 0.5 },
-        colors: ["#FFD700", "#FFA500", "#FFEC8B", "#FF6B35", "#FFE066"],
+        colors: ["#FFD700", "#F472B6", "#3B82F6", "#FFA500", "#FFE066"],
         ticks: 120,
       });
     }
@@ -505,60 +489,39 @@ export default function FullRanking() {
 
   const currentUserRank = user ? findUserRank(user.id) : null;
 
-  // Floating particles
+  // Floating particles - Yellow, Pink, Blue theme
   const floatingParticles = [
-    { emoji: "✨", x: "5%", y: "10%", duration: 4 },
-    { emoji: "⭐", x: "90%", y: "15%", duration: 5 },
-    { emoji: "💎", x: "10%", y: "60%", duration: 4.5 },
-    { emoji: "🌟", x: "85%", y: "55%", duration: 3.5 },
-    { emoji: "💫", x: "50%", y: "5%", duration: 4 },
-    { emoji: "🔥", x: "75%", y: "30%", duration: 5.5 },
-    { emoji: "🚀", x: "20%", y: "40%", duration: 4.2 },
-    { emoji: "✨", x: "60%", y: "70%", duration: 3.8 },
+    { color: "text-yellow-500", x: "5%", y: "10%", duration: 4, size: "w-5 h-5", type: "star" },
+    { color: "text-pink-500", x: "90%", y: "15%", duration: 5, size: "w-4 h-4", type: "sparkle" },
+    { color: "text-blue-500", x: "10%", y: "60%", duration: 4.5, size: "w-4 h-4", type: "star" },
+    { color: "text-yellow-400", x: "85%", y: "55%", duration: 3.5, size: "w-5 h-5", type: "sparkle" },
+    { color: "text-pink-400", x: "50%", y: "5%", duration: 4, size: "w-5 h-5", type: "star" },
+    { color: "text-blue-400", x: "75%", y: "30%", duration: 5.5, size: "w-4 h-4", type: "sparkle" },
+    { color: "text-yellow-500", x: "20%", y: "40%", duration: 4.2, size: "w-4 h-4", type: "star" },
+    { color: "text-pink-500", x: "60%", y: "70%", duration: 3.8, size: "w-5 h-5", type: "sparkle" },
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 -z-10" />
-      
-      {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 w-full h-full object-cover -z-10"
-        style={{ opacity: 0.4 }}
-      >
-        <source src="/videos/ranking-bg.mp4" type="video/mp4" />
-      </video>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-white via-pink-50/30 to-blue-50/30">
+      {/* Subtle decorative gradients */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-yellow-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-0 w-80 h-80 bg-pink-200/25 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl" />
+      </div>
 
-      {/* Dark Overlay */}
-      <div className="fixed inset-0 bg-black/40 -z-10" />
-
-      {/* Floating Particles */}
+      {/* Floating Particles - Stars & Sparkles */}
       {floatingParticles.map((p, i) => (
         <motion.div
           key={i}
-          animate={{ y: [0, -20, 0], opacity: [0.6, 1, 0.6] }}
+          animate={{ y: [0, -15, 0], opacity: [0.5, 0.9, 0.5], rotate: [0, 10, -10, 0] }}
           transition={{ duration: p.duration, repeat: Infinity }}
-          className="fixed text-2xl pointer-events-none z-0"
-          style={{ left: p.x, top: p.y }}
+          className={`fixed pointer-events-none z-0 ${p.size} ${p.color}`}
+          style={{ left: p.x, top: p.y, filter: `drop-shadow(0 0 6px currentColor)` }}
         >
-          {p.emoji}
+          {p.type === "star" ? <Star className="w-full h-full fill-current" /> : <Sparkles className="w-full h-full" />}
         </motion.div>
       ))}
-
-      {/* CSS Keyframes */}
-      <style>
-        {`
-          @keyframes shimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-          }
-        `}
-      </style>
 
       <div className="relative z-10 container mx-auto px-3 sm:px-4 py-6 pb-28 max-w-4xl">
         {/* Header */}
@@ -571,25 +534,22 @@ export default function FullRanking() {
             variant="outline"
             size="icon"
             onClick={() => navigate("/")}
-            className="shrink-0 bg-white/10 border-white/30 hover:bg-white/20"
+            className="shrink-0 bg-white border-pink-200 hover:bg-pink-50 shadow-sm"
           >
-            <ChevronLeft className="h-5 w-5 text-white" />
+            <ChevronLeft className="h-5 w-5 text-pink-500" />
           </Button>
           
           <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white drop-shadow-lg">
-              <Trophy className="w-6 h-6 text-yellow-400" />
-              <span 
-                className="bg-gradient-to-r from-yellow-300 via-yellow-100 to-yellow-300 bg-clip-text text-transparent"
-                style={{ textShadow: "0 0 20px rgba(255,215,0,0.5)" }}
-              >
+            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <Trophy className="w-6 h-6 text-yellow-500" style={{ filter: 'drop-shadow(0 0 6px rgba(255,215,0,0.6))' }} />
+              <span className="bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
                 Bảng Xếp Hạng Toàn Cầu
               </span>
             </h1>
             <div className="flex items-center gap-2 mt-1">
-              <p className="text-sm text-white/70 flex items-center gap-1.5">
-                <Users className="w-4 h-4" />
-                <span className="font-semibold text-yellow-300">{totalUsers.toLocaleString()}</span> người chơi
+              <p className="text-sm text-gray-600 flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-blue-500" />
+                <span className="font-semibold text-pink-500">{totalUsers.toLocaleString()}</span> người chơi
               </p>
               {/* Realtime indicator */}
               <div className="flex items-center gap-1">
@@ -599,13 +559,13 @@ export default function FullRanking() {
                     transition={{ duration: 2, repeat: Infinity }}
                     className="flex items-center gap-1"
                   >
-                    <Wifi className="w-3 h-3 text-green-400" />
-                    <span className="text-xs text-green-400">Live</span>
+                    <Wifi className="w-3 h-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">Live</span>
                   </motion.div>
                 ) : (
                   <div className="flex items-center gap-1">
-                    <WifiOff className="w-3 h-3 text-red-400" />
-                    <span className="text-xs text-red-400">Offline</span>
+                    <WifiOff className="w-3 h-3 text-gray-400" />
+                    <span className="text-xs text-gray-400">Offline</span>
                   </div>
                 )}
               </div>
@@ -619,7 +579,7 @@ export default function FullRanking() {
                 initial={{ opacity: 0, scale: 0.8, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: -10 }}
-                className="absolute top-16 left-1/2 -translate-x-1/2 px-4 py-2 bg-green-500/90 rounded-full text-white text-sm font-medium shadow-lg z-50"
+                className="absolute top-16 left-1/2 -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-pink-500 to-blue-500 rounded-full text-white text-sm font-medium shadow-lg z-50"
               >
                 ✨ Đã cập nhật thứ hạng!
               </motion.div>
@@ -631,25 +591,25 @@ export default function FullRanking() {
             size="icon"
             onClick={() => fetchAllUsers(true, false)}
             disabled={refreshing}
-            className="shrink-0 bg-white/10 border-white/30 hover:bg-white/20"
+            className="shrink-0 bg-white border-blue-200 hover:bg-blue-50 shadow-sm"
           >
-            <RefreshCw className={`h-4 w-4 text-white ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-4 w-4 text-blue-500 ${refreshing ? "animate-spin" : ""}`} />
           </Button>
         </motion.div>
 
         {/* Tabs for CAMLY vs Achievement Ranking */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid w-full grid-cols-2 bg-white/10 border border-white/20">
+          <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200 shadow-sm rounded-xl p-1">
             <TabsTrigger 
               value="camly" 
-              className="data-[state=active]:bg-yellow-500/80 data-[state=active]:text-black text-white"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-400 data-[state=active]:to-yellow-500 data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 rounded-lg font-medium transition-all"
             >
               <Gem className="w-4 h-4 mr-2" />
               CAMLY Ranking
             </TabsTrigger>
             <TabsTrigger 
               value="achievement" 
-              className="data-[state=active]:bg-purple-500/80 data-[state=active]:text-white text-white"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-400 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 rounded-lg font-medium transition-all"
             >
               <Award className="w-4 h-4 mr-2" />
               Achievement Ranking
@@ -662,19 +622,15 @@ export default function FullRanking() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-yellow-500/20 to-amber-500/10 border-2 border-yellow-400/50"
-                style={{ boxShadow: "0 0 30px rgba(255,215,0,0.2)" }}
+                className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-300/60 shadow-sm"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-white/80 text-sm">Thứ hạng của bạn</span>
+                  <span className="text-gray-600 text-sm">Thứ hạng của bạn</span>
                   <div className="flex items-center gap-3">
-                    <span 
-                      className="text-3xl font-black bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent"
-                      style={{ textShadow: "0 0 15px rgba(255,215,0,0.5)" }}
-                    >
+                    <span className="text-3xl font-black bg-gradient-to-r from-yellow-500 to-pink-500 bg-clip-text text-transparent">
                       #{currentUserRank}
                     </span>
-                    <span className="text-white/60 text-sm">/ {totalUsers}</span>
+                    <span className="text-gray-400 text-sm">/ {totalUsers}</span>
                   </div>
                 </div>
               </motion.div>
@@ -682,152 +638,152 @@ export default function FullRanking() {
 
             {/* Top 3 Podium */}
             {!loading && top3Users.length >= 3 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-4 sm:p-6 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20"
-            style={{ boxShadow: "0 0 40px rgba(255,215,0,0.15)" }}
-          >
-            <div className="flex justify-center items-end gap-2 sm:gap-6">
-              {/* 2nd Place */}
-              <PodiumCard
-                user={top3Users[1]}
-                rank={2}
-                isCurrentUser={user?.id === top3Users[1]?.id}
-                currentUserId={user?.id}
-                onTransfer={handleTransfer}
-              />
-              {/* 1st Place */}
-              <PodiumCard
-                user={top3Users[0]}
-                rank={1}
-                isCurrentUser={user?.id === top3Users[0]?.id}
-                currentUserId={user?.id}
-                onTransfer={handleTransfer}
-              />
-              {/* 3rd Place */}
-              <PodiumCard
-                user={top3Users[2]}
-                rank={3}
-                isCurrentUser={user?.id === top3Users[2]?.id}
-                currentUserId={user?.id}
-                onTransfer={handleTransfer}
-              />
-            </div>
-          </motion.div>
-        )}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 p-4 sm:p-6 rounded-3xl bg-white border border-gray-200/80"
+                style={{ boxShadow: '0 8px 32px rgba(168,85,247,0.08), 0 0 40px rgba(255,182,193,0.1)' }}
+              >
+                <div className="flex justify-center items-end gap-2 sm:gap-6">
+                  {/* 2nd Place */}
+                  <PodiumCard
+                    user={top3Users[1]}
+                    rank={2}
+                    isCurrentUser={user?.id === top3Users[1]?.id}
+                    currentUserId={user?.id}
+                    onTransfer={handleTransfer}
+                  />
+                  {/* 1st Place */}
+                  <PodiumCard
+                    user={top3Users[0]}
+                    rank={1}
+                    isCurrentUser={user?.id === top3Users[0]?.id}
+                    currentUserId={user?.id}
+                    onTransfer={handleTransfer}
+                  />
+                  {/* 3rd Place */}
+                  <PodiumCard
+                    user={top3Users[2]}
+                    rank={3}
+                    isCurrentUser={user?.id === top3Users[2]?.id}
+                    currentUserId={user?.id}
+                    onTransfer={handleTransfer}
+                  />
+                </div>
+              </motion.div>
+            )}
 
-        {/* Search */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
-            <Input
-              placeholder="Tìm kiếm người chơi..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white/10 border-white/30 text-white placeholder:text-white/50 focus:ring-yellow-400/50 focus:border-yellow-400/50"
-            />
-          </div>
-        </motion.div>
-
-        {/* User List */}
-        <div className="space-y-3">
-          {loading ? (
-            <div className="flex items-center justify-center py-16">
-              <div className="animate-spin w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full" />
-            </div>
-          ) : paginatedUsers.length === 0 ? (
-            <div className="text-center py-16 text-white/60">
-              {searchQuery ? "Không tìm thấy người chơi" : "Chưa có dữ liệu"}
-            </div>
-          ) : (
-            paginatedUsers.map((u, index) => {
-              const actualRank = filteredUsers.findIndex((fu) => fu.id === u.id) + 1;
-              return (
-                <UserRow
-                  key={u.id}
-                  user={u}
-                  rank={actualRank}
-                  isCurrentUser={user?.id === u.id}
-                  index={index}
-                  currentUserId={user?.id}
-                  onTransfer={handleTransfer}
+            {/* Search */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
+                <Input
+                  placeholder="Tìm kiếm người chơi..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-white border-gray-200 text-gray-800 placeholder:text-gray-400 focus:ring-pink-400/50 focus:border-pink-400 shadow-sm"
                 />
-              );
-            })
-          )}
-        </div>
+              </div>
+            </motion.div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center justify-center gap-2 mt-8"
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="bg-white/10 border-white/30 text-white hover:bg-white/20 disabled:opacity-50"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum: number;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
-                }
-
-                return (
-                  <Button
-                    key={pageNum}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`w-9 h-9 ${
-                      currentPage === pageNum
-                        ? "bg-yellow-500/80 border-yellow-400 text-black font-bold"
-                        : "bg-white/10 border-white/30 text-white hover:bg-white/20"
-                    }`}
-                  >
-                    {pageNum}
-                  </Button>
-                );
-              })}
+            {/* User List */}
+            <div className="space-y-3">
+              {loading ? (
+                <div className="flex items-center justify-center py-16">
+                  <div className="animate-spin w-10 h-10 border-4 border-pink-400 border-t-transparent rounded-full" />
+                </div>
+              ) : paginatedUsers.length === 0 ? (
+                <div className="text-center py-16 text-gray-500">
+                  {searchQuery ? "Không tìm thấy người chơi" : "Chưa có dữ liệu"}
+                </div>
+              ) : (
+                paginatedUsers.map((u, index) => {
+                  const actualRank = filteredUsers.findIndex((fu) => fu.id === u.id) + 1;
+                  return (
+                    <UserRow
+                      key={u.id}
+                      user={u}
+                      rank={actualRank}
+                      isCurrentUser={user?.id === u.id}
+                      index={index}
+                      currentUserId={user?.id}
+                      onTransfer={handleTransfer}
+                    />
+                  );
+                })
+              )}
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="bg-white/10 border-white/30 text-white hover:bg-white/20 disabled:opacity-50"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </motion.div>
-        )}
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center justify-center gap-2 mt-8"
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="bg-white border-gray-200 text-gray-600 hover:bg-pink-50 hover:border-pink-200 disabled:opacity-50"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
 
-        {/* Page Info */}
-        {totalPages > 1 && (
-          <p className="text-center text-white/50 text-sm mt-4">
-            Trang {currentPage} / {totalPages} ({filteredUsers.length} người chơi)
-          </p>
-        )}
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-9 h-9 ${
+                          currentPage === pageNum
+                            ? "bg-gradient-to-r from-yellow-400 to-pink-500 border-yellow-400 text-white font-bold shadow-md"
+                            : "bg-white border-gray-200 text-gray-600 hover:bg-pink-50 hover:border-pink-200"
+                        }`}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="bg-white border-gray-200 text-gray-600 hover:bg-pink-50 hover:border-pink-200 disabled:opacity-50"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Page Info */}
+            {totalPages > 1 && (
+              <p className="text-center text-gray-500 text-sm mt-4">
+                Trang {currentPage} / {totalPages} ({filteredUsers.length} người chơi)
+              </p>
+            )}
           </TabsContent>
 
           <TabsContent value="achievement" className="mt-4">
