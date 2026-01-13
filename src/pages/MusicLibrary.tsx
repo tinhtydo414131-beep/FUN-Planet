@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Music, Trash2, Download, Coins, AlertTriangle, CheckCircle2, Info, Clock, Star, Sparkles, Play, Pause, Globe, User } from "lucide-react";
+import { Upload, Music, Trash2, Download, Coins, AlertTriangle, CheckCircle2, Info, Clock, Star, Sparkles, Play, Pause, Globe, User, RefreshCw } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +15,16 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { 
   validateMusicUpload, 
   formatCoins, 
@@ -54,6 +65,7 @@ const CONFIG = {
 export default function MusicLibrary() {
   const { user } = useAuth();
   const { isAdmin } = useAdminRole();
+  const [searchParams] = useSearchParams();
   const [uploading, setUploading] = useState(false);
   const [validating, setValidating] = useState(false);
   const [musicFiles, setMusicFiles] = useState<MusicFile[]>([]);
@@ -67,8 +79,21 @@ export default function MusicLibrary() {
   const [activeTab, setActiveTab] = useState("my-music");
   const [communityMusic, setCommunityMusic] = useState<CommunityTrack[]>([]);
   const [loadingCommunity, setLoadingCommunity] = useState(false);
+  const [communityError, setCommunityError] = useState<string | null>(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Delete dialog states
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [trackToDelete, setTrackToDelete] = useState<MusicFile | null>(null);
+
+  // Handle URL query param for tab deep-linking
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'community') {
+      setActiveTab('community');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (user) {
@@ -130,6 +155,7 @@ export default function MusicLibrary() {
 
   const loadCommunityMusic = async () => {
     setLoadingCommunity(true);
+    setCommunityError(null);
     try {
       // Step 1: Fetch approved music
       const { data: musicData, error } = await supabase
@@ -142,6 +168,7 @@ export default function MusicLibrary() {
 
       if (error) {
         console.error('Error fetching community music:', error);
+        setCommunityError(`Không thể tải nhạc: ${error.message}`);
         setCommunityMusic([]);
         setLoadingCommunity(false);
         return;
@@ -153,14 +180,18 @@ export default function MusicLibrary() {
         return;
       }
 
-      // Step 2: Fetch usernames for uploaders
-      const userIds = [...new Set(musicData.map(m => m.user_id))];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, username')
-        .in('id', userIds);
-
-      const profileMap = new Map(profiles?.map(p => [p.id, p.username]) || []);
+      // Step 2: Fetch usernames for uploaders (don't fail if this fails)
+      let profileMap = new Map<string, string>();
+      try {
+        const userIds = [...new Set(musicData.map(m => m.user_id))];
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, username')
+          .in('id', userIds);
+        profileMap = new Map(profiles?.map(p => [p.id, p.username]) || []);
+      } catch (profileError) {
+        console.warn('Could not fetch profile names:', profileError);
+      }
 
       const tracks: CommunityTrack[] = musicData.map(item => ({
         id: item.id,
@@ -176,6 +207,7 @@ export default function MusicLibrary() {
       setCommunityMusic(tracks);
     } catch (error) {
       console.error('Error loading community music:', error);
+      setCommunityError('Đã xảy ra lỗi khi tải nhạc cộng đồng');
       setCommunityMusic([]);
     } finally {
       setLoadingCommunity(false);
@@ -307,8 +339,16 @@ export default function MusicLibrary() {
     }
   };
 
-  const handleDelete = async (id: string, storagePath: string) => {
-    if (!confirm("Bạn có chắc muốn xóa file nhạc này?")) return;
+  const openDeleteDialog = (file: MusicFile) => {
+    setTrackToDelete(file);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!trackToDelete) return;
+    
+    setDeleteDialogOpen(false);
+    const { id, storage_path: storagePath, title } = trackToDelete;
 
     try {
       const { error } = await supabase
@@ -327,11 +367,13 @@ export default function MusicLibrary() {
         }
       }
 
-      toast.success("Đã xóa file nhạc");
+      toast.success(`Đã xóa "${title}"`);
       loadMusicFiles();
     } catch (error) {
       console.error('Error deleting music:', error);
       toast.error("Không thể xóa file nhạc");
+    } finally {
+      setTrackToDelete(null);
     }
   };
 
@@ -682,7 +724,7 @@ export default function MusicLibrary() {
                                 <Button
                                   size="icon"
                                   variant="outline"
-                                  onClick={() => handleDelete(file.id, file.storage_path)}
+                                  onClick={() => openDeleteDialog(file)}
                                   className="border-red-200 hover:bg-red-50 text-red-500"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -732,6 +774,20 @@ export default function MusicLibrary() {
                           Đang tải nhạc cộng đồng...
                         </p>
                       </div>
+                    ) : communityError ? (
+                      <div className="text-center py-12">
+                        <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-red-400" />
+                        <p className="font-comic text-red-500 mb-2">Lỗi tải nhạc</p>
+                        <p className="text-sm text-gray-500 mb-4">{communityError}</p>
+                        <Button 
+                          onClick={loadCommunityMusic} 
+                          variant="outline" 
+                          className="border-red-300 hover:bg-red-50"
+                        >
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Thử lại
+                        </Button>
+                      </div>
                     ) : communityMusic.length === 0 ? (
                       <div className="text-center py-12">
                         <Globe className="w-16 h-16 mx-auto mb-4 text-blue-300" />
@@ -743,6 +799,7 @@ export default function MusicLibrary() {
                           variant="outline" 
                           className="border-blue-300 hover:bg-blue-50"
                         >
+                          <RefreshCw className="w-4 h-4 mr-2" />
                           Thử tải lại
                         </Button>
                       </div>
@@ -814,6 +871,28 @@ export default function MusicLibrary() {
           </Tabs>
         </div>
       </main>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa nhạc</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa "{trackToDelete?.title}"? 
+              Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Xóa vĩnh viễn
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
