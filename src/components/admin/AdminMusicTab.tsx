@@ -64,6 +64,8 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [trackToDelete, setTrackToDelete] = useState<MusicTrack | null>(null);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [trackToReject, setTrackToReject] = useState<MusicTrack | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -181,22 +183,29 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
     }
   };
 
-  const handleReject = async (track: MusicTrack) => {
-    if (!confirm(`Từ chối và xóa "${track.title}"?`)) return;
+  const openRejectDialog = (track: MusicTrack) => {
+    setTrackToReject(track);
+    setRejectDialogOpen(true);
+  };
+
+  const confirmReject = async () => {
+    if (!trackToReject) return;
     
-    setProcessingId(track.id);
+    setRejectDialogOpen(false);
+    setProcessingId(trackToReject.id);
+    
     try {
       // Delete from database
       const { error } = await supabase
         .from("user_music")
         .delete()
-        .eq("id", track.id);
+        .eq("id", trackToReject.id);
 
       if (error) throw error;
 
       // Try to delete from R2
-      if (track.storage_path.includes("r2.dev") || track.storage_path.includes("cloudflare")) {
-        const key = track.storage_path.split("/").slice(-2).join("/");
+      if (trackToReject.storage_path.includes("r2.dev") || trackToReject.storage_path.includes("cloudflare")) {
+        const key = trackToReject.storage_path.split("/").slice(-2).join("/");
         try {
           await deleteFromR2(key);
         } catch (r2Error) {
@@ -206,19 +215,20 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
 
       // Send rejection notification
       await supabase.from("user_notifications").insert({
-        user_id: track.user_id,
+        user_id: trackToReject.user_id,
         notification_type: "music_rejected",
         title: "Nhạc không được duyệt 😔",
-        message: `"${track.title}" không đạt tiêu chuẩn. Vui lòng thử lại với file khác.`
+        message: `"${trackToReject.title}" không đạt tiêu chuẩn. Vui lòng thử lại với file khác.`
       });
 
-      toast.success(`Đã từ chối "${track.title}"`);
+      toast.success(`Đã từ chối "${trackToReject.title}"`);
       loadTracks();
     } catch (error) {
       console.error("Error rejecting track:", error);
       toast.error("Không thể từ chối nhạc");
     } finally {
       setProcessingId(null);
+      setTrackToReject(null);
     }
   };
 
@@ -446,7 +456,7 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                onClick={() => handleReject(track)}
+                                onClick={() => openRejectDialog(track)}
                                 disabled={processingId === track.id}
                                 className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600"
                               >
@@ -543,7 +553,7 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
                       <Button
                         size="sm"
                         variant="destructive"
-                        onClick={() => handleReject(track)}
+                        onClick={() => openRejectDialog(track)}
                         disabled={processingId === track.id}
                         className="flex-1"
                       >
@@ -587,6 +597,28 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
               className="bg-red-600 hover:bg-red-700"
             >
               Xóa vĩnh viễn
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reject Confirmation Dialog */}
+      <AlertDialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Từ chối nhạc</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn từ chối và xóa "{trackToReject?.title}"? 
+              Người dùng sẽ nhận thông báo về việc này.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmReject}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Từ chối
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
