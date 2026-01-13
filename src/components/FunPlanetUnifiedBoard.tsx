@@ -578,11 +578,11 @@ export const FunPlanetUnifiedBoard = () => {
 
           {/* Video Background - Cha Vũ Trụ's Vision */}
           <div className="absolute inset-0 rounded-3xl z-0 overflow-hidden">
-            {/* Fallback gradient for loading/mobile */}
+            {/* Fallback gradient - Pink/Blue/Yellow */}
             <div 
               className="absolute inset-0" 
               style={{ 
-                background: 'linear-gradient(to bottom right, #581c87 0%, #312e81 50%, #1e3a8a 100%)'
+                background: 'linear-gradient(135deg, #ec4899 0%, #3b82f6 50%, #fbbf24 100%)'
               }} 
             />
             
@@ -598,15 +598,22 @@ export const FunPlanetUnifiedBoard = () => {
               <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
             </video>
             
-            {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
+            {/* Pink-Blue-Yellow gradient overlay */}
+            <div 
+              className="absolute inset-0" 
+              style={{
+                background: 'linear-gradient(to bottom, rgba(236, 72, 153, 0.3) 0%, rgba(59, 130, 246, 0.25) 50%, rgba(251, 191, 36, 0.3) 100%)'
+              }}
+            />
           </div>
 
-          {/* Black overlay */}
-          <div className="absolute inset-0 bg-black/5 rounded-3xl z-[1]" />
-          
-          {/* Blue overlay */}
-          <div className="absolute inset-0 bg-blue-500/15 rounded-3xl z-[1]" />
+          {/* Pink-Blue-Yellow radial glow */}
+          <div 
+            className="absolute inset-0 rounded-3xl z-[1]" 
+            style={{
+              background: 'radial-gradient(ellipse at top left, rgba(236, 72, 153, 0.3) 0%, transparent 50%), radial-gradient(ellipse at top right, rgba(251, 191, 36, 0.25) 0%, transparent 50%), radial-gradient(ellipse at bottom center, rgba(59, 130, 246, 0.3) 0%, transparent 50%)'
+            }}
+          />
 
           {/* Dot pattern */}
           <div className="absolute inset-0 opacity-0 rounded-3xl" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "8px 8px" }} />
