@@ -282,7 +282,7 @@ export default function MusicLibrary() {
 
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-24 pb-12">
+      <main className="container mx-auto px-4 pt-24 pb-32 sm:pb-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">

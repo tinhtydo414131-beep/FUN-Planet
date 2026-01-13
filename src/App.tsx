@@ -30,7 +30,6 @@ const Chat = lazy(() => import("./pages/Chat"));
 const Community = lazy(() => import("./pages/Community"));
 const NexusLeaderboard = lazy(() => import("./pages/NexusLeaderboard"));
 const MusicLibrary = lazy(() => import("./pages/MusicLibrary"));
-const PublicMusic = lazy(() => import("./pages/PublicMusic"));
 const RecentlyPlayed = lazy(() => import("./pages/RecentlyPlayed"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Install = lazy(() => import("./pages/Install"));
@@ -140,7 +139,7 @@ const AnimatedRoutes = () => {
           
           {/* Music */}
           <Route path="/music" element={<MusicLibrary />} />
-          <Route path="/public-music" element={<PublicMusic />} />
+          <Route path="/public-music" element={<MusicLibrary />} />
           
           {/* Parent & Education */}
           <Route path="/parent-dashboard" element={<ParentDashboard />} />
