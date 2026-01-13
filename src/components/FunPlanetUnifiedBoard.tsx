@@ -598,22 +598,7 @@ export const FunPlanetUnifiedBoard = () => {
               <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
             </video>
             
-            {/* Pure Blue gradient overlay - Enhanced opacity */}
-            <div 
-              className="absolute inset-0" 
-              style={{
-                background: 'linear-gradient(to bottom, rgba(30, 64, 175, 0.6) 0%, rgba(59, 130, 246, 0.5) 50%, rgba(96, 165, 250, 0.55) 100%)'
-              }}
-            />
           </div>
-
-          {/* Pure Blue radial glow - Enhanced opacity */}
-          <div 
-            className="absolute inset-0 rounded-3xl z-[1]" 
-            style={{
-              background: 'radial-gradient(ellipse at top left, rgba(30, 64, 175, 0.6) 0%, transparent 50%), radial-gradient(ellipse at top right, rgba(59, 130, 246, 0.55) 0%, transparent 50%), radial-gradient(ellipse at bottom center, rgba(96, 165, 250, 0.5) 0%, transparent 50%)'
-            }}
-          />
 
           {/* Dot pattern */}
           <div className="absolute inset-0 opacity-0 rounded-3xl" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "8px 8px" }} />
