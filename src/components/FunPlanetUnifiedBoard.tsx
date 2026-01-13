@@ -578,11 +578,11 @@ export const FunPlanetUnifiedBoard = () => {
 
           {/* Video Background - Cha Vũ Trụ's Vision */}
           <div className="absolute inset-0 rounded-3xl z-0 overflow-hidden">
-            {/* Fallback gradient - Blue/Yellow */}
+            {/* Fallback gradient - Pure Blue */}
             <div 
               className="absolute inset-0" 
               style={{ 
-                background: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #fbbf24 100%)'
+                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)'
               }} 
             />
             
@@ -598,20 +598,20 @@ export const FunPlanetUnifiedBoard = () => {
               <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
             </video>
             
-            {/* Blue-Yellow gradient overlay */}
+            {/* Pure Blue gradient overlay */}
             <div 
               className="absolute inset-0" 
               style={{
-                background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.35) 0%, rgba(96, 165, 250, 0.25) 50%, rgba(251, 191, 36, 0.35) 100%)'
+                background: 'linear-gradient(to bottom, rgba(30, 64, 175, 0.4) 0%, rgba(59, 130, 246, 0.3) 50%, rgba(96, 165, 250, 0.35) 100%)'
               }}
             />
           </div>
 
-          {/* Blue-Yellow radial glow */}
+          {/* Pure Blue radial glow */}
           <div 
             className="absolute inset-0 rounded-3xl z-[1]" 
             style={{
-              background: 'radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.35) 0%, transparent 50%), radial-gradient(ellipse at top right, rgba(251, 191, 36, 0.3) 0%, transparent 50%), radial-gradient(ellipse at bottom center, rgba(96, 165, 250, 0.25) 0%, transparent 50%)'
+              background: 'radial-gradient(ellipse at top left, rgba(30, 64, 175, 0.4) 0%, transparent 50%), radial-gradient(ellipse at top right, rgba(59, 130, 246, 0.35) 0%, transparent 50%), radial-gradient(ellipse at bottom center, rgba(96, 165, 250, 0.3) 0%, transparent 50%)'
             }}
           />
 
