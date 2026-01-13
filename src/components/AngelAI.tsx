@@ -312,7 +312,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                     animate={{ rotate: [0, 5, -5, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden shadow-lg border-2 border-yellow-400/60">
+                    <div className={`${isExpanded ? 'w-10 h-10 sm:w-11 sm:h-11' : 'w-8 h-8 sm:w-9 sm:h-9'} rounded-full overflow-hidden shadow-lg border-2 border-yellow-400/60 transition-all duration-200`}>
                       <video 
                         src="/angel-ai-avatar.mp4" 
                         autoPlay 
