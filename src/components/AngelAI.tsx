@@ -336,17 +336,6 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
               </div>
 
               <div className="flex items-center gap-2">
-                {/* Voice Settings Button */}
-                {!showHistory && !showVoiceSettings && ttsSupported && (
-                  <button
-                    onClick={() => setShowVoiceSettings(true)}
-                    className="p-1.5 rounded-full hover:bg-muted/50 transition-colors text-muted-foreground hover:text-purple-600"
-                    title="Cài đặt giọng nói"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </button>
-                )}
-
                 {/* History Button */}
                 {!showHistory && !showVoiceSettings && user && (
                   <button
