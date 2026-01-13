@@ -170,8 +170,8 @@ const GlowingRing = ({ rank }: { rank: number }) => {
 
 // Podium Card - Mobile Optimized
 const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: number; maxBalance: number; isCurrentUser: boolean }) => {
-  const heights = { 1: "h-14 sm:h-18 md:h-20", 2: "h-10 sm:h-14 md:h-16", 3: "h-8 sm:h-12 md:h-14" };
-  const avatarSizes = { 1: "h-14 w-14 sm:h-16 sm:w-16 md:h-18 md:w-18", 2: "h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16", 3: "h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14" };
+  const heights = { 1: "h-16 sm:h-20 md:h-24", 2: "h-12 sm:h-16 md:h-20", 3: "h-10 sm:h-14 md:h-16" };
+  const avatarSizes = { 1: "h-16 w-16 sm:h-18 sm:w-18 md:h-20 md:w-20", 2: "h-14 w-14 sm:h-16 sm:w-16 md:h-18 md:w-18", 3: "h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16" };
   const ringColors = {
     1: "border-yellow-400 shadow-[0_0_15px_rgba(255,215,0,0.8)] sm:shadow-[0_0_20px_rgba(255,215,0,0.8)]",
     2: "border-slate-300 shadow-[0_0_10px_rgba(192,192,192,0.6)] sm:shadow-[0_0_15px_rgba(192,192,192,0.6)]",
@@ -247,12 +247,10 @@ const PodiumCard = ({ user, rank, isCurrentUser }: { user: RankedUser; rank: num
   );
 };
 
-// Reduced floating particles for performance (from 8 to 4)
+// Reduced floating particles for performance (from 4 to 2 for cleaner look)
 const floatingParticles = [
-  { emoji: "🌍", delay: 0, x: "8%", y: "15%", duration: 5 },
-  { emoji: "🎮", delay: 1, x: "90%", y: "20%", duration: 6 },
-  { emoji: "💎", delay: 2, x: "85%", y: "60%", duration: 5 },
-  { emoji: "👑", delay: 3, x: "10%", y: "70%", duration: 6 },
+  { emoji: "🌍", delay: 0, x: "5%", y: "10%", duration: 6 },
+  { emoji: "👑", delay: 2, x: "95%", y: "85%", duration: 7 },
 ];
 
 export const FunPlanetUnifiedBoard = () => {
@@ -598,6 +596,13 @@ export const FunPlanetUnifiedBoard = () => {
               <source src="/videos/honor-board-bg.mp4" type="video/mp4" />
             </video>
             
+            {/* Subtle dark overlay for better text readability */}
+            <div 
+              className="absolute inset-0" 
+              style={{ 
+                background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.35) 50%, rgba(0, 0, 0, 0.3) 100%)'
+              }}
+            />
           </div>
 
           {/* Dot pattern */}
@@ -642,7 +647,7 @@ export const FunPlanetUnifiedBoard = () => {
               {/* Honor Board Header */}
               <div className="mb-2 flex items-center justify-center gap-1.5 sm:gap-2">
                 <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>🌍</motion.span>
-                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>HONOR BOARD</h3>
+                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 5s linear infinite" }}>HONOR BOARD</h3>
                 <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>🏆</motion.span>
               </div>
 
@@ -659,8 +664,8 @@ export const FunPlanetUnifiedBoard = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                       whileHover={{ scale: 1.02, y: -2, boxShadow: `0 0 25px ${item.accentColor}50` }}
-                      className="relative flex items-center gap-1.5 sm:gap-2 rounded-xl p-1 sm:p-1.5 px-2 sm:px-2.5 overflow-hidden cursor-pointer transition-all duration-300"
-                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.25) 0%, rgba(255,215,0,0.15) 100%)", borderLeft: `4px solid ${item.accentColor}`, ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
+                      className="relative flex items-center gap-1.5 sm:gap-2 rounded-xl p-1.5 sm:p-2 px-2.5 sm:px-3 overflow-hidden cursor-pointer transition-all duration-300 backdrop-blur-sm"
+                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.35) 0%, rgba(255,215,0,0.2) 100%)", borderLeft: `4px solid ${item.accentColor}`, backdropFilter: "blur(8px)", ...(isCamly && { border: "2px solid rgba(244, 63, 94, 0.6)", borderLeft: `4px solid ${item.accentColor}`, boxShadow: "0 0 20px rgba(244, 63, 94, 0.3)" }) }}
                     >
                       <div className="absolute inset-0 rounded-xl overflow-hidden">
                         <motion.div className="h-full" style={{ background: `linear-gradient(90deg, ${item.accentColor}50 0%, ${item.accentColor}20 50%, transparent 100%)` }} initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1.5, delay: index * 0.15, ease: "easeOut" }} />
@@ -693,7 +698,7 @@ export const FunPlanetUnifiedBoard = () => {
                 {/* Legends Header */}
                 <div className="mb-2 sm:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
                   <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>👑</motion.span>
-                  <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 3s linear infinite" }}>FUN PLANET LEGENDS</h3>
+                  <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 5s linear infinite" }}>FUN PLANET LEGENDS</h3>
                   <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>👑</motion.span>
                 </div>
 
@@ -710,7 +715,7 @@ export const FunPlanetUnifiedBoard = () => {
                 </div>
 
                 {/* Content */}
-                <div className="overflow-y-auto overflow-x-hidden space-y-1 sm:space-y-1.5 h-[160px] sm:h-[200px]">
+                <div className="overflow-y-auto overflow-x-hidden space-y-1.5 sm:space-y-2 h-[180px] sm:h-[200px]">
                   <AnimatePresence mode="wait">
                     {legendsLoading ? (
                       <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center h-32">
@@ -725,7 +730,7 @@ export const FunPlanetUnifiedBoard = () => {
                             const badge = getCreatorBadge(creator.games_count);
                             const rank = index + 1;
                             return (
-                              <motion.div key={creator.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/25 hover:bg-white/30 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
+                              <motion.div key={creator.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-white/30 hover:bg-white/35 transition-all cursor-pointer backdrop-blur-sm" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
                                 <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{getRankIcon(rank)}</span>
                                 <Avatar className="h-10 w-10 border-2 border-white/30">
                                   <AvatarImage src={creator.avatar_url || undefined} />
@@ -747,13 +752,13 @@ export const FunPlanetUnifiedBoard = () => {
                     ) : (
                       <motion.div key="donors" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-2">
                         {donors.length === 0 ? (
-                          <div className="text-center py-4" style={{ color: 'white' }}><Heart className="h-8 w-8 mx-auto mb-2 text-rose-400" /><p>Chưa có ai ủng hộ. Hãy là người đầu tiên!</p></div>
+                          <div className="text-center py-6" style={{ color: 'white' }}><Heart className="h-8 w-8 mx-auto mb-2 text-rose-400" /><p>Chưa có ai ủng hộ. Hãy là người đầu tiên!</p></div>
                         ) : (
                           donors.map((donor, index) => {
                             const badge = getDonorBadge(donor.total_donated);
                             const rank = index + 1;
                             return (
-                              <motion.div key={donor.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2 rounded-xl bg-white/25 hover:bg-white/30 transition-all cursor-pointer" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
+                              <motion.div key={donor.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} whileHover={{ scale: 1.02, y: -2 }} className="flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-white/30 hover:bg-white/35 transition-all cursor-pointer backdrop-blur-sm" style={{ boxShadow: rank <= 3 ? `0 0 15px ${rank === 1 ? 'rgba(255,215,0,0.4)' : rank === 2 ? 'rgba(192,192,192,0.4)' : 'rgba(205,127,50,0.4)'}` : undefined }}>
                                 <span className="text-lg w-8 text-center font-bold !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">{getRankIcon(rank)}</span>
                                 <Avatar className="h-10 w-10 border-2 border-white/30">
                                   {donor.is_anonymous ? <AvatarFallback className="bg-gradient-to-br from-gray-500 to-gray-700"><span className="text-lg">🎭</span></AvatarFallback> : <><AvatarImage src={donor.avatar_url || undefined} /><AvatarFallback className="bg-gradient-to-br from-rose-500 to-pink-500"><User className="h-5 w-5 text-white" /></AvatarFallback></>}
@@ -854,7 +859,7 @@ export const FunPlanetUnifiedBoard = () => {
 
                   {/* Remaining Rankings with ScrollArea */}
                   {remainingUsers.length > 0 && (
-                    <ScrollArea className="flex-1 max-h-[280px] sm:max-h-[350px] md:max-h-[400px] pr-1 sm:pr-2 ranking-scrollbar">
+                    <ScrollArea className="flex-1 max-h-[300px] sm:max-h-[350px] md:max-h-[400px] pr-1 sm:pr-2 ranking-scrollbar">
                       <div className="space-y-2">
                         {remainingUsers.map((rankedUser, index) => {
                           const rank = index + 4;
@@ -868,7 +873,7 @@ export const FunPlanetUnifiedBoard = () => {
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: index * 0.1 + 0.5 }}
                                   whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
-                                  className={`flex items-center gap-2 sm:gap-3 rounded-lg sm:rounded-xl border p-2 sm:p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/25 to-white/20 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
+                                  className={`flex items-center gap-2.5 sm:gap-3 rounded-xl border p-2.5 sm:p-3 backdrop-blur-sm cursor-pointer transition-all border-white/40 bg-gradient-to-r from-white/30 to-white/25 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
                                 >
                                   <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20 flex-shrink-0">
                                     <span className="text-sm sm:text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
