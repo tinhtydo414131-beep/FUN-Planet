@@ -9,6 +9,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { 
   Music2, 
   Search, 
   Play, 
@@ -52,6 +62,8 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
   const [searchQuery, setSearchQuery] = useState("");
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [trackToDelete, setTrackToDelete] = useState<MusicTrack | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -210,21 +222,30 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
     }
   };
 
-  const handleDelete = async (track: MusicTrack) => {
-    if (!confirm(`Xóa vĩnh viễn "${track.title}"?`)) return;
+  const openDeleteDialog = (track: MusicTrack, e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    setTrackToDelete(track);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!trackToDelete) return;
     
-    setProcessingId(track.id);
+    setDeleteDialogOpen(false);
+    setProcessingId(trackToDelete.id);
+    
     try {
       const { error } = await supabase
         .from("user_music")
         .delete()
-        .eq("id", track.id);
+        .eq("id", trackToDelete.id);
 
       if (error) throw error;
 
       // Try to delete from R2
-      if (track.storage_path.includes("r2.dev") || track.storage_path.includes("cloudflare")) {
-        const key = track.storage_path.split("/").slice(-2).join("/");
+      if (trackToDelete.storage_path.includes("r2.dev") || trackToDelete.storage_path.includes("cloudflare")) {
+        const key = trackToDelete.storage_path.split("/").slice(-2).join("/");
         try {
           await deleteFromR2(key);
         } catch (r2Error) {
@@ -232,13 +253,14 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
         }
       }
 
-      toast.success(`Đã xóa "${track.title}"`);
+      toast.success(`Đã xóa "${trackToDelete.title}"`);
       loadTracks();
     } catch (error) {
       console.error("Error deleting track:", error);
       toast.error("Không thể xóa nhạc");
     } finally {
       setProcessingId(null);
+      setTrackToDelete(null);
     }
   };
 
@@ -436,7 +458,7 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleDelete(track)}
+                              onClick={(e) => openDeleteDialog(track, e)}
                               disabled={processingId === track.id}
                               className="border-red-200 text-red-600 hover:bg-red-50"
                             >
@@ -533,7 +555,7 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleDelete(track)}
+                      onClick={(e) => openDeleteDialog(track, e)}
                       disabled={processingId === track.id}
                       className="w-full border-red-200 text-red-600"
                     >
@@ -547,6 +569,28 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
           )}
         </div>
       </CardContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa nhạc</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa vĩnh viễn "{trackToDelete?.title}"? 
+              Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Xóa vĩnh viễn
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 });

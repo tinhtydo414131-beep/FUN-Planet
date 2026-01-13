@@ -140,10 +140,16 @@ export default function MusicLibrary() {
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching community music:', error);
+        setCommunityMusic([]);
+        setLoadingCommunity(false);
+        return;
+      }
       
       if (!musicData || musicData.length === 0) {
         setCommunityMusic([]);
+        setLoadingCommunity(false);
         return;
       }
 
@@ -170,6 +176,7 @@ export default function MusicLibrary() {
       setCommunityMusic(tracks);
     } catch (error) {
       console.error('Error loading community music:', error);
+      setCommunityMusic([]);
     } finally {
       setLoadingCommunity(false);
     }
