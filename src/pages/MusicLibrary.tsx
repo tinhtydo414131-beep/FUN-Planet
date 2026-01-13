@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Music, Trash2, Download, Coins, AlertTriangle, CheckCircle2, Info, Clock, Star, Sparkles } from "lucide-react";
+import { Upload, Music, Trash2, Download, Coins, AlertTriangle, CheckCircle2, Info, Clock, Star, Sparkles, Play, Pause, Globe, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   validateMusicUpload, 
   formatCoins, 
@@ -31,6 +32,17 @@ interface MusicFile {
   created_at: string;
   pending_approval?: boolean;
   parent_approved?: boolean;
+}
+
+interface CommunityTrack {
+  id: string;
+  title: string;
+  artist: string | null;
+  storage_path: string;
+  file_size: number | null;
+  duration: string | null;
+  created_at: string;
+  uploader_name?: string;
 }
 
 // ===== CẤU HÌNH HIỂN THỊ =====
@@ -52,12 +64,18 @@ export default function MusicLibrary() {
     maxDaily: number;
   } | null>(null);
   const [lastValidation, setLastValidation] = useState<ValidationResponse | null>(null);
+  const [activeTab, setActiveTab] = useState("my-music");
+  const [communityMusic, setCommunityMusic] = useState<CommunityTrack[]>([]);
+  const [loadingCommunity, setLoadingCommunity] = useState(false);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (user) {
       loadDailyInfo();
       loadMusicFiles();
     }
+    loadCommunityMusic();
   }, [user]);
 
   const loadDailyInfo = async () => {
@@ -109,6 +127,68 @@ export default function MusicLibrary() {
       setLoading(false);
     }
   };
+
+  const loadCommunityMusic = async () => {
+    setLoadingCommunity(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_music')
+        .select(`
+          id, title, artist, storage_path, file_size, duration, created_at, user_id,
+          profiles:user_id (username)
+        `)
+        .eq('parent_approved', true)
+        .eq('pending_approval', false)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      const tracks: CommunityTrack[] = (data || []).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        artist: item.artist,
+        storage_path: item.storage_path,
+        file_size: item.file_size,
+        duration: item.duration,
+        created_at: item.created_at,
+        uploader_name: item.profiles?.username || 'Unknown'
+      }));
+
+      setCommunityMusic(tracks);
+    } catch (error) {
+      console.error('Error loading community music:', error);
+    } finally {
+      setLoadingCommunity(false);
+    }
+  };
+
+  const handlePlayCommunity = (track: CommunityTrack) => {
+    if (currentlyPlaying === track.id) {
+      audioRef.current?.pause();
+      setCurrentlyPlaying(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      audioRef.current = new Audio(track.storage_path);
+      audioRef.current.play().catch(() => {
+        toast.error("Không thể phát nhạc");
+      });
+      audioRef.current.onended = () => setCurrentlyPlaying(null);
+      setCurrentlyPlaying(track.id);
+    }
+  };
+
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -461,115 +541,251 @@ export default function MusicLibrary() {
             </CardContent>
           </Card>
 
-          {/* Music List */}
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardHeader>
-              <CardTitle className="font-fredoka text-2xl flex items-center gap-2">
-                <div className="p-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500">
-                  <Music className="w-5 h-5 text-white" />
-                </div>
-                <span className="bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent">
-                  Nhạc Của Bạn ({musicFiles.length})
-                </span>
-              </CardTitle>
-              <CardDescription className="text-gray-600">
-                <Button
-                  onClick={loadMusicFiles}
-                  variant="outline"
-                  size="sm"
-                  disabled={loading || !user}
-                  className="mt-2 border-gray-300 hover:bg-gray-50"
-                >
-                  {loading ? "Đang tải..." : "Làm mới danh sách"}
-                </Button>
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[400px]">
-                {musicFiles.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Music className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                    <p className="font-comic text-gray-500">
-                      Chưa có nhạc nào. Tải lên file đầu tiên nhé!
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {musicFiles.map((file) => (
-                      <div
-                        key={file.id}
-                        className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl transition-all gap-3 ${
-                          file.pending_approval 
-                            ? 'bg-yellow-50 border border-yellow-200' 
-                            : 'bg-white border border-gray-200 hover:border-pink-200 hover:shadow-sm'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className={`p-2 rounded-full shrink-0 ${
-                            file.pending_approval 
-                              ? 'bg-yellow-200' 
-                              : 'bg-gradient-to-r from-pink-400 to-pink-500'
-                          }`}>
-                            <Music className={`w-4 h-4 ${file.pending_approval ? 'text-yellow-700' : 'text-white'}`} />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p className="font-fredoka font-bold truncate text-gray-800">
-                                {file.title}
-                              </p>
-                              {getStatusBadge(file)}
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              {file.artist || 'Unknown Artist'} • {formatDuration(file.duration)} • {formatFileSize(file.file_size)}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                              {new Date(file.created_at).toLocaleDateString('vi-VN')}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* Audio Player */}
-                        <audio 
-                          controls 
-                          className="h-8 w-full sm:w-32 md:w-48"
-                          src={file.storage_path}
-                        />
-                        
-                        <div className="flex items-center gap-2 shrink-0 justify-end">
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            asChild
-                            className="border-gray-300 hover:bg-pink-50 hover:border-pink-300"
-                          >
-                            <a
-                              href={file.storage_path}
-                              download
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Download className="w-4 h-4 text-pink-500" />
-                            </a>
-                          </Button>
-                          
-                          {isAdmin && (
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              onClick={() => handleDelete(file.id, file.storage_path)}
-                              className="border-red-200 hover:bg-red-50 text-red-500"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
+          {/* Tabs for My Music / Community */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full bg-white border border-gray-200 p-1 mb-4">
+              <TabsTrigger 
+                value="my-music" 
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-400 data-[state=active]:to-pink-500 data-[state=active]:text-white"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Nhạc Của Bạn ({musicFiles.length})
+              </TabsTrigger>
+              <TabsTrigger 
+                value="community" 
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-400 data-[state=active]:to-blue-500 data-[state=active]:text-white"
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                Nhạc Cộng Đồng ({communityMusic.length})
+              </TabsTrigger>
+            </TabsList>
+
+            {/* My Music Tab */}
+            <TabsContent value="my-music">
+              <Card className="bg-white border border-gray-200 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="font-fredoka text-2xl flex items-center gap-2">
+                    <div className="p-2 rounded-full bg-gradient-to-r from-pink-400 to-pink-500">
+                      <Music className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">
+                      Nhạc Của Bạn
+                    </span>
+                  </CardTitle>
+                  <CardDescription className="text-gray-600">
+                    <Button
+                      onClick={loadMusicFiles}
+                      variant="outline"
+                      size="sm"
+                      disabled={loading || !user}
+                      className="mt-2 border-gray-300 hover:bg-gray-50"
+                    >
+                      {loading ? "Đang tải..." : "Làm mới danh sách"}
+                    </Button>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[400px]">
+                    {!user ? (
+                      <div className="text-center py-12">
+                        <Music className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                        <p className="font-comic text-gray-500">
+                          Đăng nhập để xem nhạc của bạn
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                    ) : musicFiles.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Music className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                        <p className="font-comic text-gray-500">
+                          Chưa có nhạc nào. Tải lên file đầu tiên nhé!
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {musicFiles.map((file) => (
+                          <div
+                            key={file.id}
+                            className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl transition-all gap-3 ${
+                              file.pending_approval 
+                                ? 'bg-yellow-50 border border-yellow-200' 
+                                : 'bg-white border border-gray-200 hover:border-pink-200 hover:shadow-sm'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className={`p-2 rounded-full shrink-0 ${
+                                file.pending_approval 
+                                  ? 'bg-yellow-200' 
+                                  : 'bg-gradient-to-r from-pink-400 to-pink-500'
+                              }`}>
+                                <Music className={`w-4 h-4 ${file.pending_approval ? 'text-yellow-700' : 'text-white'}`} />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="font-fredoka font-bold truncate text-gray-800">
+                                    {file.title}
+                                  </p>
+                                  {getStatusBadge(file)}
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                  {file.artist || 'Unknown Artist'} • {formatDuration(file.duration)} • {formatFileSize(file.file_size)}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                  {new Date(file.created_at).toLocaleDateString('vi-VN')}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {/* Audio Player */}
+                            <audio 
+                              controls 
+                              className="h-8 w-full sm:w-32 md:w-48"
+                              src={file.storage_path}
+                            />
+                            
+                            <div className="flex items-center gap-2 shrink-0 justify-end">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                asChild
+                                className="border-gray-300 hover:bg-pink-50 hover:border-pink-300"
+                              >
+                                <a
+                                  href={file.storage_path}
+                                  download
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <Download className="w-4 h-4 text-pink-500" />
+                                </a>
+                              </Button>
+                              
+                              {isAdmin && (
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  onClick={() => handleDelete(file.id, file.storage_path)}
+                                  className="border-red-200 hover:bg-red-50 text-red-500"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Community Music Tab */}
+            <TabsContent value="community">
+              <Card className="bg-white border border-gray-200 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="font-fredoka text-2xl flex items-center gap-2">
+                    <div className="p-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500">
+                      <Globe className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent">
+                      Nhạc Cộng Đồng
+                    </span>
+                  </CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Tất cả nhạc đã được duyệt từ cộng đồng Fun Planet
+                    <Button
+                      onClick={loadCommunityMusic}
+                      variant="outline"
+                      size="sm"
+                      disabled={loadingCommunity}
+                      className="ml-4 border-gray-300 hover:bg-gray-50"
+                    >
+                      {loadingCommunity ? "Đang tải..." : "Làm mới"}
+                    </Button>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[400px]">
+                    {loadingCommunity ? (
+                      <div className="text-center py-12">
+                        <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
+                        <p className="font-comic text-gray-500">
+                          Đang tải nhạc cộng đồng...
+                        </p>
+                      </div>
+                    ) : communityMusic.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Music className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                        <p className="font-comic text-gray-500">
+                          Chưa có nhạc nào trong thư viện cộng đồng
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {communityMusic.map((track) => (
+                          <div
+                            key={track.id}
+                            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl transition-all gap-3 bg-gradient-to-r from-blue-50/50 to-pink-50/50 border border-blue-200 hover:border-blue-300 hover:shadow-sm"
+                          >
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              {/* Play/Pause Button */}
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handlePlayCommunity(track)}
+                                className={`shrink-0 w-10 h-10 rounded-full ${
+                                  currentlyPlaying === track.id 
+                                    ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' 
+                                    : 'bg-gradient-to-r from-blue-400 to-blue-500 text-white hover:from-blue-500 hover:to-blue-600'
+                                }`}
+                              >
+                                {currentlyPlaying === track.id ? (
+                                  <Pause className="w-5 h-5" />
+                                ) : (
+                                  <Play className="w-5 h-5 ml-0.5" />
+                                )}
+                              </Button>
+                              
+                              <div className="min-w-0 flex-1">
+                                <p className="font-fredoka font-bold truncate text-gray-800">
+                                  {track.title}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {track.artist || 'Unknown Artist'} • {formatDuration(track.duration)} • {formatFileSize(track.file_size)}
+                                </p>
+                                <p className="text-xs text-blue-500 flex items-center gap-1">
+                                  <User className="w-3 h-3" />
+                                  {track.uploader_name}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 shrink-0 justify-end">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                asChild
+                                className="border-gray-300 hover:bg-blue-50 hover:border-blue-300"
+                              >
+                                <a
+                                  href={track.storage_path}
+                                  download
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <Download className="w-4 h-4 text-blue-500" />
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>
