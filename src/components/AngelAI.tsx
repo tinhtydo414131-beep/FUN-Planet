@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Star, Heart, Rocket, X, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft, Settings } from "lucide-react";
+import { Sparkles, Star, Heart, Rocket, X, GripVertical, Send, Loader2, Mic, MicOff, Volume2, VolumeX, History, Trash2, ChevronLeft, Settings, Maximize2, Minimize2 } from "lucide-react";
 import { Angel2DFallback } from "@/components/angel-ai/Angel2DFallback";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,6 +67,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [isVoiceChatMode, setIsVoiceChatMode] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const lastAssistantMessageRef = useRef<string>("");
@@ -284,18 +285,20 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
         initial={{ opacity: 0, scale: 0.8, y: 50 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.8, y: 50 }}
-        className="fixed bottom-4 right-4 z-50 w-[720px] max-w-[calc(100vw-2rem)]"
+        className={`fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] transition-all duration-300 ${
+          isExpanded ? 'w-[600px]' : 'w-[380px]'
+        }`}
       >
         <motion.div className="relative">
           {/* Glow Effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-300/30 via-pink-300/30 to-purple-300/30 rounded-3xl blur-xl animate-pulse" />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 via-pink-300/15 to-yellow-300/20 rounded-2xl blur-lg" />
           
           {/* Main Card */}
           <div className="relative bg-gradient-to-br from-white/95 via-yellow-50/95 to-pink-50/95 dark:from-slate-900/95 dark:via-purple-900/95 dark:to-pink-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-yellow-200/50 dark:border-yellow-500/30 overflow-hidden">
             
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-yellow-200/30 dark:border-yellow-500/20">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between p-3 sm:p-4 border-b border-yellow-200/30 dark:border-yellow-500/20">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {showHistory ? (
                   <button
                     onClick={() => setShowHistory(false)}
@@ -309,7 +312,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                     animate={{ rotate: [0, 5, -5, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg border-2 border-yellow-400/60">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-lg border-2 border-yellow-400/60">
                       <video 
                         src="/angel-ai-avatar.mp4" 
                         autoPlay 
@@ -319,20 +322,14 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    {/* Halo */}
-                    <motion.div
-                      className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-8 h-2 rounded-full border-2 border-yellow-400"
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    />
                   </motion.div>
                 )}
                 
                 <div>
-                  <h3 className="font-bold text-base bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent">
+                  <h3 className="font-bold text-sm sm:text-base bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent">
                     {showHistory ? "Lịch sử trò chuyện" : "Angel AI"}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">
                     {showHistory ? "Xem lại các cuộc hội thoại" : "Thiên thần ánh sáng của bé"}
                   </p>
                 </div>
@@ -389,6 +386,21 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                   />
                 )}
 
+                {/* Zoom Toggle Button */}
+                {!showHistory && !showVoiceSettings && (
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="p-1.5 rounded-full hover:bg-muted/50 transition-colors text-muted-foreground hover:text-blue-600"
+                    title={isExpanded ? "Thu nhỏ" : "Phóng to"}
+                  >
+                    {isExpanded ? (
+                      <Minimize2 className="w-4 h-4" />
+                    ) : (
+                      <Maximize2 className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+
                 <button
                   onClick={handleClose}
                   className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
@@ -423,7 +435,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                 onClose={() => setShowVoiceSettings(false)}
               />
             ) : showHistory ? (
-              <div className="h-[400px] flex flex-col">
+              <div className={`flex flex-col ${isExpanded ? 'h-[450px]' : 'h-[350px]'}`}>
                 <ScrollArea className="flex-1 p-4">
                   {loadingHistory ? (
                     <div className="flex items-center justify-center h-full">
@@ -493,7 +505,7 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
             ) : (
               <>
                 {/* Chat Messages */}
-                <ScrollArea className="h-[400px] p-4" ref={scrollRef}>
+                <ScrollArea className={`p-3 sm:p-4 ${isExpanded ? 'h-[450px]' : 'h-[350px]'}`} ref={scrollRef}>
                   {/* Welcome Message */}
                   {messages.length === 0 && (
                     <motion.div
