@@ -513,17 +513,17 @@ export function AngelAI({ isNewUser = false, onClose }: AngelAIProps) {
                       animate={{ opacity: 1, y: 0 }}
                       className="mb-4"
                     >
-                      <div className="bg-gradient-to-r from-yellow-100/80 to-pink-100/80 dark:from-yellow-900/30 dark:to-pink-900/30 rounded-[18px] rounded-tl-sm px-3 py-2">
-                        <p className="text-[15px] text-foreground leading-[1.4]">
-                          {getWelcomeMessage()}
-                        </p>
-                      </div>
+                <div className={`bg-gradient-to-r from-yellow-100/80 to-pink-100/80 dark:from-yellow-900/30 dark:to-pink-900/30 rounded-[18px] rounded-tl-sm ${isExpanded ? 'px-3 py-2' : 'px-2.5 py-1.5'}`}>
+                  <p className={`${isExpanded ? 'text-[15px]' : 'text-[14px]'} text-foreground leading-[1.4]`}>
+                    {getWelcomeMessage()}
+                  </p>
+                </div>
                     </motion.div>
                   )}
 
                   {/* Chat History */}
-                  {messages.map((msg) => (
-                    <MessageBubble key={msg.id || `msg-${msg.created_at}`} message={msg} isExpanded={isExpanded} />
+              {messages.map((msg, index) => (
+                <MessageBubble key={msg.id || `msg-${index}-${msg.created_at}`} message={msg} isExpanded={isExpanded} />
                   ))}
 
                   {/* Loading Indicator */}
