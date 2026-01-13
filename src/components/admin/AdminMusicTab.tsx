@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,7 +45,7 @@ interface AdminMusicTabProps {
 
 const UPLOAD_REWARD = 20000; // 20k CAMLY per song
 
-export function AdminMusicTab({ onStatsUpdate }: AdminMusicTabProps) {
+const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsUpdate }, ref) => {
   const [tracks, setTracks] = useState<MusicTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"pending" | "approved" | "all">("pending");
@@ -202,7 +202,6 @@ export function AdminMusicTab({ onStatsUpdate }: AdminMusicTabProps) {
 
       toast.success(`Đã từ chối "${track.title}"`);
       loadTracks();
-      onStatsUpdate?.();
     } catch (error) {
       console.error("Error rejecting track:", error);
       toast.error("Không thể từ chối nhạc");
@@ -235,7 +234,6 @@ export function AdminMusicTab({ onStatsUpdate }: AdminMusicTabProps) {
 
       toast.success(`Đã xóa "${track.title}"`);
       loadTracks();
-      onStatsUpdate?.();
     } catch (error) {
       console.error("Error deleting track:", error);
       toast.error("Không thể xóa nhạc");
@@ -551,4 +549,8 @@ export function AdminMusicTab({ onStatsUpdate }: AdminMusicTabProps) {
       </CardContent>
     </Card>
   );
-}
+});
+
+AdminMusicTab.displayName = "AdminMusicTab";
+
+export { AdminMusicTab };

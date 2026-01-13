@@ -131,20 +131,32 @@ export default function MusicLibrary() {
   const loadCommunityMusic = async () => {
     setLoadingCommunity(true);
     try {
-      const { data, error } = await supabase
+      // Step 1: Fetch approved music
+      const { data: musicData, error } = await supabase
         .from('user_music')
-        .select(`
-          id, title, artist, storage_path, file_size, duration, created_at, user_id,
-          profiles:user_id (username)
-        `)
+        .select('id, title, artist, storage_path, file_size, duration, created_at, user_id')
         .eq('parent_approved', true)
         .eq('pending_approval', false)
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
+      
+      if (!musicData || musicData.length === 0) {
+        setCommunityMusic([]);
+        return;
+      }
 
-      const tracks: CommunityTrack[] = (data || []).map((item: any) => ({
+      // Step 2: Fetch usernames for uploaders
+      const userIds = [...new Set(musicData.map(m => m.user_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.id, p.username]) || []);
+
+      const tracks: CommunityTrack[] = musicData.map(item => ({
         id: item.id,
         title: item.title,
         artist: item.artist,
@@ -152,7 +164,7 @@ export default function MusicLibrary() {
         file_size: item.file_size,
         duration: item.duration,
         created_at: item.created_at,
-        uploader_name: item.profiles?.username || 'Unknown'
+        uploader_name: profileMap.get(item.user_id) || 'Unknown'
       }));
 
       setCommunityMusic(tracks);
