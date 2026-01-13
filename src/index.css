@@ -631,6 +631,31 @@
   @apply border-l-2 border-muted pl-3 ml-3 text-sm text-muted-foreground;
 }
 
+/* Hide scrollbar by default, show on hover */
+.scrollbar-hide-hover {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide-hover::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+
+.scrollbar-hide-hover::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.scrollbar-hide-hover:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.scrollbar-hide-hover:hover {
+  scrollbar-width: thin;
+}
+
 /* Page transitions */
 .page-transition-enter {
   opacity: 0;
