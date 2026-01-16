@@ -4,7 +4,7 @@ import "./index.css";
 import "./i18n";
 
 // App version for cache busting - force new version
-const APP_VERSION = "2026-01-14-v3";
+const APP_VERSION = "2026-01-16-v1";
 
 
 console.log(`[FunPlanet] App starting, version: ${APP_VERSION}`);
