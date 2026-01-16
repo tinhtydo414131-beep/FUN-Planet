@@ -1,4 +1,4 @@
-// Force Cloudflare rebuild: 2026-01-16T10:00:00Z - Version sync update
+// Force Cloudflare rebuild: 2026-01-14T12:00:00Z - HoverCard ref fix + mobile layout
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
