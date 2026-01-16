@@ -19,7 +19,6 @@ interface PublicProfileData {
   total_plays: number;
   total_likes: number;
   total_friends: number;
-  total_messages: number;
   leaderboard_score: number;
 }
 
@@ -73,9 +72,10 @@ export default function PublicProfile() {
 
   const fetchProfile = async () => {
     try {
+      // Use public_profiles view to bypass RLS restrictions for viewing other users
       const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username, avatar_url, bio, total_plays, total_likes, total_friends, total_messages, leaderboard_score")
+        .from("public_profiles")
+        .select("id, username, avatar_url, bio, total_plays, total_likes, total_friends, leaderboard_score")
         .eq("id", userId)
         .maybeSingle();
 
@@ -305,16 +305,6 @@ export default function PublicProfile() {
                 <p className="text-sm font-comic text-muted-foreground">Bạn bè</p>
                 <div className="text-4xl font-fredoka font-bold text-accent">
                   {profile.total_friends}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-secondary/30 hover:border-secondary transition-all hover:shadow-lg transform hover:scale-105">
-              <CardContent className="p-6 text-center space-y-2">
-                <MessageCircle className="w-10 h-10 text-secondary mx-auto" />
-                <p className="text-sm font-comic text-muted-foreground">Tin nhắn</p>
-                <div className="text-4xl font-fredoka font-bold text-secondary">
-                  {profile.total_messages}
                 </div>
               </CardContent>
             </Card>

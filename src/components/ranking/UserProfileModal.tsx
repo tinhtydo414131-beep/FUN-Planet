@@ -50,16 +50,18 @@ export function UserProfileModal({
   const fetchUserProfile = async (id: string) => {
     setLoading(true);
     try {
+      // Use public_profiles view to bypass RLS restrictions
       const { data, error } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id, username, avatar_url, bio, total_plays, total_friends, leaderboard_score")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setProfile(data);
     } catch (err) {
       console.error("Error fetching user profile:", err);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
