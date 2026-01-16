@@ -80,15 +80,32 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
-        globPatterns: ["**/*.{css,html,ico,png,svg,jpg,jpeg,webp}"],
+        // Chỉ cache static assets, KHÔNG cache HTML
+        globPatterns: ["**/*.{css,ico,png,svg,jpg,jpeg,webp,woff,woff2}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-        // Exclude ALL JS files from precaching - always fetch fresh
-        globIgnores: ['**/*.js', '**/*.mjs'],
+        // Exclude ALL JS, MJS, and HTML files from precaching
+        globIgnores: ['**/*.js', '**/*.mjs', '**/*.html', 'index.html'],
         // Force new SW to take over immediately
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Disable navigateFallback to prevent HTML caching
+        navigateFallback: null,
         runtimeCaching: [
+          {
+            // NEVER cache HTML files - always fetch fresh
+            urlPattern: /\.html$/i,
+            handler: "NetworkOnly",
+          },
+          {
+            // NEVER cache navigation requests (SPA routes) - always fetch fresh
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: "NetworkFirst",
+            options: {
+              networkTimeoutSeconds: 3,
+              cacheName: "navigation-cache",
+            }
+          },
           {
             // NEVER cache JS files - always fetch from network
             urlPattern: /\.(?:js|mjs)$/i,
