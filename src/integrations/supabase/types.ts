@@ -6705,16 +6705,26 @@ export type Database = {
         }
         Returns: boolean
       }
-      process_p2p_transfer: {
-        Args: {
-          p_amount: number
-          p_notes?: string
-          p_recipient_id: string
-          p_sender_id: string
-          p_token_type?: string
-        }
-        Returns: Json
-      }
+      process_p2p_transfer:
+        | {
+            Args: {
+              p_amount: number
+              p_notes?: string
+              p_recipient_id: string
+              p_sender_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_amount: number
+              p_notes?: string
+              p_recipient_id: string
+              p_sender_id: string
+              p_token_type?: string
+            }
+            Returns: Json
+          }
       process_referral_reward: {
         Args: {
           p_referral_code: string
