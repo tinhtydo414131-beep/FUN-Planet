@@ -116,39 +116,6 @@ clearOldTheme();
 clearOldCookies();
 clearLocalStorageCache();
 
-// Version check - Force reload nếu version mismatch
-const checkVersionAndReload = (): boolean => {
-  try {
-    const savedVersion = localStorage.getItem(VERSION_KEY);
-    
-    if (savedVersion && savedVersion !== APP_VERSION) {
-      console.log(`[FunPlanet] Version mismatch detected: ${savedVersion} → ${APP_VERSION}`);
-      localStorage.setItem(VERSION_KEY, APP_VERSION);
-      
-      // Force hard reload (bypass cache)
-      const hasCaches = 'caches' in window;
-      if (hasCaches) {
-        caches.keys().then(names => {
-          Promise.all(names.map(name => caches.delete(name))).then(() => {
-            console.log('[FunPlanet] All caches cleared, reloading...');
-            (window as Window).location.reload();
-          });
-        });
-      } else {
-        (window as Window).location.reload();
-      }
-      return false; // Đừng render app
-    }
-    
-    // Save current version
-    localStorage.setItem(VERSION_KEY, APP_VERSION);
-    return true; // OK, render app
-  } catch (error) {
-    console.error('[FunPlanet] Version check error:', error);
-    return true; // Continue rendering on error
-  }
-};
-
 // Listen for SW updates with reload protection
 let refreshing = false;
 if ('serviceWorker' in navigator) {
@@ -160,10 +127,8 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Check version and render app if OK
-if (checkVersionAndReload()) {
-  createRoot(document.getElementById("root")!).render(<App />);
-}
+// Render app immediately - không dùng version check để tránh reload loop
+createRoot(document.getElementById("root")!).render(<App />);
 
 // Clear caches and service workers asynchronously (after render)
 (async () => {
