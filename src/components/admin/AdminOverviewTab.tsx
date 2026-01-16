@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { format, subDays } from "date-fns";
 import { Loader2 } from "lucide-react";
+import { AdminSystemStats } from "./AdminSystemStats";
 
 // Lazy load AdminAchievementStats
 const AdminAchievementStats = lazy(() => import("./AdminAchievementStats"));
@@ -141,6 +142,9 @@ export const AdminOverviewTab = forwardRef<HTMLDivElement, AdminOverviewTabProps
 
   return (
     <div ref={ref} className="space-y-6">
+      {/* System Stats (Honor Board) */}
+      <AdminSystemStats />
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Claims Line Chart */}
