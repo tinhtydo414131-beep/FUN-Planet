@@ -313,31 +313,34 @@ export const FunPlanetUnifiedBoard = () => {
     return 0;
   }, []);
 
-  // Fetch Honor Board Stats
+  // Fetch Honor Board Stats using RPC to bypass RLS
   const fetchStats = useCallback(async () => {
     try {
-      const [treasuryBalance, usersResult, uploadedGamesResult, lovableGamesResult, uploadsResult, camlyResult] = await Promise.all([
+      const [treasuryBalance, statsResult] = await Promise.all([
         fetchTreasuryBalance(),
-        supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("uploaded_games").select("*", { count: "exact", head: true }).eq("status", "approved"),
-        supabase.from("lovable_games").select("*", { count: "exact", head: true }).eq("approved", true),
-        supabase.from("uploaded_games").select("*", { count: "exact", head: true }),
-        supabase.from("user_rewards").select("pending_amount, claimed_amount"),
+        supabase.rpc('get_public_stats')
       ]);
 
-      const totalGames = (uploadedGamesResult.count || 0) + (lovableGamesResult.count || 0);
-      // Calculate totalCamly from user_rewards (pending_amount + claimed_amount)
-      const totalCamly = camlyResult.data?.reduce((sum, reward) => 
-        sum + (Number(reward.pending_amount) || 0) + (Number(reward.claimed_amount) || 0), 0) || 0;
+      if (statsResult.error) {
+        console.error("Error fetching public stats:", statsResult.error);
+        return;
+      }
 
-      console.log("📊 Honor Board Stats - Total CAMLY:", totalCamly);
+      const data = statsResult.data as {
+        total_users: number;
+        total_games: number;
+        total_uploads: number;
+        total_camly: number;
+      };
+
+      console.log("📊 Honor Board Stats via RPC:", data);
 
       setStats({
-        totalUsers: usersResult.count || 0,
-        totalGames,
+        totalUsers: data.total_users || 0,
+        totalGames: data.total_games || 0,
         treasuryBalance,
-        totalUploads: uploadsResult.count || 0,
-        totalCamly,
+        totalUploads: data.total_uploads || 0,
+        totalCamly: data.total_camly || 0,
       });
       setHasUpdate(true);
       setTimeout(() => setHasUpdate(false), 1000);
