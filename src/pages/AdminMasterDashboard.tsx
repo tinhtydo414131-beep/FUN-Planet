@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { 
   Users, 
@@ -28,6 +26,9 @@ import {
   Target,
   MessageSquare,
   Music2,
+  LayoutDashboard,
+  UserCog,
+  ShieldCheck,
 } from "lucide-react";
 import { AdminOverviewTab } from "@/components/admin/AdminOverviewTab";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
@@ -74,14 +75,45 @@ export default function AdminMasterDashboard() {
     newUsersToday: 0
   });
   const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [pendingMusicCount, setPendingMusicCount] = useState(0);
   const tabsRef = useRef<HTMLDivElement>(null);
 
+  // Sub-tab states
+  const [dashboardSubTab, setDashboardSubTab] = useState("overview");
+  const [managementSubTab, setManagementSubTab] = useState("users");
+  const [financeSubTab, setFinanceSubTab] = useState("rewards");
+
   // Navigate to specific tab (called from realtime bell)
   const handleNavigateToTab = (tab: string) => {
-    setActiveTab(tab);
-    // Scroll tabs into view
+    // Map old tab names to new structure
+    const tabMapping: Record<string, { main: string; sub: string }> = {
+      overview: { main: "dashboard", sub: "overview" },
+      kpi: { main: "dashboard", sub: "kpi" },
+      analytics: { main: "dashboard", sub: "analytics" },
+      reports: { main: "dashboard", sub: "reports" },
+      users: { main: "management", sub: "users" },
+      games: { main: "management", sub: "games" },
+      music: { main: "management", sub: "music" },
+      angelai: { main: "management", sub: "angelai" },
+      appeals: { main: "management", sub: "appeals" },
+      donations: { main: "management", sub: "donations" },
+      settings: { main: "management", sub: "settings" },
+      rewards: { main: "finance", sub: "rewards" },
+      withdrawals: { main: "finance", sub: "withdrawals" },
+      fraud: { main: "finance", sub: "fraud" },
+      audit: { main: "finance", sub: "audit" },
+      notifications: { main: "finance", sub: "notifications" },
+    };
+
+    const mapping = tabMapping[tab];
+    if (mapping) {
+      setActiveTab(mapping.main);
+      if (mapping.main === "dashboard") setDashboardSubTab(mapping.sub);
+      if (mapping.main === "management") setManagementSubTab(mapping.sub);
+      if (mapping.main === "finance") setFinanceSubTab(mapping.sub);
+    }
+    
     tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
@@ -230,150 +262,186 @@ export default function AdminMasterDashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
 
-        {/* Main Tabs - Responsive Grid */}
+        {/* 3 Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" ref={tabsRef}>
-          <TabsList className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-16 w-full mb-6 h-auto gap-1">
-            <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <BarChart3 className="h-4 w-4" />
-              <span>Overview</span>
+          <TabsList className="grid grid-cols-3 w-full mb-6 h-auto">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2 py-3 px-4 text-sm font-medium">
+              <LayoutDashboard className="h-5 w-5" />
+              <span className="hidden sm:inline">📊 Tổng Quan</span>
+              <span className="sm:hidden">Tổng Quan</span>
             </TabsTrigger>
-            <TabsTrigger value="kpi" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Target className="h-4 w-4" />
-              <span>KPI</span>
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Users className="h-4 w-4" />
-              <span>Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="games" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Gamepad2 className="h-4 w-4" />
-              <span>Games</span>
-            </TabsTrigger>
-            <TabsTrigger value="rewards" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Coins className="h-4 w-4" />
-              <span>Rewards</span>
-            </TabsTrigger>
-            <TabsTrigger value="withdrawals" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Wallet className="h-4 w-4" />
-              <span>Withdrawals</span>
-            </TabsTrigger>
-            <TabsTrigger value="donations" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <HeartHandshake className="h-4 w-4" />
-              <span>Donations</span>
-            </TabsTrigger>
-            <TabsTrigger value="fraud" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs relative">
-              <AlertTriangle className="h-4 w-4" />
-              <span>Fraud</span>
-              {stats.suspiciousCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                  {stats.suspiciousCount}
-                </span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <FileText className="h-4 w-4" />
-              <span>Reports</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <TrendingUp className="h-4 w-4" />
-              <span>Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="audit" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <ScrollText className="h-4 w-4" />
-              <span>Audit</span>
-            </TabsTrigger>
-            <TabsTrigger value="angelai" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Sparkles className="h-4 w-4" />
-              <span>Angel AI</span>
-            </TabsTrigger>
-            <TabsTrigger value="appeals" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <MessageSquare className="h-4 w-4" />
-              <span>Appeals</span>
-            </TabsTrigger>
-            <TabsTrigger value="music" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs relative">
-              <Music2 className="h-4 w-4" />
-              <span>Music</span>
+            <TabsTrigger value="management" className="flex items-center gap-2 py-3 px-4 text-sm font-medium relative">
+              <UserCog className="h-5 w-5" />
+              <span className="hidden sm:inline">👥 Quản Lý</span>
+              <span className="sm:hidden">Quản Lý</span>
               {pendingMusicCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
                   {pendingMusicCount}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Bell className="h-4 w-4" />
-              <span>Notify</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-2 text-xs">
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
+            <TabsTrigger value="finance" className="flex items-center gap-2 py-3 px-4 text-sm font-medium relative">
+              <ShieldCheck className="h-5 w-5" />
+              <span className="hidden sm:inline">💰 Tài Chính & Bảo Mật</span>
+              <span className="sm:hidden">Tài Chính</span>
+              {stats.suspiciousCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                  {stats.suspiciousCount}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview">
-            <AdminOverviewTab stats={stats} onRefresh={loadStats} />
+          {/* Tab 1: Tổng Quan (Dashboard) */}
+          <TabsContent value="dashboard" className="space-y-4">
+            <Tabs value={dashboardSubTab} onValueChange={setDashboardSubTab}>
+              <TabsList className="w-full justify-start bg-muted/50 p-1">
+                <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <BarChart3 className="h-4 w-4" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="kpi" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Target className="h-4 w-4" />
+                  KPI
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <TrendingUp className="h-4 w-4" />
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="reports" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <FileText className="h-4 w-4" />
+                  Reports
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="mt-4">
+                <AdminOverviewTab stats={stats} onRefresh={loadStats} />
+              </TabsContent>
+              <TabsContent value="kpi" className="mt-4">
+                <AdminKPIDashboard />
+              </TabsContent>
+              <TabsContent value="analytics" className="mt-4">
+                <AdminAnalyticsTab />
+              </TabsContent>
+              <TabsContent value="reports" className="mt-4">
+                <AdminReportsTab onStatsUpdate={loadStats} />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
-          <TabsContent value="kpi">
-            <AdminKPIDashboard />
+          {/* Tab 2: Quản Lý (Management) */}
+          <TabsContent value="management" className="space-y-4">
+            <Tabs value={managementSubTab} onValueChange={setManagementSubTab}>
+              <TabsList className="w-full justify-start bg-muted/50 p-1 flex-wrap h-auto gap-1">
+                <TabsTrigger value="users" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Users className="h-4 w-4" />
+                  Users
+                </TabsTrigger>
+                <TabsTrigger value="games" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Gamepad2 className="h-4 w-4" />
+                  Games
+                </TabsTrigger>
+                <TabsTrigger value="music" className="flex items-center gap-1.5 text-xs sm:text-sm relative">
+                  <Music2 className="h-4 w-4" />
+                  Music
+                  {pendingMusicCount > 0 && (
+                    <span className="ml-1 bg-pink-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+                      {pendingMusicCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="angelai" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Sparkles className="h-4 w-4" />
+                  Angel AI
+                </TabsTrigger>
+                <TabsTrigger value="appeals" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <MessageSquare className="h-4 w-4" />
+                  Appeals
+                </TabsTrigger>
+                <TabsTrigger value="donations" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <HeartHandshake className="h-4 w-4" />
+                  Donations
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Settings className="h-4 w-4" />
+                  Settings
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="users" className="mt-4">
+                <AdminUsersTab onStatsUpdate={loadStats} />
+              </TabsContent>
+              <TabsContent value="games" className="mt-4">
+                <AdminGamesTab onStatsUpdate={loadStats} />
+              </TabsContent>
+              <TabsContent value="music" className="mt-4">
+                <AdminMusicTab onStatsUpdate={loadStats} />
+              </TabsContent>
+              <TabsContent value="angelai" className="mt-4">
+                <AdminAngelAITab />
+              </TabsContent>
+              <TabsContent value="appeals" className="mt-4">
+                <AdminAppealsTab />
+              </TabsContent>
+              <TabsContent value="donations" className="mt-4">
+                <AdminDonationsTab />
+              </TabsContent>
+              <TabsContent value="settings" className="mt-4">
+                <AdminSettingsTab />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
-          <TabsContent value="users">
-            <AdminUsersTab onStatsUpdate={loadStats} />
-          </TabsContent>
+          {/* Tab 3: Tài Chính & Bảo Mật (Finance & Security) */}
+          <TabsContent value="finance" className="space-y-4">
+            <Tabs value={financeSubTab} onValueChange={setFinanceSubTab}>
+              <TabsList className="w-full justify-start bg-muted/50 p-1 flex-wrap h-auto gap-1">
+                <TabsTrigger value="rewards" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Coins className="h-4 w-4" />
+                  Rewards
+                </TabsTrigger>
+                <TabsTrigger value="withdrawals" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Wallet className="h-4 w-4" />
+                  Withdrawals
+                </TabsTrigger>
+                <TabsTrigger value="fraud" className="flex items-center gap-1.5 text-xs sm:text-sm relative">
+                  <AlertTriangle className="h-4 w-4" />
+                  Fraud
+                  {stats.suspiciousCount > 0 && (
+                    <span className="ml-1 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+                      {stats.suspiciousCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="audit" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <ScrollText className="h-4 w-4" />
+                  Audit
+                </TabsTrigger>
+                <TabsTrigger value="notifications" className="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <Bell className="h-4 w-4" />
+                  Notify
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="games">
-            <AdminGamesTab onStatsUpdate={loadStats} />
-          </TabsContent>
-
-          <TabsContent value="rewards">
-            <AdminRewardsTab onStatsUpdate={loadStats} />
-          </TabsContent>
-
-          <TabsContent value="withdrawals">
-            <AdminWithdrawalsTab />
-          </TabsContent>
-
-          <TabsContent value="donations">
-            <AdminDonationsTab />
-          </TabsContent>
-
-          <TabsContent value="fraud">
-            <AdminFraudTab onStatsUpdate={loadStats} />
-          </TabsContent>
-
-          <TabsContent value="reports">
-            <AdminReportsTab onStatsUpdate={loadStats} />
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <AdminAnalyticsTab />
-          </TabsContent>
-
-          <TabsContent value="audit">
-            <AdminAuditLogsTab />
-          </TabsContent>
-
-          <TabsContent value="angelai">
-            <AdminAngelAITab />
-          </TabsContent>
-
-          <TabsContent value="appeals">
-            <AdminAppealsTab />
-          </TabsContent>
-
-          <TabsContent value="music">
-            <AdminMusicTab onStatsUpdate={loadStats} />
-          </TabsContent>
-
-          <TabsContent value="notifications">
-            <div className="space-y-6">
-              <AdminNotificationsTab />
-              <AdminWeeklySummaryStats />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <AdminSettingsTab />
+              <TabsContent value="rewards" className="mt-4">
+                <AdminRewardsTab onStatsUpdate={loadStats} />
+              </TabsContent>
+              <TabsContent value="withdrawals" className="mt-4">
+                <AdminWithdrawalsTab />
+              </TabsContent>
+              <TabsContent value="fraud" className="mt-4">
+                <AdminFraudTab onStatsUpdate={loadStats} />
+              </TabsContent>
+              <TabsContent value="audit" className="mt-4">
+                <AdminAuditLogsTab />
+              </TabsContent>
+              <TabsContent value="notifications" className="mt-4">
+                <div className="space-y-6">
+                  <AdminNotificationsTab />
+                  <AdminWeeklySummaryStats />
+                </div>
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
       </div>
