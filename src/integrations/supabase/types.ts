@@ -6649,6 +6649,19 @@ export type Database = {
         Args: { p_wallet_address: string }
         Returns: number
       }
+      get_public_donors: {
+        Args: { limit_count?: number }
+        Returns: {
+          avatar_url: string
+          games_uploaded: number
+          id: string
+          is_anonymous: boolean
+          total_donated: number
+          total_plays: number
+          username: string
+          wallet_address: string
+        }[]
+      }
       get_public_ranking: {
         Args: { limit_count?: number }
         Returns: {
