@@ -14,6 +14,7 @@ import confetti from "canvas-confetti";
 import { TransferModal } from "@/components/TransferModal";
 import { toast } from "sonner";
 import AchievementLeaderboard from "@/components/leaderboard/AchievementLeaderboard";
+import { UserProfileModal } from "@/components/ranking/UserProfileModal";
 
 interface RankedUser {
   id: string;
@@ -111,12 +112,14 @@ const PodiumCard = memo(({
   isCurrentUser,
   currentUserId,
   onTransfer,
+  onUserClick,
 }: {
   user: RankedUser;
   rank: number;
   isCurrentUser: boolean;
   currentUserId?: string;
   onTransfer: (user: RankedUser) => void;
+  onUserClick: (user: RankedUser, rank: number) => void;
 }) => {
   const heights = { 1: "h-24", 2: "h-16", 3: "h-14" };
   const avatarSizes = { 1: "h-20 w-20", 2: "h-16 w-16", 3: "h-14 w-14" };
@@ -131,7 +134,8 @@ const PodiumCard = memo(({
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: rank === 1 ? 0.2 : rank === 2 ? 0.1 : 0.3 }}
-      className="flex flex-col items-center"
+      className="flex flex-col items-center cursor-pointer"
+      onClick={() => onUserClick(user, rank)}
     >
       {/* Avatar with Glowing Ring */}
       <div className="relative mb-3">
@@ -263,6 +267,7 @@ const UserRow = memo(({
   index,
   currentUserId,
   onTransfer,
+  onUserClick,
 }: {
   user: RankedUser;
   rank: number;
@@ -270,15 +275,15 @@ const UserRow = memo(({
   index: number;
   currentUserId?: string;
   onTransfer: (user: RankedUser) => void;
+  onUserClick: (user: RankedUser, rank: number) => void;
 }) => {
-  const navigate = useNavigate();
   
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
-      onClick={() => navigate(`/profile/${user.id}`)}
+      onClick={() => onUserClick(user, rank)}
       className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.01] ${
         isCurrentUser
           ? "bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-400/60 shadow-[0_0_20px_rgba(255,215,0,0.15)]"
@@ -365,8 +370,15 @@ export default function FullRanking() {
     avatar?: string | null;
     walletAddress?: string | null;
   } | null>(null);
+  const [userModalOpen, setUserModalOpen] = useState(false);
+  const [selectedUserForModal, setSelectedUserForModal] = useState<{ user: RankedUser; rank: number } | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const handleUserClick = (targetUser: RankedUser, rank: number) => {
+    setSelectedUserForModal({ user: targetUser, rank });
+    setUserModalOpen(true);
+  };
 
   const handleTransfer = (targetUser: RankedUser) => {
     setSelectedRecipient({
@@ -658,6 +670,7 @@ export default function FullRanking() {
                     isCurrentUser={user?.id === top3Users[1]?.id}
                     currentUserId={user?.id}
                     onTransfer={handleTransfer}
+                    onUserClick={handleUserClick}
                   />
                   {/* 1st Place */}
                   <PodiumCard
@@ -666,6 +679,7 @@ export default function FullRanking() {
                     isCurrentUser={user?.id === top3Users[0]?.id}
                     currentUserId={user?.id}
                     onTransfer={handleTransfer}
+                    onUserClick={handleUserClick}
                   />
                   {/* 3rd Place */}
                   <PodiumCard
@@ -674,6 +688,7 @@ export default function FullRanking() {
                     isCurrentUser={user?.id === top3Users[2]?.id}
                     currentUserId={user?.id}
                     onTransfer={handleTransfer}
+                    onUserClick={handleUserClick}
                   />
                 </div>
               </motion.div>
@@ -718,6 +733,7 @@ export default function FullRanking() {
                       index={index}
                       currentUserId={user?.id}
                       onTransfer={handleTransfer}
+                      onUserClick={handleUserClick}
                     />
                   );
                 })
@@ -809,6 +825,15 @@ export default function FullRanking() {
           recipientWalletAddress={selectedRecipient.walletAddress}
         />
       )}
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        open={userModalOpen}
+        onOpenChange={setUserModalOpen}
+        userId={selectedUserForModal?.user.id || null}
+        totalCamly={selectedUserForModal?.user.total_camly}
+        userRank={selectedUserForModal?.rank}
+      />
     </div>
   );
 }
