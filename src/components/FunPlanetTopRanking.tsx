@@ -276,62 +276,34 @@ export const FunPlanetTopRanking = () => {
       if (isRefresh) setRefreshing(true);
       setError(null);
       
-      console.log("[Ranking] Fetching top users...", { isRefresh, timestamp: new Date().toISOString() });
+      console.log("[Ranking] Fetching top users via RPC...", { isRefresh, timestamp: new Date().toISOString() });
       
-      // Fetch profiles
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, username, avatar_url, wallet_balance, created_at");
+      // Use RPC to bypass RLS and get all users for ranking
+      const { data, error: rpcError } = await supabase
+        .rpc('get_public_ranking', { limit_count: 10 });
 
-      if (profilesError) {
-        console.error("[Ranking] Supabase profiles error:", profilesError);
-        throw profilesError;
+      if (rpcError) {
+        console.error("[Ranking] RPC error:", rpcError);
+        throw rpcError;
       }
 
-      // Fetch user_rewards
-      const { data: rewardsData, error: rewardsError } = await supabase
-        .from("user_rewards")
-        .select("user_id, pending_amount, claimed_amount");
-
-      if (rewardsError) {
-        console.error("[Ranking] Supabase rewards error:", rewardsError);
-        throw rewardsError;
-      }
-
-      // Create rewards map
-      const rewardsMap = new Map<string, { pending_amount: number; claimed_amount: number }>();
-      rewardsData?.forEach(reward => {
-        rewardsMap.set(reward.user_id, {
-          pending_amount: Number(reward.pending_amount) || 0,
-          claimed_amount: Number(reward.claimed_amount) || 0,
-        });
-      });
-
-      // Merge and calculate total_camly
-      const mergedUsers: RankedUser[] = (profilesData || []).map(profile => {
-        const rewards = rewardsMap.get(profile.id) || { pending_amount: 0, claimed_amount: 0 };
-        return {
-          id: profile.id,
-          username: profile.username || 'Unknown',
-          avatar_url: profile.avatar_url,
-          wallet_balance: profile.wallet_balance,
-          pending_amount: rewards.pending_amount,
-          claimed_amount: rewards.claimed_amount,
-          total_camly: rewards.pending_amount + rewards.claimed_amount,
-          created_at: profile.created_at,
-        };
-      });
-
-      // Sort by total_camly DESC and take top 10
-      mergedUsers.sort((a, b) => b.total_camly - a.total_camly);
-      const top10 = mergedUsers.slice(0, 10);
+      const rankedUsers: RankedUser[] = (data || []).map((row: any) => ({
+        id: row.id,
+        username: row.username || 'Unknown',
+        avatar_url: row.avatar_url,
+        wallet_balance: Number(row.wallet_balance) || 0,
+        pending_amount: Number(row.pending_amount) || 0,
+        claimed_amount: Number(row.claimed_amount) || 0,
+        total_camly: Number(row.total_camly) || 0,
+        created_at: row.created_at,
+      }));
       
-      console.log("[Ranking] Success! Fetched", top10.length, "users:", top10.map(u => ({ 
+      console.log("[Ranking] Success! Fetched", rankedUsers.length, "users:", rankedUsers.map(u => ({ 
         username: u.username, 
         total_camly: u.total_camly 
       })));
       
-      setTopUsers(top10);
+      setTopUsers(rankedUsers);
       setRetryCount(0);
     } catch (err: any) {
       console.error("[Ranking] Error fetching top users:", err);

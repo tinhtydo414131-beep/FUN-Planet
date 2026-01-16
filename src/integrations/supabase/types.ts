@@ -6649,6 +6649,19 @@ export type Database = {
         Args: { p_wallet_address: string }
         Returns: number
       }
+      get_public_ranking: {
+        Args: { limit_count?: number }
+        Returns: {
+          avatar_url: string
+          claimed_amount: number
+          created_at: string
+          id: string
+          pending_amount: number
+          total_camly: number
+          username: string
+          wallet_balance: number
+        }[]
+      }
       get_public_stats: { Args: never; Returns: Json }
       get_quiz_streak: { Args: { p_user_id: string }; Returns: number }
       get_user_ip_history: {
