@@ -376,6 +376,19 @@ export default function FullRanking() {
   const { user } = useAuth();
 
   const handleUserClick = (targetUser: RankedUser, rank: number) => {
+    console.log('[FullRanking] User clicked:', {
+      userId: targetUser.id,
+      username: targetUser.username,
+      rank,
+      totalCamly: targetUser.total_camly
+    });
+    
+    if (!targetUser.id) {
+      console.error('[FullRanking] targetUser.id is missing!');
+      toast.error('Không thể hiển thị thông tin user này');
+      return;
+    }
+    
     setSelectedUserForModal({ user: targetUser, rank });
     setUserModalOpen(true);
   };

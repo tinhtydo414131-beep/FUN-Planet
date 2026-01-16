@@ -42,12 +42,18 @@ export function UserProfileModal({
   const { user: currentUser } = useAuth();
 
   useEffect(() => {
+    console.log('[UserProfileModal] Effect triggered:', { open, userId });
     if (open && userId) {
       fetchUserProfile(userId);
+    } else if (open && !userId) {
+      console.warn('[UserProfileModal] Modal opened but userId is null/undefined');
+      setProfile(null);
+      setLoading(false);
     }
   }, [open, userId]);
 
   const fetchUserProfile = async (id: string) => {
+    console.log('[UserProfileModal] Fetching profile for userId:', id);
     setLoading(true);
     try {
       // Use public_profiles view to bypass RLS restrictions
@@ -57,10 +63,12 @@ export function UserProfileModal({
         .eq("id", id)
         .maybeSingle();
 
+      console.log('[UserProfileModal] Query result:', { data, error });
+
       if (error) throw error;
       setProfile(data);
     } catch (err) {
-      console.error("Error fetching user profile:", err);
+      console.error("[UserProfileModal] Error fetching user profile:", err);
       setProfile(null);
     } finally {
       setLoading(false);
