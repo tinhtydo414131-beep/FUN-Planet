@@ -382,46 +382,37 @@ export default function FullRanking() {
     try {
       if (isRefresh && !isRealtime) setRefreshing(true);
 
-      // Fetch profiles with wallet_address
-      const { data: profilesData, error: profilesError, count } = await supabase
-        .from("profiles")
-        .select("id, username, avatar_url, wallet_balance, wallet_address", { count: "exact" });
-
-      if (profilesError) throw profilesError;
-
-      // Fetch pending_amount and claimed_amount from user_rewards
-      const userIds = (profilesData || []).map(p => p.id);
-      const { data: rewardsData } = await supabase
-        .from("user_rewards")
-        .select("user_id, pending_amount, claimed_amount")
-        .in("user_id", userIds);
-
-      // Map rewards to users
-      const rewardsMap = new Map<string, { pending: number; claimed: number }>();
-      (rewardsData || []).forEach(r => {
-        rewardsMap.set(r.user_id, {
-          pending: r.pending_amount || 0,
-          claimed: r.claimed_amount || 0
-        });
-      });
-
-      const usersWithEarnings: RankedUser[] = (profilesData || []).map(p => {
-        const rewards = rewardsMap.get(p.id) || { pending: 0, claimed: 0 };
-        const total = rewards.pending + rewards.claimed;
-        return {
-          ...p,
-          pending_amount: rewards.pending,
-          claimed_amount: rewards.claimed,
-          total_camly: total
+      console.log("[FullRanking] Fetching all users via RPC...");
+      
+      // Use RPC to bypass RLS and get ALL users for ranking
+      // Pass a high limit (1000) to get all users
+      const { data, error: rpcError } = await supabase
+        .rpc('get_public_ranking' as any, { limit_count: 1000 }) as { 
+          data: any[] | null; 
+          error: any 
         };
-      });
 
-      // Sort by total_camly descending
-      usersWithEarnings.sort((a, b) => b.total_camly - a.total_camly);
+      if (rpcError) {
+        console.error("[FullRanking] RPC error:", rpcError);
+        throw rpcError;
+      }
+
+      const usersWithEarnings: RankedUser[] = (data || []).map((row: any) => ({
+        id: row.id,
+        username: (row.username || 'Unknown').trim(),
+        avatar_url: row.avatar_url,
+        wallet_balance: Number(row.wallet_balance) || 0,
+        wallet_address: null, // RPC không trả về field này
+        pending_amount: Number(row.pending_amount) || 0,
+        claimed_amount: Number(row.claimed_amount) || 0,
+        total_camly: Number(row.total_camly) || 0,
+      }));
+
+      console.log("[FullRanking] Success! Fetched", usersWithEarnings.length, "users");
 
       setAllUsers(usersWithEarnings);
       setFilteredUsers(usersWithEarnings);
-      setTotalUsers(count || 0);
+      setTotalUsers(usersWithEarnings.length);
       
       // Show update indicator for realtime updates
       if (isRealtime) {
