@@ -2822,6 +2822,174 @@ export type Database = {
         }
         Relationships: []
       }
+      gem_fusion_level_progress: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          high_score: number | null
+          id: string
+          level_id: number
+          stars: number | null
+          user_id: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          high_score?: number | null
+          id?: string
+          level_id: number
+          stars?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          high_score?: number | null
+          id?: string
+          level_id?: number
+          stars?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gem_fusion_level_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_level_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_level_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_level_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_level_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gem_fusion_progress: {
+        Row: {
+          booster_extra_moves: number | null
+          booster_fish_swarm: number | null
+          booster_hammer: number | null
+          booster_rainbow: number | null
+          coins: number | null
+          created_at: string | null
+          current_level: number | null
+          current_world: number | null
+          daily_streak: number | null
+          id: string
+          last_daily_reward: string | null
+          lives: number | null
+          music_enabled: boolean | null
+          sound_enabled: boolean | null
+          stars: number | null
+          unlocked_worlds: number[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          booster_extra_moves?: number | null
+          booster_fish_swarm?: number | null
+          booster_hammer?: number | null
+          booster_rainbow?: number | null
+          coins?: number | null
+          created_at?: string | null
+          current_level?: number | null
+          current_world?: number | null
+          daily_streak?: number | null
+          id?: string
+          last_daily_reward?: string | null
+          lives?: number | null
+          music_enabled?: boolean | null
+          sound_enabled?: boolean | null
+          stars?: number | null
+          unlocked_worlds?: number[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          booster_extra_moves?: number | null
+          booster_fish_swarm?: number | null
+          booster_hammer?: number | null
+          booster_rainbow?: number | null
+          coins?: number | null
+          created_at?: string | null
+          current_level?: number | null
+          current_world?: number | null
+          daily_streak?: number | null
+          id?: string
+          last_daily_reward?: string | null
+          lives?: number | null
+          music_enabled?: boolean | null
+          sound_enabled?: boolean | null
+          stars?: number | null
+          unlocked_worlds?: number[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gem_fusion_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "camly_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "leaderboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "public_leaderboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gem_fusion_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gold_miner_combos: {
         Row: {
           created_at: string
@@ -6537,16 +6705,26 @@ export type Database = {
         }
         Returns: boolean
       }
-      process_p2p_transfer: {
-        Args: {
-          p_amount: number
-          p_notes?: string
-          p_recipient_id: string
-          p_sender_id: string
-          p_token_type?: string
-        }
-        Returns: Json
-      }
+      process_p2p_transfer:
+        | {
+            Args: {
+              p_amount: number
+              p_notes?: string
+              p_recipient_id: string
+              p_sender_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_amount: number
+              p_notes?: string
+              p_recipient_id: string
+              p_sender_id: string
+              p_token_type?: string
+            }
+            Returns: Json
+          }
       process_referral_reward: {
         Args: {
           p_referral_code: string
@@ -6565,23 +6743,10 @@ export type Database = {
         }
         Returns: Json
       }
-      process_withdrawal_request:
-        | {
-            Args: {
-              p_amount: number
-              p_user_id: string
-              p_wallet_address: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              p_amount: number
-              p_user_id: string
-              p_wallet_address: string
-            }
-            Returns: Json
-          }
+      process_withdrawal_request: {
+        Args: { p_amount: number; p_user_id: string; p_wallet_address: string }
+        Returns: Json
+      }
       sync_all_referral_to_pending: {
         Args: never
         Returns: {
