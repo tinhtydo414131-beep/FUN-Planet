@@ -1,4 +1,4 @@
-// Force Cloudflare rebuild: 2026-01-14T12:00:00Z - HoverCard ref fix + mobile layout
+// Force Cloudflare rebuild: 2026-01-16T12:00:00Z - PWA cache fix v2
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
