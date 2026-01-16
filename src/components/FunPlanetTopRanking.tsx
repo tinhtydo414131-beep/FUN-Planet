@@ -280,7 +280,7 @@ export const FunPlanetTopRanking = () => {
       
       // Use RPC to bypass RLS and get all users for ranking
       const { data, error: rpcError } = await supabase
-        .rpc('get_public_ranking', { limit_count: 10 });
+        .rpc('get_public_ranking' as any, { limit_count: 10 }) as { data: any[] | null; error: any };
 
       if (rpcError) {
         console.error("[Ranking] RPC error:", rpcError);
