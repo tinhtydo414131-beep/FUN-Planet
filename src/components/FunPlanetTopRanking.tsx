@@ -753,70 +753,72 @@ export const FunPlanetTopRanking = () => {
                   return (
                     <HoverCard key={rankedUser.id} openDelay={200}>
                       <HoverCardTrigger asChild>
-                        <motion.div
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 + 0.5 }}
-                          whileHover={{
-                            scale: 1.02,
-                            boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)",
-                          }}
-                          className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${
-                            isCurrentUser ? "ring-2 ring-yellow-400" : ""
-                          }`}
-                        >
-                          {/* Rank */}
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
-                            <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
-                              #{rank}
-                            </span>
-                          </div>
+                        <div>
+                          <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 + 0.5 }}
+                            whileHover={{
+                              scale: 1.02,
+                              boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)",
+                            }}
+                            className={`flex items-center gap-3 rounded-xl border p-2.5 backdrop-blur-sm cursor-pointer transition-all border-white/35 bg-gradient-to-r from-white/15 to-white/10 ${
+                              isCurrentUser ? "ring-2 ring-yellow-400" : ""
+                            }`}
+                          >
+                            {/* Rank */}
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20">
+                              <span className="text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">
+                                #{rank}
+                              </span>
+                            </div>
 
-                          {/* Avatar */}
-                          <Avatar className="h-9 w-9 border-2 border-white/40">
-                            <AvatarImage src={rankedUser.avatar_url || undefined} />
-                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
-                              {rankedUser.username?.charAt(0).toUpperCase() || "?"}
-                            </AvatarFallback>
-                          </Avatar>
+                            {/* Avatar */}
+                            <Avatar className="h-9 w-9 border-2 border-white/40">
+                              <AvatarImage src={rankedUser.avatar_url || undefined} />
+                              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
+                                {rankedUser.username?.charAt(0).toUpperCase() || "?"}
+                              </AvatarFallback>
+                            </Avatar>
 
-                          {/* Username & Progress */}
-                          <div className="flex-1 min-w-0">
-                            <p
-                              className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
-                                isCurrentUser ? "text-yellow-300" : "text-white"
-                              }`}
-                            >
-                              {rankedUser.username}
-                              {isCurrentUser && (
-                                <span className="ml-1 text-xs text-yellow-300/80">
-                                  (Bạn)
-                                </span>
-                              )}
-                            </p>
-                            <ProgressBar
-                              value={rankedUser.total_camly || 0}
-                              maxValue={maxTotalCamly}
-                            />
-                          </div>
-
-                          {/* Balance - Only Total CAMLY */}
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)] cursor-help">
-                                  <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" />
-                                  <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" style={{ textShadow: '0 0 8px rgba(255,215,0,0.7)' }}>
-                                    {(rankedUser.total_camly || 0).toLocaleString()}
+                            {/* Username & Progress */}
+                            <div className="flex-1 min-w-0">
+                              <p
+                                className={`truncate max-w-[140px] text-base font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] ${
+                                  isCurrentUser ? "text-yellow-300" : "text-white"
+                                }`}
+                              >
+                                {rankedUser.username}
+                                {isCurrentUser && (
+                                  <span className="ml-1 text-xs text-yellow-300/80">
+                                    (Bạn)
                                   </span>
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
-                                Tổng CAMLY đã nhận
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </motion.div>
+                                )}
+                              </p>
+                              <ProgressBar
+                                value={rankedUser.total_camly || 0}
+                                maxValue={maxTotalCamly}
+                              />
+                            </div>
+
+                            {/* Balance - Only Total CAMLY */}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/50 to-amber-500/40 px-3 py-1 border-2 border-yellow-400/70 shadow-[0_0_15px_rgba(255,215,0,0.6)] cursor-help">
+                                    <Gem className="h-4 w-4 text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" />
+                                    <span className="text-sm font-extrabold text-yellow-400 drop-shadow-[0_0_6px_rgba(255,215,0,0.8)]" style={{ textShadow: '0 0 8px rgba(255,215,0,0.7)' }}>
+                                      {(rankedUser.total_camly || 0).toLocaleString()}
+                                    </span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="bg-black/90 border-yellow-500/50 text-yellow-400 text-xs">
+                                  Tổng CAMLY đã nhận
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </motion.div>
+                        </div>
                       </HoverCardTrigger>
                       <HoverCardContent
                         className="w-64 bg-gradient-to-br from-purple-500/95 via-pink-500/90 to-yellow-400/95 border-pink-400/50 backdrop-blur-xl"

@@ -223,8 +223,8 @@ serve(async (req) => {
     const { data: withdrawalResult, error: withdrawalError } = await supabase
       .rpc('process_withdrawal_request', {
         p_user_id: user.id,
-        p_amount: amount,
-        p_wallet_address: walletAddress
+        p_wallet_address: walletAddress,
+        p_amount: amount
       });
 
     if (withdrawalError) {
@@ -247,18 +247,17 @@ serve(async (req) => {
       });
     }
 
-    console.log(`✅ [${timestamp}] Withdrawal request created: ${withdrawalResult.withdrawal_id}`);
-    console.log(`🔐 [${timestamp}] User: ${profile?.username}, Trust: ${withdrawalResult.trust_score}, Auto-approved: ${withdrawalResult.auto_approved}`);
+    console.log(`✅ [${timestamp}] Withdrawal request created: ${withdrawalResult.request_id}`);
+    console.log(`🔐 [${timestamp}] User: ${profile?.username}, Status: ${withdrawalResult.status}`);
 
-    // If not auto-approved, return pending status
-    if (!withdrawalResult.auto_approved) {
-      console.log(`⏳ [${timestamp}] PENDING REVIEW: User ${profile?.username} (Trust: ${withdrawalResult.trust_score}) requesting ${amount} CAMLY`);
+    // If not approved (fraud suspect or blacklisted), return pending status
+    if (withdrawalResult.status !== 'approved') {
+      console.log(`⏳ [${timestamp}] PENDING REVIEW: User ${profile?.username} requesting ${amount} CAMLY - Status: ${withdrawalResult.status}`);
       console.log(`📋 [${timestamp}] ========== END (PENDING) ==========`);
       return new Response(JSON.stringify({ 
         success: true,
         status: 'pending_review',
-        withdrawal_id: withdrawalResult.withdrawal_id,
-        trust_score: withdrawalResult.trust_score,
+        withdrawal_id: withdrawalResult.request_id,
         message: 'Your withdrawal is pending admin review. You will be notified when approved.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -342,7 +341,7 @@ serve(async (req) => {
             status: 'failed',
             admin_notes: `Insufficient CAMLY in reward wallet. Required: ${amount}, Available: ${ethers.formatUnits(walletBalance, decimals)}`
           })
-          .eq('id', withdrawalResult.withdrawal_id);
+          .eq('id', withdrawalResult.request_id);
         
         // Create admin notification
         await supabase
@@ -357,7 +356,7 @@ serve(async (req) => {
               username: profile?.username,
               amount: amount, 
               available: ethers.formatUnits(walletBalance, decimals),
-              withdrawal_id: withdrawalResult.withdrawal_id
+              withdrawal_id: withdrawalResult.request_id
             }
           });
 
@@ -388,7 +387,7 @@ serve(async (req) => {
           tx_hash: receipt.hash,
           completed_at: new Date().toISOString()
         })
-        .eq('id', withdrawalResult.withdrawal_id);
+        .eq('id', withdrawalResult.request_id);
 
       if (updateError) {
         console.error(`⚠️ [${timestamp}] Error updating withdrawal status:`, updateError);
@@ -423,8 +422,7 @@ serve(async (req) => {
         success: true, 
         status: 'completed',
         txHash: receipt.hash,
-        amount: amount,
-        trust_score: withdrawalResult.trust_score
+        amount: amount
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -443,7 +441,7 @@ serve(async (req) => {
           status: 'failed',
           admin_notes: `TX error: ${txError.message?.substring(0, 200)}`
         })
-        .eq('id', withdrawalResult.withdrawal_id);
+        .eq('id', withdrawalResult.request_id);
 
       // Rollback - add back pending amount
       console.log(`🔄 [${timestamp}] Rolling back pending amount for ${profile?.username}...`);
@@ -472,7 +470,7 @@ serve(async (req) => {
             username: profile?.username,
             amount: amount, 
             error: txError.message,
-            withdrawal_id: withdrawalResult.withdrawal_id
+            withdrawal_id: withdrawalResult.request_id
           }
         });
 

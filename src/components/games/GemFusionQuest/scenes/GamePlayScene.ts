@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { useGemFusionStore } from '../store';
 import { GEM_COLORS, LEVELS, LevelConfig, SPECIAL_GEMS, BLOCKER_TYPES } from '../gameData';
+import { FUN_PLANET_COLORS, GEM_VISUAL_STYLES } from '../gemFusionStyles';
 
 interface Gem {
   row: number;
@@ -65,16 +66,38 @@ export class GamePlayScene extends Phaser.Scene {
   
   create() {
     const { width, height } = this.cameras.main;
+    const isMobile = width < 400;
     
-    // Background
+    // Fun Planet themed background (Sky blue to Rose gold)
     const bg = this.add.graphics();
-    bg.fillGradientStyle(0x1a1a2e, 0x1a1a2e, 0x2d3436, 0x2d3436, 1);
+    bg.fillGradientStyle(
+      FUN_PLANET_COLORS.bgGradient.top1,
+      FUN_PLANET_COLORS.bgGradient.top2,
+      FUN_PLANET_COLORS.bgGradient.bottom1,
+      FUN_PLANET_COLORS.bgGradient.bottom2,
+      1
+    );
     bg.fillRect(0, 0, width, height);
     
-    // Calculate grid position
-    this.cellSize = Math.min(60, (width - 40) / this.gridWidth);
+    // Dynamic cell size based on screen
+    const maxGridWidth = width - 24; // 12px padding each side
+    const hudHeight = isMobile ? 140 : 180;
+    const maxGridHeight = height - hudHeight - 20; // Space for HUD + bottom padding
+    
+    this.cellSize = Math.min(
+      Math.floor(maxGridWidth / this.gridWidth),
+      Math.floor(maxGridHeight / this.gridHeight),
+      56 // Max cell size (reduced for better fit)
+    );
+    
+    // Center grid horizontally
     this.gridOffsetX = (width - this.gridWidth * this.cellSize) / 2;
-    this.gridOffsetY = 200;
+    
+    // Center grid vertically in available space
+    const gridTotalHeight = this.gridHeight * this.cellSize;
+    const availableHeight = height - hudHeight;
+    this.gridOffsetY = hudHeight + (availableHeight - gridTotalHeight) / 2;
+    this.gridOffsetY = Math.max(hudHeight, this.gridOffsetY);
     
     // Draw grid background
     this.drawGridBackground();
@@ -101,8 +124,8 @@ export class GamePlayScene extends Phaser.Scene {
   drawGridBackground() {
     const bg = this.add.graphics();
     
-    // Grid container background
-    bg.fillStyle(0x000000, 0.3);
+    // Grid container with glassmorphism effect
+    bg.fillStyle(0xFFFFFF, 0.4);
     bg.fillRoundedRect(
       this.gridOffsetX - 10,
       this.gridOffsetY - 10,
@@ -110,8 +133,17 @@ export class GamePlayScene extends Phaser.Scene {
       this.gridHeight * this.cellSize + 20,
       15
     );
+    // Golden border
+    bg.lineStyle(3, FUN_PLANET_COLORS.cell.border, 0.6);
+    bg.strokeRoundedRect(
+      this.gridOffsetX - 10,
+      this.gridOffsetY - 10,
+      this.gridWidth * this.cellSize + 20,
+      this.gridHeight * this.cellSize + 20,
+      15
+    );
     
-    // Cell backgrounds
+    // Cell backgrounds with Fun Planet colors
     for (let row = 0; row < this.gridHeight; row++) {
       for (let col = 0; col < this.gridWidth; col++) {
         const x = this.gridOffsetX + col * this.cellSize;
@@ -121,8 +153,12 @@ export class GamePlayScene extends Phaser.Scene {
         const isHole = this.level.holes?.some(h => h[0] === col && h[1] === row);
         
         if (!isHole) {
-          bg.fillStyle((row + col) % 2 === 0 ? 0x3d3d5c : 0x4a4a6a, 0.8);
+          // Alternating cream/white cells
+          bg.fillStyle((row + col) % 2 === 0 ? FUN_PLANET_COLORS.cell.even : FUN_PLANET_COLORS.cell.odd, 0.85);
           bg.fillRoundedRect(x + 2, y + 2, this.cellSize - 4, this.cellSize - 4, 8);
+          // Subtle golden border
+          bg.lineStyle(1, FUN_PLANET_COLORS.cell.border, 0.3);
+          bg.strokeRoundedRect(x + 2, y + 2, this.cellSize - 4, this.cellSize - 4, 8);
         }
       }
     }
@@ -130,44 +166,49 @@ export class GamePlayScene extends Phaser.Scene {
   
   createHUD() {
     const { width } = this.cameras.main;
+    const isMobile = width < 400;
+    const fontSize = isMobile ? '20px' : '28px';
+    const labelSize = isMobile ? '11px' : '14px';
+    const titleSize = isMobile ? '18px' : '24px';
+    const topOffset = isMobile ? 20 : 30;
     
     // Level indicator
-    this.add.text(width / 2, 30, `Level ${this.level.id}`, {
+    this.add.text(width / 2, topOffset, `Level ${this.level.id}`, {
       fontFamily: 'Arial Black',
-      fontSize: '24px',
+      fontSize: titleSize,
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 2,
     }).setOrigin(0.5);
     
     // Score
-    this.add.text(30, 70, 'SCORE', {
-      fontSize: '14px',
+    this.add.text(15, isMobile ? 50 : 70, 'SCORE', {
+      fontSize: labelSize,
       color: '#a8d8ff',
     });
-    this.scoreText = this.add.text(30, 90, '0', {
+    this.scoreText = this.add.text(15, isMobile ? 65 : 90, '0', {
       fontFamily: 'Arial Black',
-      fontSize: '28px',
+      fontSize: fontSize,
       color: '#ffd93d',
       stroke: '#000000',
       strokeThickness: 2,
     });
     
     // Moves
-    this.add.text(width - 30, 70, 'MOVES', {
-      fontSize: '14px',
+    this.add.text(width - 15, isMobile ? 50 : 70, 'MOVES', {
+      fontSize: labelSize,
       color: '#a8d8ff',
     }).setOrigin(1, 0);
-    this.movesText = this.add.text(width - 30, 90, this.movesLeft.toString(), {
+    this.movesText = this.add.text(width - 15, isMobile ? 65 : 90, this.movesLeft.toString(), {
       fontFamily: 'Arial Black',
-      fontSize: '28px',
+      fontSize: fontSize,
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 2,
     }).setOrigin(1, 0);
     
     // Objectives
-    this.objectivesContainer = this.add.container(width / 2, 140);
+    this.objectivesContainer = this.add.container(width / 2, isMobile ? 110 : 140);
     this.updateObjectivesDisplay();
     
     // Star progress bar
@@ -377,42 +418,49 @@ export class GamePlayScene extends Phaser.Scene {
   }
   
   setupInput() {
-    let startPos: { row: number; col: number } | null = null;
+    let startPos: { x: number; y: number; row: number; col: number } | null = null;
+    let isDragging = false;
+    const SWIPE_THRESHOLD = 25; // pixels - more responsive
     
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (this.isProcessing) return;
       
       const pos = this.getGridPosition(pointer.x, pointer.y);
       if (pos && this.grid[pos.row]?.[pos.col]) {
-        startPos = pos;
+        startPos = { x: pointer.x, y: pointer.y, ...pos };
+        isDragging = true;
         this.selectGem(this.grid[pos.row][pos.col]!);
       }
     });
     
-    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      if (this.isProcessing || !startPos) return;
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (!isDragging || !startPos || this.isProcessing) return;
       
-      const endPos = this.getGridPosition(pointer.x, pointer.y);
-      if (endPos) {
-        const dx = endPos.col - startPos.col;
-        const dy = endPos.row - startPos.row;
-        
-        // Determine swipe direction
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) >= 0.3) {
-          // Horizontal swipe
+      const dx = pointer.x - startPos.x;
+      const dy = pointer.y - startPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance >= SWIPE_THRESHOLD) {
+        // Determine direction and swap
+        if (Math.abs(dx) > Math.abs(dy)) {
           const targetCol = startPos.col + (dx > 0 ? 1 : -1);
           if (targetCol >= 0 && targetCol < this.gridWidth) {
             this.trySwap(startPos.row, startPos.col, startPos.row, targetCol);
           }
-        } else if (Math.abs(dy) >= 0.3) {
-          // Vertical swipe
+        } else {
           const targetRow = startPos.row + (dy > 0 ? 1 : -1);
           if (targetRow >= 0 && targetRow < this.gridHeight) {
             this.trySwap(startPos.row, startPos.col, targetRow, startPos.col);
           }
         }
+        isDragging = false;
+        this.deselectGem();
+        startPos = null;
       }
-      
+    });
+    
+    this.input.on('pointerup', () => {
+      isDragging = false;
       this.deselectGem();
       startPos = null;
     });
@@ -454,47 +502,73 @@ export class GamePlayScene extends Phaser.Scene {
   async trySwap(row1: number, col1: number, row2: number, col2: number) {
     const gem1 = this.grid[row1]?.[col1];
     const gem2 = this.grid[row2]?.[col2];
-    
+
     if (!gem1 || !gem2) return;
     if (gem1.blocker || gem2.blocker) return; // Can't swap blocked gems
-    
+
+    // Prevent re-entry
+    if (this.isProcessing) return;
     this.isProcessing = true;
-    
-    // Animate swap
-    await this.animateSwap(gem1, gem2);
-    
-    // Actually swap in grid
-    this.grid[row1][col1] = gem2;
-    this.grid[row2][col2] = gem1;
-    gem1.row = row2;
-    gem1.col = col2;
-    gem2.row = row1;
-    gem2.col = col1;
-    
-    // Check for matches
-    const matches = this.findMatches();
-    
-    if (matches.length > 0) {
-      this.movesLeft--;
-      this.movesText.setText(this.movesLeft.toString());
-      
-      this.cascadeCount = 0;
-      await this.processMatches(matches);
-      
-      // Check win/lose conditions
-      this.checkGameEnd();
-    } else {
-      // Swap back
+
+    // Safety: never let the game get stuck in processing state
+    const safetyTimeout = this.time.delayedCall(8000, () => {
+      // If any tween/promise chain fails, recover input
+      this.isProcessing = false;
+    });
+
+    try {
+      // Animate swap
       await this.animateSwap(gem1, gem2);
-      this.grid[row1][col1] = gem1;
-      this.grid[row2][col2] = gem2;
-      gem1.row = row1;
-      gem1.col = col1;
-      gem2.row = row2;
-      gem2.col = col2;
+
+      // Actually swap in grid
+      this.grid[row1][col1] = gem2;
+      this.grid[row2][col2] = gem1;
+      gem1.row = row2;
+      gem1.col = col2;
+      gem2.row = row1;
+      gem2.col = col1;
+
+      // Special-gem swap activation (prevents "stuck" boards)
+      const didActivateSpecial = await this.tryActivateSpecialSwap(gem1, gem2);
+
+      // Check for matches
+      const matches = this.findMatches();
+
+      if (didActivateSpecial || matches.length > 0) {
+        this.movesLeft--;
+        this.movesText.setText(this.movesLeft.toString());
+
+        this.cascadeCount = 0;
+
+        if (matches.length > 0) {
+          await this.processMatches(matches);
+        } else {
+          // Special activation may have cleared gems without creating a normal match
+          await this.dropGems();
+          await this.fillEmptySpaces();
+
+          const newMatches = this.findMatches();
+          if (newMatches.length > 0) {
+            await this.processMatches(newMatches);
+          }
+        }
+
+        // Check win/lose conditions
+        this.checkGameEnd();
+      } else {
+        // Swap back (invalid move)
+        await this.animateSwap(gem1, gem2);
+        this.grid[row1][col1] = gem1;
+        this.grid[row2][col2] = gem2;
+        gem1.row = row1;
+        gem1.col = col1;
+        gem2.row = row2;
+        gem2.col = col2;
+      }
+    } finally {
+      safetyTimeout.remove(false);
+      this.isProcessing = false;
     }
-    
-    this.isProcessing = false;
   }
   
   animateSwap(gem1: Gem, gem2: Gem): Promise<void> {
@@ -717,40 +791,173 @@ export class GamePlayScene extends Phaser.Scene {
       });
     });
   }
-  
+
+  private isHoleAt(row: number, col: number) {
+    return !!this.level.holes?.some(h => h[0] === col && h[1] === row);
+  }
+
+  private async destroyGems(gems: Gem[]) {
+    const unique = new Map<string, Gem>();
+    for (const g of gems) unique.set(`${g.row},${g.col}`, g);
+
+    await Promise.all(
+      Array.from(unique.values()).map(async gem => {
+        // Skip already cleared
+        if (!this.grid[gem.row]?.[gem.col]) return;
+        this.createMatchParticles(gem);
+        this.clearAdjacentBlockers(gem.row, gem.col);
+        await this.animateGemDestroy(gem);
+        this.grid[gem.row][gem.col] = null;
+      })
+    );
+  }
+
+  /**
+   * Activates special gem swaps so the board never gets into a "no-match but should-clear" stuck state.
+   * Returns true if any special effect was triggered.
+   */
+  private async tryActivateSpecialSwap(gem1: Gem, gem2: Gem): Promise<boolean> {
+    // Rainbow clears target color
+    if (gem1.special === 'rainbow') {
+      await this.activateRainbowGem(gem1, gem2.colorIndex);
+      return true;
+    }
+    if (gem2.special === 'rainbow') {
+      await this.activateRainbowGem(gem2, gem1.colorIndex);
+      return true;
+    }
+
+    // Line gems clear a full row/column
+    if (gem1.special === 'line_h' || gem1.special === 'line_v') {
+      await this.activateLineGem(gem1, gem1.special);
+      return true;
+    }
+    if (gem2.special === 'line_h' || gem2.special === 'line_v') {
+      await this.activateLineGem(gem2, gem2.special);
+      return true;
+    }
+
+    // Burst (if ever present)
+    if (gem1.special === 'burst') {
+      await this.activateBurstGem(gem1);
+      return true;
+    }
+    if (gem2.special === 'burst') {
+      await this.activateBurstGem(gem2);
+      return true;
+    }
+
+    return false;
+  }
+
+  private async activateRainbowGem(rainbowGem: Gem, targetColorIndex: number) {
+    const gemsToClear: Gem[] = [];
+
+    // Always consume the rainbow gem itself
+    gemsToClear.push(rainbowGem);
+
+    for (let row = 0; row < this.gridHeight; row++) {
+      for (let col = 0; col < this.gridWidth; col++) {
+        if (this.isHoleAt(row, col)) continue;
+        const gem = this.grid[row][col];
+        if (!gem) continue;
+        if (gem.blocker) continue;
+        if (gem.colorIndex === targetColorIndex) gemsToClear.push(gem);
+      }
+    }
+
+    await this.destroyGems(gemsToClear);
+  }
+
+  private async activateLineGem(lineGem: Gem, type: 'line_h' | 'line_v') {
+    const gemsToClear: Gem[] = [lineGem];
+
+    if (type === 'line_h') {
+      const row = lineGem.row;
+      for (let col = 0; col < this.gridWidth; col++) {
+        if (this.isHoleAt(row, col)) continue;
+        const gem = this.grid[row][col];
+        if (!gem) continue;
+        if (gem.blocker) continue;
+        gemsToClear.push(gem);
+      }
+    } else {
+      const col = lineGem.col;
+      for (let row = 0; row < this.gridHeight; row++) {
+        if (this.isHoleAt(row, col)) continue;
+        const gem = this.grid[row][col];
+        if (!gem) continue;
+        if (gem.blocker) continue;
+        gemsToClear.push(gem);
+      }
+    }
+
+    await this.destroyGems(gemsToClear);
+  }
+
+  private async activateBurstGem(burstGem: Gem) {
+    const gemsToClear: Gem[] = [burstGem];
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        const row = burstGem.row + dr;
+        const col = burstGem.col + dc;
+        if (row < 0 || row >= this.gridHeight || col < 0 || col >= this.gridWidth) continue;
+        if (this.isHoleAt(row, col)) continue;
+        const gem = this.grid[row][col];
+        if (!gem) continue;
+        if (gem.blocker) continue;
+        gemsToClear.push(gem);
+      }
+    }
+
+    await this.destroyGems(gemsToClear);
+  }
+
   async dropGems() {
     const promises: Promise<void>[] = [];
-    
+
     for (let col = 0; col < this.gridWidth; col++) {
-      let emptyRow = this.gridHeight - 1;
-      
+      let targetRow = this.gridHeight - 1;
+
       for (let row = this.gridHeight - 1; row >= 0; row--) {
+        if (this.isHoleAt(row, col)) continue;
         const gem = this.grid[row][col];
-        
-        if (gem) {
-          if (row !== emptyRow) {
-            // Move gem down
-            this.grid[emptyRow][col] = gem;
-            this.grid[row][col] = null;
-            gem.row = emptyRow;
-            
-            const targetY = this.gridOffsetY + emptyRow * this.cellSize + this.cellSize / 2;
-            
-            promises.push(new Promise(resolve => {
+        if (!gem) continue;
+
+        // Find next valid landing row (skip holes)
+        while (targetRow >= 0 && this.isHoleAt(targetRow, col)) targetRow--;
+        if (targetRow < 0) break;
+
+        if (row !== targetRow) {
+          this.grid[targetRow][col] = gem;
+          this.grid[row][col] = null;
+          gem.row = targetRow;
+
+          const targetY = this.gridOffsetY + targetRow * this.cellSize + this.cellSize / 2;
+          promises.push(
+            new Promise(resolve => {
               this.tweens.add({
                 targets: gem.sprite,
                 y: targetY,
-                duration: 200 + (emptyRow - row) * 30,
+                duration: 200 + Math.abs(targetRow - row) * 30,
                 ease: 'Bounce.easeOut',
                 onComplete: () => resolve(),
               });
-            }));
-          }
-          emptyRow--;
+            })
+          );
+        }
+
+        targetRow--;
+      }
+
+      // Clear any remaining above-target non-hole cells (safety)
+      for (let r = targetRow; r >= 0; r--) {
+        if (!this.isHoleAt(r, col) && this.grid[r][col] && (this.grid[r][col] as Gem).row !== r) {
+          this.grid[r][col] = null;
         }
       }
     }
-    
+
     await Promise.all(promises);
   }
   
@@ -866,9 +1073,30 @@ export class GamePlayScene extends Phaser.Scene {
   }
   
   createPauseButton() {
-    const pauseBtn = this.add.text(this.cameras.main.width - 50, 35, '⏸️', {
-      fontSize: '32px',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    const isMobile = this.cameras.main.width < 400;
+    const btnSize = isMobile ? '32px' : '36px';
+    // Position below the React header overlay (header is ~60px tall)
+    const topY = isMobile ? 70 : 80;
+    
+    // Back button - left side with background for visibility
+    const backBg = this.add.circle(35, topY, 24, 0x000000, 0.6);
+    backBg.setDepth(200);
+    
+    const backBtn = this.add.text(35, topY, '⬅️', {
+      fontSize: btnSize,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(201);
+    
+    backBtn.on('pointerdown', () => {
+      this.scene.start('WorldMap');
+    });
+    
+    // Pause button - right side with background
+    const pauseBg = this.add.circle(this.cameras.main.width - 35, topY, 24, 0x000000, 0.6);
+    pauseBg.setDepth(200);
+    
+    const pauseBtn = this.add.text(this.cameras.main.width - 35, topY, '⏸️', {
+      fontSize: btnSize,
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(201);
     
     pauseBtn.on('pointerdown', () => {
       this.showPauseMenu();
@@ -876,33 +1104,57 @@ export class GamePlayScene extends Phaser.Scene {
   }
   
   showPauseMenu() {
-    // Simple pause menu implementation
     const { width, height } = this.cameras.main;
+    const isMobile = width < 400;
+    const titleSize = isMobile ? '32px' : '42px';
+    const btnSize = isMobile ? '22px' : '28px';
     
     const overlay = this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.7);
     overlay.setInteractive();
+    overlay.setDepth(100);
     
-    const pauseText = this.add.text(width/2, height/2 - 50, 'PAUSED', {
+    const pauseText = this.add.text(width/2, height/2 - 60, 'PAUSED', {
       fontFamily: 'Arial Black',
-      fontSize: '42px',
+      fontSize: titleSize,
       color: '#ffffff',
-    }).setOrigin(0.5);
+    }).setOrigin(0.5).setDepth(101);
     
-    const resumeBtn = this.add.text(width/2, height/2 + 30, '▶️ Resume', {
-      fontSize: '28px',
+    const resumeBtn = this.add.text(width/2, height/2, '▶️ Resume', {
+      fontSize: btnSize,
       color: '#2ecc71',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      backgroundColor: '#1a1a2e',
+      padding: { x: 20, y: 10 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(101);
     
-    const quitBtn = this.add.text(width/2, height/2 + 80, '🏠 Quit', {
-      fontSize: '28px',
+    const restartBtn = this.add.text(width/2, height/2 + 55, '🔄 Restart', {
+      fontSize: btnSize,
+      color: '#f39c12',
+      backgroundColor: '#1a1a2e',
+      padding: { x: 20, y: 10 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(101);
+    
+    const quitBtn = this.add.text(width/2, height/2 + 110, '🏠 Quit to Map', {
+      fontSize: btnSize,
       color: '#e74c3c',
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      backgroundColor: '#1a1a2e',
+      padding: { x: 20, y: 10 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(101);
     
-    resumeBtn.on('pointerdown', () => {
+    const cleanupMenu = () => {
       overlay.destroy();
       pauseText.destroy();
       resumeBtn.destroy();
+      restartBtn.destroy();
       quitBtn.destroy();
+    };
+    
+    resumeBtn.on('pointerdown', () => {
+      cleanupMenu();
+    });
+    
+    restartBtn.on('pointerdown', () => {
+      cleanupMenu();
+      this.scene.restart();
     });
     
     quitBtn.on('pointerdown', () => {

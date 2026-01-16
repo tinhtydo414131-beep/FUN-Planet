@@ -38,6 +38,21 @@ export const ReferralLeaderboard = () => {
     fetchLeaderboards();
   }, [user]);
 
+  // Listen for wallet-connected-refresh event to force update ranking after wallet connect
+  useEffect(() => {
+    const handleWalletRefresh = () => {
+      console.log('[ReferralLeaderboard] Wallet connected - delaying refresh by 800ms for DB sync');
+      // Delay refresh to allow database triggers to complete wallet bonus sync
+      setTimeout(() => {
+        console.log('[ReferralLeaderboard] Now refreshing leaderboard data');
+        fetchLeaderboards();
+      }, 800);
+    };
+    
+    window.addEventListener('wallet-connected-refresh', handleWalletRefresh);
+    return () => window.removeEventListener('wallet-connected-refresh', handleWalletRefresh);
+  }, []);
+
   const fetchLeaderboards = async () => {
     setLoading(true);
     try {

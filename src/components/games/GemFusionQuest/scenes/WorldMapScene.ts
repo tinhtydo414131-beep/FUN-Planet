@@ -135,10 +135,11 @@ export class WorldMapScene extends Phaser.Scene {
   createLevelNodes() {
     const { width, height } = this.cameras.main;
     const store = useGemFusionStore.getState();
+    const isMobile = width < 400;
     
     const worldLevels = LEVELS.filter(l => l.worldId === this.selectedWorld);
-    const startY = 220;
-    const spacing = 100;
+    const startY = isMobile ? 180 : 220;
+    const spacing = isMobile ? 80 : 100;
     
     this.maxScroll = Math.max(0, (worldLevels.length * spacing) - (height - startY - 100));
     
@@ -149,30 +150,30 @@ export class WorldMapScene extends Phaser.Scene {
       const isUnlocked = level.id === 1 || 
                          store.levelProgress.some(p => p.levelId === level.id - 1 && p.completed);
       
-      // Zigzag pattern
-      const xOffset = index % 2 === 0 ? -60 : 60;
+      // Zigzag pattern - smaller offset on mobile
+      const xOffset = index % 2 === 0 ? (isMobile ? -40 : -60) : (isMobile ? 40 : 60);
       const x = width / 2 + xOffset;
       const y = startY + index * spacing + this.scrollY;
       
-      const node = this.createLevelNode(x, y, level.id, stars, isUnlocked, isCompleted);
+      const node = this.createLevelNode(x, y, level.id, stars, isUnlocked, isCompleted, isMobile);
       this.levelNodes.push(node);
       
       // Path line to next level
       if (index < worldLevels.length - 1) {
-        const nextXOffset = (index + 1) % 2 === 0 ? -60 : 60;
+        const nextXOffset = (index + 1) % 2 === 0 ? (isMobile ? -40 : -60) : (isMobile ? 40 : 60);
         const nextX = width / 2 + nextXOffset;
         const nextY = startY + (index + 1) * spacing + this.scrollY;
         
         const path = this.add.graphics();
-        path.lineStyle(4, isCompleted ? 0xffd93d : 0x666666, isUnlocked ? 1 : 0.5);
+        path.lineStyle(isMobile ? 3 : 4, isCompleted ? 0xffd93d : 0x666666, isUnlocked ? 1 : 0.5);
         path.beginPath();
-        path.moveTo(x, y + 30);
-        path.lineTo(nextX, nextY - 30);
+        path.moveTo(x, y + (isMobile ? 25 : 30));
+        path.lineTo(nextX, nextY - (isMobile ? 25 : 30));
         path.strokePath();
         
         // Store path for updates
         (node as any).pathLine = path;
-        (node as any).pathData = { x1: x, y1: y + 30, x2: nextX, y2: nextY - 30 };
+        (node as any).pathData = { x1: x, y1: y + (isMobile ? 25 : 30), x2: nextX, y2: nextY - (isMobile ? 25 : 30), isMobile };
       }
     });
   }
@@ -183,9 +184,11 @@ export class WorldMapScene extends Phaser.Scene {
     levelId: number, 
     stars: number, 
     isUnlocked: boolean,
-    isCompleted: boolean
+    isCompleted: boolean,
+    isMobile: boolean = false
   ) {
     const container = this.add.container(x, y);
+    const nodeRadius = isMobile ? 28 : 35;
     
     // Node background
     const bg = this.add.graphics();
@@ -194,18 +197,18 @@ export class WorldMapScene extends Phaser.Scene {
     } else {
       bg.fillStyle(0x666666, 0.7);
     }
-    bg.fillCircle(0, 0, 35);
+    bg.fillCircle(0, 0, nodeRadius);
     
     // Border
-    bg.lineStyle(4, isCompleted ? 0xffd93d : 0xffffff, isUnlocked ? 1 : 0.5);
-    bg.strokeCircle(0, 0, 35);
+    bg.lineStyle(isMobile ? 3 : 4, isCompleted ? 0xffd93d : 0xffffff, isUnlocked ? 1 : 0.5);
+    bg.strokeCircle(0, 0, nodeRadius);
     
     container.add(bg);
     
     // Level number
     const levelText = this.add.text(0, 0, levelId.toString(), {
       fontFamily: 'Arial Black',
-      fontSize: '24px',
+      fontSize: isMobile ? '18px' : '24px',
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 2,
@@ -213,10 +216,10 @@ export class WorldMapScene extends Phaser.Scene {
     container.add(levelText);
     
     // Stars
-    const starsContainer = this.add.container(0, 45);
+    const starsContainer = this.add.container(0, isMobile ? 38 : 45);
     for (let i = 0; i < 3; i++) {
-      const star = this.add.text((i - 1) * 20, 0, i < stars ? '⭐' : '☆', {
-        fontSize: '18px',
+      const star = this.add.text((i - 1) * (isMobile ? 16 : 20), 0, i < stars ? '⭐' : '☆', {
+        fontSize: isMobile ? '14px' : '18px',
       }).setOrigin(0.5);
       starsContainer.add(star);
     }
@@ -225,14 +228,14 @@ export class WorldMapScene extends Phaser.Scene {
     // Lock icon for locked levels
     if (!isUnlocked) {
       const lock = this.add.text(0, 0, '🔒', {
-        fontSize: '24px',
+        fontSize: isMobile ? '20px' : '24px',
       }).setOrigin(0.5);
       container.add(lock);
     }
     
     // Make interactive if unlocked
     if (isUnlocked) {
-      container.setSize(70, 70);
+      container.setSize(nodeRadius * 2, nodeRadius * 2);
       container.setInteractive({ useHandCursor: true });
       
       container.on('pointerover', () => {

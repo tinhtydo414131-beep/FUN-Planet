@@ -30,6 +30,21 @@ export default function CamlyLeaderboard() {
     fetchLeaderboard();
   }, [user]);
 
+  // Listen for wallet-connected-refresh event to force update ranking after wallet connect
+  useEffect(() => {
+    const handleWalletRefresh = () => {
+      console.log('[CamlyLeaderboard] Wallet connected - delaying refresh by 800ms for DB sync');
+      // Delay refresh to allow database triggers to complete wallet bonus sync
+      setTimeout(() => {
+        console.log('[CamlyLeaderboard] Now refreshing leaderboard data');
+        fetchLeaderboard();
+      }, 800);
+    };
+    
+    window.addEventListener('wallet-connected-refresh', handleWalletRefresh);
+    return () => window.removeEventListener('wallet-connected-refresh', handleWalletRefresh);
+  }, []);
+
   const fetchLeaderboard = async () => {
     try {
       // Use the secure camly_leaderboard view that only exposes safe data

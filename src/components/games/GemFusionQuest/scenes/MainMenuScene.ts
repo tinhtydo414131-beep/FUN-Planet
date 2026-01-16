@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { useGemFusionStore } from '../store';
-import { WORLDS } from '../gameData';
+import { FUN_PLANET_COLORS, GEM_VISUAL_STYLES } from '../gemFusionStyles';
 
 export class MainMenuScene extends Phaser.Scene {
   private particles: Phaser.GameObjects.Particles.ParticleEmitter | null = null;
@@ -12,34 +12,45 @@ export class MainMenuScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
     
-    // Animated gradient background
+    // Fun Planet themed gradient background (Sky blue to Rose gold)
     const bg = this.add.graphics();
-    bg.fillGradientStyle(0x1a1a2e, 0x1a1a2e, 0x16213e, 0x16213e, 1);
+    bg.fillGradientStyle(
+      FUN_PLANET_COLORS.bgGradient.top1,
+      FUN_PLANET_COLORS.bgGradient.top2,
+      FUN_PLANET_COLORS.bgGradient.bottom1,
+      FUN_PLANET_COLORS.bgGradient.bottom2,
+      1
+    );
     bg.fillRect(0, 0, width, height);
+    
+    // Add golden stars background
+    this.createStarsBackground();
     
     // Floating gems background
     this.createFloatingGems();
     
-    // Title
+    // Title with golden glow
     const titleShadow = this.add.text(width / 2 + 3, 143, '💎 GEM FUSION', {
       fontFamily: 'Arial Black, Arial',
       fontSize: '42px',
-      color: '#000000',
+      color: '#8B4513',
       align: 'center',
     }).setOrigin(0.5).setAlpha(0.3);
     
     const title = this.add.text(width / 2, 140, '💎 GEM FUSION', {
       fontFamily: 'Arial Black, Arial',
       fontSize: '42px',
-      color: '#ffffff',
+      color: '#FFFFFF',
+      stroke: '#FFD700',
+      strokeThickness: 3,
       align: 'center',
     }).setOrigin(0.5);
     
     const subtitle = this.add.text(width / 2, 190, 'QUEST', {
       fontFamily: 'Arial Black, Arial',
       fontSize: '56px',
-      color: '#ffd93d',
-      stroke: '#ff6b9d',
+      color: '#FFD700',
+      stroke: '#FF6B9D',
       strokeThickness: 4,
       align: 'center',
     }).setOrigin(0.5);
@@ -65,14 +76,14 @@ export class MainMenuScene extends Phaser.Scene {
     });
     
     // Tagline
-    this.add.text(width / 2, 250, 'Worlds of Wonder', {
+    this.add.text(width / 2, 250, '✨ Worlds of Wonder ✨', {
       fontFamily: 'Georgia, serif',
       fontSize: '24px',
-      color: '#a8d8ff',
+      color: '#5D3FD3',
       fontStyle: 'italic',
     }).setOrigin(0.5);
     
-    // Character
+    // Character with golden glow
     const kira = this.add.text(width / 2, 350, '👧', {
       fontSize: '80px',
     }).setOrigin(0.5);
@@ -102,32 +113,32 @@ export class MainMenuScene extends Phaser.Scene {
       delay: 500,
     });
     
-    // Play Button
-    const playBtn = this.createButton(width / 2, 500, 'PLAY', 0x2ecc71, () => {
+    // Play Button - Fun Planet green
+    this.createButton(width / 2, 500, '▶️ CHƠI NGAY', FUN_PLANET_COLORS.button.primary, () => {
       this.cameras.main.fade(300, 0, 0, 0);
       this.time.delayedCall(300, () => {
         this.scene.start('WorldMap');
       });
     });
     
-    // Daily Reward Button
-    const dailyBtn = this.createButton(width / 2, 580, '🎁 Daily Reward', 0xf1c40f, () => {
+    // Daily Reward Button - Golden
+    this.createButton(width / 2, 580, '🎁 Quà Hàng Ngày', FUN_PLANET_COLORS.button.secondary, () => {
       this.showDailyReward();
     }, 0.8);
     
     // Endless Mode Button (unlocks at level 50)
     const store = useGemFusionStore.getState();
     if (store.currentLevel >= 50) {
-      this.createButton(width / 2, 650, '♾️ Endless Mode', 0x9b59b6, () => {
+      this.createButton(width / 2, 650, '♾️ Vô Tận Mode', FUN_PLANET_COLORS.button.purple, () => {
         // Start endless mode
       }, 0.7);
     }
     
     // Version
-    this.add.text(width / 2, height - 30, 'v1.0 - funplanet.lovable.app', {
+    this.add.text(width / 2, height - 30, 'v1.0 - Fun Planet 🌍', {
       fontSize: '14px',
-      color: '#ffffff',
-    }).setOrigin(0.5).setAlpha(0.5);
+      color: '#5D3FD3',
+    }).setOrigin(0.5).setAlpha(0.7);
     
     // Sparkle effect around title
     this.time.addEvent({
@@ -140,9 +151,34 @@ export class MainMenuScene extends Phaser.Scene {
     });
   }
   
+  createStarsBackground() {
+    const { width, height } = this.cameras.main;
+    
+    // Add golden stars
+    for (let i = 0; i < 15; i++) {
+      const star = this.add.text(
+        Phaser.Math.Between(20, width - 20),
+        Phaser.Math.Between(20, height - 100),
+        '⭐',
+        { fontSize: `${Phaser.Math.Between(12, 24)}px` }
+      ).setAlpha(0.3);
+      
+      // Twinkle animation
+      this.tweens.add({
+        targets: star,
+        alpha: 0.6,
+        duration: Phaser.Math.Between(1000, 2000),
+        yoyo: true,
+        repeat: -1,
+        delay: Phaser.Math.Between(0, 1000),
+      });
+    }
+  }
+  
   createFloatingGems() {
     const { width, height } = this.cameras.main;
-    const gems = ['🔴', '🟡', '🟢', '🔵', '🟣', '🟠'];
+    // Use Fun Planet gem styles
+    const gems = GEM_VISUAL_STYLES.map(g => g.emoji);
     
     for (let i = 0; i < 20; i++) {
       const gem = this.add.text(
@@ -150,7 +186,7 @@ export class MainMenuScene extends Phaser.Scene {
         Phaser.Math.Between(0, height),
         gems[Phaser.Math.Between(0, gems.length - 1)],
         { fontSize: `${Phaser.Math.Between(16, 32)}px` }
-      ).setAlpha(0.2);
+      ).setAlpha(0.25);
       
       this.tweens.add({
         targets: gem,
@@ -162,7 +198,7 @@ export class MainMenuScene extends Phaser.Scene {
         onRepeat: () => {
           gem.y = height + 50;
           gem.x = Phaser.Math.Between(0, width);
-          gem.alpha = 0.2;
+          gem.alpha = 0.25;
         },
       });
     }
@@ -261,56 +297,60 @@ export class MainMenuScene extends Phaser.Scene {
     
     const { width, height } = this.cameras.main;
     
-    // Overlay
-    const overlay = this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.7);
+    // Overlay with soft blur effect
+    const overlay = this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.5);
     overlay.setInteractive();
     
-    // Popup
+    // Popup with Fun Planet theme
     const popup = this.add.container(width/2, height/2);
     
     const bg = this.add.graphics();
-    bg.fillStyle(0x2d3436, 1);
+    // Cream/white background
+    bg.fillStyle(0xFFFAF0, 1);
     bg.fillRoundedRect(-150, -150, 300, 300, 20);
-    bg.lineStyle(4, 0xffd93d);
+    // Golden border
+    bg.lineStyle(4, 0xFFD700);
     bg.strokeRoundedRect(-150, -150, 300, 300, 20);
     
     popup.add(bg);
     
     if (reward) {
       popup.add(this.add.text(0, -100, '🎁', { fontSize: '60px' }).setOrigin(0.5));
-      popup.add(this.add.text(0, -30, 'Daily Reward!', {
+      popup.add(this.add.text(0, -30, 'Quà Hàng Ngày!', {
         fontSize: '28px',
-        color: '#ffd93d',
+        color: '#FFD700',
         fontFamily: 'Arial Black',
+        stroke: '#8B4513',
+        strokeThickness: 2,
       }).setOrigin(0.5));
       popup.add(this.add.text(0, 20, `+${reward.coins} 💰`, {
         fontSize: '24px',
-        color: '#ffffff',
+        color: '#5D3FD3',
       }).setOrigin(0.5));
       if (reward.boosters > 0) {
         popup.add(this.add.text(0, 55, `+${reward.boosters} 🔨`, {
           fontSize: '20px',
-          color: '#ffffff',
+          color: '#5D3FD3',
         }).setOrigin(0.5));
       }
-      popup.add(this.add.text(0, 90, `Streak: Day ${store.dailyStreak}`, {
+      popup.add(this.add.text(0, 90, `Chuỗi: Ngày ${store.dailyStreak} 🔥`, {
         fontSize: '16px',
-        color: '#a8d8ff',
+        color: '#FF6B9D',
       }).setOrigin(0.5));
     } else {
       popup.add(this.add.text(0, -50, '⏰', { fontSize: '60px' }).setOrigin(0.5));
-      popup.add(this.add.text(0, 30, 'Come back tomorrow\nfor more rewards!', {
+      popup.add(this.add.text(0, 30, 'Quay lại ngày mai\nđể nhận thêm quà!', {
         fontSize: '18px',
-        color: '#ffffff',
+        color: '#5D3FD3',
         align: 'center',
       }).setOrigin(0.5));
     }
     
-    // Close button
+    // Close button with mint green
     const closeBtn = this.add.text(0, 120, 'OK', {
       fontSize: '24px',
-      color: '#2ecc71',
-      backgroundColor: '#27ae60',
+      color: '#FFFFFF',
+      backgroundColor: '#2ECC71',
       padding: { x: 30, y: 10 },
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     

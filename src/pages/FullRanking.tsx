@@ -449,6 +449,21 @@ export default function FullRanking() {
     fetchAllUsers();
   }, [fetchAllUsers]);
 
+  // Listen for wallet-connected-refresh event to force update ranking after wallet connect
+  useEffect(() => {
+    const handleWalletRefresh = () => {
+      console.log('[FullRanking] Wallet connected - delaying refresh by 800ms for DB sync');
+      // Delay refresh to allow database triggers to complete wallet bonus sync
+      setTimeout(() => {
+        console.log('[FullRanking] Now refreshing ranking data');
+        fetchAllUsers(true);
+      }, 800);
+    };
+    
+    window.addEventListener('wallet-connected-refresh', handleWalletRefresh);
+    return () => window.removeEventListener('wallet-connected-refresh', handleWalletRefresh);
+  }, [fetchAllUsers]);
+
   // Fire confetti on load
   useEffect(() => {
     if (!loading && allUsers.length > 0 && !confettiFired) {

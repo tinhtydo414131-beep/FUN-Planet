@@ -25,7 +25,9 @@ export interface RewardHistoryItem {
   claimed_to_wallet: boolean;
 }
 
-const DAILY_LIMIT = 500000; // 500,000 CAMLY per day (synced with backend)
+// Daily withdrawal limit - synced with admin_settings table
+// Last updated: 2026-01-14 - Production sync for planet.fun.rich
+const DAILY_LIMIT = 200000; // 200,000 CAMLY per 24 hours
 
 export function useUserRewards() {
   const { user } = useAuth();
@@ -43,13 +45,73 @@ export function useUserRewards() {
       return;
     }
 
+    setIsLoading(true);
+    console.log('[useUserRewards] Loading rewards for user:', user.id);
+
     try {
-      // Get or create user rewards
+      // Verify session is valid first
+      let { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      // Try to refresh if session error or missing
+      if (sessionError || !session) {
+        console.warn('[useUserRewards] Session invalid or missing, attempting refresh...');
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError || !refreshData.session) {
+          console.error('[useUserRewards] Cannot refresh session:', refreshError?.message);
+          setIsLoading(false);
+          return;
+        }
+        session = refreshData.session;
+        console.log('[useUserRewards] Session refreshed successfully');
+      }
+
+      console.log('[useUserRewards] Session valid, calling RPC...');
+      
+      // Get or create user rewards via RPC
       const { data, error } = await supabase
         .rpc('get_or_create_user_rewards', { p_user_id: user.id });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[useUserRewards] RPC error:', error.message, error.code);
+        // Fallback: try direct query with explicit auth context
+        console.log('[useUserRewards] Trying direct query fallback...');
+        const { data: directData, error: directError } = await supabase
+          .from('user_rewards')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (directError) {
+          console.error('[useUserRewards] Direct query error:', directError.message);
+        }
+        
+        if (directData) {
+          console.log('[useUserRewards] Loaded via direct query - pending:', directData.pending_amount);
+          setRewards(directData);
+          
+          // Calculate daily remaining
+          const today = new Date().toISOString().split('T')[0];
+          if (directData.last_claim_date === today) {
+            setDailyRemaining(Math.max(0, DAILY_LIMIT - (directData.daily_claimed || 0)));
+          } else {
+            setDailyRemaining(DAILY_LIMIT);
+          }
+        } else {
+          console.log('[useUserRewards] No rewards data found via direct query');
+          // Set default rewards object for new users
+          setRewards(null);
+        }
+        setIsLoading(false);
+        return;
+      }
 
+      if (!data) {
+        console.log('[useUserRewards] RPC returned null, user may not have rewards yet');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('[useUserRewards] Loaded via RPC - pending:', data.pending_amount, 'claimed:', data.claimed_amount);
       setRewards(data);
 
       // Calculate daily remaining
@@ -59,8 +121,8 @@ export function useUserRewards() {
       } else {
         setDailyRemaining(DAILY_LIMIT);
       }
-    } catch (error) {
-      console.error('Error loading rewards:', error);
+    } catch (error: any) {
+      console.error('[useUserRewards] Unexpected error:', error?.message || error);
     } finally {
       setIsLoading(false);
     }
@@ -95,6 +157,54 @@ export function useUserRewards() {
     loadRewards();
     loadRewardHistory();
   }, [loadRewards, loadRewardHistory]);
+
+  // Real-time subscription to update dailyRemaining instantly after claims
+  useEffect(() => {
+    if (!user) return;
+
+    console.log('[useUserRewards] Setting up realtime subscription for user:', user.id);
+    
+    const channel = supabase
+      .channel(`user_rewards_realtime_${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'user_rewards',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('[useUserRewards] ✅ REALTIME UPDATE:', {
+            old_daily_claimed: (payload.old as UserRewards)?.daily_claimed,
+            new_daily_claimed: (payload.new as UserRewards)?.daily_claimed,
+            calculated_remaining: Math.max(0, DAILY_LIMIT - ((payload.new as UserRewards)?.daily_claimed || 0))
+          });
+          const newData = payload.new as UserRewards;
+          
+          // Update rewards state immediately
+          setRewards(newData);
+          
+          // Recalculate daily remaining based on new data
+          const today = new Date().toISOString().split('T')[0];
+          if (newData.last_claim_date === today) {
+            const newRemaining = Math.max(0, DAILY_LIMIT - (newData.daily_claimed || 0));
+            console.log('[useUserRewards] Updating dailyRemaining:', newRemaining);
+            setDailyRemaining(newRemaining);
+          } else {
+            setDailyRemaining(DAILY_LIMIT);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('[useUserRewards] Realtime subscription status:', status);
+      });
+
+    return () => {
+      console.log('[useUserRewards] Cleaning up realtime subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const addPendingReward = useCallback(async (amount: number, source: string) => {
     if (!user) return null;

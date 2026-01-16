@@ -29,8 +29,10 @@ interface PendingBalanceCardProps {
   walletAddress: string | null;
   isConnected: boolean;
   isClaiming: boolean;
+  isLoading?: boolean;
   onClaim: (amount: number) => Promise<{ success: boolean; txHash?: string; error?: string; status?: 'completed' | 'pending_review' }>;
   onConnect: () => void;
+  onRefresh?: () => Promise<void>;
 }
 
 export function PendingBalanceCard({
@@ -41,12 +43,37 @@ export function PendingBalanceCard({
   walletAddress,
   isConnected,
   isClaiming,
+  isLoading = false,
   onClaim,
-  onConnect
+  onConnect,
+  onRefresh
 }: PendingBalanceCardProps) {
   const [claimAmount, setClaimAmount] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Debug log props on mount and change
+  console.log('[PendingBalanceCard] Props:', {
+    pendingAmount,
+    dailyRemaining,
+    isConnected,
+    walletAddress: walletAddress?.substring(0, 10),
+    isLoading
+  });
+
+  const handleRefresh = async () => {
+    if (!onRefresh) return;
+    setIsRefreshing(true);
+    try {
+      await onRefresh();
+      toast.success('Đã cập nhật số dư!');
+    } catch (error) {
+      console.error('[PendingBalanceCard] Refresh error:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const maxClaimable = Math.min(pendingAmount, dailyRemaining);
   const sliderPercentage = maxClaimable > 0 ? (claimAmount / maxClaimable) * 100 : 0;
@@ -313,9 +340,9 @@ export function PendingBalanceCard({
                 </div>
               )}
 
-              <div className="flex items-center justify-between relative z-10 mt-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 relative z-10 mt-4">
                 <span 
-                  className="text-xl md:text-2xl font-fredoka font-bold tracking-wide"
+                  className="text-lg sm:text-xl md:text-2xl font-fredoka font-bold tracking-wide text-center sm:text-left"
                   style={{
                     background: 'linear-gradient(135deg, #60A5FA, #3B82F6)',
                     WebkitBackgroundClip: 'text',
@@ -324,11 +351,26 @@ export function PendingBalanceCard({
                 >
                   Giới hạn hôm nay còn:
                 </span>
-                <Badge
-                  className="text-base px-4 py-1 font-bold bg-green-100 text-green-600 border border-green-300"
+                <motion.div
+                  key={dailyRemaining}
+                  initial={{ scale: 1.2 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="flex justify-center sm:justify-end"
                 >
-                  {dailyRemaining.toLocaleString()} / {dailyLimit.toLocaleString()} CAMLY
-                </Badge>
+                  <Badge
+                    className="text-sm sm:text-base px-3 sm:px-4 py-1 font-bold bg-green-100 text-green-600 border border-green-300"
+                  >
+                    <motion.span
+                      key={dailyRemaining}
+                      initial={{ color: '#10B981' }}
+                      animate={{ color: '#16A34A' }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {dailyRemaining.toLocaleString()} / {dailyLimit.toLocaleString()} CAMLY
+                    </motion.span>
+                  </Badge>
+                </motion.div>
               </div>
             </div>
 
@@ -409,7 +451,7 @@ export function PendingBalanceCard({
               >
                 <Button
                   onClick={handleClaim}
-                  disabled={isClaiming || claimAmount <= 0 || !isConnected}
+                  disabled={isClaiming || (claimAmount <= 0 && isConnected && pendingAmount > 0) || !isConnected}
                   className="w-full h-16 text-2xl font-fredoka font-bold text-amber-900 border-0 tracking-wide"
                   style={{
                     background: 'linear-gradient(135deg, #FFD700 0%, #FFF8DC 25%, #FFD700 50%, #DAA520 75%, #FFD700 100%)',
@@ -427,6 +469,16 @@ export function PendingBalanceCard({
                       <Zap className="w-7 h-7 mr-3" />
                       Kết nối ví để nhận
                     </>
+                  ) : pendingAmount === 0 ? (
+                    <>
+                      <Gift className="w-7 h-7 mr-3" />
+                      Chưa có số dư chờ rút
+                    </>
+                  ) : claimAmount <= 0 ? (
+                    <>
+                      <Coins className="w-7 h-7 mr-3" />
+                      Chọn số lượng muốn rút
+                    </>
                   ) : (
                     <>
                       <Sparkles className="w-7 h-7 mr-3" />
@@ -435,6 +487,40 @@ export function PendingBalanceCard({
                   )}
                 </Button>
               </motion.div>
+              
+              {/* Helpful message when no pending balance + Refresh button */}
+              {isConnected && pendingAmount === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center p-4 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 space-y-3"
+                >
+                  <p className="text-blue-700 font-medium">
+                    💡 Hãy hoàn thành nhiệm vụ để tích lũy CAMLY vào số dư chờ rút!
+                  </p>
+                  {onRefresh && (
+                    <Button
+                      onClick={handleRefresh}
+                      disabled={isRefreshing || isLoading}
+                      variant="outline"
+                      size="sm"
+                      className="border-blue-300 text-blue-600 hover:bg-blue-100"
+                    >
+                      {isRefreshing || isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Đang tải...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="w-4 h-4 mr-2" />
+                          Làm mới số dư
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </motion.div>
+              )}
 
               {/* Last Transaction */}
               {lastTxHash && (

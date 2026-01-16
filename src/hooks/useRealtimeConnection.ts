@@ -78,6 +78,11 @@ export function useRealtimeConnection({
       if (lastVisibilityRef.current === 'hidden' && currentVisibility === 'visible') {
         console.log('[Realtime] App returned to foreground, reconnecting...');
         setupChannel();
+        // Force trigger onMessage after a short delay to refresh data
+        setTimeout(() => {
+          console.log('[Realtime] Triggering refresh after foreground return');
+          onMessage({ type: 'visibility_change', reason: 'foreground_return' });
+        }, 500);
       }
       
       lastVisibilityRef.current = currentVisibility;
@@ -88,7 +93,7 @@ export function useRealtimeConnection({
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [setupChannel]);
+  }, [setupChannel, onMessage]);
 
   // Initial setup
   useEffect(() => {

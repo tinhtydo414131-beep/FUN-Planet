@@ -220,6 +220,10 @@ export const useWeb3Rewards = () => {
         firstWalletClaimed: true,
       }));
 
+      // Emit event to trigger refresh in ranking boards
+      console.log('[useWeb3Rewards] Wallet connected - emitting refresh event');
+      window.dispatchEvent(new CustomEvent('wallet-connected-refresh'));
+
       return address;
     } catch (error: any) {
       console.error('Wallet connection error:', error);

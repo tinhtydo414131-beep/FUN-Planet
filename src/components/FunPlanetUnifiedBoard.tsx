@@ -493,9 +493,10 @@ export const FunPlanetUnifiedBoard = () => {
 
   // Single unified realtime subscription (merged from 6 channels - includes user_rewards)
   useEffect(() => {
-    // Clear stale data first, then fetch fresh
-    setTopUsers([]);
-    setRankingLoading(true);
+    // Only set loading if we have no data yet - don't clear existing data to prevent flash
+    if (topUsers.length === 0) {
+      setRankingLoading(true);
+    }
     
     // Initial fetch
     fetchStats();
@@ -523,6 +524,22 @@ export const FunPlanetUnifiedBoard = () => {
       supabase.removeChannel(unifiedChannel);
     };
   }, [fetchStats, fetchLegends, fetchTopUsers, debouncedFetchAllData]);
+
+  // Listen for wallet-connected-refresh event to force update ranking after wallet connect
+  useEffect(() => {
+    const handleWalletRefresh = () => {
+      console.log('[UnifiedBoard] Wallet connected - delaying refresh by 800ms for DB sync');
+      // Delay refresh to allow database triggers to complete wallet bonus sync
+      setTimeout(() => {
+        console.log('[UnifiedBoard] Now refreshing ranking data');
+        fetchTopUsers(true);
+        fetchStats();
+      }, 800);
+    };
+    
+    window.addEventListener('wallet-connected-refresh', handleWalletRefresh);
+    return () => window.removeEventListener('wallet-connected-refresh', handleWalletRefresh);
+  }, [fetchTopUsers, fetchStats]);
 
   // Fire confetti once on initial load (disabled on mobile for performance)
   useEffect(() => {
@@ -868,13 +885,14 @@ export const FunPlanetUnifiedBoard = () => {
                           return (
                             <HoverCard key={rankedUser.id} openDelay={200}>
                               <HoverCardTrigger asChild>
-                                <motion.div
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.1 + 0.5 }}
-                                  whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
-                                  className={`flex items-center gap-2.5 sm:gap-3 rounded-xl border p-2.5 sm:p-3 backdrop-blur-sm cursor-pointer transition-all border-white/40 bg-gradient-to-r from-white/30 to-white/25 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
-                                >
+                                <div>
+                                  <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.1 + 0.5 }}
+                                    whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
+                                    className={`flex items-center gap-2.5 sm:gap-3 rounded-xl border p-2.5 sm:p-3 backdrop-blur-sm cursor-pointer transition-all border-white/40 bg-gradient-to-r from-white/30 to-white/25 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
+                                  >
                                   <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20 flex-shrink-0">
                                     <span className="text-sm sm:text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
                                   </div>
@@ -893,6 +911,7 @@ export const FunPlanetUnifiedBoard = () => {
                                     <span className="text-xs sm:text-sm font-extrabold text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"><AnimatedCounter value={rankedUser.total_camly || 0} /></span>
                                   </div>
                                 </motion.div>
+                                </div>
                               </HoverCardTrigger>
                               <HoverCardContent className="w-64 bg-gradient-to-br from-purple-500/95 via-pink-500/90 to-yellow-400/95 border-pink-400/50 backdrop-blur-xl" side="top">
                                 <div className="flex items-center gap-3">

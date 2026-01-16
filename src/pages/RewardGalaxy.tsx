@@ -95,6 +95,7 @@ export default function RewardGalaxy() {
     dailyRemaining,
     dailyLimit,
     isClaiming: isClaimingArbitrary,
+    isLoading: isLoadingRewards,
     claimArbitrary,
     loadRewards
   } = useUserRewards();
@@ -244,6 +245,21 @@ export default function RewardGalaxy() {
     loadClaimHistory();
   }, [user, checkCanClaim, loadClaimHistory]);
 
+  // Listen for wallet-connected-refresh event to reload rewards after wallet connect
+  useEffect(() => {
+    const handleWalletRefresh = () => {
+      console.log('[RewardGalaxy] Wallet connected - delaying refresh by 800ms for DB sync');
+      setTimeout(() => {
+        console.log('[RewardGalaxy] Now refreshing rewards data');
+        loadRewards();
+        loadWeb3Rewards();
+      }, 800);
+    };
+    
+    window.addEventListener('wallet-connected-refresh', handleWalletRefresh);
+    return () => window.removeEventListener('wallet-connected-refresh', handleWalletRefresh);
+  }, [loadRewards, loadWeb3Rewards]);
+
   const handleClaimArbitrary = async (amount: number) => {
     if (!actualWalletAddress) {
       return { success: false, error: 'Please connect your wallet first' };
@@ -251,6 +267,12 @@ export default function RewardGalaxy() {
     const result = await claimArbitrary(amount, actualWalletAddress);
     // Claim completed
     return result;
+  };
+
+  const handleManualRefresh = async () => {
+    console.log('[RewardGalaxy] Manual refresh triggered');
+    await loadRewards();
+    await loadWeb3Rewards();
   };
 
   const handleClaimFirstWallet = async () => {
@@ -342,8 +364,10 @@ export default function RewardGalaxy() {
             walletAddress={actualWalletAddress}
             isConnected={actualIsConnected}
             isClaiming={isClaimingArbitrary}
+            isLoading={isLoadingRewards}
             onClaim={handleClaimArbitrary}
             onConnect={() => open()}
+            onRefresh={handleManualRefresh}
           />
 
           {/* Reward Categories - Planet Cards */}

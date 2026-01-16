@@ -1,3 +1,4 @@
+// Force Cloudflare rebuild: 2026-01-14T12:00:00Z - HoverCard ref fix + mobile layout
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -56,6 +57,7 @@ const RewardGalaxy = lazy(() => import("./pages/RewardGalaxy"));
 const AngelAIHubPage = lazy(() => import("./pages/AngelAIHubPage"));
 
 const LawOfLight = lazy(() => import("./pages/LawOfLight"));
+const GemFusionQuestPage = lazy(() => import("./pages/games/GemFusionQuestPage"));
 
 // Lazy load heavy components
 const BackgroundMusicPlayer = lazy(() => import("@/components/BackgroundMusicPlayer").then(m => ({ default: m.BackgroundMusicPlayer })));
@@ -101,6 +103,7 @@ const AnimatedRoutes = () => {
           <Route path="/game/:gameId" element={<GamePlay />} />
           <Route path="/game-details/:id" element={<GameDetails />} />
           <Route path="/lovable-game/:id" element={<LovableGamePlay />} />
+          <Route path="/games/gem-fusion-quest" element={<GemFusionQuestPage />} />
           <Route path="/recently-played" element={<RecentlyPlayed />} />
           <Route path="/my-games" element={<MyGames />} />
           <Route path="/edit-game/:id" element={<EditGame />} />

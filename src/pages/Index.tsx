@@ -56,11 +56,20 @@ const Index = () => {
   const [showRoleSelector, setShowRoleSelector] = useState(false);
 
   useEffect(() => {
-    // Onboarding overlays disabled - homepage now displays content directly
-    // Users can access FunID intro, role selection, and Angel AI manually:
-    // - FunID: via Auth page
-    // - Role selector: via Settings/Profile
-    // - Angel AI: via floating button on the right side of the screen
+    if (!loading && !user) {
+      const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
+      if (!hasSeenFunId) {
+        setShowFunIdOnboarding(true);
+      }
+    }
+    
+    if (!loading && user && !hasCompletedOnboarding()) {
+      setShowRoleSelector(true);
+    }
+    
+    if (user && funId && shouldShowAngel) {
+      setShowAngelChat(true);
+    }
   }, [user, loading, funId, shouldShowAngel]);
 
   const handleSelectRole = (role: "kid" | "parent" | "developer") => {

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Play, X, Maximize2, Star, Users, Flame } from "lucide-react";
+import { Play, X, Maximize2, Star, Users, Flame, Sparkles } from "lucide-react";
 import { GamePreviewPlaceholder } from "@/components/GamePreviewPlaceholder";
+import gemFusionThumbnail from "@/assets/games/gem-fusion-quest-thumbnail.png";
 
 interface FeaturedGame {
   id: string;
@@ -18,6 +20,7 @@ interface FeaturedGame {
 }
 
 export function FeaturedGamesSection() {
+  const navigate = useNavigate();
   const [games, setGames] = useState<FeaturedGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedGame, setSelectedGame] = useState<FeaturedGame | null>(null);
@@ -118,6 +121,66 @@ export function FeaturedGamesSection() {
 
           {/* Games Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {/* Gem Fusion Quest - Built-in Game Featured */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              <Card
+                className="group relative overflow-hidden rounded-2xl border-2 border-yellow-400/50 hover:border-yellow-400 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500/20 hover:scale-105"
+                onClick={() => navigate('/games/gem-fusion-quest')}
+              >
+                {/* Thumbnail */}
+                <div className="relative aspect-video overflow-hidden">
+                  <img 
+                    src={gemFusionThumbnail}
+                    alt="Gem Fusion Quest"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  
+                  {/* Sparkle effects */}
+                  <Sparkles className="absolute top-4 left-4 w-6 h-6 text-yellow-300 animate-pulse z-10" />
+                  <Sparkles className="absolute bottom-4 right-4 w-5 h-5 text-white animate-pulse delay-300 z-10" />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                  
+                  {/* Play Button */}
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    whileHover={{ scale: 1.1 }}
+                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-yellow-500/90 flex items-center justify-center shadow-xl">
+                      <Play className="w-8 h-8 text-white ml-1" />
+                    </div>
+                  </motion.div>
+
+                  {/* NEW Badge */}
+                  <Badge className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg">
+                    ✨ NEW
+                  </Badge>
+
+                  {/* Match-3 Badge */}
+                  <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 shadow-lg">
+                    🧩 Match-3
+                  </Badge>
+                </div>
+
+                {/* Game Title */}
+                <div className="p-3 bg-card">
+                  <h3 className="font-bold text-sm md:text-base">Gem Fusion Quest</h3>
+                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                    <Star className="w-3 h-3 text-yellow-500" />
+                    <span>5.0</span>
+                    <Users className="w-3 h-3 ml-2" />
+                    <span>150 levels</span>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
             {games.map((game, index) => (
               <motion.div
                 key={game.id}
