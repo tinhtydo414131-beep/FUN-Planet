@@ -56,8 +56,11 @@ interface Donor {
   id: string;
   username: string;
   avatar_url: string | null;
+  wallet_address: string | null;
   total_donated: number;
   is_anonymous: boolean;
+  total_plays: number;
+  games_uploaded: number;
 }
 
 interface RankedUser {
@@ -377,34 +380,30 @@ export const FunPlanetUnifiedBoard = () => {
         setCreators(Array.from(creatorMap.values()).sort((a, b) => b.games_count - a.games_count || b.total_plays - a.total_plays).slice(0, 3));
       }
 
-      const { data: donationsData } = await supabase.from("platform_donations").select("user_id, amount, is_anonymous, profiles!platform_donations_user_id_fkey(id, username, avatar_url)").order("created_at", { ascending: false });
+      // Use RPC to bypass RLS and get donors with full info
+      console.log("[UnifiedBoard] Fetching donors via RPC get_public_donors...");
+      const { data: donorsData, error: donorsError } = await supabase
+        .rpc('get_public_donors' as any, { limit_count: 10 }) as {
+          data: any[] | null;
+          error: any;
+        };
 
-      if (donationsData) {
-        const donorMap = new Map<string, Donor>();
-
-        for (const donation of donationsData) {
-          const profile = donation.profiles as any;
-          // Some profiles may not be publicly readable due to RLS.
-          // In that case, still show the donor using user_id with a safe fallback.
-          const donorId = profile?.id ?? donation.user_id;
-          if (!donorId) continue;
-
-          const existing = donorMap.get(donorId);
-          if (existing) {
-            existing.total_donated += donation.amount;
-          } else {
-            const isAnonymous = !!donation.is_anonymous;
-            donorMap.set(donorId, {
-              id: donorId,
-              username: isAnonymous ? "Anonymous" : (profile?.username ?? "Unknown"),
-              avatar_url: isAnonymous ? null : (profile?.avatar_url ?? null),
-              total_donated: donation.amount,
-              is_anonymous: isAnonymous,
-            });
-          }
-        }
-
-        setDonors(Array.from(donorMap.values()).sort((a, b) => b.total_donated - a.total_donated).slice(0, 3));
+      if (donorsError) {
+        console.error("[UnifiedBoard] Donors RPC error:", donorsError);
+      } else if (donorsData) {
+        console.log("[UnifiedBoard] Donors fetched:", donorsData.length);
+        const donorsList: Donor[] = donorsData.map((d: any) => ({
+          id: d.id,
+          username: d.username || 'Unknown',
+          avatar_url: d.avatar_url,
+          wallet_address: d.wallet_address,
+          total_donated: Number(d.total_donated) || 0,
+          is_anonymous: d.is_anonymous || false,
+          total_plays: d.total_plays || 0,
+          games_uploaded: d.games_uploaded || 0,
+        }));
+        
+        setDonors(donorsList.slice(0, 3));
       }
     } catch (error) {
       console.error("Error fetching legends data:", error);
@@ -764,6 +763,27 @@ export const FunPlanetUnifiedBoard = () => {
                                 <div className="text-right">
                                   <div className="flex items-center gap-1 text-sm font-bold text-rose-300 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"><Gem className="h-3 w-3" /><span className="!text-white">{donor.total_donated.toLocaleString()}</span></div>
                                   <div className="text-[10px] !text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">CAMLY</div>
+                                  {/* Extended stats for non-anonymous donors */}
+                                  {!donor.is_anonymous && (donor.games_uploaded > 0 || donor.total_plays > 0) && (
+                                    <div className="flex items-center justify-end gap-2 text-[10px] text-white/70 mt-0.5">
+                                      {donor.games_uploaded > 0 && (
+                                        <span className="flex items-center gap-0.5">
+                                          <Upload className="h-2.5 w-2.5" />{donor.games_uploaded}
+                                        </span>
+                                      )}
+                                      {donor.total_plays > 0 && (
+                                        <span className="flex items-center gap-0.5">
+                                          <Play className="h-2.5 w-2.5" />{donor.total_plays}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                  {/* Wallet address (truncated) */}
+                                  {!donor.is_anonymous && donor.wallet_address && (
+                                    <div className="text-[9px] text-yellow-300/60 mt-0.5 truncate max-w-[80px]">
+                                      {donor.wallet_address.slice(0, 6)}...{donor.wallet_address.slice(-4)}
+                                    </div>
+                                  )}
                                 </div>
                               </motion.div>
                             );
