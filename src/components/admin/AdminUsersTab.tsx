@@ -60,10 +60,11 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [blockModalOpen, setBlockModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const pageSize = 20;
+  const pageSize = 50;
 
   useEffect(() => {
     loadUsers();
@@ -138,6 +139,7 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
         }
 
         setUsers(usersWithData);
+        setTotalUsers(count || 0);
         setTotalPages(Math.ceil((count || 0) / pageSize));
       }
     } catch (error) {
@@ -234,7 +236,12 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
       {/* Users Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Users ({users.length})</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-2">
+            Users
+            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+              {totalUsers.toLocaleString()} users
+            </Badge>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -345,7 +352,7 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
               {/* Pagination */}
               <div className="flex items-center justify-between mt-4">
                 <p className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
+                  Showing {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, totalUsers)} of {totalUsers.toLocaleString()} users • Page {page}/{totalPages}
                 </p>
                 <div className="flex gap-2">
                   <Button
