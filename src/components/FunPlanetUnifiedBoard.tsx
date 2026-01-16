@@ -413,69 +413,43 @@ export const FunPlanetUnifiedBoard = () => {
     }
   }, []);
 
-  // Fetch Top Users - Using total_camly = pending_amount + claimed_amount
+  // Fetch Top Users - Using RPC to bypass RLS and get all users
   const fetchTopUsers = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
       
-      // Fetch profiles
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, username, avatar_url, wallet_balance, created_at");
-
-      if (profilesError) {
-        console.error("[UnifiedBoard] Error fetching profiles:", profilesError);
-        return;
-      }
-
-      // Fetch user_rewards - this is the source of truth for CAMLY
-      const { data: rewardsData, error: rewardsError } = await supabase
-        .from("user_rewards")
-        .select("user_id, pending_amount, claimed_amount");
-
-      if (rewardsError) {
-        console.error("[UnifiedBoard] Error fetching user_rewards:", rewardsError);
-        return;
-      }
-
-      console.log("[UnifiedBoard] Rewards data count:", rewardsData?.length || 0);
-
-      // Create rewards map - parse numeric values carefully
-      const rewardsMap = new Map<string, { pending_amount: number; claimed_amount: number }>();
-      rewardsData?.forEach(reward => {
-        const pending = Math.max(0, Number(reward.pending_amount) || 0);
-        const claimed = Number(reward.claimed_amount) || 0;
-        rewardsMap.set(reward.user_id, { pending_amount: pending, claimed_amount: claimed });
-      });
-
-      // Merge and calculate total_camly
-      const mergedUsers: RankedUser[] = (profilesData || []).map(profile => {
-        const rewards = rewardsMap.get(profile.id) || { pending_amount: 0, claimed_amount: 0 };
-        const total = rewards.pending_amount + rewards.claimed_amount;
-        return {
-          id: profile.id,
-          username: (profile.username || 'Unknown').trim(),
-          avatar_url: profile.avatar_url,
-          wallet_balance: profile.wallet_balance,
-          pending_amount: rewards.pending_amount,
-          claimed_amount: rewards.claimed_amount,
-          total_camly: total,
-          created_at: profile.created_at,
-        };
-      });
-
-      // Sort by total_camly DESC and take top 20
-      mergedUsers.sort((a, b) => b.total_camly - a.total_camly);
-      const top20 = mergedUsers.slice(0, 20);
+      console.log("[UnifiedBoard] Fetching top users via RPC...");
       
-      console.log("[UnifiedBoard] Top 5 users:", top20.slice(0, 5).map(u => ({
+      // Use RPC to bypass RLS and get all users for ranking
+      const { data, error: rpcError } = await supabase
+        .rpc('get_public_ranking' as any, { limit_count: 20 }) as { 
+          data: any[] | null; 
+          error: any 
+        };
+
+      if (rpcError) {
+        console.error("[UnifiedBoard] RPC error:", rpcError);
+        return;
+      }
+
+      const rankedUsers: RankedUser[] = (data || []).map((row: any) => ({
+        id: row.id,
+        username: (row.username || 'Unknown').trim(),
+        avatar_url: row.avatar_url,
+        wallet_balance: Number(row.wallet_balance) || 0,
+        pending_amount: Number(row.pending_amount) || 0,
+        claimed_amount: Number(row.claimed_amount) || 0,
+        total_camly: Number(row.total_camly) || 0,
+        created_at: row.created_at,
+      }));
+      
+      console.log("[UnifiedBoard] Success! Fetched", rankedUsers.length, "users");
+      console.log("[UnifiedBoard] Top 5:", rankedUsers.slice(0, 5).map(u => ({
         username: u.username,
-        total_camly: u.total_camly,
-        pending: u.pending_amount,
-        claimed: u.claimed_amount
+        total_camly: u.total_camly
       })));
 
-      setTopUsers(top20);
+      setTopUsers(rankedUsers);
     } catch (error) {
       console.error("Error fetching top users:", error);
     } finally {
