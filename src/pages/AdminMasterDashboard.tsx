@@ -227,65 +227,8 @@ export default function AdminMasterDashboard() {
         </div>
       </div>
 
-      {/* Quick Stats Cards */}
+      {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Users</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.totalUsers.toLocaleString()}</p>
-                  <p className="text-xs text-green-500">+{stats.newUsersToday} today</p>
-                </div>
-                <Users className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/20">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Pending CAMLY</p>
-                  <p className="text-2xl font-bold text-foreground">{(stats.totalPending / 1000000).toFixed(2)}M</p>
-                  <p className="text-xs text-muted-foreground">Chờ claim</p>
-                </div>
-                <Coins className="h-8 w-8 text-amber-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Claimed CAMLY</p>
-                  <p className="text-2xl font-bold text-foreground">{(stats.totalClaimed / 1000000).toFixed(2)}M</p>
-                  <p className="text-xs text-muted-foreground">{stats.todayClaims} claims today</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/20">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Blocked Users</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.blockedUsers}</p>
-                  {stats.suspiciousCount > 0 && (
-                    <Badge variant="destructive" className="text-xs">
-                      {stats.suspiciousCount} suspicious
-                    </Badge>
-                  )}
-                </div>
-                <AlertTriangle className="h-8 w-8 text-red-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Main Tabs - Responsive Grid */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" ref={tabsRef}>
