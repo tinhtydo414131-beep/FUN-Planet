@@ -6649,6 +6649,7 @@ export type Database = {
         Args: { p_wallet_address: string }
         Returns: number
       }
+      get_public_stats: { Args: never; Returns: Json }
       get_quiz_streak: { Args: { p_user_id: string }; Returns: number }
       get_user_ip_history: {
         Args: { p_user_id: string }
