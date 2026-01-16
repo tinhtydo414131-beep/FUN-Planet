@@ -80,15 +80,54 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
         .eq("status", "blocked");
 
       const blockedMap = new Map(blockedData?.map(b => [b.user_id, b.reason]) || []);
+      const blockedIds = Array.from(blockedMap.keys());
+
+      // Handle filter at database level
+      let targetUserIds: string[] | null = null;
+      
+      if (statusFilter === "blocked") {
+        // Only show blocked users
+        if (blockedIds.length === 0) {
+          setUsers([]);
+          setTotalUsers(0);
+          setTotalPages(1);
+          setLoading(false);
+          return;
+        }
+        targetUserIds = blockedIds;
+      } else if (statusFilter === "active") {
+        // Will exclude blocked users after fetching
+        targetUserIds = null; // fetch all, then exclude
+      }
 
       // Build query - include wallet_balance
       let query = supabase
         .from("profiles")
         .select("id, username, email, wallet_address, created_at, wallet_balance", { count: "exact" });
 
+      // Filter by blocked user IDs at database level
+      if (statusFilter === "blocked" && targetUserIds) {
+        query = query.in("id", targetUserIds);
+      }
+
       // Apply search
       if (searchQuery) {
         query = query.or(`username.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,wallet_address.ilike.%${searchQuery}%`);
+      }
+
+      // For "active" filter, we need to get count separately
+      let actualCount = 0;
+      
+      if (statusFilter === "active" && blockedIds.length > 0) {
+        // Get count of active users (excluding blocked)
+        const { count: activeCount } = await supabase
+          .from("profiles")
+          .select("id", { count: "exact", head: true })
+          .not("id", "in", `(${blockedIds.join(",")})`);
+        actualCount = activeCount || 0;
+        
+        // Apply exclusion filter
+        query = query.not("id", "in", `(${blockedIds.join(",")})`);
       }
 
       // Pagination
@@ -99,9 +138,23 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
         .order("created_at", { ascending: false })
         .range(from, to);
 
+      // Use correct count based on filter
+      const finalCount = statusFilter === "active" && blockedIds.length > 0 
+        ? actualCount 
+        : (count || 0);
+
       if (profilesData) {
         // Get rewards data for these users
         const userIds = profilesData.map(p => p.id);
+        
+        if (userIds.length === 0) {
+          setUsers([]);
+          setTotalUsers(0);
+          setTotalPages(1);
+          setLoading(false);
+          return;
+        }
+
         const { data: rewardsData } = await supabase
           .from("user_rewards")
           .select("user_id, total_earned, pending_amount, claimed_amount")
@@ -116,7 +169,7 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
         const rewardsMap = new Map(rewardsData?.map(r => [r.user_id, r]) || []);
         const web3Map = new Map(web3Data?.map(w => [w.user_id, w]) || []);
 
-        let usersWithData = profilesData.map(profile => ({
+        const usersWithData = profilesData.map(profile => ({
           id: profile.id,
           username: profile.username,
           email: profile.email,
@@ -131,16 +184,9 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
           blockReason: blockedMap.get(profile.id)
         }));
 
-        // Filter by status
-        if (statusFilter === "blocked") {
-          usersWithData = usersWithData.filter(u => u.isBlocked);
-        } else if (statusFilter === "active") {
-          usersWithData = usersWithData.filter(u => !u.isBlocked);
-        }
-
         setUsers(usersWithData);
-        setTotalUsers(count || 0);
-        setTotalPages(Math.ceil((count || 0) / pageSize));
+        setTotalUsers(finalCount);
+        setTotalPages(Math.ceil(finalCount / pageSize));
       }
     } catch (error) {
       console.error("Load users error:", error);
