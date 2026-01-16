@@ -139,10 +139,10 @@ export const AdminSystemStats = forwardRef<HTMLDivElement>((_, ref) => {
 
   if (loading) {
     return (
-      <Card ref={ref} className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
+      <Card ref={ref} className="p-6 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg rounded-xl">
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 text-purple-400 animate-spin mr-2" />
-          <span className="text-slate-400">Đang tải thống kê...</span>
+          <Loader2 className="w-6 h-6 text-purple-500 animate-spin mr-2" />
+          <span className="text-gray-500">Đang tải thống kê...</span>
         </div>
       </Card>
     );
@@ -155,74 +155,82 @@ export const AdminSystemStats = forwardRef<HTMLDivElement>((_, ref) => {
       icon: Users,
       value: formatNumber(stats.totalUsers),
       label: "Users",
-      color: "text-blue-400",
-      bgColor: "bg-blue-500/10"
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200"
     },
     {
       icon: UserPlus,
       value: `+${stats.newUsersToday}`,
       label: "Today",
-      color: "text-green-400",
-      bgColor: "bg-green-500/10"
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200"
     },
     {
       icon: Gamepad2,
       value: formatNumber(stats.totalGames),
       label: "Games",
-      color: "text-purple-400",
-      bgColor: "bg-purple-500/10"
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200"
     },
     {
       icon: Upload,
       value: formatNumber(stats.totalUploads),
       label: "Uploads",
-      color: "text-cyan-400",
-      bgColor: "bg-cyan-500/10"
+      color: "text-cyan-600",
+      bgColor: "bg-cyan-50",
+      borderColor: "border-cyan-200"
     },
     {
       icon: Wallet,
       value: formatNumber(stats.treasuryBalance),
       label: "Quỹ FP",
-      color: "text-yellow-400",
-      bgColor: "bg-yellow-500/10"
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-50",
+      borderColor: "border-yellow-200"
     },
     {
       icon: Coins,
       value: formatNumber(stats.totalCamly),
       label: "System",
-      color: "text-pink-400",
-      bgColor: "bg-pink-500/10"
+      color: "text-pink-600",
+      bgColor: "bg-pink-50",
+      borderColor: "border-pink-200"
     },
     {
       icon: Clock,
       value: formatNumber(stats.pendingCamly),
       label: "Pending",
-      color: "text-orange-400",
-      bgColor: "bg-orange-500/10"
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+      borderColor: "border-orange-200"
     },
     {
       icon: CheckCircle,
       value: formatNumber(stats.claimedCamly),
       label: "Claimed",
-      color: "text-emerald-400",
-      bgColor: "bg-emerald-500/10"
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-200"
     }
   ];
 
   return (
-    <Card ref={ref} className="p-4 sm:p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-slate-700/50 shadow-xl">
+    <Card ref={ref} className="p-4 sm:p-6 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg rounded-xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-purple-400" />
-          <h3 className="text-lg font-bold text-white">Thống Kê Hệ Thống</h3>
+          <TrendingUp className="w-5 h-5 text-purple-600" />
+          <h3 className="text-lg font-bold text-gray-800">Thống Kê Hệ Thống</h3>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={fetchStats}
           disabled={refreshing}
-          className="text-slate-400 hover:text-white hover:bg-slate-700/50"
+          className="text-gray-500 hover:text-gray-800 hover:bg-gray-100"
         >
           <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? "animate-spin" : ""}`} />
           Refresh
@@ -234,13 +242,13 @@ export const AdminSystemStats = forwardRef<HTMLDivElement>((_, ref) => {
         {statItems.map((item, index) => (
           <div
             key={index}
-            className={`${item.bgColor} rounded-lg p-2 sm:p-3 text-center border border-white/5 hover:border-white/10 transition-all`}
+            className={`${item.bgColor} rounded-lg p-2 sm:p-3 text-center border ${item.borderColor} hover:shadow-md transition-all`}
           >
             <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.color} mx-auto mb-1`} />
             <div className={`text-sm sm:text-lg font-bold ${item.color}`}>
               {item.value}
             </div>
-            <div className="text-[10px] sm:text-xs text-slate-400 font-medium">
+            <div className="text-[10px] sm:text-xs text-gray-600 font-medium">
               {item.label}
             </div>
           </div>
@@ -248,24 +256,24 @@ export const AdminSystemStats = forwardRef<HTMLDivElement>((_, ref) => {
       </div>
 
       {/* Bottom Stats Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-700/50">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-200">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-sm">
-            <Ban className="w-4 h-4 text-red-400" />
-            <span className="text-slate-400">Blocked:</span>
-            <span className="text-red-400 font-semibold">{stats.blockedUsers}</span>
+            <Ban className="w-4 h-4 text-red-500" />
+            <span className="text-gray-600">Blocked:</span>
+            <span className="text-red-500 font-semibold">{stats.blockedUsers}</span>
           </div>
           {stats.suspiciousCount > 0 && (
             <div className="flex items-center gap-2 text-sm">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
-              <span className="text-amber-400 font-semibold">{stats.suspiciousCount} suspicious</span>
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <span className="text-amber-500 font-semibold">{stats.suspiciousCount} suspicious</span>
             </div>
           )}
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <CheckCircle className="w-4 h-4 text-green-400" />
-          <span className="text-slate-400">Claims today:</span>
-          <span className="text-green-400 font-semibold">{stats.todayClaims}</span>
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span className="text-gray-600">Claims today:</span>
+          <span className="text-green-500 font-semibold">{stats.todayClaims}</span>
         </div>
       </div>
     </Card>
