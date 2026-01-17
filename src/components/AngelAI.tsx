@@ -773,19 +773,8 @@ function MessageBubble({ message, isExpanded = true }: { message: ChatMessage; i
   );
 }
 
-// Floating Angel Button for triggering Angel AI - Always visible for all users
+// Floating Angel Button for triggering Angel AI - Simplified 2D only
 export function AngelAIButton({ onClick }: { onClick: () => void }) {
-  const [showTip, setShowTip] = useState(false);
-  const [tipIndex, setTipIndex] = useState(0);
-  
-  const tips = [
-    "Hãy chơi game giáo dục hôm nay! 📚",
-    "Khám phá games mới nào! 🎮",
-    "Nhận thưởng mỗi ngày nhé! 🎁",
-    "Kết bạn và chơi cùng nhau! 👋",
-    "Angel luôn ở đây giúp bé! ✨",
-  ];
-
   const {
     position,
     isDragging,
@@ -801,38 +790,6 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
     longPressDelay: 300
   });
 
-  // Wave animation every 20 seconds
-  const [isWaving, setIsWaving] = useState(false);
-  
-  useEffect(() => {
-    const waveInterval = setInterval(() => {
-      setIsWaving(true);
-      setTimeout(() => setIsWaving(false), 1000);
-    }, 20000);
-    
-    return () => clearInterval(waveInterval);
-  }, []);
-
-  // Speech bubble every 30 seconds for 5 seconds
-  useEffect(() => {
-    const tipInterval = setInterval(() => {
-      setTipIndex(prev => (prev + 1) % tips.length);
-      setShowTip(true);
-      setTimeout(() => setShowTip(false), 5000);
-    }, 30000);
-    
-    // Show first tip after 5 seconds
-    const initialTip = setTimeout(() => {
-      setShowTip(true);
-      setTimeout(() => setShowTip(false), 5000);
-    }, 5000);
-    
-    return () => {
-      clearInterval(tipInterval);
-      clearTimeout(initialTip);
-    };
-  }, []);
-
   const handleClick = () => {
     if (!isDragging) {
       onClick();
@@ -841,7 +798,6 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
 
   // Check if desktop for positioning
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
-  const buttonSize = isDesktop ? 80 : 60;
 
   return (
     <div
@@ -852,22 +808,6 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         bottom: isDesktop ? '1rem' : 'calc(6rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
-      {/* Speech Bubble */}
-      <AnimatePresence>
-        {showTip && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            className="absolute -top-16 right-0 bg-white dark:bg-slate-800 rounded-2xl px-3 py-2 shadow-lg border border-purple-200 dark:border-purple-600 max-w-[180px]"
-          >
-            <p className="text-xs text-gray-700 dark:text-gray-200 font-medium">{tips[tipIndex]}</p>
-            {/* Speech bubble tail */}
-            <div className="absolute -bottom-2 right-6 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-white dark:border-t-slate-800" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Drag Handle */}
       <div
         className={`absolute -top-3 left-1/2 -translate-x-1/2 p-1 rounded-full transition-all cursor-grab active:cursor-grabbing ${
@@ -894,23 +834,19 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         onTouchMove={handleLongPressMove}
         whileHover={isDragging ? {} : { scale: 1.05 }}
         whileTap={isDragging ? {} : { scale: 0.95 }}
-        animate={isWaving ? {
-          rotate: [0, 15, -15, 15, -15, 0],
-          filter: "drop-shadow(0 0 15px rgba(255, 215, 0, 0.7))"
-        } : isDragging ? {
+        animate={isDragging ? {
           filter: "drop-shadow(0 0 15px rgba(255, 215, 0, 0.7))"
         } : { 
           filter: [
-            "drop-shadow(0 0 6px rgba(168, 85, 247, 0.4))",
-            "drop-shadow(0 0 12px rgba(168, 85, 247, 0.6))",
-            "drop-shadow(0 0 6px rgba(168, 85, 247, 0.4))"
+            "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))",
+            "drop-shadow(0 0 12px rgba(255, 215, 0, 0.5))",
+            "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))"
           ]
         }}
-        transition={isWaving ? { duration: 0.5 } : { duration: 2, repeat: isDragging ? 0 : Infinity }}
+        transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
         className="relative"
-        style={{ width: buttonSize, height: buttonSize }}
       >
-        {/* Always use simplified 2D logo - responsive size */}
+        {/* Always use simplified 2D logo - no complex 3D effects */}
         <Angel2DFallback onClick={handleClick} />
         
         {/* Notification dot */}

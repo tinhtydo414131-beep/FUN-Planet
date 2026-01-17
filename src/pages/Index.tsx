@@ -55,29 +55,22 @@ const Index = () => {
   const [showAngelChat, setShowAngelChat] = useState(false);
   const [showRoleSelector, setShowRoleSelector] = useState(false);
 
-  // DISABLED: Auto-show popups to improve initial page load experience
-  // Users can access these features manually:
-  // - FunID via Auth page
-  // - Role Selection via Profile/Settings
-  // - Angel AI via floating button
-  // See memory: ux/onboarding-auto-display-policy
-  
-  // useEffect(() => {
-  //   if (!loading && !user) {
-  //     const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
-  //     if (!hasSeenFunId) {
-  //       setShowFunIdOnboarding(true);
-  //     }
-  //   }
-  //   
-  //   if (!loading && user && !hasCompletedOnboarding()) {
-  //     setShowRoleSelector(true);
-  //   }
-  //   
-  //   if (user && funId && shouldShowAngel) {
-  //     setShowAngelChat(true);
-  //   }
-  // }, [user, loading, funId, shouldShowAngel]);
+  useEffect(() => {
+    if (!loading && !user) {
+      const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
+      if (!hasSeenFunId) {
+        setShowFunIdOnboarding(true);
+      }
+    }
+    
+    if (!loading && user && !hasCompletedOnboarding()) {
+      setShowRoleSelector(true);
+    }
+    
+    if (user && funId && shouldShowAngel) {
+      setShowAngelChat(true);
+    }
+  }, [user, loading, funId, shouldShowAngel]);
 
   const handleSelectRole = (role: "kid" | "parent" | "developer") => {
     setShowRoleSelector(false);
@@ -204,15 +197,9 @@ const Index = () => {
         )}
       </AnimatePresence>
 
-      {/* Angel AI Button - Always visible for all users */}
-      {!showAngelChat && (
-        <AngelAIButton onClick={() => {
-          if (user && funId) {
-            setShowAngelChat(true);
-          } else {
-            navigate('/auth');
-          }
-        }} />
+      {/* Angel AI Button */}
+      {user && funId && !showAngelChat && (
+        <AngelAIButton onClick={() => setShowAngelChat(true)} />
       )}
 
       {/* Legend Particle Effect */}
@@ -239,7 +226,70 @@ const Index = () => {
       
       
 
-      {/* Removed: Full Games Gallery - Using CategoryIslands in Hero instead */}
+      {/* Full Games Gallery */}
+      <section id="games-gallery" className="py-16 px-4 bg-gradient-to-b from-primary/5 to-background">
+        <div className="container mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+              {t('home.gameCategories')} 🎨
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              {t('home.pickFavorite')}
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {categories.map((category, index) => (
+              <motion.button
+                key={category.name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                onClick={() => navigate("/games")}
+                className="relative overflow-hidden rounded-3xl border-4 border-primary/30 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all group"
+              >
+                <div className="relative aspect-[4/3]">
+                  <img 
+                    src={category.image} 
+                    alt={category.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className={`absolute inset-0 ${category.color} opacity-40 group-hover:opacity-30 transition-opacity`} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+                    <p className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">{category.count}</p>
+                    <p className="text-lg md:text-xl font-bold drop-shadow-lg">{category.name}</p>
+                    <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-sm drop-shadow-lg">{t('home.playNowArrow')}</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mt-10"
+          >
+            <Button
+              onClick={() => navigate("/games")}
+              size="lg"
+              className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl"
+            >
+              {t('home.browseAll')}
+            </Button>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Features Section */}
       <section className="py-16 px-4">
@@ -291,7 +341,38 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Removed: Quick Access - Navigation in header/mobile nav instead */}
+      {/* Quick Access */}
+      <section className="py-12 px-4 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
+        <div className="container mx-auto max-w-7xl">
+          <h2 className="text-3xl font-bold text-center mb-8 text-primary">
+            {t('home.quickAccess')}
+          </h2>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+            {[
+              { path: "/games", icon: "🎮", label: t('home.gamesLabel') },
+              { path: "/upload-game", icon: "📤", label: t('home.uploadLabel') },
+              { path: "/reward-galaxy", icon: "🎁", label: t('home.rewardsLabel') },
+              { path: "/nft-gallery", icon: "💎", label: t('home.nftsLabel') },
+              { path: "/chat", icon: "💬", label: t('home.chatLabel') },
+              { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: t('home.parentsLabel') },
+              { path: "/leaderboard", icon: "🏆", label: t('home.leadersLabel') },
+              { path: "/achievement-leaderboard", icon: "🏅", label: t('home.achievementsLabel') },
+              { path: "/find-friends", icon: "👥", label: t('home.friendsLabel') },
+              { path: user ? "/profile" : "/auth", icon: "👤", label: user ? t('home.profileLabel') : t('home.loginLabel') },
+            ].map((item) => (
+              <Button
+                key={item.path}
+                variant="outline"
+                onClick={() => navigate(item.path)}
+                className="flex flex-col items-center gap-1 h-20 border-2 border-primary/20 hover:border-primary hover:bg-primary/10 transition-all hover:scale-105"
+              >
+                <span className="text-2xl">{item.icon}</span>
+                <span className="text-xs font-bold">{item.label}</span>
+              </Button>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* CTA Section */}
       <section className="py-16 px-4">
