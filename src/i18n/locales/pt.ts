@@ -138,5 +138,7 @@ export default {
   auth: {
     exploreAsGuest: 'Explorar como Convidado 👀',
     or: 'ou',
+    ipBlocked: 'Não é possível registrar a partir deste endereço IP',
+    maxAccountsReached: 'Limite máximo de contas para este IP atingido',
   },
 };

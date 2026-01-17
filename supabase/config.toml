@@ -1,5 +1,8 @@
 project_id = "epcjxoacajoaidglrvai"
 
+[functions.check-ip-eligibility]
+verify_jwt = false
+
 [functions.telegram-music-bot]
 verify_jwt = false
 

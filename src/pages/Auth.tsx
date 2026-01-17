@@ -13,6 +13,33 @@ import { useAccount, useDisconnect, useConnect } from 'wagmi';
 import { z } from "zod";
 import { withRetry, formatErrorMessage } from "@/utils/supabaseRetry";
 
+// Check IP eligibility before signup (max 3 accounts per IP)
+const checkIPEligibility = async (): Promise<{ eligible: boolean; reason: string; existing_accounts: number }> => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-ip-eligibility`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      }
+    );
+    const data = await response.json();
+    console.log("[Auth] IP eligibility check:", data);
+    return { 
+      eligible: data.is_eligible !== false, 
+      reason: data.reason || "OK",
+      existing_accounts: data.existing_accounts || 0
+    };
+  } catch (error) {
+    console.error("[Auth] IP check error:", error);
+    // Allow on error to not block legitimate users
+    return { eligible: true, reason: "Check failed", existing_accounts: 0 };
+  }
+};
+
 export default function Auth() {
   const { t } = useTranslation();
   const [username, setUsername] = useState("");
@@ -203,6 +230,19 @@ export default function Auth() {
         toast.success(t('auth.welcomeBack', { name: profile?.username || "bạn" }));
         navigate("/");
       } else {
+        // CHECK IP ELIGIBILITY BEFORE SIGNUP
+        const ipCheck = await checkIPEligibility();
+        if (!ipCheck.eligible) {
+          console.log("[Auth] IP blocked:", ipCheck);
+          toast.error(t('auth.ipBlocked'), {
+            description: `${t('auth.maxAccountsReached')} (${ipCheck.existing_accounts}/3)`,
+            duration: 8000,
+          });
+          setLoading(false);
+          isSubmittingRef.current = false;
+          return;
+        }
+
         // Signup
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -308,6 +348,19 @@ export default function Auth() {
       });
 
       if (signInError && signInError.message.includes("Invalid login credentials")) {
+        // CHECK IP ELIGIBILITY BEFORE WALLET SIGNUP
+        const ipCheck = await checkIPEligibility();
+        if (!ipCheck.eligible) {
+          console.log("[Auth] IP blocked for wallet signup:", ipCheck);
+          toast.error(t('auth.ipBlocked'), {
+            description: `${t('auth.maxAccountsReached')} (${ipCheck.existing_accounts}/3)`,
+            duration: 8000,
+          });
+          setLoading(false);
+          isSubmittingRef.current = false;
+          return;
+        }
+
         // Account doesn't exist, create new
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: walletEmail,
