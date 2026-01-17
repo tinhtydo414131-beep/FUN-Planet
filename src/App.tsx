@@ -58,6 +58,7 @@ const AngelAIHubPage = lazy(() => import("./pages/AngelAIHubPage"));
 
 const LawOfLight = lazy(() => import("./pages/LawOfLight"));
 const GemFusionQuestPage = lazy(() => import("./pages/games/GemFusionQuestPage"));
+const HonorBoard = lazy(() => import("./pages/HonorBoard"));
 
 // Lazy load heavy components
 const BackgroundMusicPlayer = lazy(() => import("@/components/BackgroundMusicPlayer").then(m => ({ default: m.BackgroundMusicPlayer })));
@@ -156,6 +157,7 @@ const AnimatedRoutes = () => {
           
           {/* Other */}
           <Route path="/about" element={<About />} />
+          <Route path="/honor-board" element={<HonorBoard />} />
           
           <Route path="/angel-ai" element={<AngelAIHubPage />} />
           <Route path="/law-of-light" element={<LawOfLight />} />
