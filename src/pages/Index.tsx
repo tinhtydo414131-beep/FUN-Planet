@@ -55,22 +55,29 @@ const Index = () => {
   const [showAngelChat, setShowAngelChat] = useState(false);
   const [showRoleSelector, setShowRoleSelector] = useState(false);
 
-  useEffect(() => {
-    if (!loading && !user) {
-      const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
-      if (!hasSeenFunId) {
-        setShowFunIdOnboarding(true);
-      }
-    }
-    
-    if (!loading && user && !hasCompletedOnboarding()) {
-      setShowRoleSelector(true);
-    }
-    
-    if (user && funId && shouldShowAngel) {
-      setShowAngelChat(true);
-    }
-  }, [user, loading, funId, shouldShowAngel]);
+  // DISABLED: Auto-show popups to improve initial page load experience
+  // Users can access these features manually:
+  // - FunID via Auth page
+  // - Role Selection via Profile/Settings
+  // - Angel AI via floating button
+  // See memory: ux/onboarding-auto-display-policy
+  
+  // useEffect(() => {
+  //   if (!loading && !user) {
+  //     const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
+  //     if (!hasSeenFunId) {
+  //       setShowFunIdOnboarding(true);
+  //     }
+  //   }
+  //   
+  //   if (!loading && user && !hasCompletedOnboarding()) {
+  //     setShowRoleSelector(true);
+  //   }
+  //   
+  //   if (user && funId && shouldShowAngel) {
+  //     setShowAngelChat(true);
+  //   }
+  // }, [user, loading, funId, shouldShowAngel]);
 
   const handleSelectRole = (role: "kid" | "parent" | "developer") => {
     setShowRoleSelector(false);
