@@ -6653,10 +6653,10 @@ export type Database = {
         Returns: {
           avatar_url: string
           games_uploaded: number
-          id: string
           is_anonymous: boolean
           total_donated: number
           total_plays: number
+          user_id: string
           username: string
           wallet_address: string
         }[]
@@ -6665,11 +6665,10 @@ export type Database = {
         Args: { limit_count?: number }
         Returns: {
           avatar_url: string
-          claimed_amount: number
-          created_at: string
+          games_uploaded: number
           id: string
-          pending_amount: number
           total_camly: number
+          total_plays: number
           username: string
           wallet_balance: number
         }[]
