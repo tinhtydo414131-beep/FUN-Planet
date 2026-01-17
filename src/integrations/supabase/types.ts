@@ -6666,11 +6666,11 @@ export type Database = {
         Returns: {
           avatar_url: string
           games_uploaded: number
-          id: string
+          rank: number
           total_camly: number
           total_plays: number
+          user_id: string
           username: string
-          wallet_balance: number
         }[]
       }
       get_public_stats: { Args: never; Returns: Json }
