@@ -138,5 +138,7 @@ export default {
   auth: {
     exploreAsGuest: '게스트로 탐색 👀',
     or: '또는',
+    ipBlocked: '이 IP 주소에서는 가입할 수 없습니다',
+    maxAccountsReached: '이 IP의 최대 계정 수에 도달했습니다',
   },
 };

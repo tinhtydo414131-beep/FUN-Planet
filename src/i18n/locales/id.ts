@@ -138,5 +138,7 @@ export default {
   auth: {
     exploreAsGuest: 'Jelajahi sebagai Tamu 👀',
     or: 'atau',
+    ipBlocked: 'Tidak dapat mendaftar dari alamat IP ini',
+    maxAccountsReached: 'Batas maksimum akun untuk IP ini tercapai',
   },
 };

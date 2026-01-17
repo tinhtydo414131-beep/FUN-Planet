@@ -138,5 +138,7 @@ export default {
   auth: {
     exploreAsGuest: '游客探索 👀',
     or: '或',
+    ipBlocked: '无法从此IP地址注册',
+    maxAccountsReached: '此IP已达到最大账户数量限制',
   },
 };

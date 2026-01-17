@@ -247,6 +247,8 @@ export default {
     sending: '送信中... ⏳',
     exploreAsGuest: 'ゲストとして探索 👀',
     or: 'または',
+    ipBlocked: 'このIPアドレスからは登録できません',
+    maxAccountsReached: 'このIPのアカウント上限に達しました',
   },
   heroActions: {
     playNow: '今すぐプレイ',
