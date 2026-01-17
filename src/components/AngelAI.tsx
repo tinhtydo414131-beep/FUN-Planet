@@ -773,22 +773,8 @@ function MessageBubble({ message, isExpanded = true }: { message: ChatMessage; i
   );
 }
 
-// Random tips for Angel speech bubble
-const ANGEL_TIPS = [
-  "Hãy chơi game giáo dục hôm nay! 📚",
-  "Bạn đã nhận thưởng chưa? 🎁",
-  "Khám phá game mới nào! 🚀",
-  "Mời bạn bè nhận 25K CAMLY! 💰",
-  "Chúc bạn chơi vui vẻ! 🌟",
-  "Bạn thật tuyệt vời! ✨",
-];
-
-// Floating Angel Button for triggering Angel AI - Enhanced with wave + tips
+// Floating Angel Button for triggering Angel AI - Simplified 2D only
 export function AngelAIButton({ onClick }: { onClick: () => void }) {
-  const [showTip, setShowTip] = useState(false);
-  const [currentTip, setCurrentTip] = useState('');
-  const [isWaving, setIsWaving] = useState(false);
-  
   const {
     position,
     isDragging,
@@ -804,47 +790,8 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
     longPressDelay: 300
   });
 
-  // Wave animation every 20 seconds
-  useEffect(() => {
-    const waveInterval = setInterval(() => {
-      setIsWaving(true);
-      setTimeout(() => setIsWaving(false), 2000);
-    }, 20000);
-    
-    // Initial wave after 3 seconds
-    const initialWave = setTimeout(() => {
-      setIsWaving(true);
-      setTimeout(() => setIsWaving(false), 2000);
-    }, 3000);
-    
-    return () => {
-      clearInterval(waveInterval);
-      clearTimeout(initialWave);
-    };
-  }, []);
-  
-  // Speech bubble tips every 30 seconds
-  useEffect(() => {
-    const showRandomTip = () => {
-      setCurrentTip(ANGEL_TIPS[Math.floor(Math.random() * ANGEL_TIPS.length)]);
-      setShowTip(true);
-      setTimeout(() => setShowTip(false), 5000);
-    };
-    
-    // Show first tip after 5 seconds
-    const initialTip = setTimeout(showRandomTip, 5000);
-    
-    const tipInterval = setInterval(showRandomTip, 30000);
-    
-    return () => {
-      clearInterval(tipInterval);
-      clearTimeout(initialTip);
-    };
-  }, []);
-
   const handleClick = () => {
     if (!isDragging) {
-      setShowTip(false); // Hide tip when opening chat
       onClick();
     }
   };
@@ -861,24 +808,6 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         bottom: isDesktop ? '1rem' : 'calc(6rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
-      {/* Speech Bubble */}
-      <AnimatePresence>
-        {showTip && !isDragging && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8, y: 5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            className="absolute bottom-full right-0 mb-3 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-[180px] sm:max-w-[200px] border border-yellow-200 dark:border-yellow-500/30"
-            onClick={() => setShowTip(false)}
-          >
-            <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 font-medium">{currentTip}</p>
-            {/* Speech bubble tail */}
-            <div className="absolute bottom-0 right-6 w-3 h-3 bg-white dark:bg-slate-800 border-r border-b border-yellow-200 dark:border-yellow-500/30 transform rotate-45 translate-y-1/2" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
       {/* Drag Handle */}
       <div
         className={`absolute -top-3 left-1/2 -translate-x-1/2 p-1 rounded-full transition-all cursor-grab active:cursor-grabbing ${
@@ -905,20 +834,16 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         onTouchMove={handleLongPressMove}
         whileHover={isDragging ? {} : { scale: 1.05 }}
         whileTap={isDragging ? {} : { scale: 0.95 }}
-        animate={
-          isWaving && !isDragging 
-            ? { rotate: [0, 15, -15, 15, -10, 5, 0] } 
-            : isDragging 
-              ? { filter: "drop-shadow(0 0 15px rgba(255, 215, 0, 0.7))" }
-              : { 
-                  filter: [
-                    "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))",
-                    "drop-shadow(0 0 12px rgba(255, 215, 0, 0.5))",
-                    "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))"
-                  ]
-                }
-        }
-        transition={isWaving ? { duration: 1, ease: "easeInOut" } : { duration: 2, repeat: isDragging ? 0 : Infinity }}
+        animate={isDragging ? {
+          filter: "drop-shadow(0 0 15px rgba(255, 215, 0, 0.7))"
+        } : { 
+          filter: [
+            "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))",
+            "drop-shadow(0 0 12px rgba(255, 215, 0, 0.5))",
+            "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))"
+          ]
+        }}
+        transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
         className="relative"
       >
         {/* Always use simplified 2D logo - no complex 3D effects */}

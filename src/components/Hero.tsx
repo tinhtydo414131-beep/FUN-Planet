@@ -1,14 +1,19 @@
-import { Sparkles, Gamepad2 } from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Search, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
-import { CategoryIslands } from "./CategoryIslands";
-import { MiniLeaderboard } from "./MiniLeaderboard";
+import { FunPlanetUnifiedBoard } from "./FunPlanetUnifiedBoard";
 import { motion } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
 
 export const Hero = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const {
     playClick,
@@ -17,13 +22,20 @@ export const Hero = () => {
     toggleSound
   } = useGameAudio();
 
-  const handlePlayNow = () => {
-    playClick();
-    navigate('/games');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (search.trim()) {
+      navigate(`/games?search=${encodeURIComponent(search)}`);
+    }
+  };
+  const scrollToFeaturedGames = () => {
+    document.getElementById('featured-games')?.scrollIntoView({
+      behavior: 'smooth'
+    });
   };
 
-  return (
-    <section className="relative pt-16 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-2 sm:px-4 overflow-hidden min-h-[85vh] sm:min-h-screen flex flex-col justify-start">
+  return <section className="relative pt-16 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-2 sm:px-4 overflow-hidden min-h-screen flex flex-col justify-start">
       {/* Background image - optimized for mobile */}
       <img 
         src="/images/backgrounds/fun-planet-bg.jpg" 
@@ -73,32 +85,45 @@ export const Hero = () => {
         }}
       />
       
-      <div className="container mx-auto max-w-7xl relative z-10 px-4">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8">
-          {/* Left side: Main content */}
-          <div className="flex-1 text-center lg:text-left space-y-6 sm:space-y-8">
-            {/* Audio controls */}
-            <div className="flex justify-center lg:justify-start mb-2">
-              <AudioControls isSoundEnabled={isSoundEnabled} onToggleSound={toggleSound} />
-            </div>
+      <div className="container mx-auto max-w-6xl relative z-10">
+        <div className="text-center space-y-6 sm:space-y-8">
+          {/* Audio controls */}
+          <div className="flex justify-end mb-2">
+            <AudioControls isSoundEnabled={isSoundEnabled} onToggleSound={toggleSound} />
+          </div>
           
           {/* Badge - Enhanced with glow */}
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1 sm:py-2.5 bg-gradient-to-r from-purple-600/95 via-pink-600/95 to-cyan-600/95 backdrop-blur-lg rounded-full border-2 border-white/60 shadow-[0_0_30px_rgba(168,85,247,0.5)]"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: -20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1 sm:py-2.5 bg-gradient-to-r from-purple-600/95 via-pink-600/95 to-cyan-600/95 backdrop-blur-lg rounded-full border-2 border-white/60 shadow-[0_0_30px_rgba(168,85,247,0.5)]">
             <Sparkles className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-300 animate-pulse drop-shadow-[0_0_10px_rgba(253,224,71,0.8)]" />
             <span className="font-space text-[10px] sm:text-base font-black text-white drop-shadow-lg">🌟 {t('hero.badge')}</span>
           </motion.div>
 
           {/* Logo with diamonds */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            transition={{ delay: 0.2 }} 
-            className="flex items-center justify-center gap-3 sm:gap-6 md:gap-8"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          scale: 0.9
+        }} animate={{
+          opacity: 1,
+          scale: 1
+        }} transition={{
+          delay: 0.2
+        }} className="flex items-center justify-center gap-3 sm:gap-6 md:gap-8">
+            <motion.div animate={{
+            rotate: 360
+          }} transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "linear"
+          }}>
+              
+            </motion.div>
+            
             <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider relative">
               {/* Metallic gold shadow with enhanced depth */}
               <span 
@@ -142,101 +167,107 @@ export const Hero = () => {
                 FUN PLANET
               </span>
             </h1>
+            
+            
           </motion.div>
 
           {/* Slogan - Enhanced glassmorphism */}
-          <motion.p 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ delay: 0.3 }} 
-            className="text-xs sm:text-base md:text-lg text-white font-rajdhani font-black max-w-[90vw] sm:max-w-2xl mx-auto leading-relaxed px-3 sm:px-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] bg-gradient-to-r from-purple-600/70 via-pink-600/70 to-cyan-600/70 backdrop-blur-xl rounded-2xl py-2.5 sm:py-4 border border-white/50 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_0_40px_rgba(168,85,247,0.25)]"
-          >
+          <motion.p initial={{
+          opacity: 0
+        }} animate={{
+          opacity: 1
+        }} transition={{
+          delay: 0.3
+        }} className="text-xs sm:text-base md:text-lg text-white font-rajdhani font-black max-w-[90vw] sm:max-w-2xl mx-auto leading-relaxed px-3 sm:px-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] bg-gradient-to-r from-purple-600/70 via-pink-600/70 to-cyan-600/70 backdrop-blur-xl rounded-2xl py-2.5 sm:py-4 border border-white/50 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_0_40px_rgba(168,85,247,0.25)]">
             🚀 {t('hero.slogan')} 💎✨
           </motion.p>
 
-          {/* BIG PLAY NOW BUTTON - New hero element */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-            className="pt-4 sm:pt-6"
-          >
-            <motion.button
-              onClick={handlePlayNow}
-              onMouseEnter={() => playPop()}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative min-w-[200px] sm:min-w-[280px] min-h-[70px] sm:min-h-[100px] px-8 sm:px-12 py-4 sm:py-6 text-xl sm:text-3xl font-black rounded-3xl text-white overflow-hidden group"
-              style={{
-                background: 'linear-gradient(135deg, #FFD700 0%, #FF6BD6 35%, #A855F7 70%, #3B82F6 100%)',
-                boxShadow: '0 0 30px rgba(255,105,180,0.6), 0 10px 40px rgba(168,85,247,0.4), inset 0 2px 0 rgba(255,255,255,0.3)',
-              }}
-            >
-              {/* Rainbow pulse animation */}
-              <motion.div
-                className="absolute inset-0 rounded-3xl"
-                animate={{
-                  boxShadow: [
-                    "0 0 20px rgba(255,215,0,0.6)",
-                    "0 0 40px rgba(255,105,180,0.8)",
-                    "0 0 30px rgba(138,43,226,0.6)",
-                    "0 0 20px rgba(59,130,246,0.6)",
-                    "0 0 20px rgba(255,215,0,0.6)"
-                  ]
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
-              
-              {/* Shimmer overlay */}
+
+          {/* Search bar - Glossy white with pink-blue gradient border */}
+          <motion.form initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.4
+        }} onSubmit={handleSearch} className="max-w-xl mx-auto px-2 sm:px-4">
+            <div className="relative group">
+              {/* Pink-blue gradient border */}
               <div 
-                className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity"
+                className="absolute -inset-[2px] rounded-2xl opacity-90 group-hover:opacity-100 transition duration-300"
                 style={{
-                  background: 'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%)',
-                  backgroundSize: '200% 200%',
-                  animation: 'shimmer 2s infinite',
+                  background: 'linear-gradient(90deg, #E040A0 0%, #C060C0 25%, #9070E0 50%, #70A0F0 75%, #50B0FF 100%)',
                 }}
               />
-              
-              <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3 drop-shadow-lg">
-                <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8" />
-                <span>{t('hero.playNow', 'CHƠI NGAY')}</span>
-                <span className="text-2xl sm:text-3xl">🎮</span>
-              </span>
-            </motion.button>
+              <div 
+                className="relative rounded-xl overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,245,255,0.92) 50%, rgba(255,255,255,0.95) 100%)',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                {/* Search icon - outline style only */}
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 z-10" strokeWidth={1.5} />
+                <Input 
+                  type="text" 
+                  placeholder={t('hero.searchPlaceholder')} 
+                  value={search} 
+                  onChange={e => setSearch(e.target.value)} 
+                  className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-rajdhani font-medium bg-transparent border-0 rounded-xl shadow-none focus:ring-0 focus:border-0 text-purple-700 placeholder:text-gray-400"
+                />
+                <Button 
+                  type="submit" 
+                  onMouseEnter={() => playPop()} 
+                  onClick={() => playClick()} 
+                  className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm rounded-xl border-2 border-purple-300/50 hover:border-purple-400/70 transition-all"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(200,180,255,0.95) 0%, rgba(180,160,255,0.9) 50%, rgba(200,190,255,0.95) 100%)',
+                    color: '#6D28D9',
+                    boxShadow: '0 4px 15px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
+                    fontWeight: 700,
+                  }}
+                >
+                  {t('hero.searchButton')} 🚀
+                </Button>
+              </div>
+            </div>
+          </motion.form>
+
+
+          {/* Unified Board: Honor + Legends + Top Ranking */}
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.5
+        }} className="pt-4 sm:pt-6 w-full max-w-5xl mx-auto px-0 sm:px-2">
+            <FunPlanetUnifiedBoard />
           </motion.div>
 
-          {/* Category Islands */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <CategoryIslands />
-          </motion.div>
-
-          {/* Scroll indicator - simplified */}
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1, y: [0, 10, 0] }} 
-            transition={{ delay: 1, y: { duration: 1.5, repeat: Infinity } }} 
-            className="pt-6 sm:pt-8"
-          >
-            <button 
-              onClick={() => document.getElementById('featured-games')?.scrollIntoView({ behavior: 'smooth' })} 
-              className="text-white/60 hover:text-white transition-colors"
-            >
+          {/* Scroll indicator */}
+          <motion.div initial={{
+          opacity: 0
+        }} animate={{
+          opacity: 1,
+          y: [0, 10, 0]
+        }} transition={{
+          delay: 1,
+          y: {
+            duration: 1.5,
+            repeat: Infinity
+          }
+        }} className="pt-8">
+            <button onClick={scrollToFeaturedGames} className="text-white/60 hover:text-white transition-colors">
               <span className="block text-sm mb-2">{t('hero.scrollToPlay')}</span>
               <span className="text-3xl">↓</span>
             </button>
           </motion.div>
-          </div>
-          
-          {/* Right side: Mini Leaderboard (Desktop only) */}
-          <div className="hidden lg:block lg:flex-shrink-0 lg:pt-8">
-            <MiniLeaderboard />
-          </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
