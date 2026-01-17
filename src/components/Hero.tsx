@@ -139,7 +139,7 @@ export const Hero = () => {
               <img
                 src={mascotPlanet}
                 alt="Fun Planet Mascot"
-                className="relative z-10 w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 object-contain drop-shadow-2xl"
+                className="relative z-10 w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 object-contain drop-shadow-2xl"
               />
               
               {/* Sparkle decorations */}

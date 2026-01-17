@@ -21,7 +21,7 @@ const categories: CategoryIsland[] = [
     id: "puzzle",
     name: "Trí Tuệ",
     nameKey: "puzzle",
-    icon: <Puzzle className="h-10 w-10 sm:h-12 sm:w-12 text-white drop-shadow-lg" />,
+    icon: <Puzzle className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white drop-shadow-lg" />,
     gradient: "from-[#A2D2FF] via-[#87CEEB] to-[#A2D2FF]",
     glowColor: "rgba(162, 210, 255, 0.6)",
     link: "/games?category=puzzle",
@@ -30,7 +30,7 @@ const categories: CategoryIsland[] = [
     id: "adventure",
     name: "Phiêu Lưu",
     nameKey: "adventure",
-    icon: <Map className="h-10 w-10 sm:h-12 sm:w-12 text-white drop-shadow-lg" />,
+    icon: <Map className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white drop-shadow-lg" />,
     gradient: "from-[#F3C4FB] via-[#FFB6C1] to-[#F3C4FB]",
     glowColor: "rgba(243, 196, 251, 0.6)",
     link: "/games?category=adventure",
@@ -40,7 +40,7 @@ const categories: CategoryIsland[] = [
     id: "creative",
     name: "Sáng Tạo",
     nameKey: "creative",
-    icon: <Palette className="h-10 w-10 sm:h-12 sm:w-12 text-white drop-shadow-lg" />,
+    icon: <Palette className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white drop-shadow-lg" />,
     gradient: "from-[#CDB4DB] via-[#DDA0DD] to-[#CDB4DB]",
     glowColor: "rgba(205, 180, 219, 0.6)",
     link: "/games?category=creative",
@@ -50,7 +50,7 @@ const categories: CategoryIsland[] = [
     id: "rewards",
     name: "Phần Thưởng",
     nameKey: "rewards",
-    icon: <Gift className="h-10 w-10 sm:h-12 sm:w-12 text-white drop-shadow-lg" />,
+    icon: <Gift className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white drop-shadow-lg" />,
     gradient: "from-[#98F5E1] via-[#B4F8C8] to-[#98F5E1]",
     glowColor: "rgba(152, 245, 225, 0.6)",
     link: "/reward-galaxy",
@@ -94,7 +94,7 @@ const CategoryIsland = ({ category, index }: { category: CategoryIsland; index: 
       
       {/* Island Container */}
       <div
-        className="relative rounded-2xl p-4 sm:p-6 overflow-hidden"
+        className="relative rounded-2xl p-3 sm:p-4 md:p-6 overflow-hidden"
         style={{
           background: 'rgba(255, 255, 255, 0.2)',
           backdropFilter: 'blur(15px)',
@@ -156,7 +156,7 @@ const CategoryIsland = ({ category, index }: { category: CategoryIsland; index: 
           </motion.div>
           
           {/* Category Name */}
-          <span className="text-white font-bold text-sm sm:text-base drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+          <span className="text-white font-bold text-xs sm:text-sm md:text-base drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
             {category.name}
           </span>
         </div>

@@ -160,9 +160,9 @@ export const MiniLeaderboard = () => {
             </span>
             
             {/* Avatar */}
-            <Avatar className="h-7 w-7 border border-white/30">
+            <Avatar className="h-6 w-6 sm:h-7 sm:w-7 border border-white/30">
               <AvatarImage src={item.avatar_url || undefined} />
-              <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xs font-bold">
+              <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-[10px] sm:text-xs font-bold">
                 {item.username.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -191,7 +191,7 @@ export const MiniLeaderboard = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.3 }}
-      className="relative w-full max-w-[300px] sm:max-w-[320px]"
+      className="relative w-full max-w-[260px] sm:max-w-[280px] md:max-w-[300px] mx-auto lg:mx-0"
     >
       {/* Glassmorphism Card */}
       <div 
