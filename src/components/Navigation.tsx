@@ -99,6 +99,7 @@ export const Navigation = () => {
 
   const navLinks = [
     { path: "/games", label: t('nav.playGames') },
+    { path: "/honor-board", label: t('nav.rankings', '🏆 Rankings') },
     { path: "/public-music", label: t('nav.music') },
     { path: "/reward-galaxy", label: t('nav.rewardGalaxy'), special: true },
     ...(isAdmin ? [{ path: "/admin/master", label: "👑 Admin", admin: true }] : []),
@@ -382,6 +383,21 @@ export const Navigation = () => {
                           >
                             <MessageCircle className="w-5 h-5 text-muted-foreground" />
                             <span className="font-inter font-medium">{t('nav.messages')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Rankings / Honor Board */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/honor-board")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl transition-colors"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(168,85,247,0.15) 0%, rgba(236,72,153,0.15) 100%)',
+                              border: '2px solid rgba(168,85,247,0.4)',
+                            }}
+                          >
+                            <Trophy className="w-5 h-5 text-purple-500" />
+                            <span className="font-inter font-bold text-purple-600">{t('nav.rankings', '🏆 Bảng Vinh Danh')}</span>
+                            <Sparkles className="ml-auto w-4 h-4 text-purple-400 animate-pulse" />
                           </button>
                         </SheetClose>
                         {/* Public Music */}
