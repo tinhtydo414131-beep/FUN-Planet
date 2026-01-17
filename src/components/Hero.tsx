@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
 import { CategoryIslands } from "./CategoryIslands";
+import { MiniLeaderboard } from "./MiniLeaderboard";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -72,12 +73,14 @@ export const Hero = () => {
         }}
       />
       
-      <div className="container mx-auto max-w-6xl relative z-10">
-        <div className="text-center space-y-6 sm:space-y-8">
-          {/* Audio controls */}
-          <div className="flex justify-end mb-2">
-            <AudioControls isSoundEnabled={isSoundEnabled} onToggleSound={toggleSound} />
-          </div>
+      <div className="container mx-auto max-w-7xl relative z-10 px-4">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8">
+          {/* Left side: Main content */}
+          <div className="flex-1 text-center lg:text-left space-y-6 sm:space-y-8">
+            {/* Audio controls */}
+            <div className="flex justify-center lg:justify-start mb-2">
+              <AudioControls isSoundEnabled={isSoundEnabled} onToggleSound={toggleSound} />
+            </div>
           
           {/* Badge - Enhanced with glow */}
           <motion.div 
@@ -226,6 +229,12 @@ export const Hero = () => {
               <span className="text-3xl">↓</span>
             </button>
           </motion.div>
+          </div>
+          
+          {/* Right side: Mini Leaderboard (Desktop only) */}
+          <div className="hidden lg:block lg:flex-shrink-0 lg:pt-8">
+            <MiniLeaderboard />
+          </div>
         </div>
       </div>
     </section>
