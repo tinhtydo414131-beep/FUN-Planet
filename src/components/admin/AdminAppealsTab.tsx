@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +56,7 @@ interface Appeal {
   rejection_note?: string;
 }
 
-export function AdminAppealsTab() {
+const AdminAppealsTab = forwardRef<HTMLDivElement>((_, ref) => {
   const [appeals, setAppeals] = useState<Appeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("pending");
@@ -232,7 +232,7 @@ export function AdminAppealsTab() {
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -460,4 +460,8 @@ export function AdminAppealsTab() {
       </Dialog>
     </div>
   );
-}
+});
+
+AdminAppealsTab.displayName = "AdminAppealsTab";
+
+export { AdminAppealsTab };

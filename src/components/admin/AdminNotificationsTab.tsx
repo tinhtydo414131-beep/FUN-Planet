@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +69,7 @@ interface Notification {
   created_by: string | null;
 }
 
-export function AdminNotificationsTab() {
+const AdminNotificationsTab = forwardRef<HTMLDivElement>((_, ref) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -316,7 +316,7 @@ export function AdminNotificationsTab() {
   };
 
   return (
-    <div className="space-y-4">
+    <div ref={ref} className="space-y-4">
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4">
         <Card>
@@ -739,4 +739,8 @@ export function AdminNotificationsTab() {
       </Dialog>
     </div>
   );
-}
+});
+
+AdminNotificationsTab.displayName = "AdminNotificationsTab";
+
+export { AdminNotificationsTab };

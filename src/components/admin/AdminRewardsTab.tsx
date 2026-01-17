@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,10 +35,11 @@ interface AdminRewardsTabProps {
   onStatsUpdate: () => void;
 }
 
-export function AdminRewardsTab({ onStatsUpdate }: AdminRewardsTabProps) {
-  const [approvalQueue, setApprovalQueue] = useState<ApprovalItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [processingId, setProcessingId] = useState<string | null>(null);
+const AdminRewardsTab = forwardRef<HTMLDivElement, AdminRewardsTabProps>(
+  ({ onStatsUpdate }, ref) => {
+    const [approvalQueue, setApprovalQueue] = useState<ApprovalItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [processingId, setProcessingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadApprovalQueue();
@@ -160,9 +161,9 @@ export function AdminRewardsTab({ onStatsUpdate }: AdminRewardsTabProps) {
 
   const pendingCount = approvalQueue.filter(i => i.status === "pending").length;
 
-  return (
-    <div className="space-y-4">
-      {/* Stats Cards */}
+    return (
+      <div ref={ref} className="space-y-4">
+        {/* Stats Cards */}
       <div className="grid grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-4">
@@ -286,6 +287,11 @@ export function AdminRewardsTab({ onStatsUpdate }: AdminRewardsTabProps) {
           )}
         </CardContent>
       </Card>
-    </div>
-  );
-}
+      </div>
+    );
+  }
+);
+
+AdminRewardsTab.displayName = "AdminRewardsTab";
+
+export { AdminRewardsTab };

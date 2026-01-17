@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,7 +59,7 @@ interface ReferralData {
 
 const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
 
-export function AdminAnalyticsTab() {
+const AdminAnalyticsTab = forwardRef<HTMLDivElement>((_, ref) => {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<string>("30");
   const [userGrowth, setUserGrowth] = useState<UserGrowthData[]>([]);
@@ -228,7 +228,7 @@ export function AdminAnalyticsTab() {
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Controls */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -472,4 +472,8 @@ export function AdminAnalyticsTab() {
       </div>
     </div>
   );
-}
+});
+
+AdminAnalyticsTab.displayName = "AdminAnalyticsTab";
+
+export { AdminAnalyticsTab };

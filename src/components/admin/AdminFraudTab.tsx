@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,9 +50,10 @@ interface AdminFraudTabProps {
   onStatsUpdate: () => void;
 }
 
-export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
-  const [activities, setActivities] = useState<SuspiciousActivity[]>([]);
-  const [loading, setLoading] = useState(true);
+const AdminFraudTab = forwardRef<HTMLDivElement, AdminFraudTabProps>(
+  ({ onStatsUpdate }, ref) => {
+    const [activities, setActivities] = useState<SuspiciousActivity[]>([]);
+    const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [blockModalOpen, setBlockModalOpen] = useState(false);
@@ -304,9 +305,9 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
 
   const unreviewedCount = activities.filter(a => !a.reviewed).length;
 
-  return (
-    <div className="space-y-4">
-      {/* Scan Control */}
+    return (
+      <div ref={ref} className="space-y-4">
+        {/* Scan Control */}
       <Card>
         <CardContent className="pt-4">
           <div className="flex items-center justify-between">
@@ -529,4 +530,8 @@ export function AdminFraudTab({ onStatsUpdate }: AdminFraudTabProps) {
       )}
     </div>
   );
-}
+});
+
+AdminFraudTab.displayName = "AdminFraudTab";
+
+export { AdminFraudTab };
