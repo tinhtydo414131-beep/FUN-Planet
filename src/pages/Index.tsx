@@ -197,8 +197,8 @@ const Index = () => {
         )}
       </AnimatePresence>
 
-      {/* Angel AI Button */}
-      {user && funId && !showAngelChat && (
+      {/* Angel AI Button - Always visible for all users */}
+      {(!showAngelChat) && (
         <AngelAIButton onClick={() => setShowAngelChat(true)} />
       )}
 
