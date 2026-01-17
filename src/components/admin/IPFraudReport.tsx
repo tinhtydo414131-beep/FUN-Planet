@@ -35,7 +35,7 @@ import {
 import { format } from "date-fns";
 
 interface IPFraudRing {
-  ip_address: string;
+  fraud_ip: string;
   account_count: number;
   user_ids: string[];
   usernames: string[];
@@ -278,9 +278,9 @@ export function IPFraudReport({ onStatsUpdate }: IPFraudReportProps) {
                       ring.total_balance
                     );
                     return (
-                      <TableRow key={ring.ip_address}>
+                      <TableRow key={ring.fraud_ip}>
                         <TableCell className="font-mono text-sm">
-                          {ring.ip_address}
+                          {ring.fraud_ip}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">{ring.account_count}</Badge>
@@ -332,10 +332,10 @@ export function IPFraudReport({ onStatsUpdate }: IPFraudReportProps) {
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() => setConfirmBlockIP(ring.ip_address)}
-                            disabled={blocking === ring.ip_address}
+                            onClick={() => setConfirmBlockIP(ring.fraud_ip)}
+                            disabled={blocking === ring.fraud_ip}
                           >
-                            {blocking === ring.ip_address ? (
+                            {blocking === ring.fraud_ip ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <>

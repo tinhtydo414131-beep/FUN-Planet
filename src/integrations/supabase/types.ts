@@ -6565,7 +6565,7 @@ export type Database = {
         Returns: {
           account_count: number
           first_seen: string
-          ip_address: string
+          fraud_ip: string
           last_seen: string
           total_balance: number
           user_ids: string[]
