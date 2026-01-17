@@ -6607,7 +6607,6 @@ export type Database = {
           fraud_detected_at: string
           fraud_suspect_reason: string
           is_fraud_suspect: boolean
-          trust_score: number
           user_id: string
           username: string
           wallet_address: string
