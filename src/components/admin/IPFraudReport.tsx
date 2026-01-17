@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +56,8 @@ interface IPFraudReportProps {
   onStatsUpdate?: () => void;
 }
 
-export function IPFraudReport({ onStatsUpdate }: IPFraudReportProps) {
+const IPFraudReport = forwardRef<HTMLDivElement, IPFraudReportProps>(
+  ({ onStatsUpdate }, ref) => {
   const [fraudRings, setFraudRings] = useState<IPFraudRing[]>([]);
   const [stats, setStats] = useState<IPStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,11 +71,15 @@ export function IPFraudReport({ onStatsUpdate }: IPFraudReportProps) {
   const loadData = async () => {
     setLoading(true);
     try {
+      console.log('[IPFraudReport] Loading fraud rings...');
+      
       // Load IP fraud rings
       const { data: rings, error: ringsError } = await supabase.rpc(
         "detect_ip_fraud_rings",
         { min_accounts: 2 }
       );
+
+      console.log('[IPFraudReport] Fraud rings result:', { rings, error: ringsError });
 
       if (ringsError) throw ringsError;
       setFraudRings(rings || []);
@@ -84,12 +89,14 @@ export function IPFraudReport({ onStatsUpdate }: IPFraudReportProps) {
         "get_fraud_ip_stats"
       );
 
+      console.log('[IPFraudReport] Stats result:', { statsData, error: statsError });
+
       if (statsError) throw statsError;
       if (statsData && statsData[0]) {
         setStats(statsData[0]);
       }
     } catch (error) {
-      console.error("Load IP fraud data error:", error);
+      console.error("[IPFraudReport] Load IP fraud data error:", error);
       toast.error("Failed to load IP fraud data");
     } finally {
       setLoading(false);
@@ -161,7 +168,7 @@ export function IPFraudReport({ onStatsUpdate }: IPFraudReportProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div ref={ref} className="space-y-4">
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
@@ -392,4 +399,9 @@ export function IPFraudReport({ onStatsUpdate }: IPFraudReportProps) {
       </AlertDialog>
     </div>
   );
-}
+  }
+);
+
+IPFraudReport.displayName = "IPFraudReport";
+
+export { IPFraudReport };
