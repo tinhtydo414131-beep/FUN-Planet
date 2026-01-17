@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,7 +75,7 @@ interface UserGrowthPoint {
 
 const COLORS = ["#22c55e", "#eab308", "#6366f1"];
 
-export function AdminKPIDashboard() {
+const AdminKPIDashboard = forwardRef<HTMLDivElement, object>((props, ref) => {
   const [kpiData, setKpiData] = useState<KPIData>({
     totalUsers: 0,
     activeUsers: 0,
@@ -299,7 +299,7 @@ export function AdminKPIDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -548,4 +548,8 @@ export function AdminKPIDashboard() {
       </Card>
     </div>
   );
-}
+});
+
+AdminKPIDashboard.displayName = "AdminKPIDashboard";
+
+export { AdminKPIDashboard };
