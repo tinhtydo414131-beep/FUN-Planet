@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,9 +53,10 @@ interface AdminUsersTabProps {
   onStatsUpdate: () => void;
 }
 
-export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [loading, setLoading] = useState(true);
+const AdminUsersTab = forwardRef<HTMLDivElement, AdminUsersTabProps>(
+  ({ onStatsUpdate }, ref) => {
+    const [users, setUsers] = useState<UserData[]>([]);
+    const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
@@ -248,9 +249,9 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  return (
-    <div className="space-y-4">
-      {/* Search & Filter */}
+    return (
+      <div ref={ref} className="space-y-4">
+        {/* Search & Filter */}
       <Card>
         <CardContent className="pt-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -447,6 +448,11 @@ export function AdminUsersTab({ onStatsUpdate }: AdminUsersTabProps) {
           />
         </>
       )}
-    </div>
-  );
-}
+      </div>
+    );
+  }
+);
+
+AdminUsersTab.displayName = "AdminUsersTab";
+
+export { AdminUsersTab };

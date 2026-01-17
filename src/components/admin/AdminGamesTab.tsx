@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -88,9 +88,10 @@ interface AdminGamesTabProps {
   onStatsUpdate: () => void;
 }
 
-export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
+const AdminGamesTab = forwardRef<HTMLDivElement, AdminGamesTabProps>(
+  ({ onStatsUpdate }, ref) => {
+    const [games, setGames] = useState<Game[]>([]);
+    const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -899,4 +900,8 @@ export function AdminGamesTab({ onStatsUpdate }: AdminGamesTabProps) {
       </Dialog>
     </div>
   );
-}
+});
+
+AdminGamesTab.displayName = "AdminGamesTab";
+
+export { AdminGamesTab };

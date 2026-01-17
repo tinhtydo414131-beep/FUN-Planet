@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -109,7 +109,7 @@ interface AppealStats {
   avgProcessingTimeHours: number;
 }
 
-export function AdminAngelAITab() {
+const AdminAngelAITab = forwardRef<HTMLDivElement>((_, ref) => {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<string>("7");
   const [stats, setStats] = useState<ChatStats>({
@@ -1159,4 +1159,8 @@ export function AdminAngelAITab() {
       </Card>
     </div>
   );
-}
+});
+
+AdminAngelAITab.displayName = "AdminAngelAITab";
+
+export { AdminAngelAITab };

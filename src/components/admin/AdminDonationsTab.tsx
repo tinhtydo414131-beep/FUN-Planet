@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ interface DonationStats {
 
 const DONATION_WALLET = "0xaBeB558CC6D34e56eaDB53D248872bEd1e7b77be";
 
-export function AdminDonationsTab() {
+const AdminDonationsTab = forwardRef<HTMLDivElement>((_, ref) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [stats, setStats] = useState<DonationStats>({
     total: 0, internal: 0, onchain: 0,
@@ -172,7 +172,7 @@ export function AdminDonationsTab() {
   });
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -368,4 +368,8 @@ export function AdminDonationsTab() {
       </Card>
     </div>
   );
-}
+});
+
+AdminDonationsTab.displayName = "AdminDonationsTab";
+
+export { AdminDonationsTab };

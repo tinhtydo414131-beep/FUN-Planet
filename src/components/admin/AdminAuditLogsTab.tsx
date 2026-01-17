@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,7 +45,7 @@ interface AuditLog {
   created_at: string;
 }
 
-export function AdminAuditLogsTab() {
+const AdminAuditLogsTab = forwardRef<HTMLDivElement>((_, ref) => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,7 +162,7 @@ export function AdminAuditLogsTab() {
   const uniqueActions = [...new Set(logs.map((l) => l.action.split("_")[0]))];
 
   return (
-    <div className="space-y-4">
+    <div ref={ref} className="space-y-4">
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         <Card>
@@ -338,4 +338,8 @@ export function AdminAuditLogsTab() {
       </Card>
     </div>
   );
-}
+});
+
+AdminAuditLogsTab.displayName = "AdminAuditLogsTab";
+
+export { AdminAuditLogsTab };

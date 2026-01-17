@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,7 @@ import {
   Wallet
 } from "lucide-react";
 
-export function AdminSettingsTab() {
+const AdminSettingsTab = forwardRef<HTMLDivElement>((_, ref) => {
   const { 
     settings, 
     setSettings, 
@@ -58,7 +59,7 @@ export function AdminSettingsTab() {
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Reward Settings */}
       <Card>
         <CardHeader>
@@ -277,4 +278,8 @@ export function AdminSettingsTab() {
       </div>
     </div>
   );
-}
+});
+
+AdminSettingsTab.displayName = "AdminSettingsTab";
+
+export { AdminSettingsTab };

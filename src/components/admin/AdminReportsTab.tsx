@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,9 +54,10 @@ interface AdminReportsTabProps {
   onStatsUpdate: () => void;
 }
 
-export function AdminReportsTab({ onStatsUpdate }: AdminReportsTabProps) {
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
+const AdminReportsTab = forwardRef<HTMLDivElement, AdminReportsTabProps>(
+  ({ onStatsUpdate }, ref) => {
+    const [reports, setReports] = useState<Report[]>([]);
+    const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
@@ -211,9 +212,9 @@ export function AdminReportsTab({ onStatsUpdate }: AdminReportsTabProps) {
     dismissed: reports.filter((r) => r.status === "dismissed").length,
   };
 
-  return (
-    <div className="space-y-4">
-      {/* Stats Cards */}
+    return (
+      <div ref={ref} className="space-y-4">
+        {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-4">
@@ -443,6 +444,11 @@ export function AdminReportsTab({ onStatsUpdate }: AdminReportsTabProps) {
           )}
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
+      </div>
+    );
+  }
+);
+
+AdminReportsTab.displayName = "AdminReportsTab";
+
+export { AdminReportsTab };
