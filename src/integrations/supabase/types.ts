@@ -6405,10 +6405,10 @@ export type Database = {
         Returns: Json
       }
       admin_block_users_by_ip: {
-        Args: { p_admin_id: string; p_ip_address: string; p_reason?: string }
+        Args: { p_admin_id?: string; p_ip_address: string; p_reason?: string }
         Returns: {
+          blacklisted: boolean
           blocked_count: number
-          reset_amount: number
           user_ids: string[]
         }[]
       }
