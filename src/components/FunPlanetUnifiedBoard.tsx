@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Gamepad2, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw, Play } from "lucide-react";
+import { Users, Gamepad2, Upload, Gem, Crown, Heart, User, ChevronRight, RefreshCw, Play, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ethers } from "ethers";
 import { CAMLY_CONTRACT_ADDRESS, CAMLY_ABI } from "@/lib/web3";
@@ -17,6 +17,7 @@ import {
 } from "./ui/hover-card";
 import confetti from "canvas-confetti";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
+import { Skeleton } from "./ui/skeleton";
 
 // Treasury wallet address and BSC RPC (with backup URLs)
 const FUN_PLANET_TREASURY = "0xDb792AF6a426E1c2AbF4A2A1F8716775b7145C69";
@@ -256,6 +257,59 @@ const floatingParticles = [
   { emoji: "👑", delay: 2, x: "95%", y: "85%", duration: 7 },
 ];
 
+// =============== SKELETON COMPONENTS ===============
+const RankingSkeleton = React.forwardRef<HTMLDivElement, object>((_, ref) => (
+  <div ref={ref} className="space-y-3 p-4">
+    {[1, 2, 3, 4, 5].map((i) => (
+      <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-white/10">
+        <Skeleton className="h-8 w-8 rounded-full bg-white/20" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-4 w-24 bg-white/20" />
+          <Skeleton className="h-3 w-16 bg-white/15" />
+        </div>
+        <Skeleton className="h-4 w-20 bg-white/20" />
+      </div>
+    ))}
+  </div>
+));
+RankingSkeleton.displayName = "RankingSkeleton";
+
+const PodiumSkeleton = React.forwardRef<HTMLDivElement, object>((_, ref) => (
+  <div ref={ref} className="flex items-end justify-center gap-4 py-4">
+    {[2, 1, 3].map((rank) => (
+      <div key={rank} className="flex flex-col items-center">
+        <Skeleton className={`rounded-full bg-white/20 ${rank === 1 ? 'h-20 w-20' : 'h-16 w-16'}`} />
+        <Skeleton className="h-4 w-16 mt-2 bg-white/20" />
+        <Skeleton className="h-3 w-12 mt-1 bg-white/15" />
+        <Skeleton className={`w-full mt-2 rounded-t-lg bg-white/15 ${
+          rank === 1 ? 'h-24' : rank === 2 ? 'h-20' : 'h-16'
+        }`} />
+      </div>
+    ))}
+  </div>
+));
+PodiumSkeleton.displayName = "PodiumSkeleton";
+
+// =============== ERROR COMPONENT ===============
+const ErrorWithRetry = React.forwardRef<HTMLDivElement, { message: string; onRetry: () => void }>(
+  ({ message, onRetry }, ref) => (
+    <div ref={ref} className="flex flex-col items-center justify-center py-8 px-4 text-center">
+      <AlertCircle className="h-12 w-12 text-red-400 mb-3" />
+      <p className="text-white/80 text-sm mb-4">{message}</p>
+      <Button
+        onClick={onRetry}
+        variant="outline"
+        size="sm"
+        className="border-white/30 text-white hover:bg-white/10"
+      >
+        <RefreshCw className="h-4 w-4 mr-2" />
+        Thử lại
+      </Button>
+    </div>
+  )
+);
+ErrorWithRetry.displayName = "ErrorWithRetry";
+
 export const FunPlanetUnifiedBoard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -270,11 +324,13 @@ export const FunPlanetUnifiedBoard = () => {
   const [creators, setCreators] = useState<Creator[]>([]);
   const [donors, setDonors] = useState<Donor[]>([]);
   const [legendsLoading, setLegendsLoading] = useState(true);
+  const [legendsError, setLegendsError] = useState<string | null>(null);
   const [showDonateModal, setShowDonateModal] = useState(false);
 
   // Ranking State
   const [topUsers, setTopUsers] = useState<RankedUser[]>([]);
   const [rankingLoading, setRankingLoading] = useState(true);
+  const [rankingError, setRankingError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [confettiFired, setConfettiFired] = useState(false);
 
@@ -357,6 +413,7 @@ export const FunPlanetUnifiedBoard = () => {
   // Fetch Legends Data
   const fetchLegends = useCallback(async () => {
     try {
+      setLegendsError(null);
       const { data: gamesData } = await supabase.from("uploaded_games").select("user_id, profiles!uploaded_games_user_id_fkey(id, username, avatar_url)").eq("status", "approved");
 
       if (gamesData) {
@@ -390,10 +447,11 @@ export const FunPlanetUnifiedBoard = () => {
 
       if (donorsError) {
         console.error("[UnifiedBoard] Donors RPC error:", donorsError);
+        setLegendsError("Không thể tải danh sách nhà tài trợ");
       } else if (donorsData) {
         console.log("[UnifiedBoard] Donors fetched:", donorsData.length);
         const donorsList: Donor[] = donorsData.map((d: any) => ({
-          id: d.id,
+          id: d.user_id || d.id,
           username: d.username || 'Unknown',
           avatar_url: d.avatar_url,
           wallet_address: d.wallet_address,
@@ -407,6 +465,7 @@ export const FunPlanetUnifiedBoard = () => {
       }
     } catch (error) {
       console.error("Error fetching legends data:", error);
+      setLegendsError("Lỗi kết nối. Vui lòng thử lại.");
     } finally {
       setLegendsLoading(false);
     }
@@ -416,6 +475,7 @@ export const FunPlanetUnifiedBoard = () => {
   const fetchTopUsers = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
+      setRankingError(null);
       
       console.log("[UnifiedBoard] Fetching top users via RPC...");
       
@@ -428,11 +488,12 @@ export const FunPlanetUnifiedBoard = () => {
 
       if (rpcError) {
         console.error("[UnifiedBoard] RPC error:", rpcError);
+        setRankingError("Không thể tải bảng xếp hạng. Vui lòng thử lại.");
         return;
       }
 
       const rankedUsers: RankedUser[] = (data || []).map((row: any) => ({
-        id: row.id,
+        id: row.user_id || row.id,
         username: (row.username || 'Unknown').trim(),
         avatar_url: row.avatar_url,
         wallet_balance: Number(row.wallet_balance) || 0,
@@ -451,6 +512,7 @@ export const FunPlanetUnifiedBoard = () => {
       setTopUsers(rankedUsers);
     } catch (error) {
       console.error("Error fetching top users:", error);
+      setRankingError("Lỗi kết nối. Vui lòng thử lại.");
     } finally {
       setRankingLoading(false);
       setRefreshing(false);
@@ -715,8 +777,12 @@ export const FunPlanetUnifiedBoard = () => {
                 <div className="overflow-y-auto overflow-x-hidden scrollbar-hide-hover space-y-1.5 sm:space-y-2 h-[180px] sm:h-[200px]">
                   <AnimatePresence mode="wait">
                     {legendsLoading ? (
-                      <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center h-32">
-                        <div className="animate-pulse text-white/70">Loading...</div>
+                      <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                        <RankingSkeleton />
+                      </motion.div>
+                    ) : legendsError ? (
+                      <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                        <ErrorWithRetry message={legendsError} onRetry={fetchLegends} />
                       </motion.div>
                     ) : activeTab === "creators" ? (
                       <motion.div key="creators" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-2">
@@ -848,15 +914,9 @@ export const FunPlanetUnifiedBoard = () => {
               </div>
 
               {rankingLoading ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-3 rounded-xl border border-white/30 bg-white/25 p-3">
-                      <div className="h-8 w-8 animate-pulse rounded-full bg-white/35" />
-                      <div className="flex-1"><div className="h-4 w-24 animate-pulse rounded bg-white/35" /></div>
-                      <div className="h-4 w-16 animate-pulse rounded bg-white/35" />
-                    </div>
-                  ))}
-                </div>
+                <PodiumSkeleton />
+              ) : rankingError ? (
+                <ErrorWithRetry message={rankingError} onRetry={() => fetchTopUsers(true)} />
               ) : (
                 <>
                   {/* PODIUM FOR TOP 3 - Mobile Optimized */}
