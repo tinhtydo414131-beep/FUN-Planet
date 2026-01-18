@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { FeaturedGamesSection } from "@/components/FeaturedGamesSection";
+import { HonorBoardSection } from "@/components/HonorBoardSection";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -224,7 +225,9 @@ const Index = () => {
       {/* Featured Games - Play Instantly */}
       <FeaturedGamesSection />
       
-      
+      {/* Honor Board Section - Moved from Hero */}
+      <HonorBoardSection />
+
 
       {/* Full Games Gallery */}
       <section id="games-gallery" className="py-16 px-4 bg-gradient-to-b from-primary/5 to-background">
