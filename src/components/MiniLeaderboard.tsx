@@ -30,7 +30,7 @@ export const MiniLeaderboard = () => {
   const tabs = [
     { id: "donors" as TabType, icon: Heart, label: t('miniLeaderboard.donors') || "Nhà Tài Trợ", shortLabel: "Tài trợ", color: "from-pink-400 to-rose-500" },
     { id: "creators" as TabType, icon: Gamepad2, label: t('miniLeaderboard.creators') || "Nhà Sáng Tạo", shortLabel: "Sáng tạo", color: "from-purple-400 to-violet-500" },
-    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", shortLabel: "CAMLY", color: "from-cyan-400 to-blue-500" },
+    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", shortLabel: "CAMLY", color: "from-pink-400 via-purple-500 to-blue-500" },
   ];
 
   const fetchData = useCallback(async (silent = false) => {
@@ -187,6 +187,11 @@ export const MiniLeaderboard = () => {
                     ? `bg-gradient-to-r ${tab.color} text-white shadow-lg scale-105`
                     : 'bg-white/50 text-gray-600 hover:bg-white/70 hover:scale-[1.02]'
                 }`}
+                style={{
+                  boxShadow: activeTab === tab.id 
+                    ? '0 0 20px rgba(243, 196, 251, 0.5), 0 0 10px rgba(162, 210, 255, 0.3)' 
+                    : undefined
+                }}
               >
                 {/* ✨ Shimmer effect for active tab */}
                 {activeTab === tab.id && (

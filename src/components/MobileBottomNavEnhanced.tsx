@@ -73,14 +73,14 @@ export const MobileBottomNavEnhanced = () => {
       initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
       transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-pink-50/98 via-white/95 to-blue-50/90 backdrop-blur-xl border-t-2 border-purple-200/50 shadow-[0_-8px_40px_rgba(243,196,251,0.25),0_-2px_16px_rgba(162,210,255,0.2)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-pink-100/98 via-white/95 to-blue-100/90 backdrop-blur-xl border-t-2 border-purple-300/60 shadow-[0_-8px_40px_rgba(243,196,251,0.35),0_-2px_16px_rgba(162,210,255,0.3)]"
       style={{ 
         paddingBottom: 'max(env(safe-area-inset-bottom), 12px)',
       }}
     >
-      {/* ✨ Rainbow shimmer top border */}
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-300 via-purple-400 via-blue-400 to-cyan-300 opacity-80" />
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-pulse" />
+      {/* ✨ Rainbow shimmer top border - brighter holographic */}
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-pink-400 via-purple-500 via-blue-400 to-cyan-400 opacity-90" />
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-transparent via-white/70 to-transparent animate-pulse" />
       
       {/* 4-column grid with 88px height */}
       <div className="grid grid-cols-4 h-[88px] max-w-md mx-auto">
@@ -109,12 +109,12 @@ export const MobileBottomNavEnhanced = () => {
                 />
               )}
               
-              {/* 💎 Icon container - enhanced holographic glow */}
+              {/* 💎 Icon container - enhanced holographic glow matching MiniLeaderboard */}
               <motion.div 
                 className={cn(
                   "relative p-3 rounded-2xl transition-all duration-300 border",
                   active 
-                    ? "bg-gradient-to-br from-pink-100/60 to-blue-100/40 border-purple-200/50 shadow-[0_0_28px_rgba(243,196,251,0.5),0_0_12px_rgba(162,210,255,0.3)]"
+                    ? "bg-gradient-to-br from-pink-100/80 to-blue-100/60 border-purple-300/60 shadow-[0_0_30px_rgba(243,196,251,0.6),0_0_15px_rgba(162,210,255,0.4)]"
                     : "border-transparent"
                 )}
                 whileTap={shouldReduceAnimations ? undefined : { scale: 0.8 }}

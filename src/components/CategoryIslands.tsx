@@ -132,12 +132,13 @@ export const CategoryIslands = () => {
                   bg-gradient-to-br ${island.gradient}
                   backdrop-blur-sm
                   border-2 border-white/40
+                  hover:border-transparent
                   p-4 md:p-6
                   cursor-pointer
                   group
                   touch-manipulation
                   active:scale-95
-                  transition-transform
+                  transition-all duration-300
                 `}
                 style={{
                   perspective: "1000px",
@@ -147,6 +148,24 @@ export const CategoryIslands = () => {
                     0 0 60px ${island.shadowColor},
                     inset 0 1px 0 rgba(255,255,255,0.5)
                   `,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderImage = 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1';
+                  e.currentTarget.style.boxShadow = `
+                    0 20px 40px ${island.shadowColor},
+                    0 0 60px ${island.shadowColor},
+                    0 0 25px rgba(243, 196, 251, 0.5),
+                    0 0 15px rgba(162, 210, 255, 0.4),
+                    inset 0 1px 0 rgba(255,255,255,0.5)
+                  `;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderImage = 'none';
+                  e.currentTarget.style.boxShadow = `
+                    0 20px 40px ${island.shadowColor},
+                    0 0 60px ${island.shadowColor},
+                    inset 0 1px 0 rgba(255,255,255,0.5)
+                  `;
                 }}
               >
                 {/* Holographic shimmer overlay */}
