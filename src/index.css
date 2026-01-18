@@ -231,16 +231,16 @@
     animation: hero-gradient-shift 15s ease-in-out infinite;
   }
 
-  /* 🌈 Unified Holographic Page Background - Matches reference image */
+  /* 🌈 Unified Holographic Page Background - Matches logo purple-pink tones */
   .holographic-page-bg {
     background: linear-gradient(
       135deg,
-      #E8D0F0 0%,        /* Hồng-tím đậm hơn - khớp logo */
-      #D0C0E8 20%,       /* Tím đậm hơn */
-      #C0D8F0 40%,       /* Xanh nhạt */
-      #C8F0F0 60%,       /* Mint-cyan */
-      #D0C0E8 80%,       /* Tím đậm */
-      #E8D0F0 100%       /* Hồng-tím */
+      #E5C8F0 0%,        /* Pink-lavender đậm - khớp logo */
+      #C8B0E8 20%,       /* Tím đậm hơn - logo purple */
+      #B8D0F0 40%,       /* Xanh đậm hơn */
+      #C0F0F0 60%,       /* Mint-cyan */
+      #C8B0E8 80%,       /* Tím đậm - logo purple */
+      #E5C8F0 100%       /* Pink-lavender đậm */
     );
     position: relative;
     min-height: 100vh;
@@ -252,11 +252,11 @@
     inset: 0;
     background-image: 
       /* Tia sáng hồng lớn - đậm hơn */
-      radial-gradient(circle at 15% 25%, rgba(243, 196, 251, 0.30) 0%, transparent 40%),
+      radial-gradient(circle at 15% 25%, rgba(243, 196, 251, 0.35) 0%, transparent 40%),
       /* Tia sáng xanh lớn - đậm hơn */
-      radial-gradient(circle at 85% 75%, rgba(162, 210, 255, 0.30) 0%, transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(162, 210, 255, 0.35) 0%, transparent 40%),
       /* Tia sáng tím trung tâm - khớp logo #9070E0 */
-      radial-gradient(circle at 50% 50%, rgba(144, 112, 224, 0.20) 0%, transparent 35%),
+      radial-gradient(circle at 50% 50%, rgba(144, 112, 224, 0.25) 0%, transparent 35%),
       /* Ngôi sao lấp lánh nhỏ */
       radial-gradient(circle at 10% 80%, rgba(255, 255, 255, 0.8) 0%, transparent 2%),
       radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.7) 0%, transparent 1.5%),
