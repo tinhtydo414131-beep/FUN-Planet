@@ -235,29 +235,28 @@
   .holographic-page-bg {
     background: linear-gradient(
       135deg,
-      #E8D5F0 0%,        /* Soft pink-lavender */
-      #D8C8E8 20%,       /* Lavender */
-      #C8E0F0 40%,       /* Light blue */
-      #D0F0F0 60%,       /* Mint-cyan */
-      #D8C8E8 80%,       /* Lavender */
-      #E8D5F0 100%       /* Soft pink-lavender */
+      #E8D0F0 0%,        /* Hồng-tím đậm hơn - khớp logo */
+      #D0C0E8 20%,       /* Tím đậm hơn */
+      #C0D8F0 40%,       /* Xanh nhạt */
+      #C8F0F0 60%,       /* Mint-cyan */
+      #D0C0E8 80%,       /* Tím đậm */
+      #E8D0F0 100%       /* Hồng-tím */
     );
     position: relative;
     min-height: 100vh;
   }
 
-  /* Tia sáng lấp lánh tinh tế */
   .holographic-page-bg::before {
     content: '';
     position: absolute;
     inset: 0;
     background-image: 
-      /* Tia sáng hồng lớn */
-      radial-gradient(circle at 15% 25%, rgba(243, 196, 251, 0.25) 0%, transparent 40%),
-      /* Tia sáng xanh lớn */
-      radial-gradient(circle at 85% 75%, rgba(162, 210, 255, 0.25) 0%, transparent 40%),
-      /* Tia sáng tím trung tâm */
-      radial-gradient(circle at 50% 50%, rgba(205, 180, 219, 0.15) 0%, transparent 35%),
+      /* Tia sáng hồng lớn - đậm hơn */
+      radial-gradient(circle at 15% 25%, rgba(243, 196, 251, 0.30) 0%, transparent 40%),
+      /* Tia sáng xanh lớn - đậm hơn */
+      radial-gradient(circle at 85% 75%, rgba(162, 210, 255, 0.30) 0%, transparent 40%),
+      /* Tia sáng tím trung tâm - khớp logo #9070E0 */
+      radial-gradient(circle at 50% 50%, rgba(144, 112, 224, 0.20) 0%, transparent 35%),
       /* Ngôi sao lấp lánh nhỏ */
       radial-gradient(circle at 10% 80%, rgba(255, 255, 255, 0.8) 0%, transparent 2%),
       radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.7) 0%, transparent 1.5%),
