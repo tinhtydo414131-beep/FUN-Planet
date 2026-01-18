@@ -234,6 +234,20 @@ export const Navigation = () => {
                       <Trophy className="mr-3 h-5 w-5 text-amber-500" />
                       <span className="font-medium">{t('nav.achievementLeaderboard')}</span>
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {/* Quick Access Items - Moved from Homepage */}
+                    <DropdownMenuItem onClick={() => navigate("/nft-gallery")} className="py-3">
+                      <Sparkles className="mr-3 h-5 w-5 text-purple-500" />
+                      <span className="font-medium">{t('home.nftGallery')}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/full-ranking")} className="py-3">
+                      <Crown className="mr-3 h-5 w-5 text-amber-500" />
+                      <span className="font-medium">{t('home.leadersLabel')}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/chat")} className="py-3">
+                      <MessageCircle className="mr-3 h-5 w-5 text-blue-500" />
+                      <span className="font-medium">{t('home.chatLabel')}</span>
+                    </DropdownMenuItem>
                     {isAdmin && (
                       <>
                         <DropdownMenuSeparator />
@@ -422,6 +436,36 @@ export const Navigation = () => {
                           >
                             <Trophy className="w-5 h-5 text-amber-500" />
                             <span className="font-inter font-medium">{t('nav.achievementLeaderboard')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Quick Access - NFT Gallery */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/nft-gallery")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <Sparkles className="w-5 h-5 text-purple-500" />
+                            <span className="font-inter font-medium">{t('home.nftGallery')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Quick Access - Leaderboard */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/full-ranking")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <Crown className="w-5 h-5 text-amber-500" />
+                            <span className="font-inter font-medium">{t('home.leadersLabel')}</span>
+                          </button>
+                        </SheetClose>
+                        {/* Quick Access - Chat */}
+                        <SheetClose asChild>
+                          <button
+                            onClick={() => navigate("/chat")}
+                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                          >
+                            <MessageCircle className="w-5 h-5 text-blue-500" />
+                            <span className="font-inter font-medium">{t('home.chatLabel')}</span>
                           </button>
                         </SheetClose>
                         {/* Settings */}
