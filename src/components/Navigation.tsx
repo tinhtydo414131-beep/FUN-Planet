@@ -329,15 +329,22 @@ export const Navigation = () => {
         </div>
       </nav>
 
-      {/* Mobile Top Header - Sticky */}
-      <div className="md:hidden sticky-header">
-        <div className="flex items-center justify-between h-16 px-4">
+      {/* Mobile Top Header - Holographic Sticky */}
+      <div className="md:hidden sticky-header relative overflow-hidden">
+        {/* Rainbow shimmer top border */}
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-300 via-purple-300 via-blue-300 to-pink-300 animate-gradient-shift" />
+        
+        {/* Holographic glass background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-50/95 via-white/90 to-blue-50/95 backdrop-blur-lg" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-300/50 to-transparent" />
+        
+        <div className="flex items-center justify-between h-16 px-4 relative z-10">
           <NavLink 
             to="/" 
             className="flex items-center group active:scale-95 transition-transform ml-2"
           >
-            {/* Circular logo only - no text */}
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-md group-hover:border-purple-500 transition-all">
+            {/* Circular logo with holographic glow */}
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-[0_0_20px_rgba(243,196,251,0.4),0_0_40px_rgba(162,210,255,0.3)] group-hover:border-purple-500 group-hover:shadow-[0_0_30px_rgba(243,196,251,0.6),0_0_60px_rgba(162,210,255,0.4)] transition-all duration-300">
               <img 
                 src={funPlanetLogo} 
                 alt="FUN Planet" 
@@ -366,10 +373,19 @@ export const Navigation = () => {
                   <Menu className="w-6 h-6 text-foreground" />
                 </button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] p-0">
+              <SheetContent 
+                side="right" 
+                className="w-[300px] p-0 bg-gradient-to-b from-pink-50/98 via-white/95 to-blue-50/98 backdrop-blur-xl border-l-2"
+                style={{
+                  borderImage: 'linear-gradient(180deg, #F3C4FB, #A2D2FF, #CDB4DB) 1'
+                }}
+              >
                 <div className="flex flex-col h-full">
+                  {/* Rainbow top border for header */}
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-300 via-purple-300 via-blue-300 to-pink-300" />
+                  
                   {/* Header */}
-                  <div className="p-6 border-b border-border">
+                  <div className="p-6 border-b border-purple-200/50 bg-white/40 backdrop-blur-sm">
                     {user ? (
                       <div className="flex items-center gap-3">
                         <Avatar className="w-12 h-12 border-2 border-primary/30">
