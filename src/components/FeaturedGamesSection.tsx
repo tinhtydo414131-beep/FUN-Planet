@@ -81,10 +81,8 @@ export function FeaturedGamesSection() {
   // Loading skeleton with horizontal layout - mobile optimized
   if (loading) {
     return (
-      <section className="py-6 md:py-12 px-2 md:px-4">
-        <div 
-          className="container mx-auto max-w-6xl bg-white/20 backdrop-blur-lg rounded-2xl md:rounded-3xl p-3 md:p-6 border-2 border-white/30"
-        >
+      <section className="py-4 md:py-8 px-2 md:px-4">
+        <div className="container mx-auto max-w-6xl py-4 md:py-8">
           <div className="h-6 md:h-8 bg-white/30 rounded-lg w-32 md:w-48 mb-4 md:mb-6 animate-pulse" />
           <div className="flex gap-3 md:gap-4 overflow-hidden">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -169,8 +167,8 @@ export function FeaturedGamesSection() {
                 onMouseEnter={() => playBloop()}
               >
                 {/* Front Face - Main Card */}
-                <div 
-                  className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/30 backdrop-blur-sm border-2 border-pink-300/60 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-pink-400/80 active:scale-[0.98]"
+                    <div 
+                      className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/20 backdrop-blur-[2px] border border-pink-200/40 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-pink-300/60 active:scale-[0.98]"
                   style={{
                     boxShadow: '0 8px 24px rgba(243, 196, 251, 0.3), inset 0 1px 0 rgba(255,255,255,0.4)'
                   }}
@@ -255,7 +253,7 @@ export function FeaturedGamesSection() {
                   >
                     {/* Front Face - Main Card */}
                     <div 
-                      className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/30 backdrop-blur-sm border-2 border-purple-200/60 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-purple-300/80 active:scale-[0.98]"
+                      className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/20 backdrop-blur-[2px] border border-purple-200/40 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-purple-300/60 active:scale-[0.98]"
                       style={{
                         boxShadow: '0 8px 24px rgba(168, 85, 247, 0.2), inset 0 1px 0 rgba(255,255,255,0.4)'
                       }}
@@ -360,7 +358,7 @@ export function FeaturedGamesSection() {
           </div>
 
           {/* Mobile scroll fade indicator - positioned outside scroll container */}
-          <div className="absolute right-0 top-16 bottom-8 w-8 bg-gradient-to-l from-white/40 to-transparent pointer-events-none md:hidden rounded-r-2xl" />
+          <div className="absolute right-0 top-16 bottom-8 w-8 bg-gradient-to-l from-white/30 to-transparent pointer-events-none md:hidden rounded-r-2xl" />
         </div>
       </section>
 
