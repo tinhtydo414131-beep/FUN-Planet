@@ -73,7 +73,7 @@ export const MobileBottomNavEnhanced = () => {
       initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
       transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#E5C8F0]/98 via-white/95 to-[#B8D0F0]/90 backdrop-blur-xl border-t-2 border-purple-300/60 shadow-[0_-8px_40px_rgba(243,196,251,0.40),0_-2px_16px_rgba(144,112,224,0.25)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#E2C0F0]/98 via-white/95 to-[#B0C8F0]/90 backdrop-blur-xl border-t-2 border-purple-300/60 shadow-[0_-8px_40px_rgba(243,196,251,0.45),0_-2px_16px_rgba(144,112,224,0.30)]"
       style={{ 
         paddingBottom: 'max(env(safe-area-inset-bottom), 12px)',
       }}
