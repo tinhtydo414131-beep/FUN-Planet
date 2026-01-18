@@ -291,6 +291,17 @@
     animation: holo-border-shift 4s ease-in-out infinite;
   }
 
+  /* 🎮 Category Islands 3D Cube - Responsive rotation */
+  .island-3d-cube {
+    transform: rotateX(3deg) rotateY(-2deg);
+  }
+  
+  @media (min-width: 768px) {
+    .island-3d-cube {
+      transform: rotateX(6deg) rotateY(-4deg);
+    }
+  }
+
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }

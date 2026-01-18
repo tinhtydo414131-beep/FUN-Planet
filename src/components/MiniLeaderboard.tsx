@@ -214,7 +214,7 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.08, type: "spring", stiffness: 300 }}
-                  className="flex items-center gap-2 py-2.5 px-2 rounded-xl bg-white/50 hover:bg-white/70 transition-all cursor-pointer group min-h-[44px]"
+                  className="flex items-center gap-2 py-2.5 px-2 rounded-xl bg-white/70 backdrop-blur-sm hover:bg-white/80 transition-all cursor-pointer group h-[44px]"
                   onClick={() => {
                     // Prevent navigation if userId is empty (placeholder row)
                     if (row.userId) {
