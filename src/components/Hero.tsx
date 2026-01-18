@@ -313,7 +313,7 @@ export const Hero = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex justify-center lg:justify-end order-3 w-full lg:w-auto"
+            className="flex justify-center lg:justify-end order-3 w-full lg:w-auto mt-6 lg:mt-0"
           >
             <MiniLeaderboard />
           </motion.div>

@@ -231,16 +231,16 @@
     animation: hero-gradient-shift 15s ease-in-out infinite;
   }
 
-  /* 🌈 Unified Holographic Page Background - Matches logo purple-pink tones */
+  /* 🌈 Unified Holographic Page Background - Matches logo purple #9070E0 */
   .holographic-page-bg {
     background: linear-gradient(
       135deg,
-      #E5C8F0 0%,        /* Pink-lavender đậm - khớp logo */
-      #C8B0E8 20%,       /* Tím đậm hơn - logo purple */
-      #B8D0F0 40%,       /* Xanh đậm hơn */
-      #C0F0F0 60%,       /* Mint-cyan */
-      #C8B0E8 80%,       /* Tím đậm - logo purple */
-      #E5C8F0 100%       /* Pink-lavender đậm */
+      #E2C0F0 0%,        /* Pink-lavender đậm hơn */
+      #C0A8E8 20%,       /* Tím đậm - closer to logo #9070E0 */
+      #B0C8F0 40%,       /* Xanh đậm hơn */
+      #B8F0F0 60%,       /* Mint-cyan */
+      #C0A8E8 80%,       /* Tím đậm - logo purple */
+      #E2C0F0 100%       /* Pink-lavender đậm */
     );
     position: relative;
     min-height: 100vh;
@@ -274,6 +274,21 @@
   .holographic-page-bg > * {
     position: relative;
     z-index: 2;
+  }
+
+  /* 🌈 Holographic Border Animation */
+  @keyframes holo-border-shift {
+    0%, 100% { 
+      background-position: 0% 50%; 
+    }
+    50% { 
+      background-position: 100% 50%; 
+    }
+  }
+
+  .holo-border-animated {
+    background-size: 200% 200%;
+    animation: holo-border-shift 4s ease-in-out infinite;
   }
 
   @keyframes float {
