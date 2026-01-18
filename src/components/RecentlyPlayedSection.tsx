@@ -61,7 +61,7 @@ function RecentGameCard({ game, onClick }: RecentGameCardProps) {
     <motion.div
       variants={itemVariants}
       whileHover={{ scale: 1.05, y: -4 }}
-      whileTap={{ scale: 0.98 }}
+      whileTap={{ scale: 0.95 }}
       onClick={onClick}
       className="
         flex-shrink-0 
@@ -76,6 +76,9 @@ function RecentGameCard({ game, onClick }: RecentGameCardProps) {
         overflow-hidden
         group
         relative
+        touch-manipulation
+        active:scale-95
+        snap-start
       "
     >
       {/* Thumbnail */}
@@ -92,8 +95,8 @@ function RecentGameCard({ game, onClick }: RecentGameCardProps) {
           </div>
         )}
         
-        {/* Play Button Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        {/* Play Button Overlay - Always visible on mobile, hover on desktop */}
+        <div className="absolute inset-0 bg-black/20 md:opacity-0 opacity-100 md:group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
           <div className="
             w-10 h-10 
             rounded-full 
@@ -118,9 +121,12 @@ function RecentGameCard({ game, onClick }: RecentGameCardProps) {
         </div>
       </div>
 
-      {/* Holographic border effect on hover */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+      {/* Holographic border effect */}
+      <div 
+        className="absolute inset-0 rounded-2xl opacity-30 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
+          borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1',
+          border: '1px solid transparent',
           background: 'linear-gradient(135deg, transparent, rgba(243,196,251,0.1), rgba(162,210,255,0.1), transparent)',
         }}
       />
@@ -130,11 +136,11 @@ function RecentGameCard({ game, onClick }: RecentGameCardProps) {
 
 function RecentGameSkeleton() {
   return (
-    <div className="flex-shrink-0 w-[120px] h-[150px] md:w-[140px] md:h-[170px] rounded-2xl overflow-hidden">
-      <Skeleton className="w-full h-[80px] md:h-[95px] bg-gradient-to-br from-pink-100/50 to-blue-100/50" />
-      <div className="p-2 space-y-2">
-        <Skeleton className="h-4 w-full bg-pink-100/50" />
-        <Skeleton className="h-3 w-2/3 bg-blue-100/50" />
+    <div className="flex-shrink-0 w-[120px] h-[150px] md:w-[140px] md:h-[170px] rounded-2xl overflow-hidden snap-start bg-white/30 backdrop-blur-sm border border-white/40">
+      <div className="w-full h-[80px] md:h-[95px] bg-gradient-to-br from-pink-100/50 to-blue-100/50 animate-pulse" />
+      <div className="p-2 space-y-2 bg-white/40">
+        <div className="h-4 w-full bg-gradient-to-r from-pink-100/60 to-blue-100/60 rounded animate-pulse" />
+        <div className="h-3 w-2/3 bg-gradient-to-r from-blue-100/60 to-pink-100/60 rounded animate-pulse" />
       </div>
     </div>
   );
@@ -173,9 +179,9 @@ export function RecentlyPlayedSection() {
           </Button>
         </div>
 
-        {/* Games Grid/Scroll */}
+        {/* Games Grid/Scroll - Full-bleed on mobile */}
         {loading ? (
-          <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2 scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible">
+          <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none">
             {[...Array(4)].map((_, i) => (
               <RecentGameSkeleton key={i} />
             ))}
@@ -185,7 +191,7 @@ export function RecentlyPlayedSection() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex gap-3 md:gap-4 overflow-x-auto pb-2 scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible"
+            className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none"
           >
             {recentGames.map((game) => (
               <RecentGameCard
