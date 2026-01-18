@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trophy, Heart, Gamepad2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
 interface LeaderboardEntry {
@@ -29,11 +29,7 @@ export const MiniLeaderboard = () => {
     { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", color: "from-yellow-400 to-amber-500" },
   ];
 
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === "camly") {
@@ -49,7 +45,6 @@ export const MiniLeaderboard = () => {
             id: r.id,
             username: r.username || 'Anonymous',
             avatar_url: r.avatar_url,
-            // Try multiple field names for compatibility
             value: Number(r.wallet_balance) || Number(r.total_camly) || Number(r.camly_balance) || 0
           })));
         }
@@ -91,7 +86,32 @@ export const MiniLeaderboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // 🔴 Supabase Realtime subscription for live updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('mini_leaderboard_realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        fetchData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_rewards' }, () => {
+        fetchData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'platform_donations' }, () => {
+        fetchData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchData]);
 
   const formatValue = (value: number) => {
     if (activeTab === "creators") return `${value} 🎮`;
@@ -114,96 +134,121 @@ export const MiniLeaderboard = () => {
     >
       {/* Glassmorphism container with holographic border */}
       <div className="relative rounded-3xl overflow-hidden">
-        {/* Holographic border effect */}
+        {/* ✨ Enhanced holographic border with animated gradient */}
         <div 
           className="absolute -inset-[2px] rounded-3xl opacity-80"
           style={{
-            background: 'linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 50%, #CDB4DB 100%)',
-            backgroundSize: '200% 200%',
-            animation: 'gradient-shift 4s ease infinite',
+            background: 'linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 25%, #CDB4DB 50%, #98F5E1 75%, #F3C4FB 100%)',
+            backgroundSize: '300% 300%',
+            animation: 'gradient-shift 6s ease infinite',
           }}
         />
         
         {/* Glass content */}
         <div className="relative bg-white/40 backdrop-blur-xl rounded-3xl p-4 border border-white/50">
-          {/* Tab buttons - Always show labels */}
+          {/* Tab buttons with shimmer effect */}
           <div className="flex gap-1 mb-3">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-0.5 sm:gap-1 py-2.5 px-1.5 sm:px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all min-h-[44px] ${
+                className={`flex-1 flex items-center justify-center gap-0.5 sm:gap-1 py-2.5 px-1.5 sm:px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all min-h-[44px] relative overflow-hidden ${
                   activeTab === tab.id
                     ? `bg-gradient-to-r ${tab.color} text-white shadow-lg scale-105`
                     : 'bg-white/50 text-gray-600 hover:bg-white/70'
                 }`}
               >
-                <tab.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                <span className="truncate">{tab.label}</span>
+                {/* ✨ Shimmer effect for active tab */}
+                {activeTab === tab.id && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite] -skew-x-12" />
+                )}
+                <tab.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 relative z-10" />
+                <span className="truncate relative z-10">{tab.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Leaderboard entries */}
-          <div className="space-y-2">
-            {loading ? (
-              // Loading skeleton
-              [...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3 p-2 animate-pulse">
-                  <div className="w-6 h-6 bg-gray-200 rounded-full" />
-                  <div className="w-8 h-8 bg-gray-200 rounded-full" />
-                  <div className="flex-1">
-                    <div className="h-3 bg-gray-200 rounded w-20" />
+          {/* Leaderboard entries with AnimatePresence for smooth transitions */}
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-2"
+            >
+              {loading ? (
+                // Loading skeleton
+                [...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2 animate-pulse">
+                    <div className="w-6 h-6 bg-gray-200 rounded-full" />
+                    <div className="w-8 h-8 bg-gray-200 rounded-full" />
+                    <div className="flex-1">
+                      <div className="h-3 bg-gray-200 rounded w-20" />
+                    </div>
+                    <div className="h-4 bg-gray-200 rounded w-12" />
                   </div>
-                  <div className="h-4 bg-gray-200 rounded w-12" />
+                ))
+              ) : data.length === 0 ? (
+                <div className="text-center py-4 text-gray-500 text-sm">
+                  {t('miniLeaderboard.noData') || 'No data yet'}
                 </div>
-              ))
-            ) : data.length === 0 ? (
-              <div className="text-center py-4 text-gray-500 text-sm">
-                {t('miniLeaderboard.noData') || 'No data yet'}
-              </div>
-            ) : (
-              data.map((entry, index) => (
-                <motion.div
-                  key={entry.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-3 p-2 rounded-xl bg-white/50 hover:bg-white/70 transition-all cursor-pointer group"
-                  onClick={() => navigate(`/profile/${entry.id}`)}
-                >
-                  {/* Rank */}
-                  <span className="text-lg w-6 text-center">{getRankEmoji(index)}</span>
-                  
-                  {/* Avatar */}
-                  <Avatar className="w-8 h-8 border-2 border-white shadow-md group-hover:scale-110 transition-transform">
-                    <AvatarImage src={entry.avatar_url || undefined} />
-                    <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xs">
-                      {entry.username.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  {/* Username */}
-                  <span className="flex-1 font-bold text-gray-700 text-sm truncate">
-                    {entry.username}
-                  </span>
-                  
-                  {/* Value */}
-                  <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 text-sm">
-                    {formatValue(entry.value)}
-                  </span>
-                </motion.div>
-              ))
-            )}
-          </div>
+              ) : (
+                data.map((entry, index) => (
+                  <motion.div
+                    key={`${entry.id}-${index}`}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
+                    className="flex items-center gap-3 p-2 rounded-xl bg-white/50 hover:bg-white/70 transition-all cursor-pointer group"
+                    onClick={() => navigate(`/profile/${entry.id}`)}
+                  >
+                    {/* Rank with glow */}
+                    <motion.span 
+                      className="text-lg w-6 text-center drop-shadow-[0_0_4px_rgba(250,204,21,0.5)]"
+                      whileHover={{ scale: 1.2 }}
+                    >
+                      {getRankEmoji(index)}
+                    </motion.span>
+                    
+                    {/* Avatar */}
+                    <Avatar className="w-8 h-8 border-2 border-white shadow-md group-hover:scale-110 transition-transform">
+                      <AvatarImage src={entry.avatar_url || undefined} />
+                      <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xs">
+                        {entry.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    {/* Username */}
+                    <span className="flex-1 font-bold text-gray-700 text-sm truncate">
+                      {entry.username}
+                    </span>
+                    
+                    {/* ✨ Value with glow animation */}
+                    <motion.span 
+                      key={`${entry.id}-${entry.value}`}
+                      initial={{ scale: 1.2, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 text-sm drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+                    >
+                      {formatValue(entry.value)}
+                    </motion.span>
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
+          </AnimatePresence>
 
           {/* View All link */}
-          <button
+          <motion.button
             onClick={() => navigate('/full-ranking')}
             className="w-full mt-3 py-2 text-center text-sm font-bold text-purple-600 hover:text-pink-600 transition-colors flex items-center justify-center gap-1"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             {t('miniLeaderboard.viewAll') || 'View All'} →
-          </button>
+          </motion.button>
         </div>
       </div>
     </motion.div>
