@@ -173,14 +173,15 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
       transition={{ delay: 0.5 }}
       className="w-full sm:w-72 md:w-80 mx-auto lg:mx-0"
     >
-      {/* Glassmorphism container with holographic border */}
+      {/* Glassmorphism container with animated holographic border */}
       <div 
-        className="relative rounded-2xl overflow-hidden p-3 sm:p-4"
+        className="relative rounded-2xl overflow-hidden p-3 sm:p-4 holo-border-animated"
         style={{
-          background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) border-box',
+          background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #9070E0, #F3C4FB) border-box',
           border: '2px solid transparent',
           boxShadow: '0 8px 32px rgba(168, 85, 247, 0.15), 0 0 30px rgba(243, 196, 251, 0.25), 0 0 15px rgba(162, 210, 255, 0.2)',
           backdropFilter: 'blur(12px)',
+          backgroundSize: '200% 200%',
         }}
       >
         {/* 4 Static Rows */}
@@ -214,7 +215,14 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.08, type: "spring", stiffness: 300 }}
                   className="flex items-center gap-2 py-2.5 px-2 rounded-xl bg-white/50 hover:bg-white/70 transition-all cursor-pointer group min-h-[44px]"
-                  onClick={() => navigate(`/profile/${row.userId}`)}
+                  onClick={() => {
+                    // Prevent navigation if userId is empty (placeholder row)
+                    if (row.userId) {
+                      navigate(`/profile/${row.userId}`);
+                    } else {
+                      navigate('/full-ranking');
+                    }
+                  }}
                 >
                   {/* Icon */}
                   <div className="flex-shrink-0 w-5 flex items-center justify-center">
