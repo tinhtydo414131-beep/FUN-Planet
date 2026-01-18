@@ -46,9 +46,9 @@ export const Hero = () => {
         }}
       />
       
-      {/* Sparkle particles effect */}
+      {/* Sparkle particles effect - reduced on mobile for performance */}
       <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 rounded-full"
@@ -275,8 +275,10 @@ export const Hero = () => {
           </motion.div>
 
           {/* MiniLeaderboard - Mobile only (below button, optimized padding) */}
-          <div className="block md:hidden pt-5 sm:pt-6 px-2 pb-6 relative z-20">
-            <MiniLeaderboard />
+          <div className="block md:hidden pt-4 px-2 pb-4 relative z-20">
+            <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-2">
+              <MiniLeaderboard />
+            </div>
           </div>
         </div>
       </div>
