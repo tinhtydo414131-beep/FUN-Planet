@@ -15,6 +15,9 @@ interface RecentGame {
 const LOCAL_STORAGE_KEY = "fp_recent_games";
 const MAX_RECENT_GAMES = 4;
 
+// TEMPORARY: Set to true to preview UI with mock data
+const SHOW_MOCK_DATA = true;
+
 export function useRecentlyPlayed() {
   const { user } = useAuth();
   const [recentGames, setRecentGames] = useState<RecentGame[]>([]);
@@ -95,10 +98,7 @@ export function useRecentlyPlayed() {
   }, [user, fetchFromDatabase, fetchFromLocalStorage]);
 
   useEffect(() => {
-    // TEMPORARY MOCK DATA - Remove after testing
-    const SHOW_MOCK_DATA = true; // Set to false to use real data
-    
-    if (SHOW_MOCK_DATA && recentGames.length === 0) {
+    if (SHOW_MOCK_DATA) {
       const mockData: RecentGame[] = [
         { 
           id: 'mock_1', 
@@ -139,7 +139,7 @@ export function useRecentlyPlayed() {
       ];
       setRecentGames(mockData);
       setLoading(false);
-      return;
+      return; // Skip refreshRecent when using mock data
     }
     
     refreshRecent();

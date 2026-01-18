@@ -65,12 +65,12 @@ function RecentGameCard({ game, onClick }: RecentGameCardProps) {
       onClick={onClick}
       className="
         flex-shrink-0 
-        w-[120px] h-[150px] md:w-[140px] md:h-[170px]
+        w-[130px] min-h-[160px] md:w-[140px] md:min-h-[170px]
         rounded-2xl
         bg-white/40 backdrop-blur-lg
         border border-white/50
-        shadow-[0_8px_32px_rgba(243,196,251,0.15)]
-        hover:shadow-[0_12px_40px_rgba(243,196,251,0.25)]
+        shadow-[0_8px_32px_rgba(243,196,251,0.2),0_4px_16px_rgba(162,210,255,0.15)]
+        hover:shadow-[0_12px_40px_rgba(243,196,251,0.35),0_8px_24px_rgba(162,210,255,0.25)]
         transition-all duration-300
         cursor-pointer
         overflow-hidden
@@ -121,13 +121,13 @@ function RecentGameCard({ game, onClick }: RecentGameCardProps) {
         </div>
       </div>
 
-      {/* Holographic border effect */}
+      {/* Holographic border effect - stronger on mobile */}
       <div 
-        className="absolute inset-0 rounded-2xl opacity-30 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        className="absolute inset-0 rounded-2xl opacity-50 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
           borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1',
-          border: '1px solid transparent',
-          background: 'linear-gradient(135deg, transparent, rgba(243,196,251,0.1), rgba(162,210,255,0.1), transparent)',
+          border: '2px solid transparent',
+          background: 'linear-gradient(135deg, transparent, rgba(243,196,251,0.15), rgba(162,210,255,0.15), transparent)',
         }}
       />
     </motion.div>
@@ -152,12 +152,11 @@ export function RecentlyPlayedSection() {
   const { user } = useAuth();
   const { recentGames, loading, hasRecentGames } = useRecentlyPlayed();
 
-  // Don't show section if no user or no games
-  if (!user && !hasRecentGames) return null;
+  // Only hide when we've finished loading and confirmed no games
   if (!loading && !hasRecentGames) return null;
 
   return (
-    <section className="py-6 md:py-8 px-4">
+    <section className="py-6 md:py-8 px-4 pb-24 md:pb-8">
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 md:mb-6">
@@ -179,9 +178,9 @@ export function RecentlyPlayedSection() {
           </Button>
         </div>
 
-        {/* Games Grid/Scroll - Full-bleed on mobile */}
+        {/* Games Grid/Scroll - Full-bleed on mobile with scroll fade */}
         {loading ? (
-          <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none">
+          <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] md:[mask-image:none]">
             {[...Array(4)].map((_, i) => (
               <RecentGameSkeleton key={i} />
             ))}
@@ -191,7 +190,7 @@ export function RecentlyPlayedSection() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none"
+            className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:snap-none [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] md:[mask-image:none]"
           >
             {recentGames.map((game) => (
               <RecentGameCard
