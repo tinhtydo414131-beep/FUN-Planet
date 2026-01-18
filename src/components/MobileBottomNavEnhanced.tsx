@@ -73,13 +73,14 @@ export const MobileBottomNavEnhanced = () => {
       initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
       transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-white/98 via-white/95 to-white/90 backdrop-blur-xl border-t-2 border-pink-200/50 shadow-[0_-8px_40px_rgba(243,196,251,0.2),0_-2px_16px_rgba(162,210,255,0.15)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-pink-50/98 via-white/95 to-blue-50/90 backdrop-blur-xl border-t-2 border-purple-200/50 shadow-[0_-8px_40px_rgba(243,196,251,0.25),0_-2px_16px_rgba(162,210,255,0.2)]"
       style={{ 
         paddingBottom: 'max(env(safe-area-inset-bottom), 12px)',
       }}
     >
-      {/* ✨ Top gradient line */}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300" />
+      {/* ✨ Rainbow shimmer top border */}
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-300 via-purple-400 via-blue-400 to-cyan-300 opacity-80" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-pulse" />
       
       {/* 4-column grid with 88px height */}
       <div className="grid grid-cols-4 h-[88px] max-w-md mx-auto">
@@ -108,16 +109,13 @@ export const MobileBottomNavEnhanced = () => {
                 />
               )}
               
-              {/* 💎 Icon container - larger for 88px touch target */}
+              {/* 💎 Icon container - enhanced holographic glow */}
               <motion.div 
                 className={cn(
-                  "relative p-3 rounded-2xl transition-all duration-300",
-                  active && cn(
-                    "bg-gradient-to-br",
-                    item.gradientFrom.replace('from-', 'from-') + "/20",
-                    item.gradientTo.replace('to-', 'to-') + "/10",
-                    "shadow-[0_0_24px_rgba(243,196,251,0.4)]"
-                  )
+                  "relative p-3 rounded-2xl transition-all duration-300 border",
+                  active 
+                    ? "bg-gradient-to-br from-pink-100/60 to-blue-100/40 border-purple-200/50 shadow-[0_0_28px_rgba(243,196,251,0.5),0_0_12px_rgba(162,210,255,0.3)]"
+                    : "border-transparent"
                 )}
                 whileTap={shouldReduceAnimations ? undefined : { scale: 0.8 }}
               >
@@ -143,10 +141,10 @@ export const MobileBottomNavEnhanced = () => {
                 )}
               </motion.div>
               
-              {/* 📝 Label */}
+              {/* 📝 Label - improved contrast */}
               <span className={cn(
                 "text-xs font-bold transition-all duration-300",
-                active ? "text-purple-600" : "text-gray-400"
+                active ? "text-purple-600 drop-shadow-[0_1px_2px_rgba(168,85,247,0.3)]" : "text-gray-500"
               )}>
                 {item.label}
               </span>
