@@ -13,7 +13,7 @@ interface Angel2DFallbackProps {
 export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
   return (
     <motion.div
-      className="relative w-14 h-14 md:w-16 md:h-16 cursor-pointer select-none"
+      className="relative w-[60px] h-[60px] md:w-20 md:h-20 cursor-pointer select-none"
       onClick={onClick}
       whileHover={{ scale: 1.08, rotate: 5 }}
       whileTap={{ scale: 0.95 }}
