@@ -108,6 +108,7 @@ export const useGameAudio = () => {
   };
 
   return {
+    playSound,
     playClick,
     playSuccess,
     playError,

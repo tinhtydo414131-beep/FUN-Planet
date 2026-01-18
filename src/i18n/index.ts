@@ -46,7 +46,8 @@ const resources = {
       gamesLabel: 'Games', uploadLabel: 'Upload', nftsLabel: 'NFTs', chatLabel: 'Chat', parentsLabel: 'Parents', rewardsLabel: 'Rewards', leadersLabel: 'Leaders', achievementsLabel: 'Achievements', friendsLabel: 'Friends', profileLabel: 'Profile', loginLabel: 'Login',
       footerSlogan: 'Build Your Planet – Play & Earn Joy!', browseGames: 'Browse Games', leaderboard: 'Leaderboard', nftGallery: 'NFT Gallery', parentDashboard: 'Parent Dashboard', followUs: 'Follow Us', allRightsReserved: 'All rights reserved.'
     },
-    landscape: { title: 'Rotate Your Phone', description: 'For the best gaming experience, please rotate your phone to landscape! 🎮✨' }
+    landscape: { title: 'Rotate Your Phone', description: 'For the best gaming experience, please rotate your phone to landscape! 🎮✨' },
+    categoryIslands: { title: 'Explore Categories', subtitle: 'Choose your adventure!', puzzle: 'Puzzle', adventure: 'Adventure', create: 'Create', rewards: 'Rewards', games: 'games' }
   } },
   vi: { translation: { 
     nav: { home: 'Trang chủ', games: 'Trò chơi', wallet: 'Ví', profile: 'Hồ sơ', friends: 'Bạn bè', messages: 'Tin nhắn', leaderboard: 'Bảng xếp hạng', settings: 'Cài đặt', playGames: 'Chơi Game', music: 'Nhạc', rewardGalaxy: '🎁 Quà Từ Cha Vũ Trụ', myProfile: 'Hồ Sơ Của Tôi', findFriends: 'Tìm Bạn Bè', educationHub: 'Trung Tâm Học Tập', inviteFriends: 'Mời Bạn Bè', parentControls: 'Quản Lý Phụ Huynh', achievementLeaderboard: '🏅 BXH Thành Tích', adminDashboard: 'Bảng Điều Khiển Admin', logOut: 'Đăng Xuất', loginSignup: 'Đăng Nhập / Đăng Ký', upload: 'Tải Lên', rank: 'BXH' }, 
@@ -80,7 +81,8 @@ const resources = {
       gamesLabel: 'Games', uploadLabel: 'Upload', nftsLabel: 'NFTs', chatLabel: 'Chat', parentsLabel: 'Phụ huynh', rewardsLabel: 'Phần Thưởng', leadersLabel: 'BXH', achievementsLabel: 'Thành tích', friendsLabel: 'Bạn bè', profileLabel: 'Hồ sơ', loginLabel: 'Đăng nhập',
       footerSlogan: 'Xây Dựng Hành Tinh – Chơi & Nhận Niềm Vui!', browseGames: 'Xem Game', leaderboard: 'Bảng Xếp Hạng', nftGallery: 'Bộ Sưu Tập NFT', parentDashboard: 'Trang Phụ Huynh', followUs: 'Theo Dõi', allRightsReserved: 'Bảo lưu mọi quyền.'
     },
-    landscape: { title: 'Xoay Điện Thoại Ngang', description: 'Để chơi game tốt nhất, hãy xoay điện thoại ngang nhé con yêu! 🎮✨' }
+    landscape: { title: 'Xoay Điện Thoại Ngang', description: 'Để chơi game tốt nhất, hãy xoay điện thoại ngang nhé con yêu! 🎮✨' },
+    categoryIslands: { title: 'Khám Phá Thể Loại', subtitle: 'Chọn cuộc phiêu lưu của bạn!', puzzle: 'Trí Tuệ', adventure: 'Phiêu Lưu', create: 'Sáng Tạo', rewards: 'Phần Thưởng', games: 'game' }
   } },
   ja: { translation: ja },
   ko: { translation: ko },
