@@ -119,12 +119,12 @@ export const MobileBottomNavEnhanced = () => {
                 )}
                 whileTap={shouldReduceAnimations ? undefined : { scale: 0.8 }}
               >
-                <Icon 
+              <Icon 
                   className={cn(
                     "w-7 h-7 transition-all duration-300",
                     active 
                       ? "text-purple-600 scale-110 drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" 
-                      : "text-gray-400"
+                      : "text-gray-500 group-hover:text-gray-600"
                   )} 
                   strokeWidth={active ? 2.5 : 2} 
                 />
