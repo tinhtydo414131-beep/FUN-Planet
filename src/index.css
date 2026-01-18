@@ -63,13 +63,13 @@
       hsl(340, 70%, 75%), hsl(280, 65%, 75%), hsl(200, 70%, 75%), 
       hsl(160, 55%, 70%), hsl(45, 85%, 75%), hsl(340, 70%, 75%));
     
-    /* 🌈 Holographic Pastel Colors - Matched to Logo */
-    --holo-pink: 330 80% 88%;
-    --holo-blue: 210 80% 82%;
-    --holo-purple: 270 55% 65%; /* Updated to match logo purple planet */
-    --holo-mint: 160 60% 78%;
-    --holo-light-purple: 280 45% 78%;
-    --holo-gradient: linear-gradient(135deg, hsl(330, 80%, 88%), hsl(210, 80%, 82%), hsl(270, 55%, 65%));
+    /* 🌈 Holographic Pastel Colors - Enhanced to match Logo */
+    --holo-pink: 330 85% 85%;
+    --holo-blue: 200 85% 80%;
+    --holo-purple: 280 70% 70%; /* Brighter purple to match logo planet */
+    --holo-mint: 160 65% 78%;
+    --holo-light-purple: 300 60% 82%;
+    --holo-gradient: linear-gradient(135deg, hsl(330, 85%, 85%), hsl(200, 85%, 80%), hsl(280, 70%, 70%));
     
     /* 🔮 Glassmorphism */
     --glass-bg: hsla(0, 0%, 100%, 0.4);
