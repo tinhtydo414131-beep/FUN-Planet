@@ -91,7 +91,7 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
             label: 'Top Creators',
             username: topCreator.username || 'Anonymous',
             avatar_url: topCreator.avatar_url,
-            value: `${topCreator.games_uploaded || 0} 🎮`,
+            value: topCreator.games_uploaded > 0 ? `${topCreator.games_uploaded} 🎮` : '🎮',
             userId: topCreator.id,
           });
         } else {
@@ -175,10 +175,12 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
     >
       {/* Glassmorphism container with holographic border */}
       <div 
-        className="relative rounded-2xl overflow-hidden bg-white/40 backdrop-blur-xl border-2 p-3 sm:p-4 shadow-lg"
+        className="relative rounded-2xl overflow-hidden p-3 sm:p-4"
         style={{
-          borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1',
-          boxShadow: '0 8px 32px rgba(168, 85, 247, 0.15), 0 0 30px rgba(243, 196, 251, 0.2), 0 0 15px rgba(162, 210, 255, 0.15)',
+          background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) border-box',
+          border: '2px solid transparent',
+          boxShadow: '0 8px 32px rgba(168, 85, 247, 0.15), 0 0 30px rgba(243, 196, 251, 0.25), 0 0 15px rgba(162, 210, 255, 0.2)',
+          backdropFilter: 'blur(12px)',
         }}
       >
         {/* 4 Static Rows */}
