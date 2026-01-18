@@ -23,7 +23,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative pt-20 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-2 sm:px-4 overflow-hidden min-h-[85vh] flex flex-col justify-start">
+    <section className="relative pt-16 sm:pt-24 md:pt-28 pb-6 sm:pb-10 px-2 sm:px-4 overflow-hidden min-h-[75vh] sm:min-h-[80vh] flex flex-col justify-start">
       {/* Background image */}
       <img 
         src="/images/backgrounds/fun-planet-bg.jpg" 
@@ -42,7 +42,7 @@ export const Hero = () => {
       <div 
         className="absolute inset-0 z-[1] pointer-events-none"
         style={{
-          background: 'linear-gradient(135deg, rgba(243,196,251,0.3) 0%, rgba(162,210,255,0.2) 50%, rgba(205,180,219,0.3) 100%)',
+          background: 'linear-gradient(135deg, rgba(243,196,251,0.35) 0%, rgba(162,210,255,0.25) 50%, rgba(205,180,219,0.35) 100%)',
         }}
       />
       
@@ -85,7 +85,7 @@ export const Hero = () => {
             <div 
               className="w-16 h-16 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden"
               style={{
-                boxShadow: '0 0 30px rgba(243,196,251,0.6), 0 0 60px rgba(162,210,255,0.4)',
+                boxShadow: '0 0 40px rgba(243,196,251,0.7), 0 0 80px rgba(162,210,255,0.5)',
               }}
             >
               <img 
@@ -117,7 +117,7 @@ export const Hero = () => {
         </div>
         
         {/* Center content: Mascot + Title + Play Button */}
-        <div className="text-center space-y-6 sm:space-y-8">
+        <div className="text-center space-y-4 sm:space-y-6">
           {/* Badge */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }} 
@@ -138,7 +138,7 @@ export const Hero = () => {
             <motion.div
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-36 h-36 sm:w-52 sm:h-52 lg:w-64 lg:h-64 mx-auto"
+              className="relative w-28 h-28 sm:w-48 sm:h-48 lg:w-56 lg:h-56 mx-auto"
             >
               {/* Planet Mascot - actual logo image */}
               <img 
@@ -182,7 +182,7 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.9 }} 
             animate={{ opacity: 1, scale: 1 }} 
             transition={{ delay: 0.3 }}
-            className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-wider relative"
+            className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-wider relative"
           >
             {/* Metallic gold shadow */}
             <span 
@@ -275,8 +275,8 @@ export const Hero = () => {
             </motion.button>
           </motion.div>
 
-          {/* MiniLeaderboard - Mobile only (below button, centered with padding) */}
-          <div className="block lg:hidden pt-8 px-2">
+          {/* MiniLeaderboard - Mobile only (below button, optimized padding) */}
+          <div className="block lg:hidden pt-4 px-2 pb-4">
             <MiniLeaderboard />
           </div>
         </div>
