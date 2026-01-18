@@ -151,7 +151,7 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.5 }}
-      className="w-full max-w-[320px] sm:max-w-[340px] mx-auto lg:mx-0 drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+      className="w-full sm:w-80 mx-auto lg:mx-0 drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]"
     >
       {/* Glassmorphism container with holographic border */}
       <div className="relative rounded-3xl overflow-hidden">

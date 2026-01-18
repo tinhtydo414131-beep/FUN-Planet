@@ -24,7 +24,7 @@ export const Hero = () => {
 
   return (
     <section 
-      className="hero-gradient-bg relative pt-16 sm:pt-20 md:pt-24 pb-6 sm:pb-10 px-2 sm:px-4 overflow-hidden min-h-[80vh] sm:min-h-[85vh] flex flex-col"
+      className="hero-gradient-bg relative pt-12 sm:pt-20 md:pt-24 pb-4 sm:pb-10 px-2 sm:px-4 overflow-hidden min-h-[70vh] sm:min-h-[85vh] flex flex-col"
       role="banner"
       aria-label={t('hero.mainBanner', 'FUN Planet - Chơi game vui vẻ')}
     >
@@ -86,7 +86,7 @@ export const Hero = () => {
 
       <div className="container mx-auto max-w-7xl relative z-10 flex-1 flex flex-col justify-center">
         {/* Main 3-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-center">
           
           {/* LEFT COLUMN: Logo + Play Portal */}
           <motion.div
@@ -210,7 +210,7 @@ export const Hero = () => {
               initial={{ opacity: 0, scale: 0.9 }} 
               animate={{ opacity: 1, scale: 1 }} 
               transition={{ delay: 0.3 }}
-              className="text-4xl xs:text-5xl sm:text-6xl lg:text-7xl font-black tracking-wider relative mb-4"
+              className="text-3xl xs:text-4xl sm:text-5xl lg:text-7xl font-black tracking-wider relative mb-4 text-center"
             >
               {/* Metallic shadow */}
               <span 
@@ -252,7 +252,7 @@ export const Hero = () => {
               <motion.div
                 animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 mx-auto"
+                className="relative w-40 h-40 xs:w-48 xs:h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 mx-auto"
               >
                 <img 
                   src={planetMascot}
@@ -313,7 +313,7 @@ export const Hero = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex justify-center lg:justify-end order-3"
+            className="flex justify-center lg:justify-end order-3 w-full lg:w-auto"
           >
             <MiniLeaderboard />
           </motion.div>
