@@ -695,14 +695,20 @@ const Games = () => {
   );
 };
 
-// Educational badge helper
-const getEducationalBadge = (category: string) => {
+// Educational badge helper with HOT badge support
+const getEducationalBadge = (category: string, totalPlays?: number) => {
+  // HOT badge for trending games (>100 plays)
+  if (totalPlays && totalPlays > 100) {
+    return { emoji: "🔥", label: "HOT", gradient: "from-orange-500 to-red-500" };
+  }
+  
   const badges: Record<string, { emoji: string; label: string; gradient: string }> = {
     educational: { emoji: "📚", label: "Học tốt", gradient: "from-green-500 to-emerald-500" },
     puzzle: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
     brain: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
     creative: { emoji: "🎨", label: "Sáng tạo", gradient: "from-pink-500 to-rose-500" },
     creativity: { emoji: "🎨", label: "Sáng tạo", gradient: "from-pink-500 to-rose-500" },
+    casual: { emoji: "🎮", label: "Vui nhộn", gradient: "from-blue-400 to-cyan-400" },
   };
   return badges[category?.toLowerCase()] || null;
 };
@@ -758,7 +764,8 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
   const badge = getBadge();
   const thumbnail = getThumbnail();
   const category = getCategory();
-  const eduBadge = getEducationalBadge(category);
+  const totalPlays = 'total_plays' in game ? game.total_plays : 0;
+  const eduBadge = getEducationalBadge(category, totalPlays || 0);
   
   return (
     <motion.div
@@ -847,7 +854,8 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 
                   flex items-center justify-center shadow-2xl
-                  group-hover:scale-110 transition-transform duration-300 cursor-pointer pointer-events-auto"
+                  active:scale-95 group-hover:scale-110 transition-transform duration-300 
+                  cursor-pointer pointer-events-auto touch-manipulation"
                 onClick={(e) => {
                   e.preventDefault();
                   playBling();
@@ -885,7 +893,7 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
           
           {/* Content */}
           <div className="p-4 space-y-3">
-            <h3 className="font-bold text-lg text-foreground truncate group-hover:text-primary transition-colors">
+            <h3 className="font-bold text-base sm:text-lg text-foreground truncate group-hover:text-primary transition-colors">
               {game.title}
             </h3>
             
