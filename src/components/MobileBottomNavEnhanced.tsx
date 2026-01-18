@@ -79,7 +79,7 @@ export const MobileBottomNavEnhanced = () => {
       }}
     >
       {/* ✨ Rainbow shimmer top border - brighter holographic */}
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-pink-400 via-purple-500 via-blue-400 to-cyan-400 opacity-90" />
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-pink-400 via-purple-500 via-blue-500 to-cyan-400" />
       <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-transparent via-white/70 to-transparent animate-pulse" />
       
       {/* 4-column grid with 88px height */}
@@ -143,7 +143,7 @@ export const MobileBottomNavEnhanced = () => {
               
               {/* 📝 Label - responsive text size for multilingual support */}
               <span className={cn(
-                "text-[9px] xs:text-[10px] sm:text-xs font-bold transition-all duration-300 truncate max-w-full leading-tight",
+                "text-[10px] xs:text-[11px] sm:text-xs font-bold transition-all duration-300 truncate max-w-full leading-tight",
                 active ? "text-purple-600 drop-shadow-[0_1px_2px_rgba(168,85,247,0.3)]" : "text-gray-500"
               )}>
                 {item.label}
