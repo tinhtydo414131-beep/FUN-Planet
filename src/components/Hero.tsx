@@ -275,7 +275,7 @@ export const Hero = () => {
           </motion.div>
 
           {/* MiniLeaderboard - Mobile only (below button, optimized padding) */}
-          <div className="block lg:hidden pt-4 px-2 pb-4">
+          <div className="block lg:hidden pt-5 sm:pt-6 px-2 pb-6">
             <MiniLeaderboard />
           </div>
         </div>

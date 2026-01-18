@@ -21,8 +21,7 @@ export const MiniLeaderboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>("donors");
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const isInitialLoad = useRef(true);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Reordered: Sponsors first, then Creators, then CAMLY ranking
   // Updated CAMLY to holographic pink-blue theme
@@ -89,9 +88,8 @@ export const MiniLeaderboard = () => {
       }
     } catch (error) {
       console.error('MiniLeaderboard fetch error:', error);
-    } finally {
+  } finally {
       setLoading(false);
-      isInitialLoad.current = false;
     }
   }, [activeTab]);
 
@@ -150,7 +148,7 @@ export const MiniLeaderboard = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.5 }}
-      className="w-full max-w-[320px] mx-auto lg:mx-0"
+      className="w-full max-w-[320px] sm:max-w-[340px] mx-auto lg:mx-0"
     >
       {/* Glassmorphism container with holographic border */}
       <div className="relative rounded-3xl overflow-hidden">
@@ -185,8 +183,8 @@ export const MiniLeaderboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite] -skew-x-12" />
                 )}
                 <tab.icon className="w-4 h-4 sm:w-5 sm:h-5 relative z-10" />
-                {/* Micro-label visible on all screens for clarity */}
-                <span className="text-[10px] sm:text-xs relative z-10 leading-tight truncate max-w-full">
+                {/* Micro-label: visible on mobile/tablet, hidden on desktop (icon-only + tooltip) */}
+                <span className="block lg:hidden text-[10px] sm:text-xs relative z-10 leading-tight truncate max-w-full">
                   {tab.shortLabel}
                 </span>
               </button>
