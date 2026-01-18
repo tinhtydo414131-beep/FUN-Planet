@@ -1,4 +1,4 @@
-import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown } from "lucide-react";
+import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown, Home } from "lucide-react";
 
 const funPlanetLogo = "/logo-header-circular.png";
 import { NavLink } from "./NavLink";
@@ -30,6 +30,8 @@ import { MessengerButton } from "./MessengerButton";
 import { NotificationBell } from "./notifications/NotificationBell";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useNavigationSound } from "@/hooks/useNavigationSound";
 
 export const Navigation = () => {
   const { user, signOut } = useAuth();
@@ -37,6 +39,7 @@ export const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { playPopSound } = useNavigationSound();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -97,11 +100,12 @@ export const Navigation = () => {
     return location.pathname.startsWith(path);
   };
 
-  const navLinks = [
-    { path: "/games", label: t('nav.playGames') },
-    { path: "/public-music", label: t('nav.music') },
-    { path: "/reward-galaxy", label: t('nav.rewardGalaxy'), special: true },
-    ...(isAdmin ? [{ path: "/admin/master", label: "👑 Admin", admin: true }] : []),
+  // Phase 6: Icon-first navigation - 4 main icons
+  const iconNavItems = [
+    { icon: Home, path: "/", label: t('nav.home'), gradient: "from-pink-400 to-purple-400" },
+    { icon: Gamepad2, path: "/games", label: t('nav.games'), gradient: "from-purple-400 to-blue-400" },
+    { icon: Gift, path: "/reward-galaxy", label: t('nav.rewardGalaxy'), gradient: "from-yellow-400 to-orange-400" },
+    { icon: User, path: user ? "/profile" : "/auth", label: t('nav.profile'), gradient: "from-blue-400 to-cyan-400" },
   ];
 
   return (
@@ -121,13 +125,12 @@ export const Navigation = () => {
       <nav className="hidden md:block sticky-header">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
-            {/* Logo - Circular with Image + Text */}
+            {/* Logo - Circular 72px with enhanced pink-blue glow */}
             <NavLink 
               to="/" 
               className="flex items-center group ml-2 md:ml-5"
             >
-              {/* Circular logo - larger size, no text */}
-              <div className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border-2 border-purple-400/50 shadow-lg group-hover:border-purple-500 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300">
+              <div className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border-2 border-purple-400/50 shadow-lg group-hover:border-purple-500 group-hover:shadow-[0_0_30px_rgba(243,196,251,0.6),0_0_60px_rgba(162,210,255,0.4)] transition-all duration-300">
                 <img 
                   src={funPlanetLogo} 
                   alt="FUN Planet" 
@@ -139,28 +142,63 @@ export const Navigation = () => {
               </div>
             </NavLink>
 
-            {/* Desktop Links */}
-            <div className="flex items-center gap-2">
-              {navLinks.map((link) => (
-                <NavLink 
-                  key={link.path}
-                  to={link.path} 
-                  className={`px-5 py-2.5 rounded-xl font-jakarta font-semibold text-base transition-all ${
-                    (link as any).admin
-                      ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/40 text-orange-600 hover:border-orange-500/60 hover:shadow-[0_0_15px_rgba(255,100,0,0.3)]'
-                      : (link as any).angelAI
-                        ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 text-purple-600 hover:border-purple-500/60 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] animate-pulse'
-                        : link.special 
-                          ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 text-yellow-600 hover:border-yellow-500/60 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)]'
-                          : isActive(link.path) 
-                            ? 'bg-primary/10 text-primary border-b-2 border-primary' 
-                            : 'text-foreground hover:text-primary hover:bg-primary/5'
-                  }`}
-                >
-                  {link.label}
-                </NavLink>
-              ))}
+            {/* Phase 6: Icon-first navigation - 4 icons with tooltips */}
+            <div className="flex items-center gap-3">
+              {iconNavItems.map((item) => {
+                const IconComponent = item.icon;
+                const active = isActive(item.path);
+                
+                return (
+                  <Tooltip key={item.path}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => navigate(item.path)}
+                        onMouseEnter={playPopSound}
+                        className={`
+                          w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300
+                          ${active 
+                            ? `bg-gradient-to-br ${item.gradient} shadow-[0_0_20px_rgba(243,196,251,0.5)]` 
+                            : 'bg-white/60 hover:bg-white/80 border border-purple-200/50'
+                          }
+                          hover:scale-110 hover:shadow-[0_0_24px_rgba(168,85,247,0.4)]
+                          active:scale-95
+                        `}
+                      >
+                        <IconComponent 
+                          className={`w-6 h-6 transition-all ${active ? 'text-white drop-shadow-md' : 'text-gray-600'}`} 
+                          strokeWidth={active ? 2.5 : 2}
+                        />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent 
+                      side="bottom" 
+                      className="bg-white/95 backdrop-blur-sm border-purple-200 text-gray-700 font-medium"
+                    >
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
 
+              {/* Admin icon button */}
+              {isAdmin && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => navigate("/admin/master")}
+                      onMouseEnter={playPopSound}
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-orange-400 to-red-400 shadow-[0_0_16px_rgba(255,100,0,0.4)] hover:scale-110 hover:shadow-[0_0_24px_rgba(255,100,0,0.6)] transition-all duration-300 active:scale-95"
+                    >
+                      <Crown className="w-6 h-6 text-white drop-shadow-md" strokeWidth={2.5} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="bg-orange-50 border-orange-200 text-orange-700 font-medium">
+                    {t('nav.adminDashboard')}
+                  </TooltipContent>
+                </Tooltip>
+              )}
+
+              <div className="w-px h-8 bg-purple-200/50 mx-1" />
 
               <LanguageSwitcher />
               
