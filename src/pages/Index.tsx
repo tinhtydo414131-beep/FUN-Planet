@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { FeaturedGamesSection } from "@/components/FeaturedGamesSection";
+import { RecentlyPlayedSection } from "@/components/RecentlyPlayedSection";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { CategoryIslands } from "@/components/CategoryIslands";
@@ -163,6 +164,9 @@ const Index = () => {
       
       {/* Category Islands - Moved up after Hero */}
       <CategoryIslands />
+      
+      {/* Recently Played - Show recent games with one-click resume */}
+      <RecentlyPlayedSection />
       
       {/* Featured Games - Play Instantly */}
       <FeaturedGamesSection />
