@@ -93,7 +93,7 @@ export const Hero = () => {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center gap-6 order-2 lg:order-1"
+            className="flex flex-col items-center gap-4 sm:gap-6 order-1 lg:order-1"
           >
             {/* Circular Logo with Glow */}
             <motion.div 
@@ -123,7 +123,7 @@ export const Hero = () => {
               />
             </motion.div>
 
-            {/* Play Portal - Holographic Circle */}
+            {/* Play Portal - Holographic Circle - Touch target min 176px */}
             <motion.div 
               className="relative w-44 h-44 sm:w-52 sm:h-52 lg:w-56 lg:h-56"
               whileHover={{ scale: 1.05 }}
@@ -203,7 +203,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col items-center order-1 lg:order-2"
+            className="flex flex-col items-center order-2 lg:order-2"
           >
             {/* 3D FUN PLANET Title */}
             <motion.h1 

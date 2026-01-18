@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trophy, Heart, Gamepad2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,7 +16,7 @@ interface LeaderboardEntry {
 
 type TabType = "camly" | "donors" | "creators";
 
-export const MiniLeaderboard = () => {
+export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, ref) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { playPop } = useGameAudio();
@@ -147,6 +147,7 @@ export const MiniLeaderboard = () => {
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.5 }}
@@ -291,4 +292,6 @@ export const MiniLeaderboard = () => {
       </div>
     </motion.div>
   );
-};
+});
+
+MiniLeaderboard.displayName = 'MiniLeaderboard';
