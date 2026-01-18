@@ -1,11 +1,11 @@
 import { Sparkles, Play } from "lucide-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import { AudioControls } from "./AudioControls";
 import { MiniLeaderboard } from "./MiniLeaderboard";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import planetMascot from "@/assets/planet-mascot-floating.png";
 
 export const Hero = () => {
   const { t } = useTranslation();
@@ -128,7 +128,7 @@ export const Hero = () => {
             <span className="font-bold text-xs sm:text-base text-purple-700">🌟 {t('hero.badge')}</span>
           </motion.div>
 
-          {/* Planet Mascot - Using actual logo image */}
+          {/* Planet Mascot - Floating Planet with Game Controller */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -136,43 +136,42 @@ export const Hero = () => {
             className="relative mx-auto"
           >
             <motion.div
-              animate={{ y: [0, -12, 0] }}
+              animate={{ y: [0, -15, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-28 h-28 sm:w-48 sm:h-48 lg:w-56 lg:h-56 mx-auto"
+              className="relative w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 mx-auto"
             >
-              {/* Planet Mascot - actual logo image */}
+              {/* Planet Mascot - Floating planet with controller */}
               <img 
-                src="/logo-header-circular.png" 
+                src={planetMascot}
                 alt="Fun Planet Mascot"
-                className="w-full h-full object-contain drop-shadow-2xl"
+                className="w-full h-full object-contain"
                 style={{
-                  filter: 'drop-shadow(0 0 40px rgba(144,112,224,0.6)) drop-shadow(0 0 20px rgba(243,196,251,0.4))',
+                  filter: 'drop-shadow(0 0 50px rgba(168,85,247,0.5)) drop-shadow(0 0 25px rgba(243,196,251,0.6))',
                 }}
               />
               
-              {/* Orbiting stars */}
+              {/* Orbiting sparkles - reduced */}
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0"
               >
-                <span className="absolute -top-3 left-1/2 text-2xl sm:text-3xl">⭐</span>
-                <span className="absolute top-1/2 -right-3 text-xl sm:text-2xl">✨</span>
-                <span className="absolute -bottom-2 left-1/4 text-2xl sm:text-3xl">🌟</span>
+                <span className="absolute -top-2 left-1/2 text-xl sm:text-2xl">✨</span>
+                <span className="absolute top-1/2 -right-2 text-lg sm:text-xl">⭐</span>
               </motion.div>
             </motion.div>
             
             {/* Pulsating glow effect under mascot */}
             <motion.div 
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-6 rounded-full"
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 w-2/3 h-8 rounded-full"
               animate={{
-                opacity: [0.3, 0.6, 0.3],
-                scale: [1, 1.1, 1],
+                opacity: [0.4, 0.7, 0.4],
+                scale: [1, 1.15, 1],
               }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={{ duration: 2.5, repeat: Infinity }}
               style={{
-                background: 'radial-gradient(ellipse, rgba(144,112,224,0.7) 0%, rgba(243,196,251,0.4) 50%, transparent 70%)',
-                filter: 'blur(12px)',
+                background: 'radial-gradient(ellipse, rgba(168,85,247,0.6) 0%, rgba(243,196,251,0.4) 50%, transparent 70%)',
+                filter: 'blur(15px)',
               }}
             />
           </motion.div>
