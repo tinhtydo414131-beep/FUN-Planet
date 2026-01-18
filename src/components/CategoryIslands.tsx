@@ -196,7 +196,7 @@ export const CategoryIslands = () => {
                 </span>
 
                 {/* Island content */}
-                <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[110px] md:min-h-[140px]">
+                <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[120px] md:min-h-[140px]">
                   {/* Emoji */}
                   <span className="text-4xl md:text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
                     {island.emoji}
