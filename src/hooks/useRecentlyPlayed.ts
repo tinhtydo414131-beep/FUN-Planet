@@ -95,6 +95,53 @@ export function useRecentlyPlayed() {
   }, [user, fetchFromDatabase, fetchFromLocalStorage]);
 
   useEffect(() => {
+    // TEMPORARY MOCK DATA - Remove after testing
+    const SHOW_MOCK_DATA = true; // Set to false to use real data
+    
+    if (SHOW_MOCK_DATA && recentGames.length === 0) {
+      const mockData: RecentGame[] = [
+        { 
+          id: 'mock_1', 
+          gameId: 'g1', 
+          title: 'Puzzle Adventure', 
+          thumbnailUrl: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=200&h=200&fit=crop', 
+          category: 'puzzle', 
+          playedAt: new Date().toISOString(), 
+          durationSeconds: 320 
+        },
+        { 
+          id: 'mock_2', 
+          gameId: 'g2', 
+          title: 'Space Explorer', 
+          thumbnailUrl: 'https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=200&h=200&fit=crop', 
+          category: 'adventure', 
+          playedAt: new Date(Date.now() - 3600000).toISOString(), 
+          durationSeconds: 540 
+        },
+        { 
+          id: 'mock_3', 
+          gameId: 'g3', 
+          title: 'Brain Training', 
+          thumbnailUrl: 'https://images.unsplash.com/photo-1553481187-be93c21490a9?w=200&h=200&fit=crop', 
+          category: 'educational', 
+          playedAt: new Date(Date.now() - 7200000).toISOString(), 
+          durationSeconds: 180 
+        },
+        { 
+          id: 'mock_4', 
+          gameId: 'g4', 
+          title: 'Creative Canvas', 
+          thumbnailUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200&h=200&fit=crop', 
+          category: 'creative', 
+          playedAt: new Date(Date.now() - 86400000).toISOString(), 
+          durationSeconds: 720 
+        }
+      ];
+      setRecentGames(mockData);
+      setLoading(false);
+      return;
+    }
+    
     refreshRecent();
   }, [refreshRecent]);
 
