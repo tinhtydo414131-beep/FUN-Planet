@@ -152,7 +152,7 @@ export function FeaturedGamesSection() {
             className="flex gap-3 md:gap-4 overflow-x-auto pb-3 md:pb-4 snap-x snap-mandatory scrollbar-hide -mx-1 px-1 md:-mx-2 md:px-2"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {/* Built-in Game: Gem Fusion Quest */}
+            {/* Built-in Game: Gem Fusion Quest - 3D Cube Style */}
             <motion.div
               className="flex-shrink-0 snap-center"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -162,51 +162,80 @@ export function FeaturedGamesSection() {
               onAnimationComplete={() => playCardAppear()}
             >
               <div 
-                className="relative overflow-hidden rounded-xl md:rounded-2xl w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] group bg-white/25 backdrop-blur-sm border-2 border-yellow-400/50 hover:border-yellow-400 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl hover:shadow-yellow-500/20 active:scale-[0.98]"
+                className="relative group cursor-pointer"
+                style={{ 
+                  transform: 'rotateX(3deg) rotateY(-2deg)',
+                  transformStyle: 'preserve-3d'
+                }}
                 onClick={() => {
                   playBling();
                   navigate('/games/gem-fusion-quest');
                 }}
                 onMouseEnter={() => playBloop()}
               >
-                {/* Thumbnail */}
-                <img 
-                  src={gemFusionThumbnail}
-                  alt="Gem Fusion Quest"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                
-                {/* NEW Badge - smaller on mobile */}
-                <Badge className="absolute top-1.5 left-1.5 md:top-2 md:left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg z-10 text-[8px] md:text-[10px]">
-                  ✨ NEW
-                </Badge>
+                {/* Front Face - Main Card */}
+                <div 
+                  className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/30 backdrop-blur-sm border-2 border-pink-300/60 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-pink-400/80 active:scale-[0.98]"
+                  style={{
+                    boxShadow: '0 8px 24px rgba(243, 196, 251, 0.3), inset 0 1px 0 rgba(255,255,255,0.4)'
+                  }}
+                >
+                  {/* Thumbnail */}
+                  <img 
+                    src={gemFusionThumbnail}
+                    alt="Gem Fusion Quest"
+                    className="absolute inset-2 md:inset-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[55%] object-cover rounded-xl md:rounded-2xl transition-transform duration-500 group-hover:scale-105"
+                  />
+                  
+                  {/* NEW Badge */}
+                  <Badge className="absolute top-3 left-3 md:top-4 md:left-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg z-10 text-[8px] md:text-[10px]">
+                    ✨ NEW
+                  </Badge>
 
-                {/* Bottom Info - compact on mobile */}
-                <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3">
-                  <h3 className="font-bold text-white text-xs md:text-sm truncate mb-0.5 md:mb-1">Gem Fusion Quest</h3>
-                  <div className="flex items-center gap-1 text-[10px] md:text-xs text-white/80">
-                    <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-400" fill="currentColor" />
-                    <span>5.0</span>
-                    <span className="mx-0.5 hidden sm:inline">•</span>
-                    <span className="hidden sm:inline">Puzzle</span>
+                  {/* Bottom Info */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-gradient-to-t from-white/80 to-white/40 backdrop-blur-sm">
+                    <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-1">Gem Fusion Quest</h3>
+                    <div className="flex items-center gap-1 text-[10px] md:text-xs text-gray-600 mb-2">
+                      <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-500" fill="currentColor" />
+                      <span>5.0</span>
+                      <span className="mx-0.5">•</span>
+                      <span>Puzzle</span>
+                    </div>
+                    
+                    {/* Play Button - Below info */}
+                    <motion.div
+                      className="w-full h-7 md:h-9 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-all"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Play className="w-3 h-3 md:w-4 md:h-4 text-white mr-1" fill="white" />
+                      <span className="text-white text-[10px] md:text-xs font-semibold">Chơi ngay</span>
+                    </motion.div>
                   </div>
                 </div>
 
-                {/* Play Button - smaller on mobile */}
-                <motion.div
-                  className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all z-10"
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className="w-3 h-3 md:w-5 md:h-5 text-white ml-0.5" fill="white" />
-                </motion.div>
+                {/* Right Side Face - 3D Depth */}
+                <div 
+                  className="absolute top-0 -right-1.5 md:-right-2 w-1.5 md:w-2 h-full origin-left rounded-r-xl"
+                  style={{ 
+                    background: 'linear-gradient(to bottom, rgba(243,196,251,0.4), rgba(162,210,255,0.3))',
+                  }}
+                />
+
+                {/* Bottom Face - 3D Depth */}
+                <div 
+                  className="absolute -bottom-1.5 md:-bottom-2 left-0 w-full h-1.5 md:h-2 origin-top rounded-b-xl"
+                  style={{ 
+                    background: 'linear-gradient(to right, rgba(243,196,251,0.3), rgba(162,210,255,0.4))',
+                  }}
+                />
+
+                {/* Floating Shadow */}
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[85%] h-3 bg-pink-400/20 blur-lg rounded-full" />
               </div>
             </motion.div>
 
-            {/* Database Games */}
+            {/* Database Games - 3D Cube Style */}
             {games.map((game, index) => {
               const isHot = (game.play_count || 0) > 100;
               
@@ -221,57 +250,86 @@ export function FeaturedGamesSection() {
                   onAnimationComplete={() => playCardAppear()}
                 >
                   <div 
-                    className="relative overflow-hidden rounded-xl md:rounded-2xl w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] group bg-white/25 backdrop-blur-sm border-2 border-white/40 hover:border-purple-300/60 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl active:scale-[0.98]"
+                    className="relative group cursor-pointer"
+                    style={{ 
+                      transform: 'rotateX(3deg) rotateY(-2deg)',
+                      transformStyle: 'preserve-3d'
+                    }}
                     onClick={() => handlePlayGame(game)}
                     onMouseEnter={() => playBloop()}
                   >
-                    {/* Thumbnail */}
-                    {getThumbnailUrl(game.thumbnail_path) ? (
-                      <img 
-                        src={getThumbnailUrl(game.thumbnail_path)!}
-                        alt={game.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
-                        <Gamepad2 className="w-8 h-8 md:w-12 md:h-12 text-white/50" />
-                      </div>
-                    )}
-                    
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    
-                    {/* HOT Badge for popular games - smaller on mobile */}
-                    {isHot && (
-                      <Badge className="absolute top-1.5 left-1.5 md:top-2 md:left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg z-10 text-[8px] md:text-[10px]">
-                        🔥
-                      </Badge>
-                    )}
+                    {/* Front Face - Main Card */}
+                    <div 
+                      className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/30 backdrop-blur-sm border-2 border-purple-200/60 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-purple-300/80 active:scale-[0.98]"
+                      style={{
+                        boxShadow: '0 8px 24px rgba(168, 85, 247, 0.2), inset 0 1px 0 rgba(255,255,255,0.4)'
+                      }}
+                    >
+                      {/* Thumbnail - Inset style */}
+                      {getThumbnailUrl(game.thumbnail_path) ? (
+                        <img 
+                          src={getThumbnailUrl(game.thumbnail_path)!}
+                          alt={game.title}
+                          className="absolute inset-2 md:inset-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[55%] object-cover rounded-xl md:rounded-2xl transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="absolute inset-2 md:inset-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[55%] bg-gradient-to-br from-purple-300 to-pink-300 rounded-xl md:rounded-2xl flex items-center justify-center">
+                          <Gamepad2 className="w-8 h-8 md:w-10 md:h-10 text-white/60" />
+                        </div>
+                      )}
+                      
+                      {/* HOT Badge */}
+                      {isHot && (
+                        <Badge className="absolute top-3 left-3 md:top-4 md:left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg z-10 text-[8px] md:text-[10px]">
+                          🔥 HOT
+                        </Badge>
+                      )}
 
-                    {/* Bottom Info - compact on mobile */}
-                    <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3">
-                      <h3 className="font-bold text-white text-xs md:text-sm truncate mb-0.5 md:mb-1">{game.title}</h3>
-                      <div className="flex items-center gap-1 text-[10px] md:text-xs text-white/80">
-                        <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-400" fill="currentColor" />
-                        <span>4.8</span>
-                        {game.category && (
-                          <>
-                            <span className="mx-0.5 hidden sm:inline">•</span>
-                            <span className="capitalize hidden sm:inline">{game.category}</span>
-                          </>
-                        )}
+                      {/* Bottom Info */}
+                      <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-gradient-to-t from-white/80 to-white/40 backdrop-blur-sm">
+                        <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-1">{game.title}</h3>
+                        <div className="flex items-center gap-1 text-[10px] md:text-xs text-gray-600 mb-2">
+                          <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-500" fill="currentColor" />
+                          <span>4.8</span>
+                          {game.category && (
+                            <>
+                              <span className="mx-0.5">•</span>
+                              <span className="capitalize">{game.category}</span>
+                            </>
+                          )}
+                        </div>
+                        
+                        {/* Play Button - Below info */}
+                        <motion.div
+                          className="w-full h-7 md:h-9 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-all"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Play className="w-3 h-3 md:w-4 md:h-4 text-white mr-1" fill="white" />
+                          <span className="text-white text-[10px] md:text-xs font-semibold">Chơi ngay</span>
+                        </motion.div>
                       </div>
                     </div>
 
-                    {/* Play Button - smaller on mobile */}
-                    <motion.div
-                      className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all z-10"
-                      whileHover={{ scale: 1.15 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Play className="w-3 h-3 md:w-5 md:h-5 text-white ml-0.5" fill="white" />
-                    </motion.div>
+                    {/* Right Side Face - 3D Depth */}
+                    <div 
+                      className="absolute top-0 -right-1.5 md:-right-2 w-1.5 md:w-2 h-full origin-left rounded-r-xl"
+                      style={{ 
+                        background: 'linear-gradient(to bottom, rgba(168,85,247,0.3), rgba(236,72,153,0.2))',
+                      }}
+                    />
+
+                    {/* Bottom Face - 3D Depth */}
+                    <div 
+                      className="absolute -bottom-1.5 md:-bottom-2 left-0 w-full h-1.5 md:h-2 origin-top rounded-b-xl"
+                      style={{ 
+                        background: 'linear-gradient(to right, rgba(168,85,247,0.2), rgba(236,72,153,0.3))',
+                      }}
+                    />
+
+                    {/* Floating Shadow */}
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[85%] h-3 bg-purple-400/15 blur-lg rounded-full" />
                   </div>
                 </motion.div>
               );
