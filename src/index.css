@@ -235,26 +235,46 @@
   .holographic-page-bg {
     background: linear-gradient(
       135deg,
-      #E8D5E8 0%,
-      #D4C5E8 15%,
-      #C8D8F0 30%,
-      #D8E8F0 50%,
-      #E8D8E8 70%,
-      #D4C5E8 85%,
-      #E8D5E8 100%
+      #E8D5F0 0%,        /* Soft pink-lavender */
+      #D8C8E8 20%,       /* Lavender */
+      #C8E0F0 40%,       /* Light blue */
+      #D0F0F0 60%,       /* Mint-cyan */
+      #D8C8E8 80%,       /* Lavender */
+      #E8D5F0 100%       /* Soft pink-lavender */
     );
     position: relative;
+    min-height: 100vh;
   }
 
+  /* Tia sáng lấp lánh tinh tế */
   .holographic-page-bg::before {
     content: '';
     position: absolute;
     inset: 0;
     background-image: 
-      radial-gradient(circle at 20% 30%, rgba(243, 196, 251, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(162, 210, 255, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(205, 180, 219, 0.1) 0%, transparent 40%);
+      /* Tia sáng hồng lớn */
+      radial-gradient(circle at 15% 25%, rgba(243, 196, 251, 0.25) 0%, transparent 40%),
+      /* Tia sáng xanh lớn */
+      radial-gradient(circle at 85% 75%, rgba(162, 210, 255, 0.25) 0%, transparent 40%),
+      /* Tia sáng tím trung tâm */
+      radial-gradient(circle at 50% 50%, rgba(205, 180, 219, 0.15) 0%, transparent 35%),
+      /* Ngôi sao lấp lánh nhỏ */
+      radial-gradient(circle at 10% 80%, rgba(255, 255, 255, 0.8) 0%, transparent 2%),
+      radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.7) 0%, transparent 1.5%),
+      radial-gradient(circle at 75% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 2%),
+      radial-gradient(circle at 90% 60%, rgba(255, 255, 255, 0.6) 0%, transparent 1.5%),
+      radial-gradient(circle at 60% 85%, rgba(255, 255, 255, 0.75) 0%, transparent 2%),
+      radial-gradient(circle at 35% 55%, rgba(255, 255, 255, 0.5) 0%, transparent 1%),
+      radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.65) 0%, transparent 1.5%),
+      radial-gradient(circle at 45% 40%, rgba(255, 255, 255, 0.55) 0%, transparent 1%);
     pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Đảm bảo nội dung nằm trên các tia sáng */
+  .holographic-page-bg > * {
+    position: relative;
+    z-index: 2;
   }
 
   @keyframes float {
