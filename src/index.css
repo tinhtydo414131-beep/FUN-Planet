@@ -208,6 +208,29 @@
     50% { transform: scale(1.02); }
   }
 
+  /* 🌈 Hero Gradient Background Animation */
+  @keyframes hero-gradient-shift {
+    0%, 100% { 
+      background-position: 0% 0%; 
+    }
+    50% { 
+      background-position: 100% 100%; 
+    }
+  }
+
+  .hero-gradient-bg {
+    background: linear-gradient(
+      180deg,
+      #F3C4FB 0%,
+      #E0B0FF 20%,
+      #CDB4DB 40%,
+      #A2D2FF 70%,
+      #98F5E1 100%
+    );
+    background-size: 100% 200%;
+    animation: hero-gradient-shift 15s ease-in-out infinite;
+  }
+
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
