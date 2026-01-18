@@ -162,7 +162,7 @@ export function FeaturedGamesSection() {
               onAnimationComplete={() => playCardAppear()}
             >
               <div 
-                className="relative overflow-hidden rounded-xl md:rounded-2xl w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] group bg-white/25 backdrop-blur-sm border-2 border-yellow-400/50 hover:border-yellow-400 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl hover:shadow-yellow-500/20"
+                className="relative overflow-hidden rounded-xl md:rounded-2xl w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] group bg-white/25 backdrop-blur-sm border-2 border-yellow-400/50 hover:border-yellow-400 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl hover:shadow-yellow-500/20 active:scale-[0.98]"
                 onClick={() => {
                   playBling();
                   navigate('/games/gem-fusion-quest');
@@ -221,7 +221,7 @@ export function FeaturedGamesSection() {
                   onAnimationComplete={() => playCardAppear()}
                 >
                   <div 
-                    className="relative overflow-hidden rounded-xl md:rounded-2xl w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] group bg-white/25 backdrop-blur-sm border-2 border-white/40 hover:border-purple-300/60 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl"
+                    className="relative overflow-hidden rounded-xl md:rounded-2xl w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] group bg-white/25 backdrop-blur-sm border-2 border-white/40 hover:border-purple-300/60 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl active:scale-[0.98]"
                     onClick={() => handlePlayGame(game)}
                     onMouseEnter={() => playBloop()}
                   >
@@ -304,9 +304,10 @@ export function FeaturedGamesSection() {
               </div>
             </motion.div>
 
-            {/* Mobile scroll fade indicator */}
-            <div className="absolute right-0 top-0 bottom-4 w-6 bg-gradient-to-l from-white/30 to-transparent pointer-events-none md:hidden" />
           </div>
+
+          {/* Mobile scroll fade indicator - positioned outside scroll container */}
+          <div className="absolute right-0 top-16 bottom-8 w-8 bg-gradient-to-l from-white/40 to-transparent pointer-events-none md:hidden rounded-r-2xl" />
         </div>
       </section>
 
