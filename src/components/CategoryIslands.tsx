@@ -47,9 +47,9 @@ const islands: Island[] = [
     id: "create",
     icon: Palette,
     labelKey: "categoryIslands.create",
-    gradient: "from-purple-400 to-emerald-400",
-    shadowColor: "rgba(52, 211, 153, 0.4)",
-    glowColor: "rgba(52, 211, 153, 0.6)",
+    gradient: "from-purple-400 to-blue-400",
+    shadowColor: "rgba(162, 210, 255, 0.4)",
+    glowColor: "rgba(162, 210, 255, 0.6)",
     route: "/games?category=creative",
     soundFreq: 659.25,
     soundType: "sine",
@@ -59,9 +59,9 @@ const islands: Island[] = [
     id: "rewards",
     icon: Gift,
     labelKey: "categoryIslands.rewards",
-    gradient: "from-emerald-300 to-blue-400",
-    shadowColor: "rgba(96, 165, 250, 0.4)",
-    glowColor: "rgba(96, 165, 250, 0.6)",
+    gradient: "from-blue-300 to-pink-400",
+    shadowColor: "rgba(243, 196, 251, 0.4)",
+    glowColor: "rgba(243, 196, 251, 0.6)",
     route: "/reward-galaxy",
     soundFreq: 783.99,
     soundType: "sine",
@@ -114,7 +114,7 @@ export const CategoryIslands = () => {
               <motion.button
                 key={island.id}
                 onClick={() => handleIslandClick(island)}
-                className="relative group focus:outline-none touch-manipulation"
+                className="relative group focus:outline-none touch-manipulation active:scale-95 transition-transform"
                 initial={{ opacity: 0, y: 30, rotateX: -15 }}
                 whileInView={{ 
                   opacity: 1, 
