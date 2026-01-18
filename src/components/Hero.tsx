@@ -109,8 +109,8 @@ export const Hero = () => {
           <div className="flex flex-col items-end gap-4">
             <AudioControls isSoundEnabled={isSoundEnabled} onToggleSound={toggleSound} />
             
-            {/* MiniLeaderboard - Hidden on mobile, shown on lg+ */}
-            <div className="hidden lg:block">
+            {/* MiniLeaderboard - Hidden on mobile, shown on md+ */}
+            <div className="hidden md:block relative z-20">
               <MiniLeaderboard />
             </div>
           </div>
@@ -275,7 +275,7 @@ export const Hero = () => {
           </motion.div>
 
           {/* MiniLeaderboard - Mobile only (below button, optimized padding) */}
-          <div className="block lg:hidden pt-5 sm:pt-6 px-2 pb-6">
+          <div className="block md:hidden pt-5 sm:pt-6 px-2 pb-6 relative z-20">
             <MiniLeaderboard />
           </div>
         </div>

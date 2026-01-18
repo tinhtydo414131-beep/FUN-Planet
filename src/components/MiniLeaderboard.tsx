@@ -185,7 +185,7 @@ export const MiniLeaderboard = () => {
                 )}
                 <tab.icon className="w-4 h-4 sm:w-5 sm:h-5 relative z-10" />
                 {/* Micro-label: visible on mobile/tablet, hidden on desktop (icon-only + tooltip) */}
-                <span className="block lg:hidden text-[10px] sm:text-xs relative z-10 leading-tight truncate max-w-full">
+                <span className="block md:hidden text-[10px] sm:text-xs relative z-10 leading-tight truncate max-w-full">
                   {tab.shortLabel}
                 </span>
               </button>
