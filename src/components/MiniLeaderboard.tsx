@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { useGameAudio } from "@/hooks/useGameAudio";
 
 interface LeaderboardEntry {
   id: string;
@@ -18,6 +19,7 @@ type TabType = "camly" | "donors" | "creators";
 export const MiniLeaderboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { playPop } = useGameAudio();
   const [activeTab, setActiveTab] = useState<TabType>("donors");
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -152,9 +154,13 @@ export const MiniLeaderboard = () => {
     >
       {/* Glassmorphism container with holographic border */}
       <div className="relative rounded-3xl overflow-hidden">
-        {/* ✨ Enhanced holographic border with animated gradient */}
-        <div 
-          className="absolute -inset-[3px] rounded-3xl opacity-90"
+        {/* ✨ Enhanced holographic border with pulsing glow animation */}
+        <motion.div 
+          className="absolute -inset-[3px] rounded-3xl"
+          animate={{
+            opacity: [0.85, 0.95, 0.85],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           style={{
             background: 'linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 20%, #7DD3FC 40%, #CDB4DB 60%, #98F5E1 80%, #F3C4FB 100%)',
             backgroundSize: '300% 300%',
@@ -172,7 +178,10 @@ export const MiniLeaderboard = () => {
                 key={tab.id}
                 title={tab.label}
                 aria-label={tab.label}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  playPop();
+                  setActiveTab(tab.id);
+                }}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 px-1.5 sm:px-3 rounded-xl font-bold transition-all min-h-[52px] sm:min-h-[48px] relative overflow-hidden ${
                   activeTab === tab.id
                     ? `bg-gradient-to-r ${tab.color} text-white shadow-lg scale-105`
