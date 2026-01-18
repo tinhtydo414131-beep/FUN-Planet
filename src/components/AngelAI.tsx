@@ -773,8 +773,20 @@ function MessageBubble({ message, isExpanded = true }: { message: ChatMessage; i
   );
 }
 
+// Speech bubble tips for mascot
+const MASCOT_TIPS = [
+  "Hãy chơi game giáo dục hôm nay!",
+  "Bạn đã nhận phần thưởng chưa?",
+  "Khám phá game mới nào!",
+  "Mời bạn bè để nhận CAMLY!",
+];
+
 // Floating Angel Button for triggering Angel AI - Simplified 2D only
 export function AngelAIButton({ onClick }: { onClick: () => void }) {
+  const [isWaving, setIsWaving] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+  const [currentTip, setCurrentTip] = useState(0);
+
   const {
     position,
     isDragging,
@@ -796,6 +808,45 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
     }
   };
 
+  // Wave animation every 20 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsWaving(true);
+      setTimeout(() => setIsWaving(false), 1000);
+    }, 20000);
+    
+    // Initial wave after 3 seconds
+    const initialTimeout = setTimeout(() => {
+      setIsWaving(true);
+      setTimeout(() => setIsWaving(false), 1000);
+    }, 3000);
+    
+    return () => {
+      clearInterval(interval);
+      clearTimeout(initialTimeout);
+    };
+  }, []);
+
+  // Speech bubble tips every 30 seconds (shows for 5 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTip(prev => (prev + 1) % MASCOT_TIPS.length);
+      setShowTip(true);
+      setTimeout(() => setShowTip(false), 5000);
+    }, 30000);
+    
+    // Initial tip after 5 seconds
+    const initialTimeout = setTimeout(() => {
+      setShowTip(true);
+      setTimeout(() => setShowTip(false), 5000);
+    }, 5000);
+    
+    return () => {
+      clearInterval(interval);
+      clearTimeout(initialTimeout);
+    };
+  }, []);
+
   // Check if desktop for positioning
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768;
 
@@ -808,6 +859,29 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         bottom: isDesktop ? '1rem' : 'calc(6rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
+      {/* Speech Bubble */}
+      <AnimatePresence>
+        {showTip && !isDragging && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, x: 10 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.8, x: 10 }}
+            className="absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap z-50"
+          >
+            <div className="relative bg-white/95 backdrop-blur-sm px-3 py-2 rounded-2xl shadow-lg border border-pink-200">
+              <p className="text-sm text-gray-700 font-medium">
+                {MASCOT_TIPS[currentTip]}
+              </p>
+              {/* Speech bubble tail */}
+              <div className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-0 h-0 
+                border-t-[8px] border-t-transparent 
+                border-b-[8px] border-b-transparent 
+                border-l-[8px] border-l-white/95" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Drag Handle */}
       <div
         className={`absolute -top-3 left-1/2 -translate-x-1/2 p-1 rounded-full transition-all cursor-grab active:cursor-grabbing ${
@@ -834,7 +908,11 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
         onTouchMove={handleLongPressMove}
         whileHover={isDragging ? {} : { scale: 1.05 }}
         whileTap={isDragging ? {} : { scale: 0.95 }}
-        animate={isDragging ? {
+        animate={isWaving ? {
+          rotate: [0, 15, -10, 15, -5, 0],
+          scale: [1, 1.1, 1.05, 1.1, 1],
+          filter: "drop-shadow(0 0 15px rgba(255, 215, 0, 0.7))"
+        } : isDragging ? {
           filter: "drop-shadow(0 0 15px rgba(255, 215, 0, 0.7))"
         } : { 
           filter: [
@@ -843,7 +921,7 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
             "drop-shadow(0 0 6px rgba(255, 215, 0, 0.3))"
           ]
         }}
-        transition={{ duration: 2, repeat: isDragging ? 0 : Infinity }}
+        transition={isWaving ? { duration: 1, ease: "easeInOut" } : { duration: 2, repeat: isDragging ? 0 : Infinity }}
         className="relative"
       >
         {/* Always use simplified 2D logo - no complex 3D effects */}
