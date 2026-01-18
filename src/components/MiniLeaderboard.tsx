@@ -151,11 +151,12 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
       transition={{ delay: 0.5 }}
       className="w-full sm:w-72 mx-auto lg:mx-0"
     >
-      {/* Glassmorphism container with subtle border */}
+      {/* Glassmorphism container with holographic border */}
       <div 
-        className="relative rounded-2xl overflow-hidden bg-white/40 backdrop-blur-xl border border-white/50 p-3 sm:p-4 shadow-lg"
+        className="relative rounded-2xl overflow-hidden bg-white/40 backdrop-blur-xl border-2 p-3 sm:p-4 shadow-lg"
         style={{
-          boxShadow: '0 8px 32px rgba(168, 85, 247, 0.1), 0 0 20px rgba(243, 196, 251, 0.15)',
+          borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1',
+          boxShadow: '0 8px 32px rgba(168, 85, 247, 0.15), 0 0 30px rgba(243, 196, 251, 0.2), 0 0 15px rgba(162, 210, 255, 0.15)',
         }}
       >
         {/* 4 Static Rows */}

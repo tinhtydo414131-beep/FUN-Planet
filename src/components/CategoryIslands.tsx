@@ -133,8 +133,8 @@ export const CategoryIslands = () => {
       role="navigation"
       aria-label={t('categoryIslands.navigationLabel', 'Game Categories Navigation')}
     >
-      {/* Subtle Container - matching reference */}
-      <div className="container mx-auto max-w-4xl">
+      {/* Subtle Container with glassmorphism - matching holographic theme */}
+      <div className="container mx-auto max-w-4xl bg-white/15 backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 border border-white/30">
         {/* Section Header */}
         <motion.h2 
           className="text-lg md:text-2xl font-extrabold text-center mb-4 md:mb-6 text-gray-700"

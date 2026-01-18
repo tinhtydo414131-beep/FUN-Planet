@@ -103,7 +103,7 @@ const Index = () => {
 
   return (
     <motion.div 
-      className="min-h-screen holographic-page-bg relative overflow-hidden pb-20 md:pb-0"
+      className="min-h-screen holographic-page-bg relative overflow-hidden pb-24 md:pb-0"
       initial="initial"
       animate="animate"
       exit="exit"

@@ -106,9 +106,13 @@ export function FeaturedGamesSection() {
         role="region"
         aria-label="Featured games section"
       >
-        {/* Subtle Container - matching unified background */}
+        {/* Subtle Container with holographic border - matching unified background */}
         <div 
-          className="container mx-auto max-w-6xl bg-white/25 backdrop-blur-sm rounded-2xl md:rounded-3xl p-3 md:p-6 border border-white/40 overflow-hidden relative"
+          className="container mx-auto max-w-6xl bg-white/25 backdrop-blur-sm rounded-2xl md:rounded-3xl p-3 md:p-6 border-2 overflow-hidden relative"
+          style={{
+            borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1',
+            boxShadow: '0 8px 32px rgba(243, 196, 251, 0.15)',
+          }}
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-3 md:mb-6 px-1">
