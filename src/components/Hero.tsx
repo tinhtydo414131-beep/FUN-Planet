@@ -212,27 +212,27 @@ export const Hero = () => {
               transition={{ delay: 0.3 }}
               className="text-3xl xs:text-4xl sm:text-5xl lg:text-7xl font-black tracking-wider relative mb-4 text-center"
             >
-              {/* Metallic shadow */}
+              {/* Holographic shadow - pink/blue theme */}
               <span 
                 className="absolute inset-0"
                 style={{ 
                   color: 'transparent',
                   textShadow: `
-                    1px 1px 0 rgba(255,223,0,0.95),
-                    2px 2px 0 rgba(230,180,20,0.9),
-                    3px 3px 0 rgba(184,134,11,0.75),
-                    4px 4px 0 rgba(120,90,30,0.6)
+                    1px 1px 0 rgba(243, 196, 251, 0.95),
+                    2px 2px 0 rgba(162, 210, 255, 0.9),
+                    3px 3px 0 rgba(205, 180, 219, 0.75),
+                    4px 4px 0 rgba(144, 112, 224, 0.6)
                   `,
                 }}
                 aria-hidden="true"
               >
                 FUN PLANET
               </span>
-              {/* Main gradient */}
+              {/* Main holographic gradient - pink/blue */}
               <span 
                 className="relative bg-clip-text text-transparent"
                 style={{ 
-                  backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FF6BD6 35%, #9070E0 65%, #FFD700 100%)',
+                  backgroundImage: 'linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 35%, #CDB4DB 65%, #9070E0 100%)',
                   backgroundSize: '200% 200%',
                   animation: 'gradient-shift 8s ease infinite',
                   WebkitBackgroundClip: 'text',
