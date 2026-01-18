@@ -28,7 +28,7 @@ export const MiniLeaderboard = () => {
   const tabs = [
     { id: "donors" as TabType, icon: Heart, label: t('miniLeaderboard.donors') || "Nhà Tài Trợ", shortLabel: "Tài trợ", color: "from-pink-400 to-rose-500" },
     { id: "creators" as TabType, icon: Gamepad2, label: t('miniLeaderboard.creators') || "Nhà Sáng Tạo", shortLabel: "Sáng tạo", color: "from-purple-400 to-violet-500" },
-    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", shortLabel: "CAMLY", color: "from-blue-400 to-purple-500" },
+    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", shortLabel: "CAMLY", color: "from-cyan-400 to-blue-500" },
   ];
 
   const fetchData = useCallback(async (silent = false) => {
@@ -156,14 +156,14 @@ export const MiniLeaderboard = () => {
         <div 
           className="absolute -inset-[2px] rounded-3xl opacity-80"
           style={{
-            background: 'linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 25%, #CDB4DB 50%, #98F5E1 75%, #F3C4FB 100%)',
+            background: 'linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 20%, #7DD3FC 40%, #CDB4DB 60%, #98F5E1 80%, #F3C4FB 100%)',
             backgroundSize: '300% 300%',
             animation: 'gradient-shift 6s ease infinite',
           }}
         />
         
         {/* Glass content */}
-        <div className="relative bg-white/40 backdrop-blur-xl rounded-3xl p-3 sm:p-4 border border-white/50">
+        <div className="relative bg-white/50 backdrop-blur-xl rounded-3xl p-3 sm:p-4 border border-white/50">
           {/* Tab buttons - Icon + micro-label for mobile clarity */}
           <div className="flex gap-1.5 sm:gap-2 mb-3">
             {tabs.map((tab) => (
@@ -224,7 +224,7 @@ export const MiniLeaderboard = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
-                    className="flex items-center gap-2 sm:gap-3 py-3 px-2 sm:p-2.5 rounded-xl bg-white/50 hover:bg-white/70 transition-all cursor-pointer group min-h-[52px]"
+                    className="flex items-center gap-2 sm:gap-3 py-3 px-2 sm:p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all cursor-pointer group min-h-[52px]"
                     onClick={() => navigate(`/profile/${entry.id}`)}
                   >
                     {/* Rank with glow */}
@@ -244,7 +244,7 @@ export const MiniLeaderboard = () => {
                     </Avatar>
                     
                     {/* Username */}
-                    <span className="flex-1 font-bold text-gray-700 text-xs sm:text-sm truncate min-w-0">
+                    <span className="flex-1 font-bold text-gray-800 text-xs sm:text-sm truncate min-w-0">
                       {entry.username}
                     </span>
                     
