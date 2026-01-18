@@ -63,6 +63,18 @@
       hsl(340, 70%, 75%), hsl(280, 65%, 75%), hsl(200, 70%, 75%), 
       hsl(160, 55%, 70%), hsl(45, 85%, 75%), hsl(340, 70%, 75%));
     
+    /* 🌈 Holographic Pastel Colors */
+    --holo-pink: 330 80% 88%;
+    --holo-blue: 210 80% 82%;
+    --holo-purple: 280 45% 78%;
+    --holo-mint: 160 60% 78%;
+    --holo-gradient: linear-gradient(135deg, hsl(330, 80%, 88%), hsl(210, 80%, 82%), hsl(280, 45%, 78%));
+    
+    /* 🔮 Glassmorphism */
+    --glass-bg: hsla(0, 0%, 100%, 0.4);
+    --glass-border: hsla(0, 0%, 100%, 0.5);
+    --glass-blur: 16px;
+    
     /* ✨ Enhanced Cute Shadows */
     --shadow-card: 0 8px 32px hsla(280, 65%, 65%, 0.12), 0 2px 8px hsla(340, 70%, 75%, 0.08);
     --shadow-button: 0 6px 24px hsla(280, 65%, 65%, 0.25), 0 2px 8px hsla(340, 70%, 75%, 0.15);
