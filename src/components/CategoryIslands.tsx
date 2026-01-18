@@ -90,7 +90,7 @@ export const CategoryIslands = () => {
   };
 
   return (
-    <section className="py-12 md:py-16 px-4">
+    <section className="py-8 md:py-16 px-4">
       <div className="container mx-auto max-w-5xl">
         {/* Header */}
         <motion.div
@@ -132,7 +132,7 @@ export const CategoryIslands = () => {
                   bg-gradient-to-br ${island.gradient}
                   backdrop-blur-sm
                   border-2 border-white/40
-                  p-5 md:p-6
+                  p-4 md:p-6
                   cursor-pointer
                   group
                   touch-manipulation
@@ -177,7 +177,7 @@ export const CategoryIslands = () => {
                 </span>
 
                 {/* Island content */}
-                <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[130px] md:min-h-[140px]">
+                <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[110px] md:min-h-[140px]">
                   {/* Emoji */}
                   <span className="text-4xl md:text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
                     {island.emoji}

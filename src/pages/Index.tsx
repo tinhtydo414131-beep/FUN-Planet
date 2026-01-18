@@ -167,33 +167,44 @@ const Index = () => {
       {/* Featured Games - Play Instantly */}
       <FeaturedGamesSection />
 
-      {/* Simplified Footer */}
-      <footer className="bg-gradient-to-r from-primary/5 to-secondary/5 border-t border-primary/20 py-8 px-4">
+      {/* Simplified Footer - Holographic style with mobile safe-area */}
+      <footer className="bg-gradient-to-r from-pink-50/50 via-white/80 to-blue-50/50 backdrop-blur-sm border-t border-pink-200/30 py-8 px-4 pb-24 md:pb-8">
         <div className="container mx-auto max-w-5xl">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+          <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center text-center">
             {/* Logo + Slogan */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
-              <span className="text-2xl font-bold text-primary">FUN Planet 🌍</span>
-              <span className="text-muted-foreground text-sm hidden sm:inline">{t('home.footerSlogan')}</span>
+            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-2 sm:gap-3">
+              <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+                FUN Planet 🌍
+              </span>
+              <span className="text-muted-foreground text-xs sm:text-sm hidden sm:inline">{t('home.footerSlogan')}</span>
             </div>
             
-            {/* Quick Links */}
-            <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <span onClick={() => navigate("/games")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">
+            {/* Quick Links - Enhanced touch targets */}
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4 text-sm">
+              <span 
+                onClick={() => navigate("/games")} 
+                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
+              >
                 {t('nav.games')}
               </span>
-              <span onClick={() => navigate("/about")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">
+              <span 
+                onClick={() => navigate("/about")} 
+                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
+              >
                 {t('home.about')}
               </span>
-              <span onClick={() => navigate("/parent-dashboard")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">
+              <span 
+                onClick={() => navigate("/parent-dashboard")} 
+                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
+              >
                 {t('home.forParents')}
               </span>
             </div>
           </div>
           
           {/* Copyright */}
-          <div className="mt-6 pt-4 border-t border-primary/10 text-center">
-            <p className="text-sm text-muted-foreground">{t('home.copyright')}</p>
+          <div className="mt-6 pt-4 border-t border-pink-200/20 text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground">{t('home.copyright')}</p>
           </div>
         </div>
       </footer>
