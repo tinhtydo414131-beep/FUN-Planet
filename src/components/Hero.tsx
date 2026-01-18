@@ -23,11 +23,16 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative pt-16 sm:pt-24 md:pt-28 pb-6 sm:pb-10 px-2 sm:px-4 overflow-hidden min-h-[75vh] sm:min-h-[80vh] flex flex-col justify-start">
-      {/* Background image */}
+    <section 
+      className="relative pt-16 sm:pt-24 md:pt-28 pb-6 sm:pb-10 px-2 sm:px-4 overflow-hidden min-h-[75vh] sm:min-h-[80vh] flex flex-col justify-start"
+      role="banner"
+      aria-label={t('hero.mainBanner', 'FUN Planet - Chơi game vui vẻ')}
+    >
+      {/* Background image - decorative */}
       <img 
         src="/images/backgrounds/fun-planet-bg.jpg" 
-        alt="Fun Planet Background"
+        alt="" 
+        aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover z-0"
         loading="eager"
         decoding="async"

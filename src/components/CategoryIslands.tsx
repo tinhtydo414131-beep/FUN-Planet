@@ -90,7 +90,11 @@ export const CategoryIslands = () => {
   };
 
   return (
-    <section className="py-8 md:py-16 px-4">
+    <section 
+      className="py-8 md:py-16 px-4"
+      role="navigation"
+      aria-label={t('categoryIslands.navigationLabel', 'Game Categories Navigation')}
+    >
       <div className="container mx-auto max-w-5xl">
         {/* Header */}
         <motion.div
@@ -107,8 +111,12 @@ export const CategoryIslands = () => {
           </p>
         </motion.div>
 
-        {/* Islands Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        {/* Islands Grid - accessible list */}
+        <div 
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+          role="list"
+          aria-label={t('categoryIslands.gridLabel', 'Game categories')}
+        >
           {islands.map((island, index) => {
             const IconComponent = island.icon;
             
