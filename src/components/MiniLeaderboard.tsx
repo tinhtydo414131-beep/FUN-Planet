@@ -209,74 +209,75 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
 
           {/* Leaderboard entries with AnimatePresence for smooth transitions */}
           <AnimatePresence mode="wait">
-            <motion.div 
-              key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-2"
-            >
-              {loading ? (
-                // Loading skeleton with responsive sizes
-                [...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 animate-pulse min-h-[52px]">
-                    <div className="w-6 h-6 bg-gray-200 rounded-full" />
-                    <div className="w-9 h-9 sm:w-8 sm:h-8 bg-gray-200 rounded-full" />
-                    <div className="flex-1">
-                      <div className="h-3 bg-gray-200 rounded w-16 sm:w-20" />
+            <div key={activeTab}>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-2"
+              >
+                {loading ? (
+                  // Loading skeleton with responsive sizes
+                  [...Array(3)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 animate-pulse min-h-[52px]">
+                      <div className="w-6 h-6 bg-gray-200 rounded-full" />
+                      <div className="w-9 h-9 sm:w-8 sm:h-8 bg-gray-200 rounded-full" />
+                      <div className="flex-1">
+                        <div className="h-3 bg-gray-200 rounded w-16 sm:w-20" />
+                      </div>
+                      <div className="h-4 bg-gray-200 rounded w-10 sm:w-12" />
                     </div>
-                    <div className="h-4 bg-gray-200 rounded w-10 sm:w-12" />
+                  ))
+                ) : data.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500 text-sm">
+                    {t('miniLeaderboard.noData') || 'No data yet'}
                   </div>
-                ))
-              ) : data.length === 0 ? (
-                <div className="text-center py-4 text-gray-500 text-sm">
-                  {t('miniLeaderboard.noData') || 'No data yet'}
-                </div>
-              ) : (
-                data.map((entry, index) => (
-                  <motion.div
-                    key={`${entry.id}-${index}`}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
-                    className="flex items-center gap-2 sm:gap-3 py-3 px-2 sm:p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all cursor-pointer group min-h-[52px]"
-                    onClick={() => navigate(`/profile/${entry.id}`)}
-                  >
-                    {/* Rank with glow */}
-                    <motion.span 
-                      className="text-lg w-6 text-center drop-shadow-[0_0_4px_rgba(250,204,21,0.5)] flex-shrink-0"
-                      whileHover={{ scale: 1.2 }}
+                ) : (
+                  data.map((entry, index) => (
+                    <motion.div
+                      key={`${entry.id}-${index}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
+                      className="flex items-center gap-2 sm:gap-3 py-3 px-2 sm:p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all cursor-pointer group min-h-[52px]"
+                      onClick={() => navigate(`/profile/${entry.id}`)}
                     >
-                      {getRankEmoji(index)}
-                    </motion.span>
-                    
-                    {/* Avatar - larger on mobile for better touch */}
-                    <Avatar className="w-9 h-9 sm:w-8 sm:h-8 border-2 border-white shadow-md group-hover:scale-110 transition-transform flex-shrink-0">
-                      <AvatarImage src={entry.avatar_url || undefined} />
-                      <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xs">
-                        {entry.username.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    {/* Username */}
-                    <span className="flex-1 font-bold text-gray-800 text-xs sm:text-sm truncate min-w-0">
-                      {entry.username}
-                    </span>
-                    
-                    {/* ✨ Value with glow animation */}
-                    <motion.span 
-                      key={`${entry.id}-${entry.value}`}
-                      initial={{ scale: 1.2, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(168,85,247,0.4)] flex-shrink-0"
-                    >
-                      {formatValue(entry.value)}
-                    </motion.span>
-                  </motion.div>
-                ))
-              )}
-            </motion.div>
+                      {/* Rank with glow */}
+                      <motion.span 
+                        className="text-lg w-6 text-center drop-shadow-[0_0_4px_rgba(250,204,21,0.5)] flex-shrink-0"
+                        whileHover={{ scale: 1.2 }}
+                      >
+                        {getRankEmoji(index)}
+                      </motion.span>
+                      
+                      {/* Avatar - larger on mobile for better touch */}
+                      <Avatar className="w-9 h-9 sm:w-8 sm:h-8 border-2 border-white shadow-md group-hover:scale-110 transition-transform flex-shrink-0">
+                        <AvatarImage src={entry.avatar_url || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-xs">
+                          {entry.username.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      {/* Username */}
+                      <span className="flex-1 font-bold text-gray-800 text-xs sm:text-sm truncate min-w-0">
+                        {entry.username}
+                      </span>
+                      
+                      {/* ✨ Value with glow animation */}
+                      <motion.span 
+                        key={`${entry.id}-${entry.value}`}
+                        initial={{ scale: 1.2, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(168,85,247,0.4)] flex-shrink-0"
+                      >
+                        {formatValue(entry.value)}
+                      </motion.span>
+                    </motion.div>
+                  ))
+                )}
+              </motion.div>
+            </div>
           </AnimatePresence>
 
           {/* View All link */}
