@@ -185,19 +185,19 @@ const Index = () => {
                 onClick={() => navigate("/games")} 
                 className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
               >
-                {t('nav.games')}
+                🎮 {t('nav.games')}
               </span>
               <span 
                 onClick={() => navigate("/about")} 
                 className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
               >
-                {t('home.about')}
+                📖 {t('home.about')}
               </span>
               <span 
                 onClick={() => navigate("/parent-dashboard")} 
                 className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
               >
-                {t('home.forParents')}
+                👪 {t('home.forParents')}
               </span>
             </div>
           </div>
