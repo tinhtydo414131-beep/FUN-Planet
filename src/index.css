@@ -71,6 +71,19 @@
     --holo-light-purple: 300 60% 82%;
     --holo-gradient: linear-gradient(135deg, hsl(330, 85%, 85%), hsl(200, 85%, 80%), hsl(280, 70%, 70%));
     
+    /* 🎀 HEX values for direct use in components */
+    --holo-pink-hex: #F3C4FB;
+    --holo-blue-hex: #A2D2FF;
+    --holo-purple-hex: #CDB4DB;
+    --holo-mint-hex: #98F5E1;
+    
+    /* 🌈 Enhanced holographic gradient with 4 colors */
+    --holo-gradient-full: linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 25%, #CDB4DB 50%, #98F5E1 75%, #F3C4FB 100%);
+    
+    /* ✨ Holographic glow shadows */
+    --holo-glow: 0 0 20px rgba(243, 196, 251, 0.5), 0 0 10px rgba(162, 210, 255, 0.3);
+    --holo-glow-strong: 0 0 30px rgba(243, 196, 251, 0.6), 0 0 15px rgba(162, 210, 255, 0.4);
+    
     /* 🔮 Glassmorphism */
     --glass-bg: hsla(0, 0%, 100%, 0.4);
     --glass-border: hsla(0, 0%, 100%, 0.5);
@@ -244,12 +257,10 @@
   
   @keyframes pulse-glow {
     0%, 100% {
-      box-shadow: 0 0 20px rgba(234, 179, 8, 0.5);
-      border-color: rgba(234, 179, 8, 0.8);
+      box-shadow: 0 0 20px rgba(243, 196, 251, 0.5), 0 0 10px rgba(162, 210, 255, 0.3);
     }
     50% {
-      box-shadow: 0 0 40px rgba(234, 179, 8, 0.8), 0 0 60px rgba(234, 179, 8, 0.4);
-      border-color: rgba(234, 179, 8, 1);
+      box-shadow: 0 0 30px rgba(243, 196, 251, 0.7), 0 0 15px rgba(162, 210, 255, 0.5);
     }
   }
   
@@ -363,6 +374,44 @@
     font-size: 12px;
     animation: confetti-fall 0.6s ease-out forwards;
     pointer-events: none;
+  }
+
+  /* 🌈 Holographic Utility Classes */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+  }
+
+  .holo-border {
+    border: 2px solid transparent;
+    background-image: linear-gradient(white, white), linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .holo-glow {
+    box-shadow: 0 0 20px rgba(243, 196, 251, 0.5), 0 0 10px rgba(162, 210, 255, 0.3);
+  }
+
+  .holo-glow-strong {
+    box-shadow: 0 0 30px rgba(243, 196, 251, 0.6), 0 0 15px rgba(162, 210, 255, 0.4);
+  }
+
+  .holo-bg {
+    background: linear-gradient(135deg, 
+      rgba(243, 196, 251, 0.3) 0%, 
+      rgba(162, 210, 255, 0.2) 50%, 
+      rgba(205, 180, 219, 0.3) 100%
+    );
+  }
+
+  .holo-gradient-text {
+    background: linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 

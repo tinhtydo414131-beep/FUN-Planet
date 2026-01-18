@@ -121,9 +121,16 @@ export const Navigation = () => {
         onReject={rejectRequest}
       />
 
-      {/* Desktop Navigation - Sticky */}
-      <nav className="hidden md:block sticky-header">
-        <div className="container mx-auto px-6">
+      {/* Desktop Navigation - Sticky with Holographic Background */}
+      <nav className="hidden md:block sticky-header relative overflow-hidden">
+        {/* Rainbow shimmer top border */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-300 via-purple-300 via-blue-300 to-pink-300 animate-gradient-shift" />
+        
+        {/* Holographic glass background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-50/95 via-white/90 to-blue-50/95 backdrop-blur-lg" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-300/50 to-transparent" />
+        
+        <div className="container mx-auto px-6 relative z-10">
           <div className="flex items-center justify-between h-20">
             {/* Logo - Circular 72px with enhanced pink-blue glow */}
             <NavLink 
