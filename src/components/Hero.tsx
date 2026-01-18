@@ -128,7 +128,7 @@ export const Hero = () => {
             <span className="font-bold text-xs sm:text-base text-purple-700">🌟 {t('hero.badge')}</span>
           </motion.div>
 
-          {/* Planet Mascot */}
+          {/* Planet Mascot - Using actual logo image */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -138,30 +138,17 @@ export const Hero = () => {
             <motion.div
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-32 h-32 sm:w-48 sm:h-48 lg:w-56 lg:h-56 mx-auto"
+              className="relative w-36 h-36 sm:w-52 sm:h-52 lg:w-64 lg:h-64 mx-auto"
             >
-              {/* Planet body - purple gradient sphere */}
-              <div 
-                className="absolute inset-0 rounded-full"
+              {/* Planet Mascot - actual logo image */}
+              <img 
+                src="/logo-header-circular.png" 
+                alt="Fun Planet Mascot"
+                className="w-full h-full object-contain drop-shadow-2xl"
                 style={{
-                  background: 'radial-gradient(circle at 30% 30%, #CDB4DB 0%, #9070E0 40%, #7C3AED 80%, #5B21B6 100%)',
-                  boxShadow: '0 0 40px rgba(124,58,237,0.5), inset 0 -20px 40px rgba(0,0,0,0.3), inset 0 10px 30px rgba(255,255,255,0.3)',
+                  filter: 'drop-shadow(0 0 40px rgba(144,112,224,0.6)) drop-shadow(0 0 20px rgba(243,196,251,0.4))',
                 }}
               />
-              
-              {/* Planet shine highlight */}
-              <div 
-                className="absolute top-4 left-6 w-1/3 h-1/4 rounded-full opacity-60"
-                style={{
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.8) 0%, transparent 100%)',
-                  filter: 'blur(4px)',
-                }}
-              />
-              
-              {/* Game controller on planet */}
-              <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-3xl sm:text-5xl lg:text-6xl drop-shadow-lg">
-                🎮
-              </div>
               
               {/* Orbiting stars */}
               <motion.div
@@ -169,18 +156,23 @@ export const Hero = () => {
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0"
               >
-                <span className="absolute -top-2 left-1/2 text-xl">⭐</span>
-                <span className="absolute top-1/2 -right-2 text-lg">✨</span>
-                <span className="absolute -bottom-1 left-1/4 text-xl">🌟</span>
+                <span className="absolute -top-3 left-1/2 text-2xl sm:text-3xl">⭐</span>
+                <span className="absolute top-1/2 -right-3 text-xl sm:text-2xl">✨</span>
+                <span className="absolute -bottom-2 left-1/4 text-2xl sm:text-3xl">🌟</span>
               </motion.div>
             </motion.div>
             
-            {/* Glow effect under mascot */}
-            <div 
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-4 rounded-full opacity-40"
+            {/* Pulsating glow effect under mascot */}
+            <motion.div 
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-6 rounded-full"
+              animate={{
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
               style={{
-                background: 'radial-gradient(ellipse, rgba(124,58,237,0.6) 0%, transparent 70%)',
-                filter: 'blur(10px)',
+                background: 'radial-gradient(ellipse, rgba(144,112,224,0.7) 0%, rgba(243,196,251,0.4) 50%, transparent 70%)',
+                filter: 'blur(12px)',
               }}
             />
           </motion.div>
@@ -283,8 +275,8 @@ export const Hero = () => {
             </motion.button>
           </motion.div>
 
-          {/* MiniLeaderboard - Mobile only (below button) */}
-          <div className="block lg:hidden pt-6">
+          {/* MiniLeaderboard - Mobile only (below button, centered with padding) */}
+          <div className="block lg:hidden pt-8 px-2">
             <MiniLeaderboard />
           </div>
         </div>

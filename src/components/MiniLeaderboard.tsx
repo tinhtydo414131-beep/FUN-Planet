@@ -36,20 +36,31 @@ export const MiniLeaderboard = () => {
     setLoading(true);
     try {
       if (activeTab === "camly") {
-        const { data: ranking } = await supabase
-          .rpc('get_public_ranking', { limit_count: 3 }) as { data: any[] | null };
-        if (ranking) {
+        const { data: ranking, error } = await supabase
+          .rpc('get_public_ranking', { limit_count: 3 }) as { data: any[] | null; error: any };
+        
+        if (error) {
+          console.error('MiniLeaderboard CAMLY fetch error:', error);
+        }
+        
+        if (ranking && ranking.length > 0) {
           setData(ranking.map((r: any) => ({
             id: r.id,
             username: r.username || 'Anonymous',
             avatar_url: r.avatar_url,
-            value: Number(r.wallet_balance) || 0
+            // Try multiple field names for compatibility
+            value: Number(r.wallet_balance) || Number(r.total_camly) || Number(r.camly_balance) || 0
           })));
         }
       } else if (activeTab === "donors") {
-        const { data: donors } = await supabase
-          .rpc('get_public_donors', { limit_count: 3 }) as { data: any[] | null };
-        if (donors) {
+        const { data: donors, error } = await supabase
+          .rpc('get_public_donors', { limit_count: 3 }) as { data: any[] | null; error: any };
+        
+        if (error) {
+          console.error('MiniLeaderboard Donors fetch error:', error);
+        }
+        
+        if (donors && donors.length > 0) {
           setData(donors.map((d: any) => ({
             id: d.id || d.user_id,
             username: d.username || 'Anonymous',

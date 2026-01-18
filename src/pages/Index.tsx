@@ -57,20 +57,25 @@ const Index = () => {
   const [showRoleSelector, setShowRoleSelector] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
-      const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
-      if (!hasSeenFunId) {
-        setShowFunIdOnboarding(true);
-      }
-    }
+    // DISABLED: Auto-popup overlays to improve initial page load experience
+    // FunIDOnboarding and OnboardingRoleSelector now accessible manually
+    // See memory: ux/onboarding-auto-display-policy
     
-    if (!loading && user && !hasCompletedOnboarding()) {
-      setShowRoleSelector(true);
-    }
+    // if (!loading && !user) {
+    //   const hasSeenFunId = localStorage.getItem('fun_planet_fun_id_intro');
+    //   if (!hasSeenFunId) {
+    //     setShowFunIdOnboarding(true);
+    //   }
+    // }
     
-    if (user && funId && shouldShowAngel) {
-      setShowAngelChat(true);
-    }
+    // if (!loading && user && !hasCompletedOnboarding()) {
+    //   setShowRoleSelector(true);
+    // }
+    
+    // Angel AI chat - keep accessible via button
+    // if (user && funId && shouldShowAngel) {
+    //   setShowAngelChat(true);
+    // }
   }, [user, loading, funId, shouldShowAngel]);
 
   const handleSelectRole = (role: "kid" | "parent" | "developer") => {
