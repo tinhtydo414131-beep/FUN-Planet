@@ -84,15 +84,15 @@ export const CategoryIslands = () => {
 
   return (
     <section 
-      className="py-8 md:py-12 px-4"
+      className="py-6 md:py-12 px-2 md:px-4"
       role="navigation"
       aria-label={t('categoryIslands.navigationLabel', 'Game Categories Navigation')}
     >
       {/* Glassmorphism Container */}
-      <div className="container mx-auto max-w-5xl bg-white/20 backdrop-blur-lg rounded-3xl border border-white/30 p-6 md:p-8 shadow-xl">
+      <div className="container mx-auto max-w-5xl bg-white/20 backdrop-blur-lg rounded-2xl md:rounded-3xl border border-white/30 p-4 md:p-8 shadow-xl">
         {/* Section Header */}
         <motion.h2 
-          className="text-2xl md:text-3xl font-bold text-center mb-8 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent"
+          className="text-lg md:text-3xl font-bold text-center mb-4 md:mb-8 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -102,7 +102,7 @@ export const CategoryIslands = () => {
 
         {/* Hexagon Grid */}
         <div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6"
           style={{ perspective: '1000px' }}
           role="list"
           aria-label={t('categoryIslands.gridLabel', 'Game categories')}
@@ -143,7 +143,7 @@ export const CategoryIslands = () => {
                   className={`relative w-full aspect-[1/1.15] bg-gradient-to-br ${island.gradient} transition-all duration-300`}
                   style={{
                     clipPath: hexagonClipPath,
-                    boxShadow: `0 15px 40px ${island.shadowColor}, inset 0 -10px 30px rgba(0,0,0,0.2), inset 0 10px 30px rgba(255,255,255,0.3)`,
+                    boxShadow: `0 10px 25px ${island.shadowColor}, inset 0 -8px 20px rgba(0,0,0,0.2), inset 0 8px 20px rgba(255,255,255,0.3)`,
                   }}
                 >
                   {/* Inner glow effect on hover */}
@@ -156,29 +156,29 @@ export const CategoryIslands = () => {
                   />
 
                   {/* Content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 md:gap-3">
-                    {/* Icon */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 md:gap-3">
+                    {/* Icon - smaller on mobile */}
                     <motion.div
                       className="relative"
                       whileHover={{ rotate: [0, -10, 10, 0] }}
                       transition={{ duration: 0.4 }}
                     >
                       <IconComponent 
-                        className="w-10 h-10 md:w-12 md:h-12 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]" 
+                        className="w-7 h-7 sm:w-9 sm:h-9 md:w-12 md:h-12 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]" 
                         strokeWidth={1.5}
                       />
                     </motion.div>
 
-                    {/* Label */}
-                    <span className="text-white font-bold text-sm md:text-base drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] text-center px-2">
+                    {/* Label - smaller on mobile */}
+                    <span className="text-white font-bold text-xs sm:text-sm md:text-base drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] text-center px-1 leading-tight">
                       {t(island.labelKey)}
                     </span>
                   </div>
 
-                  {/* "Mới" Badge */}
+                  {/* "Mới" Badge - positioned for mobile */}
                   {island.hasNewGames && (
                     <Badge 
-                      className="absolute top-[12%] right-[8%] bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[10px] px-1.5 py-0.5 border-0 shadow-lg animate-pulse"
+                      className="absolute top-[8%] right-[5%] sm:top-[12%] sm:right-[8%] bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 border-0 shadow-lg animate-pulse"
                     >
                       Mới
                     </Badge>
