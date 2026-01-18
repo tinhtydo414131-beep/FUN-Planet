@@ -146,25 +146,27 @@ export const MiniLeaderboard = () => {
         
         {/* Glass content */}
         <div className="relative bg-white/40 backdrop-blur-xl rounded-3xl p-3 sm:p-4 border border-white/50">
-          {/* Tab buttons with shimmer effect - Icon only on mobile */}
-          <div className="flex gap-1 mb-3">
+          {/* Tab buttons - Icon only with tooltip */}
+          <div className="flex gap-2 mb-3">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
+                title={tab.label}
+                aria-label={tab.label}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1 py-2.5 px-2 sm:px-3 rounded-xl text-xs font-bold transition-all min-h-[48px] relative overflow-hidden ${
+                className={`flex-1 flex items-center justify-center py-3 px-3 rounded-xl font-bold transition-all min-h-[48px] relative overflow-hidden ${
                   activeTab === tab.id
                     ? `bg-gradient-to-r ${tab.color} text-white shadow-lg scale-105`
-                    : 'bg-white/50 text-gray-600 hover:bg-white/70'
+                    : 'bg-white/50 text-gray-600 hover:bg-white/70 hover:scale-102'
                 }`}
               >
                 {/* ✨ Shimmer effect for active tab */}
                 {activeTab === tab.id && (
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite] -skew-x-12" />
                 )}
-                <tab.icon className="w-4 h-4 sm:w-3.5 sm:h-3.5 relative z-10 flex-shrink-0" />
-                {/* Label hidden on mobile, visible on sm+ */}
-                <span className="hidden sm:inline truncate relative z-10">{tab.label}</span>
+                <tab.icon className="w-5 h-5 relative z-10" />
+                {/* Screen reader only label */}
+                <span className="sr-only">{tab.label}</span>
               </button>
             ))}
           </div>
