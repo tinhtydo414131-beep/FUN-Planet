@@ -67,9 +67,9 @@ const islands: Island[] = [
     icon: Gift,
     labelKey: "categoryIslands.rewards",
     emoji: "🎁",
-    gradient: "from-emerald-200 to-teal-300",
-    shadowColor: "rgba(110, 231, 183, 0.5)",
-    borderGlow: "rgba(110, 231, 183, 0.8)",
+    gradient: "from-pink-200 to-rose-300",
+    shadowColor: "rgba(251, 113, 133, 0.5)",
+    borderGlow: "rgba(251, 113, 133, 0.8)",
     route: "/reward-galaxy",
     soundFreq: 880,
     soundType: "sine",
@@ -132,9 +132,12 @@ export const CategoryIslands = () => {
                   bg-gradient-to-br ${island.gradient}
                   backdrop-blur-sm
                   border-2 border-white/40
-                  p-4 md:p-6
+                  p-5 md:p-6
                   cursor-pointer
                   group
+                  touch-manipulation
+                  active:scale-95
+                  transition-transform
                 `}
                 style={{
                   perspective: "1000px",
@@ -174,16 +177,16 @@ export const CategoryIslands = () => {
                 </span>
 
                 {/* Island content */}
-                <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[120px] md:min-h-[140px]">
+                <div className="relative z-10 flex flex-col items-center justify-center h-full min-h-[130px] md:min-h-[140px]">
                   {/* Emoji */}
-                  <span className="text-3xl md:text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-4xl md:text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
                     {island.emoji}
                   </span>
 
                   {/* Icon with glow */}
                   <div className="relative mb-2">
                     <IconComponent 
-                      className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-lg group-hover:scale-110 transition-transform duration-300" 
+                      className="w-9 h-9 md:w-10 md:h-10 text-white drop-shadow-lg group-hover:scale-110 transition-transform duration-300" 
                     />
                     {/* Icon glow */}
                     <div 
