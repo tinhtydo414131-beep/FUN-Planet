@@ -89,6 +89,26 @@ export const useGameAudio = () => {
     playSound(1000, 0.15, 'triangle');
   };
 
+  // "Bloop" sound for card hover (soft, short)
+  const playBloop = () => {
+    if (!isSoundEnabled || !audioContextRef.current) return;
+    playSound(350, 0.08, 'sine');
+  };
+
+  // "Bling" sound for Play button click (ascending notes)
+  const playBling = () => {
+    if (!isSoundEnabled || !audioContextRef.current) return;
+    [880, 1100, 1320].forEach((freq, i) => {
+      setTimeout(() => playSound(freq, 0.1, 'sine'), i * 60);
+    });
+  };
+
+  // "Pop" sound for card appearance (gentle)
+  const playCardAppear = () => {
+    if (!isSoundEnabled || !audioContextRef.current) return;
+    playSound(600, 0.05, 'sine');
+  };
+
   // Các hàm này giờ không làm gì - nhạc nền được quản lý bởi BackgroundMusicPlayer
   const startBackgroundMusic = async (_forceStart = false) => {
     // Không phát oscillator music nữa - dùng BackgroundMusicPlayer thay thế
@@ -115,6 +135,9 @@ export const useGameAudio = () => {
     playPop,
     playJump,
     playScore,
+    playBloop,
+    playBling,
+    playCardAppear,
     startBackgroundMusic,
     stopBackgroundMusic,
     toggleMusic,

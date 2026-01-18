@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Play, X, Maximize2, Star, Users, Flame, Sparkles } from "lucide-react";
 import { GamePreviewPlaceholder } from "@/components/GamePreviewPlaceholder";
+import { useGameAudio } from "@/hooks/useGameAudio";
 import gemFusionThumbnail from "@/assets/games/gem-fusion-quest-thumbnail.png";
 
 interface FeaturedGame {
@@ -25,6 +26,7 @@ export function FeaturedGamesSection() {
   const [loading, setLoading] = useState(true);
   const [selectedGame, setSelectedGame] = useState<FeaturedGame | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { playBloop, playBling, playCardAppear } = useGameAudio();
 
   useEffect(() => {
     fetchFeaturedGames();
@@ -58,6 +60,7 @@ export function FeaturedGamesSection() {
   };
 
   const handlePlayGame = (game: FeaturedGame) => {
+    playBling();
     setSelectedGame(game);
   };
 
@@ -75,8 +78,21 @@ export function FeaturedGamesSection() {
       action: "⚡",
       racing: "🏎️",
       creative: "🎨",
+      brain: "🧠",
     };
     return emojis[category] || "🎮";
+  };
+
+  // Educational badges based on category
+  const getEducationalBadge = (category: string, playCount?: number) => {
+    const badges: Record<string, { emoji: string; label: string; gradient: string }> = {
+      educational: { emoji: "📚", label: "Học tốt", gradient: "from-green-500 to-emerald-500" },
+      puzzle: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
+      brain: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
+      creative: { emoji: "🎨", label: "Sáng tạo", gradient: "from-pink-500 to-rose-500" },
+    };
+    
+    return badges[category] || null;
   };
 
   if (loading) {
@@ -85,7 +101,7 @@ export function FeaturedGamesSection() {
         <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="aspect-video bg-muted animate-pulse rounded-2xl" />
+              <div key={i} className="aspect-video bg-muted animate-pulse rounded-[28px] min-h-[180px]" />
             ))}
           </div>
         </div>
@@ -126,50 +142,71 @@ export function FeaturedGamesSection() {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
+              onAnimationComplete={() => playCardAppear()}
             >
               <Card
-                className="group relative overflow-hidden rounded-2xl border-2 border-yellow-400/50 hover:border-yellow-400 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500/20 hover:scale-105"
-                onClick={() => navigate('/games/gem-fusion-quest')}
+                className="group relative overflow-hidden rounded-[28px] border-2 border-yellow-400/50 hover:border-yellow-400 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500/20 hover:scale-105 min-h-[180px] md:min-h-[220px] bg-white/25 backdrop-blur-sm"
+                onClick={() => {
+                  playBling();
+                  navigate('/games/gem-fusion-quest');
+                }}
+                onMouseEnter={() => playBloop()}
               >
                 {/* Thumbnail */}
-                <div className="relative aspect-video overflow-hidden">
+                <div className="relative aspect-video overflow-hidden rounded-[24px]">
                   <img 
                     src={gemFusionThumbnail}
                     alt="Gem Fusion Quest"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   
+                  {/* Glassmorphism overlay on hover */}
+                  <div className="absolute inset-0 bg-white/25 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[24px]" />
+                  
                   {/* Sparkle effects */}
                   <Sparkles className="absolute top-4 left-4 w-6 h-6 text-yellow-300 animate-pulse z-10" />
                   <Sparkles className="absolute bottom-4 right-4 w-5 h-5 text-white animate-pulse delay-300 z-10" />
                   
                   {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                   
-                  {/* Play Button */}
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    whileHover={{ scale: 1.1 }}
-                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <div className="w-16 h-16 rounded-full bg-yellow-500/90 flex items-center justify-center shadow-xl">
-                      <Play className="w-8 h-8 text-white ml-1" />
-                    </div>
-                  </motion.div>
+                  {/* Play Button - Always Visible with Pulse Glow */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                    <motion.div
+                      animate={{
+                        boxShadow: [
+                          "0 0 20px rgba(236, 72, 153, 0.4)",
+                          "0 0 40px rgba(168, 85, 247, 0.6)",
+                          "0 0 20px rgba(236, 72, 153, 0.4)"
+                        ]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 
+                        flex items-center justify-center shadow-2xl
+                        hover:scale-110 transition-transform duration-300 cursor-pointer pointer-events-auto"
+                    >
+                      <Play className="w-8 h-8 text-white ml-1" fill="white" />
+                    </motion.div>
+                  </div>
 
                   {/* NEW Badge */}
-                  <Badge className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg">
+                  <Badge className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg z-10">
                     ✨ NEW
                   </Badge>
 
                   {/* Match-3 Badge */}
-                  <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 shadow-lg">
+                  <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 shadow-lg z-10">
                     🧩 Match-3
+                  </Badge>
+
+                  {/* Educational Badge */}
+                  <Badge className="absolute bottom-2 left-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 shadow-lg text-xs z-10">
+                    🧠 Rèn luyện tư duy
                   </Badge>
                 </div>
 
                 {/* Game Title */}
-                <div className="p-3 bg-card">
+                <div className="p-3 bg-card rounded-b-[24px]">
                   <h3 className="font-bold text-sm md:text-base">Gem Fusion Quest</h3>
                   <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                     <Star className="w-3 h-3 text-yellow-500" />
@@ -181,71 +218,96 @@ export function FeaturedGamesSection() {
               </Card>
             </motion.div>
 
-            {games.map((game, index) => (
-              <motion.div
-                key={game.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card
-                  className="group relative overflow-hidden rounded-2xl border-2 border-transparent hover:border-primary/50 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:scale-105"
-                  onClick={() => handlePlayGame(game)}
+            {games.map((game, index) => {
+              const educationalBadge = getEducationalBadge(game.category);
+              const isHot = index < 3;
+              
+              return (
+                <motion.div
+                  key={game.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  onAnimationComplete={() => playCardAppear()}
                 >
-                  {/* Thumbnail */}
-                  <div className="relative aspect-video overflow-hidden">
-                    {getThumbnailUrl(game.thumbnail_path) ? (
-                      <img
-                        src={getThumbnailUrl(game.thumbnail_path)!}
-                        alt={game.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <GamePreviewPlaceholder title={game.title} category={game.category} />
-                    )}
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                    
-                    {/* Play Button */}
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      whileHover={{ scale: 1.1 }}
-                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-xl">
-                        <Play className="w-8 h-8 text-white ml-1" />
+                  <Card
+                    className="group relative overflow-hidden rounded-[28px] border-2 border-transparent hover:border-primary/50 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:scale-105 min-h-[180px] md:min-h-[220px] bg-white/25 backdrop-blur-sm"
+                    onClick={() => handlePlayGame(game)}
+                    onMouseEnter={() => playBloop()}
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative aspect-video overflow-hidden rounded-[24px]">
+                      {getThumbnailUrl(game.thumbnail_path) ? (
+                        <img
+                          src={getThumbnailUrl(game.thumbnail_path)!}
+                          alt={game.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <GamePreviewPlaceholder title={game.title} category={game.category} />
+                      )}
+                      
+                      {/* Glassmorphism overlay on hover */}
+                      <div className="absolute inset-0 bg-white/25 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[24px]" />
+                      
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                      
+                      {/* Play Button - Always Visible with Pulse Glow */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                        <motion.div
+                          animate={{
+                            boxShadow: [
+                              "0 0 20px rgba(236, 72, 153, 0.4)",
+                              "0 0 40px rgba(168, 85, 247, 0.6)",
+                              "0 0 20px rgba(236, 72, 153, 0.4)"
+                            ]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                          className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 
+                            flex items-center justify-center shadow-2xl
+                            hover:scale-110 transition-transform duration-300 cursor-pointer pointer-events-auto"
+                        >
+                          <Play className="w-8 h-8 text-white ml-1" fill="white" />
+                        </motion.div>
                       </div>
-                    </motion.div>
 
-                    {/* Category Badge */}
-                    <Badge className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm">
-                      {getCategoryEmoji(game.category)} {game.category}
-                    </Badge>
-
-                    {/* Hot Badge for first 3 */}
-                    {index < 3 && (
-                      <Badge className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white">
-                        🔥 HOT
+                      {/* Category Badge */}
+                      <Badge className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm z-10">
+                        {getCategoryEmoji(game.category)} {game.category}
                       </Badge>
-                    )}
-                  </div>
 
-                  {/* Game Title */}
-                  <div className="p-3 bg-card">
-                    <h3 className="font-bold text-sm md:text-base truncate">{game.title}</h3>
-                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                      <Star className="w-3 h-3 text-yellow-500" />
-                      <span>4.8</span>
-                      <Users className="w-3 h-3 ml-2" />
-                      <span>{Math.floor(Math.random() * 500) + 100}</span>
+                      {/* Hot Badge for first 3 */}
+                      {isHot && (
+                        <Badge className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 z-10">
+                          🔥 HOT
+                        </Badge>
+                      )}
+
+                      {/* Educational Badge */}
+                      {educationalBadge && (
+                        <Badge className={`absolute bottom-2 left-2 bg-gradient-to-r ${educationalBadge.gradient} text-white border-0 shadow-lg text-xs z-10`}>
+                          {educationalBadge.emoji} {educationalBadge.label}
+                        </Badge>
+                      )}
                     </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+
+                    {/* Game Title */}
+                    <div className="p-3 bg-card rounded-b-[24px]">
+                      <h3 className="font-bold text-sm md:text-base truncate">{game.title}</h3>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                        <Star className="w-3 h-3 text-yellow-500" />
+                        <span>4.8</span>
+                        <Users className="w-3 h-3 ml-2" />
+                        <span>{Math.floor(Math.random() * 500) + 100}</span>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
 
           {/* View All Button */}
