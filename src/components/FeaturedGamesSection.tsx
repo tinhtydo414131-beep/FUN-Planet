@@ -113,7 +113,12 @@ export function FeaturedGamesSection() {
 
   return (
     <>
-      <section id="featured-games" className="py-16 px-4 bg-gradient-to-b from-background to-primary/5">
+      <section 
+        id="featured-games" 
+        className="py-16 px-4 bg-gradient-to-b from-background to-primary/5"
+        role="region"
+        aria-label="Featured games section"
+      >
         <div className="container mx-auto max-w-7xl">
           {/* Section Header */}
           <motion.div
@@ -123,9 +128,9 @@ export function FeaturedGamesSection() {
             className="text-center mb-12"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-pink-500/20 rounded-full mb-4">
-              <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
+              <Flame className="w-5 h-5 text-orange-500 animate-pulse" aria-hidden="true" />
               <span className="font-bold text-sm">HOT TODAY</span>
-              <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
+              <Flame className="w-5 h-5 text-orange-500 animate-pulse" aria-hidden="true" />
             </div>
             <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
               Today's Featured Games 🎮
@@ -135,8 +140,12 @@ export function FeaturedGamesSection() {
             </p>
           </motion.div>
 
-          {/* Games Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {/* Games Grid - accessible list */}
+          <div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+            role="list"
+            aria-label="Featured games"
+          >
             {/* Gem Fusion Quest - Built-in Game Featured */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}

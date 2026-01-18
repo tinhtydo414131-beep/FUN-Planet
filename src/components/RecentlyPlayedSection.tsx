@@ -156,12 +156,16 @@ export function RecentlyPlayedSection() {
   if (!loading && !hasRecentGames) return null;
 
   return (
-    <section className="py-6 md:py-8 px-4 pb-24 md:pb-8">
+    <section 
+      className="py-6 md:py-8 px-4 pb-24 md:pb-8"
+      role="region"
+      aria-label={t('home.recentlyPlayedSection', 'Recently played games')}
+    >
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 md:mb-6">
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-purple-500" />
+            <Clock className="w-5 h-5 text-purple-500" aria-hidden="true" />
             <h2 className="text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
               {t('home.recentlyPlayed', 'Chơi gần đây')}
             </h2>
@@ -172,9 +176,10 @@ export function RecentlyPlayedSection() {
             size="sm"
             onClick={() => navigate("/recently-played")}
             className="text-muted-foreground hover:text-primary gap-1 text-sm"
+            aria-label={t('home.viewAllRecentGames', 'View all recently played games')}
           >
             {t('common.viewAll', 'Xem tất cả')}
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </Button>
         </div>
 
