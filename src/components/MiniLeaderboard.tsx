@@ -78,7 +78,7 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
         });
       }
 
-      // Row 4: Top Creators
+      // Row 4: Top Creators - with fallback to ensure always 4 rows
       if (creatorsResult.data) {
         const topCreator = creatorsResult.data
           .filter((c: any) => (c.games_uploaded || 0) > 0)
@@ -94,7 +94,29 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
             value: `${topCreator.games_uploaded || 0} 🎮`,
             userId: topCreator.id,
           });
+        } else {
+          // Fallback placeholder when no creators found
+          newRows.push({
+            id: 'top-creators',
+            icon: <Gamepad2 className="w-4 h-4 text-purple-500" />,
+            label: 'Top Creators',
+            username: 'Đang chờ...',
+            avatar_url: null,
+            value: '🎮',
+            userId: '',
+          });
         }
+      } else {
+        // Fallback when query fails
+        newRows.push({
+          id: 'top-creators',
+          icon: <Gamepad2 className="w-4 h-4 text-purple-500" />,
+          label: 'Top Creators',
+          username: 'Đang chờ...',
+          avatar_url: null,
+          value: '🎮',
+          userId: '',
+        });
       }
 
       setRows(newRows);
