@@ -18,14 +18,15 @@ type TabType = "camly" | "donors" | "creators";
 export const MiniLeaderboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>("camly");
+  const [activeTab, setActiveTab] = useState<TabType>("donors");
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Reordered: Sponsors first, then Creators, then CAMLY ranking
   const tabs = [
-    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", color: "from-yellow-400 to-amber-500" },
     { id: "donors" as TabType, icon: Heart, label: t('miniLeaderboard.donors') || "Nhà Tài Trợ", color: "from-pink-400 to-rose-500" },
     { id: "creators" as TabType, icon: Gamepad2, label: t('miniLeaderboard.creators') || "Nhà Sáng Tạo", color: "from-purple-400 to-violet-500" },
+    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", color: "from-yellow-400 to-amber-500" },
   ];
 
   useEffect(() => {
