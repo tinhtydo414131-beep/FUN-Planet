@@ -148,17 +148,18 @@ export const MiniLeaderboard = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.5 }}
-      className="w-full max-w-[320px] sm:max-w-[340px] mx-auto lg:mx-0"
+      className="w-full max-w-[320px] sm:max-w-[340px] mx-auto lg:mx-0 drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]"
     >
       {/* Glassmorphism container with holographic border */}
       <div className="relative rounded-3xl overflow-hidden">
         {/* ✨ Enhanced holographic border with animated gradient */}
         <div 
-          className="absolute -inset-[2px] rounded-3xl opacity-80"
+          className="absolute -inset-[3px] rounded-3xl opacity-90"
           style={{
             background: 'linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 20%, #7DD3FC 40%, #CDB4DB 60%, #98F5E1 80%, #F3C4FB 100%)',
             backgroundSize: '300% 300%',
             animation: 'gradient-shift 6s ease infinite',
+            boxShadow: '0 0 20px rgba(162, 210, 255, 0.5), 0 0 40px rgba(243, 196, 251, 0.3)',
           }}
         />
         
@@ -172,7 +173,7 @@ export const MiniLeaderboard = () => {
                 title={tab.label}
                 aria-label={tab.label}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 px-1.5 sm:px-3 rounded-xl font-bold transition-all min-h-[48px] relative overflow-hidden ${
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 px-1.5 sm:px-3 rounded-xl font-bold transition-all min-h-[52px] sm:min-h-[48px] relative overflow-hidden ${
                   activeTab === tab.id
                     ? `bg-gradient-to-r ${tab.color} text-white shadow-lg scale-105`
                     : 'bg-white/50 text-gray-600 hover:bg-white/70 hover:scale-[1.02]'
