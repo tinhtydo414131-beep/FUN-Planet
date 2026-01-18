@@ -71,7 +71,7 @@ const islands: Island[] = [
     id: "puzzle",
     customIcon: <TiIcon />,
     labelKey: "categoryIslands.puzzle",
-    gradient: "from-pink-400 to-pink-500",
+    gradient: "from-pink-400 to-pink-500", // Trí Tuệ: Hồng đậm
     shadowColor: "rgba(236, 72, 153, 0.4)",
     glowColor: "rgba(236, 72, 153, 0.5)",
     route: "/games?category=puzzle",
@@ -83,7 +83,7 @@ const islands: Island[] = [
     id: "adventure",
     customIcon: <GamepadDotsIcon />,
     labelKey: "categoryIslands.adventure",
-    gradient: "from-pink-400 to-purple-500",
+    gradient: "from-pink-400 via-purple-400 to-purple-500", // Khâu Lưu: Hồng tím
     shadowColor: "rgba(168, 85, 247, 0.4)",
     glowColor: "rgba(168, 85, 247, 0.5)",
     route: "/games?category=adventure",
@@ -95,7 +95,7 @@ const islands: Island[] = [
     id: "create",
     customIcon: <WaveIcon />,
     labelKey: "categoryIslands.create",
-    gradient: "from-purple-400 to-blue-500",
+    gradient: "from-purple-400 via-blue-400 to-blue-500", // Sáng Tạo: Tím-xanh
     shadowColor: "rgba(162, 210, 255, 0.4)",
     glowColor: "rgba(162, 210, 255, 0.5)",
     route: "/games?category=creative",
@@ -107,7 +107,7 @@ const islands: Island[] = [
     id: "rewards",
     customIcon: <ListIcon />,
     labelKey: "categoryIslands.rewards",
-    gradient: "from-blue-400 to-cyan-400",
+    gradient: "from-cyan-300 via-teal-400 to-blue-400", // Phần Thưởng: Xanh bạc hà
     shadowColor: "rgba(34, 211, 238, 0.4)",
     glowColor: "rgba(34, 211, 238, 0.5)",
     route: "/reward-galaxy",
@@ -133,8 +133,8 @@ export const CategoryIslands = () => {
       role="navigation"
       aria-label={t('categoryIslands.navigationLabel', 'Game Categories Navigation')}
     >
-      {/* Subtle Container with glassmorphism - matching holographic theme */}
-      <div className="container mx-auto max-w-4xl bg-white/15 backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 border border-white/30">
+      {/* Seamless container - content floats on holographic background */}
+      <div className="container mx-auto max-w-4xl py-4 md:py-8">
         {/* Section Header */}
         <motion.h2 
           className="text-lg md:text-2xl font-extrabold text-center mb-4 md:mb-6 text-gray-700"
@@ -176,11 +176,10 @@ export const CategoryIslands = () => {
               viewport={{ once: true }}
               style={{ transformStyle: 'preserve-3d' }}
             >
-              {/* 3D Cube Container */}
+              {/* 3D Cube Container - smaller rotation on mobile */}
               <div 
-                className="relative"
+                className="relative island-3d-cube"
                 style={{ 
-                  transform: 'rotateX(6deg) rotateY(-4deg)',
                   transformStyle: 'preserve-3d'
                 }}
               >
@@ -222,17 +221,17 @@ export const CategoryIslands = () => {
                   </div>
                 </div>
 
-                {/* Right Side Face - 3D Depth */}
+                {/* Right Side Face - 3D Depth - smaller on mobile */}
                 <div 
-                  className="absolute top-0 -right-1.5 md:-right-2 w-1.5 md:w-2 h-full origin-left rounded-r-xl"
+                  className="absolute top-0 -right-[3px] md:-right-2 w-[3px] md:w-2 h-full origin-left rounded-r-xl"
                   style={{ 
                     background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(0,0,0,0.15))',
                   }}
                 />
 
-                {/* Bottom Face - 3D Depth */}
+                {/* Bottom Face - 3D Depth - smaller on mobile */}
                 <div 
-                  className="absolute -bottom-1.5 md:-bottom-2 left-0 w-full h-1.5 md:h-2 origin-top rounded-b-xl"
+                  className="absolute -bottom-[3px] md:-bottom-2 left-0 w-full h-[3px] md:h-2 origin-top rounded-b-xl"
                   style={{ 
                     background: 'linear-gradient(to right, rgba(255,255,255,0.15), rgba(0,0,0,0.15))',
                   }}
