@@ -102,16 +102,13 @@ export function FeaturedGamesSection() {
     <>
       <section 
         id="featured-games" 
-        className="py-6 md:py-12 px-2 md:px-4"
+        className="py-4 md:py-8 px-2 md:px-4"
         role="region"
         aria-label="Featured games section"
       >
-        {/* Glassmorphism Container with Holographic Border */}
+        {/* Subtle Container - matching unified background */}
         <div 
-          className="container mx-auto max-w-6xl bg-white/20 backdrop-blur-lg rounded-2xl md:rounded-3xl p-3 md:p-6 border-2 overflow-hidden relative"
-          style={{
-            borderImage: "linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1"
-          }}
+          className="container mx-auto max-w-6xl bg-white/25 backdrop-blur-sm rounded-2xl md:rounded-3xl p-3 md:p-6 border border-white/40 overflow-hidden relative"
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-3 md:mb-6 px-1">
