@@ -155,7 +155,7 @@ export const Navigation = () => {
                         onClick={() => navigate(item.path)}
                         onMouseEnter={playPopSound}
                         className={`
-                          w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300
+                          w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative overflow-hidden
                           ${active 
                             ? `bg-gradient-to-br ${item.gradient} shadow-[0_0_20px_rgba(243,196,251,0.5)]` 
                             : 'bg-white/60 hover:bg-white/80 border border-purple-200/50'
@@ -164,8 +164,12 @@ export const Navigation = () => {
                           active:scale-95
                         `}
                       >
+                        {/* ✨ Shimmer effect for active state */}
+                        {active && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_2s_ease-in-out_infinite] -skew-x-12" />
+                        )}
                         <IconComponent 
-                          className={`w-6 h-6 transition-all ${active ? 'text-white drop-shadow-md' : 'text-gray-600'}`} 
+                          className={`w-6 h-6 transition-all relative z-10 ${active ? 'text-white drop-shadow-md' : 'text-gray-600'}`} 
                           strokeWidth={active ? 2.5 : 2}
                         />
                       </button>
