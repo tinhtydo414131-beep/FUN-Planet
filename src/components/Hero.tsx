@@ -79,8 +79,8 @@ export const Hero = () => {
         ))}
       </div>
 
-      {/* Audio Controls - Fixed top right */}
-      <div className="absolute top-4 right-4 z-30">
+      {/* Audio Controls - Fixed top right, hidden on mobile (nav has controls) */}
+      <div className="absolute top-4 right-4 z-30 hidden sm:block">
         <AudioControls isSoundEnabled={isSoundEnabled} onToggleSound={toggleSound} />
       </div>
 
@@ -123,9 +123,9 @@ export const Hero = () => {
               />
             </motion.div>
 
-            {/* Play Portal - Holographic Circle - Touch target min 176px */}
+            {/* Play Portal - Holographic Circle - Responsive sizing for very small screens */}
             <motion.div 
-              className="relative w-44 h-44 sm:w-52 sm:h-52 lg:w-56 lg:h-56"
+              className="relative w-40 h-40 xs:w-44 xs:h-44 sm:w-52 sm:h-52 lg:w-56 lg:h-56"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -298,7 +298,7 @@ export const Hero = () => {
               className="flex flex-col items-center gap-3 mt-4"
             >
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-1.5 sm:py-2.5 bg-white/40 backdrop-blur-lg rounded-full border-2 border-white/60 shadow-lg">
-                <Sparkles className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-500 animate-pulse" />
+                <Sparkles className="w-3 h-3 sm:w-5 sm:h-5 text-purple-500 animate-pulse" />
                 <span className="font-bold text-xs sm:text-base text-purple-700">🌟 {t('hero.badge')}</span>
               </div>
               

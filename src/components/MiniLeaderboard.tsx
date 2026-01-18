@@ -243,9 +243,9 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
                       className="flex items-center gap-2 sm:gap-3 py-3 px-2 sm:p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all cursor-pointer group min-h-[52px]"
                       onClick={() => navigate(`/profile/${entry.id}`)}
                     >
-                      {/* Rank with glow */}
+                      {/* Rank with holographic glow */}
                       <motion.span 
-                        className="text-lg w-6 text-center drop-shadow-[0_0_4px_rgba(250,204,21,0.5)] flex-shrink-0"
+                        className="text-lg w-6 text-center drop-shadow-[0_0_6px_rgba(168,85,247,0.5)] flex-shrink-0"
                         whileHover={{ scale: 1.2 }}
                       >
                         {getRankEmoji(index)}
