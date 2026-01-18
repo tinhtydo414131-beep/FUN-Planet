@@ -24,7 +24,7 @@ export const Hero = () => {
 
   return (
     <section 
-      className="hero-gradient-bg relative pt-12 sm:pt-20 md:pt-24 pb-4 sm:pb-10 px-2 sm:px-4 overflow-hidden min-h-[70vh] sm:min-h-[85vh] flex flex-col"
+      className="relative pt-12 sm:pt-20 md:pt-24 pb-4 sm:pb-10 px-2 sm:px-4 overflow-hidden min-h-[70vh] sm:min-h-[85vh] flex flex-col"
       role="banner"
       aria-label={t('hero.mainBanner', 'FUN Planet - Chơi game vui vẻ')}
     >

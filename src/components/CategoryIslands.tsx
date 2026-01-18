@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Brain, Gamepad2, Palette, Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameAudio } from "@/hooks/useGameAudio";
@@ -7,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface Island {
   id: string;
-  icon: typeof Brain;
+  customIcon: React.ReactNode;
   labelKey: string;
   gradient: string;
   shadowColor: string;
@@ -18,14 +17,63 @@ interface Island {
   hasNewGames?: boolean;
 }
 
+// Custom styled icons matching reference image
+const TiIcon = () => (
+  <div className="text-white font-black text-2xl sm:text-3xl md:text-4xl drop-shadow-[0_4px_15px_rgba(0,0,0,0.4)] tracking-tight">
+    Ti
+  </div>
+);
+
+const GamepadDotsIcon = () => (
+  <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+    {[1, 2, 3, 4].map((i) => (
+      <div 
+        key={i} 
+        className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-white/90 shadow-lg"
+        style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}
+      />
+    ))}
+  </div>
+);
+
+const WaveIcon = () => (
+  <div className="flex items-end gap-0.5 sm:gap-1 h-8 sm:h-10 md:h-12">
+    {[3, 5, 4, 6, 3].map((h, i) => (
+      <div 
+        key={i}
+        className="w-1.5 sm:w-2 md:w-2.5 rounded-full bg-white/90"
+        style={{ 
+          height: `${h * 4}px`,
+          boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+        }}
+      />
+    ))}
+  </div>
+);
+
+const ListIcon = () => (
+  <div className="flex flex-col gap-1 sm:gap-1.5">
+    {[1, 2, 3].map((i) => (
+      <div 
+        key={i} 
+        className="h-1.5 sm:h-2 rounded-full bg-white/90"
+        style={{ 
+          width: i === 1 ? '28px' : i === 2 ? '22px' : '16px',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+        }}
+      />
+    ))}
+  </div>
+);
+
 const islands: Island[] = [
   {
     id: "puzzle",
-    icon: Brain,
+    customIcon: <TiIcon />,
     labelKey: "categoryIslands.puzzle",
-    gradient: "from-pink-400 to-purple-500",
+    gradient: "from-pink-400 to-pink-500",
     shadowColor: "rgba(236, 72, 153, 0.4)",
-    glowColor: "rgba(236, 72, 153, 0.6)",
+    glowColor: "rgba(236, 72, 153, 0.5)",
     route: "/games?category=puzzle",
     soundFreq: 523.25,
     soundType: "sine",
@@ -33,11 +81,11 @@ const islands: Island[] = [
   },
   {
     id: "adventure",
-    icon: Gamepad2,
+    customIcon: <GamepadDotsIcon />,
     labelKey: "categoryIslands.adventure",
-    gradient: "from-purple-400 to-pink-500",
+    gradient: "from-pink-400 to-purple-500",
     shadowColor: "rgba(168, 85, 247, 0.4)",
-    glowColor: "rgba(168, 85, 247, 0.6)",
+    glowColor: "rgba(168, 85, 247, 0.5)",
     route: "/games?category=adventure",
     soundFreq: 587.33,
     soundType: "triangle",
@@ -45,11 +93,11 @@ const islands: Island[] = [
   },
   {
     id: "create",
-    icon: Palette,
+    customIcon: <WaveIcon />,
     labelKey: "categoryIslands.create",
-    gradient: "from-purple-400 to-blue-400",
+    gradient: "from-purple-400 to-blue-500",
     shadowColor: "rgba(162, 210, 255, 0.4)",
-    glowColor: "rgba(162, 210, 255, 0.6)",
+    glowColor: "rgba(162, 210, 255, 0.5)",
     route: "/games?category=creative",
     soundFreq: 659.25,
     soundType: "sine",
@@ -57,11 +105,11 @@ const islands: Island[] = [
   },
   {
     id: "rewards",
-    icon: Gift,
+    customIcon: <ListIcon />,
     labelKey: "categoryIslands.rewards",
-    gradient: "from-blue-300 to-pink-400",
-    shadowColor: "rgba(243, 196, 251, 0.4)",
-    glowColor: "rgba(243, 196, 251, 0.6)",
+    gradient: "from-blue-400 to-cyan-400",
+    shadowColor: "rgba(34, 211, 238, 0.4)",
+    glowColor: "rgba(34, 211, 238, 0.5)",
     route: "/reward-galaxy",
     soundFreq: 783.99,
     soundType: "sine",
@@ -81,22 +129,15 @@ export const CategoryIslands = () => {
 
   return (
     <section 
-      className="py-6 md:py-12 px-2 md:px-4"
+      className="py-4 md:py-8 px-2 md:px-4"
       role="navigation"
       aria-label={t('categoryIslands.navigationLabel', 'Game Categories Navigation')}
     >
-      {/* Glassmorphism Container with Holographic Border */}
-      <div 
-        className="container mx-auto max-w-5xl bg-white/25 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-2xl relative overflow-hidden"
-        style={{
-          border: '2px solid transparent',
-          borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1',
-          boxShadow: '0 8px 32px rgba(168, 85, 247, 0.15), 0 0 40px rgba(243, 196, 251, 0.1)',
-        }}
-      >
+      {/* Subtle Container - matching reference */}
+      <div className="container mx-auto max-w-4xl">
         {/* Section Header */}
         <motion.h2 
-          className="text-xl md:text-3xl font-extrabold text-center mb-5 md:mb-8 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent drop-shadow-sm"
+          className="text-lg md:text-2xl font-extrabold text-center mb-4 md:mb-6 text-gray-700"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -104,133 +145,106 @@ export const CategoryIslands = () => {
           {t('categoryIslands.title')}
         </motion.h2>
 
-        {/* 3D Cube Grid - Enhanced perspective */}
+        {/* 3D Cube Grid */}
         <div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8"
-          style={{ perspective: '1200px' }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+          style={{ perspective: '1000px' }}
           role="list"
           aria-label={t('categoryIslands.gridLabel', 'Game categories')}
         >
-          {islands.map((island, index) => {
-            const IconComponent = island.icon;
-            
-            return (
-              <motion.button
-                key={island.id}
-                onClick={() => handleIslandClick(island)}
-                className="relative group focus:outline-none touch-manipulation"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ 
-                  opacity: 1, 
-                  y: 0, 
-                  transition: { 
-                    delay: index * 0.1, 
-                    duration: 0.5,
-                    type: "spring",
-                    stiffness: 100 
-                  }
+          {islands.map((island, index) => (
+            <motion.button
+              key={island.id}
+              onClick={() => handleIslandClick(island)}
+              className="relative group focus:outline-none touch-manipulation"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ 
+                opacity: 1, 
+                y: 0, 
+                transition: { 
+                  delay: index * 0.1, 
+                  duration: 0.4,
+                  type: "spring",
+                  stiffness: 120 
+                }
+              }}
+              whileHover={{ 
+                scale: 1.03,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ scale: 0.97 }}
+              viewport={{ once: true }}
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              {/* 3D Cube Container */}
+              <div 
+                className="relative"
+                style={{ 
+                  transform: 'rotateX(6deg) rotateY(-4deg)',
+                  transformStyle: 'preserve-3d'
                 }}
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
-                whileTap={{ scale: 0.95 }}
-                viewport={{ once: true }}
-                style={{ transformStyle: 'preserve-3d' }}
               >
-                {/* 3D Cube Container */}
-                <div 
-                  className="relative"
-                  style={{ 
-                    transform: 'rotateX(8deg) rotateY(-5deg)',
-                    transformStyle: 'preserve-3d'
+                {/* Front Face - Main Card */}
+                <div
+                  className={`relative w-full aspect-square rounded-2xl md:rounded-3xl bg-gradient-to-br ${island.gradient} transition-all duration-300 overflow-hidden group-hover:scale-[1.02]`}
+                  style={{
+                    boxShadow: `0 10px 25px ${island.shadowColor}, inset 0 -3px 10px rgba(0,0,0,0.1), inset 0 3px 10px rgba(255,255,255,0.3)`,
+                    transform: 'translateZ(6px)',
                   }}
                 >
-                  {/* Front Face - Main Card with Holographic Border */}
-                  <div
-                    className={`relative w-full aspect-square rounded-2xl md:rounded-3xl bg-gradient-to-br ${island.gradient} transition-all duration-300 overflow-hidden group-hover:scale-[1.02]`}
-                    style={{
-                      boxShadow: `0 12px 28px ${island.shadowColor}, 0 0 20px ${island.glowColor}, inset 0 -4px 12px rgba(0,0,0,0.15), inset 0 4px 12px rgba(255,255,255,0.35)`,
-                      transform: 'translateZ(8px)',
-                      borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1',
-                      border: '2px solid transparent',
-                    }}
-                  >
-                    {/* Glass overlay with subtle shimmer */}
-                    <div className="absolute inset-0 bg-white/15 backdrop-blur-[2px]" />
-                    
-                    {/* Holographic shimmer effect */}
-                    <div 
-                      className="absolute inset-0 opacity-30 group-hover:opacity-60 transition-opacity duration-500"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(243,196,251,0.3) 0%, rgba(162,210,255,0.3) 50%, rgba(243,196,251,0.3) 100%)',
-                        backgroundSize: '200% 200%',
-                        animation: 'gradient-shift 4s ease infinite',
-                      }}
-                    />
-                    
-                    {/* Inner glow effect on hover */}
-                    <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{
-                        background: `radial-gradient(circle at center, ${island.glowColor} 0%, transparent 70%)`,
-                      }}
-                    />
+                  {/* Subtle glass overlay */}
+                  <div className="absolute inset-0 bg-white/10" />
 
-                    {/* Content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 md:gap-3 p-3">
-                      {/* Icon with enhanced shadow */}
-                      <motion.div
-                        className="relative"
-                        whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
-                        transition={{ duration: 0.4 }}
+                  {/* Content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 md:gap-3 p-3">
+                    {/* Custom Icon */}
+                    <motion.div
+                      className="relative"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {island.customIcon}
+                    </motion.div>
+
+                    {/* Label */}
+                    <span className="text-white font-bold text-xs sm:text-sm md:text-base drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] text-center leading-tight">
+                      {t(island.labelKey)}
+                    </span>
+
+                    {/* "Mới" Badge - inline */}
+                    {island.hasNewGames && (
+                      <Badge 
+                        className="bg-white/90 text-pink-600 text-[9px] md:text-[10px] px-2 py-0.5 border-0 shadow-sm font-bold"
                       >
-                        <IconComponent 
-                          className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.5)]" 
-                          strokeWidth={1.5}
-                        />
-                      </motion.div>
-
-                      {/* Label with enhanced styling */}
-                      <span className="text-white font-extrabold text-sm sm:text-base md:text-lg drop-shadow-[0_3px_8px_rgba(0,0,0,0.5)] text-center leading-tight tracking-wide">
-                        {t(island.labelKey)}
-                      </span>
-
-                      {/* "Mới" Badge - below label with glow */}
-                      {island.hasNewGames && (
-                        <Badge 
-                          className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[10px] md:text-xs px-2.5 py-0.5 border-0 shadow-[0_0_12px_rgba(251,191,36,0.6)] animate-pulse"
-                        >
-                          ✨ Mới
-                        </Badge>
-                      )}
-                    </div>
+                        Mới
+                      </Badge>
+                    )}
                   </div>
-
-                  {/* Right Side Face - 3D Depth with holographic tint */}
-                  <div 
-                    className="absolute top-0 -right-2 md:-right-3 w-2 md:w-3 h-full origin-left rounded-r-xl"
-                    style={{ 
-                      background: `linear-gradient(to bottom, rgba(243,196,251,0.25), rgba(162,210,255,0.15), rgba(0,0,0,0.2))`,
-                    }}
-                  />
-
-                  {/* Bottom Face - 3D Depth with holographic tint */}
-                  <div 
-                    className="absolute -bottom-2 md:-bottom-3 left-0 w-full h-2 md:h-3 origin-top rounded-b-xl"
-                    style={{ 
-                      background: `linear-gradient(to right, rgba(162,210,255,0.2), rgba(243,196,251,0.15), rgba(0,0,0,0.2))`,
-                    }}
-                  />
                 </div>
 
-                {/* Floating Shadow */}
-                <div
-                  className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[80%] h-4 bg-black/15 blur-lg rounded-full transition-all duration-300 group-hover:w-[90%] group-hover:blur-xl group-hover:bg-black/20"
+                {/* Right Side Face - 3D Depth */}
+                <div 
+                  className="absolute top-0 -right-1.5 md:-right-2 w-1.5 md:w-2 h-full origin-left rounded-r-xl"
+                  style={{ 
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(0,0,0,0.15))',
+                  }}
                 />
-              </motion.button>
-            );
-          })}
+
+                {/* Bottom Face - 3D Depth */}
+                <div 
+                  className="absolute -bottom-1.5 md:-bottom-2 left-0 w-full h-1.5 md:h-2 origin-top rounded-b-xl"
+                  style={{ 
+                    background: 'linear-gradient(to right, rgba(255,255,255,0.15), rgba(0,0,0,0.15))',
+                  }}
+                />
+              </div>
+
+              {/* Floating Shadow */}
+              <div
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[75%] h-3 bg-black/10 blur-md rounded-full transition-all duration-300 group-hover:w-[85%] group-hover:blur-lg"
+              />
+            </motion.button>
+          ))}
         </div>
       </div>
     </section>

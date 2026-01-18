@@ -103,7 +103,7 @@ const Index = () => {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background relative overflow-hidden pb-20 md:pb-0"
+      className="min-h-screen holographic-page-bg relative overflow-hidden pb-20 md:pb-0"
       initial="initial"
       animate="animate"
       exit="exit"
@@ -171,8 +171,8 @@ const Index = () => {
       {/* Featured Games - Play Instantly */}
       <FeaturedGamesSection />
 
-      {/* Simplified Footer - Holographic style with mobile safe-area */}
-      <footer className="bg-gradient-to-r from-pink-50/50 via-white/80 to-blue-50/50 backdrop-blur-sm border-t border-pink-200/30 py-8 px-4 pb-24 md:pb-8">
+      {/* Simplified Footer - Subtle glass style matching page */}
+      <footer className="bg-white/30 backdrop-blur-sm border-t border-white/40 py-8 px-4 pb-24 md:pb-8">
         <div className="container mx-auto max-w-5xl">
           <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center text-center">
             {/* Logo + Slogan */}
