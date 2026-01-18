@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trophy, Heart, Gamepad2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,16 +21,22 @@ export const MiniLeaderboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>("donors");
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialLoad = useRef(true);
 
   // Reordered: Sponsors first, then Creators, then CAMLY ranking
+  // Updated CAMLY to holographic pink-blue theme
   const tabs = [
-    { id: "donors" as TabType, icon: Heart, label: t('miniLeaderboard.donors') || "Nhà Tài Trợ", color: "from-pink-400 to-rose-500" },
-    { id: "creators" as TabType, icon: Gamepad2, label: t('miniLeaderboard.creators') || "Nhà Sáng Tạo", color: "from-purple-400 to-violet-500" },
-    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", color: "from-yellow-400 to-amber-500" },
+    { id: "donors" as TabType, icon: Heart, label: t('miniLeaderboard.donors') || "Nhà Tài Trợ", shortLabel: "Tài trợ", color: "from-pink-400 to-rose-500" },
+    { id: "creators" as TabType, icon: Gamepad2, label: t('miniLeaderboard.creators') || "Nhà Sáng Tạo", shortLabel: "Sáng tạo", color: "from-purple-400 to-violet-500" },
+    { id: "camly" as TabType, icon: Trophy, label: t('miniLeaderboard.camly') || "CAMLY", shortLabel: "CAMLY", color: "from-blue-400 to-purple-500" },
   ];
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const fetchData = useCallback(async (silent = false) => {
+    // Only show loading spinner on initial load or tab switch
+    if (!silent) {
+      setLoading(true);
+    }
     try {
       if (activeTab === "camly") {
         const { data: ranking, error } = await supabase
@@ -85,33 +91,47 @@ export const MiniLeaderboard = () => {
       console.error('MiniLeaderboard fetch error:', error);
     } finally {
       setLoading(false);
+      isInitialLoad.current = false;
     }
   }, [activeTab]);
 
-  // Initial fetch
-  useEffect(() => {
-    fetchData();
+  // Debounced fetch for realtime events (silent refresh)
+  const debouncedFetch = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      fetchData(true); // Silent refresh - no loading spinner
+    }, 600);
   }, [fetchData]);
 
-  // 🔴 Supabase Realtime subscription for live updates
+  // Initial fetch
+  useEffect(() => {
+    fetchData(false); // Show loading on initial/tab switch
+  }, [fetchData]);
+
+  // 🔴 Supabase Realtime subscription with debounce
   useEffect(() => {
     const channel = supabase
       .channel('mini_leaderboard_realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-        fetchData();
+        debouncedFetch();
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_rewards' }, () => {
-        fetchData();
+        if (activeTab === 'camly') debouncedFetch();
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'platform_donations' }, () => {
-        fetchData();
+        if (activeTab === 'donors') debouncedFetch();
       })
       .subscribe();
 
     return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
       supabase.removeChannel(channel);
     };
-  }, [fetchData]);
+  }, [debouncedFetch, activeTab]);
 
   const formatValue = (value: number) => {
     if (activeTab === "creators") return `${value} 🎮`;
@@ -146,27 +166,29 @@ export const MiniLeaderboard = () => {
         
         {/* Glass content */}
         <div className="relative bg-white/40 backdrop-blur-xl rounded-3xl p-3 sm:p-4 border border-white/50">
-          {/* Tab buttons - Icon only with tooltip */}
-          <div className="flex gap-2 mb-3">
+          {/* Tab buttons - Icon + micro-label for mobile clarity */}
+          <div className="flex gap-1.5 sm:gap-2 mb-3">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 title={tab.label}
                 aria-label={tab.label}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center py-3 px-3 rounded-xl font-bold transition-all min-h-[48px] relative overflow-hidden ${
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 px-1.5 sm:px-3 rounded-xl font-bold transition-all min-h-[48px] relative overflow-hidden ${
                   activeTab === tab.id
                     ? `bg-gradient-to-r ${tab.color} text-white shadow-lg scale-105`
-                    : 'bg-white/50 text-gray-600 hover:bg-white/70 hover:scale-102'
+                    : 'bg-white/50 text-gray-600 hover:bg-white/70 hover:scale-[1.02]'
                 }`}
               >
                 {/* ✨ Shimmer effect for active tab */}
                 {activeTab === tab.id && (
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_ease-in-out_infinite] -skew-x-12" />
                 )}
-                <tab.icon className="w-5 h-5 relative z-10" />
-                {/* Screen reader only label */}
-                <span className="sr-only">{tab.label}</span>
+                <tab.icon className="w-4 h-4 sm:w-5 sm:h-5 relative z-10" />
+                {/* Micro-label visible on all screens for clarity */}
+                <span className="text-[10px] sm:text-xs relative z-10 leading-tight truncate max-w-full">
+                  {tab.shortLabel}
+                </span>
               </button>
             ))}
           </div>
