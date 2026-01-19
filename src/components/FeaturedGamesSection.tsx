@@ -86,7 +86,7 @@ export function FeaturedGamesSection() {
           <div className="h-6 md:h-8 bg-white/30 rounded-lg w-32 md:w-48 mb-4 md:mb-6 animate-pulse" />
           <div className="flex gap-3 md:gap-4 overflow-hidden">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex-shrink-0 w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-white/30 rounded-xl md:rounded-2xl animate-pulse" />
+              <div key={i} className="flex-shrink-0 w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/30 rounded-xl md:rounded-2xl animate-pulse" />
             ))}
           </div>
         </div>
@@ -100,12 +100,12 @@ export function FeaturedGamesSection() {
     <>
       <section 
         id="featured-games" 
-        className="py-4 md:py-8 px-2 md:px-4"
+        className="py-2 md:py-4"
         role="region"
         aria-label="Featured games section"
       >
-        {/* Seamless container - cards float on holographic background */}
-        <div className="container mx-auto max-w-6xl py-4 md:py-8 overflow-hidden relative">
+        {/* Content inside glass container */}
+        <div className="container mx-auto max-w-6xl overflow-hidden relative">
           {/* Header */}
           <div className="flex items-center justify-between mb-3 md:mb-6 px-1">
             <motion.h2 
@@ -149,7 +149,7 @@ export function FeaturedGamesSection() {
           WebkitOverflowScrolling: 'touch',
         }}
       >
-            {/* Built-in Game: Gem Fusion Quest - NEW Horizontal Layout */}
+            {/* Built-in Game: Gem Fusion Quest - NEW Vertical Card Layout */}
             <motion.div
               className="flex-shrink-0 snap-center"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -159,7 +159,7 @@ export function FeaturedGamesSection() {
               onAnimationComplete={() => playCardAppear()}
             >
               <div 
-                className="relative flex items-center rounded-2xl md:rounded-3xl w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98]"
+                className="relative flex flex-col rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98] overflow-hidden"
                 style={{
                   boxShadow: '0 8px 24px rgba(243, 196, 251, 0.25), inset 0 1px 0 rgba(255,255,255,0.4)'
                 }}
@@ -169,46 +169,43 @@ export function FeaturedGamesSection() {
                 }}
                 onMouseEnter={() => playBloop()}
               >
-                {/* Left: Thumbnail + Info */}
-                <div className="flex-1 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-hidden">
-                  {/* Thumbnail - small, rounded */}
-                  <div className="relative flex-shrink-0">
-                    <img 
-                      src={gemFusionThumbnail}
-                      alt="Gem Fusion Quest"
-                      className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover rounded-xl md:rounded-2xl transition-transform duration-300 group-hover:scale-105"
-                    />
-                    {/* NEW Badge */}
-                    <Badge className="absolute -top-1 -left-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg text-[7px] md:text-[9px] px-1.5 py-0">
-                      ✨ NEW
-                    </Badge>
-                  </div>
+                {/* Large Thumbnail on top */}
+                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                  <img 
+                    src={gemFusionThumbnail}
+                    alt="Gem Fusion Quest"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {/* NEW Badge */}
+                  <Badge className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg text-[8px] md:text-[10px] px-2 py-0.5">
+                    ✨ NEW
+                  </Badge>
                   
-                  {/* Info */}
-                  <div className="flex flex-col justify-center min-w-0">
-                    <h3 className="font-bold text-gray-800 text-[11px] sm:text-xs md:text-sm truncate mb-0.5">Gem Fusion Quest</h3>
-                    <div className="flex items-center gap-1 text-[9px] sm:text-[10px] md:text-xs text-gray-600">
-                      <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-500" fill="currentColor" />
-                      <span>5.0</span>
-                    </div>
-                    <span className="text-[8px] sm:text-[9px] md:text-[10px] text-purple-600 font-medium">Puzzle</span>
-                  </div>
-                </div>
-
-                {/* Right: Circular Play Button */}
-                <div className="flex-shrink-0 pr-2 md:pr-3">
+                  {/* Play Button - Bottom right of thumbnail */}
                   <motion.div
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow"
+                    className="absolute bottom-2 right-2 w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <Play className="w-4 h-4 md:w-5 md:h-5 text-white ml-0.5" fill="white" />
                   </motion.div>
                 </div>
+                
+                {/* Info below thumbnail */}
+                <div className="p-2 md:p-3">
+                  <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-1">Gem Fusion Quest</h3>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-[10px] md:text-xs text-gray-600">
+                      <Star className="w-3 h-3 md:w-3.5 md:h-3.5 text-yellow-500" fill="currentColor" />
+                      <span>5.0</span>
+                    </div>
+                    <span className="text-[9px] md:text-[11px] text-purple-600 font-medium">Puzzle</span>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
-            {/* Database Games - NEW Horizontal Layout */}
+            {/* Database Games - NEW Vertical Card Layout */}
             {games.map((game, index) => {
               const isHot = (game.play_count || 0) > 100;
               
@@ -223,67 +220,64 @@ export function FeaturedGamesSection() {
                   onAnimationComplete={() => playCardAppear()}
                 >
                   <div 
-                    className="relative flex items-center rounded-2xl md:rounded-3xl w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98]"
+                    className="relative flex flex-col rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98] overflow-hidden"
                     style={{
                       boxShadow: '0 8px 24px rgba(168, 85, 247, 0.15), inset 0 1px 0 rgba(255,255,255,0.4)'
                     }}
                     onClick={() => handlePlayGame(game)}
                     onMouseEnter={() => playBloop()}
                   >
-                    {/* Left: Thumbnail + Info */}
-                    <div className="flex-1 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-hidden">
-                      {/* Thumbnail - small, rounded */}
-                      <div className="relative flex-shrink-0">
-                        {getThumbnailUrl(game.thumbnail_path) ? (
-                          <img 
-                            src={getThumbnailUrl(game.thumbnail_path)!}
-                            alt={game.title}
-                            className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover rounded-xl md:rounded-2xl transition-transform duration-300 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-300 to-pink-300 rounded-xl md:rounded-2xl flex items-center justify-center">
-                            <Gamepad2 className="w-6 h-6 md:w-8 md:h-8 text-white/60" />
-                          </div>
-                        )}
-                        
-                        {/* HOT Badge */}
-                        {isHot && (
-                          <Badge className="absolute -top-1 -left-1 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg text-[7px] md:text-[9px] px-1.5 py-0">
-                            🔥 HOT
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      {/* Info */}
-                      <div className="flex flex-col justify-center min-w-0">
-                        <h3 className="font-bold text-gray-800 text-[11px] sm:text-xs md:text-sm truncate mb-0.5">{game.title}</h3>
-                        <div className="flex items-center gap-1 text-[9px] sm:text-[10px] md:text-xs text-gray-600">
-                          <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-500" fill="currentColor" />
-                          <span>4.8</span>
+                    {/* Large Thumbnail on top */}
+                    <div className="relative aspect-[4/3] w-full overflow-hidden">
+                      {getThumbnailUrl(game.thumbnail_path) ? (
+                        <img 
+                          src={getThumbnailUrl(game.thumbnail_path)!}
+                          alt={game.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center">
+                          <Gamepad2 className="w-10 h-10 md:w-12 md:h-12 text-white/60" />
                         </div>
-                        {game.category && (
-                          <span className="text-[8px] sm:text-[9px] md:text-[10px] text-purple-600 font-medium capitalize">{game.category}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Right: Circular Play Button */}
-                    <div className="flex-shrink-0 pr-2 md:pr-3">
+                      )}
+                      
+                      {/* HOT Badge */}
+                      {isHot && (
+                        <Badge className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg text-[8px] md:text-[10px] px-2 py-0.5">
+                          🔥 HOT
+                        </Badge>
+                      )}
+                      
+                      {/* Play Button - Bottom right of thumbnail */}
                       <motion.div
-                        className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow"
+                        className="absolute bottom-2 right-2 w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <Play className="w-4 h-4 md:w-5 md:h-5 text-white ml-0.5" fill="white" />
                       </motion.div>
                     </div>
+                    
+                    {/* Info below thumbnail */}
+                    <div className="p-2 md:p-3">
+                      <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-1">{game.title}</h3>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-[10px] md:text-xs text-gray-600">
+                          <Star className="w-3 h-3 md:w-3.5 md:h-3.5 text-yellow-500" fill="currentColor" />
+                          <span>4.8</span>
+                        </div>
+                        {game.category && (
+                          <span className="text-[9px] md:text-[11px] text-purple-600 font-medium capitalize">{game.category}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               );
             })}
 
-            {/* View All Card - NEW Horizontal Layout */}
+            {/* View All Card - NEW Vertical Layout */}
             <motion.div
               className="flex-shrink-0 snap-center"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -292,21 +286,19 @@ export function FeaturedGamesSection() {
               transition={{ duration: 0.3, delay: 0.4 }}
             >
               <div 
-                className="relative flex items-center justify-center rounded-2xl md:rounded-3xl w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-gradient-to-br from-purple-400/20 to-pink-400/20 backdrop-blur-sm border-2 border-dashed border-pink-300/60 hover:border-pink-400 transition-all duration-300 cursor-pointer group"
+                className="relative flex flex-col items-center justify-center rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-gradient-to-br from-purple-400/20 to-pink-400/20 backdrop-blur-sm border-2 border-dashed border-pink-300/60 hover:border-pink-400 transition-all duration-300 cursor-pointer group"
                 onClick={() => {
                   playSound(523.25, 0.1, 'sine');
                   navigate('/games');
                 }}
               >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <motion.div
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500/80 to-purple-500/80 flex items-center justify-center group-hover:from-pink-500 group-hover:to-purple-500 transition-all shadow-md group-hover:shadow-lg"
-                    whileHover={{ scale: 1.1, rotate: 90 }}
-                  >
-                    <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                  </motion.div>
-                  <span className="font-bold text-purple-700 text-xs md:text-sm">Xem Tất Cả</span>
-                </div>
+                <motion.div
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-r from-pink-500/80 to-purple-500/80 flex items-center justify-center group-hover:from-pink-500 group-hover:to-purple-500 transition-all shadow-md group-hover:shadow-lg mb-3"
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                >
+                  <ChevronRight className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                </motion.div>
+                <span className="font-bold text-purple-700 text-xs md:text-sm">Xem Tất Cả</span>
               </div>
             </motion.div>
 
