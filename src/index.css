@@ -140,37 +140,65 @@
   }
   
   body {
-    @apply bg-background text-foreground font-jakarta font-semibold antialiased;
-    font-size: 1.125rem; /* 18px base for kids readability */
+    @apply bg-background text-foreground font-nunito font-medium antialiased;
+    font-size: 1.125rem; /* 18px base - Montessori readable for children */
     line-height: 1.7;
     letter-spacing: 0.01em;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Subtle legibility */
   }
   
-  /* Typography - High Contrast */
+  /* Typography - Hologram Montessori Style */
+  /* H1 - Hero heading 56px */
   h1 {
-    @apply font-jakarta font-extrabold tracking-tight text-foreground;
-    font-size: clamp(2rem, 5vw, 2.5rem);
+    @apply font-quicksand font-bold tracking-tight text-foreground;
+    font-size: clamp(2.5rem, 6vw, 3.5rem); /* 40px - 56px */
+    line-height: 1.1;
+    letter-spacing: -0.02em; /* Modern tight spacing */
+  }
+  
+  /* H2 - Section headings 32px */
+  h2 {
+    @apply font-quicksand font-bold tracking-tight text-foreground;
+    font-size: clamp(1.5rem, 4vw, 2rem); /* 24px - 32px */
     line-height: 1.2;
   }
   
-  h2 {
-    @apply font-jakarta font-bold tracking-tight text-foreground;
-    font-size: clamp(1.75rem, 4vw, 2rem);
-    line-height: 1.25;
-  }
-  
+  /* H3 - Category names 24px */
   h3 {
-    @apply font-jakarta font-bold text-foreground;
-    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    @apply font-quicksand font-bold text-foreground;
+    font-size: clamp(1.25rem, 3vw, 1.5rem); /* 20px - 24px */
     line-height: 1.3;
   }
   
   h4, h5, h6 {
-    @apply font-jakarta font-semibold text-foreground;
+    @apply font-quicksand font-semibold text-foreground;
   }
   
-  p, span, div {
-    @apply text-foreground;
+  /* Body text - Nunito for readability */
+  p, span, li {
+    @apply font-nunito text-foreground;
+  }
+  
+  /* Button Typography - Montessori Style */
+  button, [role="button"], .btn-base, .btn-primary {
+    @apply font-quicksand font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+  }
+  
+  /* White text on holographic background - Enhanced legibility */
+  .holo-text-white {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* FUN PLANET Hero Title - Modern tight spacing */
+  .hero-title-fun-planet {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
   }
   
   /* Numbers styling */
