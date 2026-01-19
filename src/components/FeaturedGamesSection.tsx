@@ -140,11 +140,15 @@ export function FeaturedGamesSection() {
           </div>
 
           {/* Horizontal Scroll Container - mobile optimized */}
-          <div 
-            ref={scrollContainerRef}
-            className="flex gap-3 md:gap-4 overflow-x-auto pb-3 md:pb-4 snap-x snap-mandatory scrollbar-hide -mx-1 px-1 md:-mx-2 md:px-2"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
+      <div 
+        ref={scrollContainerRef}
+        className="flex gap-3 md:gap-4 overflow-x-auto pb-3 md:pb-4 snap-x snap-mandatory scrollbar-hide -mx-1 px-1 md:-mx-2 md:px-2 overscroll-x-contain"
+        style={{ 
+          scrollbarWidth: 'none', 
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
             {/* Built-in Game: Gem Fusion Quest - NEW Horizontal Layout */}
             <motion.div
               className="flex-shrink-0 snap-center"

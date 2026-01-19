@@ -227,7 +227,7 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
             {loading ? (
               // Loading skeleton
               [...Array(4)].map((_, i) => (
-                <div key={i} className="flex items-center gap-2 p-2 animate-pulse min-h-[44px]">
+                <div key={i} className="flex items-center gap-2 p-2 animate-pulse min-h-[48px]">
                   <div className="w-5 h-5 bg-gray-200 rounded-full" />
                   <div className="w-16 h-3 bg-gray-200 rounded" />
                   <div className="flex-1" />
@@ -247,7 +247,7 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.08, type: "spring", stiffness: 300 }}
-                  className="flex items-center gap-2 py-2.5 px-2 rounded-xl bg-white/70 backdrop-blur-sm hover:bg-white/80 transition-all cursor-pointer group h-[44px]"
+                  className="flex items-center gap-2 py-2.5 px-2 rounded-xl bg-white/70 backdrop-blur-sm hover:bg-white/80 transition-all cursor-pointer group min-h-[48px] touch-manipulation"
                   onClick={() => {
                     // Prevent navigation if userId is empty (placeholder row)
                     if (row.userId) {
