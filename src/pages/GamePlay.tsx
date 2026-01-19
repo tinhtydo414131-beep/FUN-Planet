@@ -275,30 +275,6 @@ const GamePlay = () => {
       const category = (game as any).category || 'default';
       startSession(game.id, 'builtin', category as GameCategory);
     }
-    
-    // Save to localStorage for recently played (works for both guests and logged-in users)
-    if (game) {
-      try {
-        const recentGamesKey = 'fp_recent_games';
-        const existingGames = JSON.parse(localStorage.getItem(recentGamesKey) || '[]');
-        
-        const newEntry = {
-          gameId: game.id,
-          title: game.title,
-          thumbnailUrl: (game as any).thumbnail_url || null,
-          category: (game as any).category || 'casual',
-          playedAt: new Date().toISOString()
-        };
-        
-        // Remove existing entry for same game and add new one at start
-        const filteredGames = existingGames.filter((g: any) => g.gameId !== game.id);
-        const updatedGames = [newEntry, ...filteredGames].slice(0, 4);
-        
-        localStorage.setItem(recentGamesKey, JSON.stringify(updatedGames));
-      } catch (error) {
-        console.error('Error saving recent game:', error);
-      }
-    }
   };
 
   const handleBackToLevelSelect = () => {

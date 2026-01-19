@@ -14,12 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        'quicksand': ['Quicksand', 'system-ui', 'sans-serif'],
-        'nunito': ['Nunito', 'system-ui', 'sans-serif'],
         'jakarta': ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
         'orbitron': ['Orbitron', 'system-ui', 'sans-serif'],
         'fredoka': ['Fredoka', 'system-ui', 'sans-serif'],
-        'sans': ['Nunito', 'system-ui', 'sans-serif'],
+        'sans': ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

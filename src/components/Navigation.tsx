@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown, Home } from "lucide-react";
+import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown } from "lucide-react";
 
 const funPlanetLogo = "/logo-header-circular.png";
 import { NavLink } from "./NavLink";
@@ -7,6 +6,7 @@ import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -30,17 +30,13 @@ import { MessengerButton } from "./MessengerButton";
 import { NotificationBell } from "./notifications/NotificationBell";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useNavigationSound } from "@/hooks/useNavigationSound";
 
-export const Navigation = React.forwardRef<HTMLElement, {}>(
-  function Navigation(_props, ref) {
+export const Navigation = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const { playPopSound } = useNavigationSound();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -101,12 +97,11 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
     return location.pathname.startsWith(path);
   };
 
-  // Phase 6: Icon-first navigation - 4 main icons
-  const iconNavItems = [
-    { icon: Home, path: "/", label: t('nav.home'), gradient: "from-pink-400 to-purple-400" },
-    { icon: Gamepad2, path: "/games", label: t('nav.games'), gradient: "from-purple-400 to-blue-400" },
-    { icon: Gift, path: "/reward-galaxy", label: t('nav.rewardGalaxy'), gradient: "from-yellow-400 to-orange-400" },
-    { icon: User, path: user ? "/profile" : "/auth", label: t('nav.profile'), gradient: "from-blue-400 to-cyan-400" },
+  const navLinks = [
+    { path: "/games", label: t('nav.playGames') },
+    { path: "/public-music", label: t('nav.music') },
+    { path: "/reward-galaxy", label: t('nav.rewardGalaxy'), special: true },
+    ...(isAdmin ? [{ path: "/admin/master", label: "👑 Admin", admin: true }] : []),
   ];
 
   return (
@@ -122,23 +117,17 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
         onReject={rejectRequest}
       />
 
-      {/* Desktop Navigation - Sticky with Holographic Background */}
-      <nav className="hidden md:block sticky-header relative overflow-hidden">
-        {/* Rainbow shimmer top border */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-300 via-purple-300 via-blue-300 to-pink-300 animate-gradient-shift" />
-        
-        {/* Holographic glass background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-pink-50/95 via-white/90 to-blue-50/95 backdrop-blur-lg" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-300/50 to-transparent" />
-        
-        <div className="container mx-auto px-6 relative z-10">
+      {/* Desktop Navigation - Sticky */}
+      <nav className="hidden md:block sticky-header">
+        <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
-            {/* Logo - Circular 72px with enhanced pink-blue glow */}
+            {/* Logo - Circular with Image + Text */}
             <NavLink 
               to="/" 
               className="flex items-center group ml-2 md:ml-5"
             >
-              <div className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border-2 border-purple-400/50 shadow-lg group-hover:border-purple-500 group-hover:shadow-[0_0_30px_rgba(243,196,251,0.6),0_0_60px_rgba(162,210,255,0.4)] transition-all duration-300">
+              {/* Circular logo - larger size, no text */}
+              <div className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border-2 border-purple-400/50 shadow-lg group-hover:border-purple-500 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300">
                 <img 
                   src={funPlanetLogo} 
                   alt="FUN Planet" 
@@ -150,71 +139,28 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
               </div>
             </NavLink>
 
-            {/* Phase 6: Icon-first navigation - 4 icons with tooltips */}
-            <div className="flex items-center gap-3">
-              {iconNavItems.map((item) => {
-                const IconComponent = item.icon;
-                const active = isActive(item.path);
-                
-                return (
-                  <Tooltip key={item.path}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => navigate(item.path)}
-                        onMouseEnter={playPopSound}
-                        className={`
-                          w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative overflow-hidden p-0
-                          ${active 
-                            ? `bg-gradient-to-br ${item.gradient} shadow-[0_0_20px_rgba(243,196,251,0.5)]` 
-                            : 'bg-white/60 hover:bg-white/80 border border-purple-200/50'
-                          }
-                          hover:scale-110 hover:shadow-[0_0_24px_rgba(168,85,247,0.4)]
-                          active:scale-95
-                        `}
-                      >
-                        {/* ✨ Shimmer effect for active state */}
-                        {active && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_2s_ease-in-out_infinite] -skew-x-12" />
-                        )}
-                        <IconComponent 
-                          className={`w-6 h-6 transition-all relative z-10 ${active ? 'text-white drop-shadow-md' : 'text-gray-600'}`} 
-                          strokeWidth={active ? 2.5 : 2}
-                        />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent 
-                      side="bottom" 
-                      className="bg-white/95 backdrop-blur-sm border-purple-200 text-gray-700 font-medium"
-                    >
-                      {item.label}
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              })}
+            {/* Desktop Links */}
+            <div className="flex items-center gap-2">
+              {navLinks.map((link) => (
+                <NavLink 
+                  key={link.path}
+                  to={link.path} 
+                  className={`px-5 py-2.5 rounded-xl font-jakarta font-semibold text-base transition-all ${
+                    (link as any).admin
+                      ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/40 text-orange-600 hover:border-orange-500/60 hover:shadow-[0_0_15px_rgba(255,100,0,0.3)]'
+                      : (link as any).angelAI
+                        ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 text-purple-600 hover:border-purple-500/60 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] animate-pulse'
+                        : link.special 
+                          ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 text-yellow-600 hover:border-yellow-500/60 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)]'
+                          : isActive(link.path) 
+                            ? 'bg-primary/10 text-primary border-b-2 border-primary' 
+                            : 'text-foreground hover:text-primary hover:bg-primary/5'
+                  }`}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
 
-              {/* Admin icon button */}
-              {isAdmin && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => navigate("/admin/master")}
-                      onMouseEnter={playPopSound}
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-orange-400 to-red-400 shadow-[0_0_16px_rgba(255,100,0,0.4)] hover:scale-110 hover:shadow-[0_0_24px_rgba(255,100,0,0.6)] transition-all duration-300 active:scale-95 p-0"
-                    >
-                      <Crown className="w-6 h-6 text-white drop-shadow-md" strokeWidth={2.5} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-orange-50 border-orange-200 text-orange-700 font-medium">
-                    {t('nav.adminDashboard')}
-                  </TooltipContent>
-                </Tooltip>
-              )}
-
-              <div className="w-px h-8 bg-purple-200/50 mx-1" />
 
               <LanguageSwitcher />
               
@@ -288,20 +234,6 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
                       <Trophy className="mr-3 h-5 w-5 text-amber-500" />
                       <span className="font-medium">{t('nav.achievementLeaderboard')}</span>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    {/* Quick Access Items - Moved from Homepage */}
-                    <DropdownMenuItem onClick={() => navigate("/nft-gallery")} className="py-3">
-                      <Sparkles className="mr-3 h-5 w-5 text-purple-500" />
-                      <span className="font-medium">{t('home.nftGallery')}</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/full-ranking")} className="py-3">
-                      <Crown className="mr-3 h-5 w-5 text-amber-500" />
-                      <span className="font-medium">{t('home.leadersLabel')}</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/chat")} className="py-3">
-                      <MessageCircle className="mr-3 h-5 w-5 text-blue-500" />
-                      <span className="font-medium">{t('home.chatLabel')}</span>
-                    </DropdownMenuItem>
                     {isAdmin && (
                       <>
                         <DropdownMenuSeparator />
@@ -334,22 +266,15 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
         </div>
       </nav>
 
-      {/* Mobile Top Header - Holographic Sticky */}
-      <div className="md:hidden sticky-header relative overflow-hidden">
-        {/* Rainbow shimmer top border */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-300 via-purple-300 via-blue-300 to-pink-300 animate-gradient-shift" />
-        
-        {/* Holographic glass background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-pink-50/95 via-white/90 to-blue-50/95 backdrop-blur-lg" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-300/50 to-transparent" />
-        
-        <div className="flex items-center justify-between h-16 px-4 relative z-10">
+      {/* Mobile Top Header - Sticky */}
+      <div className="md:hidden sticky-header">
+        <div className="flex items-center justify-between h-16 px-4">
           <NavLink 
             to="/" 
             className="flex items-center group active:scale-95 transition-transform ml-2"
           >
-            {/* Circular logo with holographic glow */}
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-[0_0_20px_rgba(243,196,251,0.4),0_0_40px_rgba(162,210,255,0.3)] group-hover:border-purple-500 group-hover:shadow-[0_0_30px_rgba(243,196,251,0.6),0_0_60px_rgba(162,210,255,0.4)] transition-all duration-300">
+            {/* Circular logo only - no text */}
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-400/50 shadow-md group-hover:border-purple-500 transition-all">
               <img 
                 src={funPlanetLogo} 
                 alt="FUN Planet" 
@@ -378,19 +303,10 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
                   <Menu className="w-6 h-6 text-foreground" />
                 </button>
               </SheetTrigger>
-              <SheetContent 
-                side="right" 
-                className="w-[300px] p-0 bg-gradient-to-b from-pink-50/98 via-white/95 to-blue-50/98 backdrop-blur-xl border-l-2"
-                style={{
-                  borderImage: 'linear-gradient(180deg, #F3C4FB, #A2D2FF, #CDB4DB) 1'
-                }}
-              >
+              <SheetContent side="right" className="w-[300px] p-0">
                 <div className="flex flex-col h-full">
-                  {/* Rainbow top border for header */}
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-300 via-purple-300 via-blue-300 to-pink-300" />
-                  
                   {/* Header */}
-                  <div className="p-6 border-b border-purple-200/50 bg-white/40 backdrop-blur-sm">
+                  <div className="p-6 border-b border-border">
                     {user ? (
                       <div className="flex items-center gap-3">
                         <Avatar className="w-12 h-12 border-2 border-primary/30">
@@ -508,36 +424,6 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
                             <span className="font-inter font-medium">{t('nav.achievementLeaderboard')}</span>
                           </button>
                         </SheetClose>
-                        {/* Quick Access - NFT Gallery */}
-                        <SheetClose asChild>
-                          <button
-                            onClick={() => navigate("/nft-gallery")}
-                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
-                          >
-                            <Sparkles className="w-5 h-5 text-purple-500" />
-                            <span className="font-inter font-medium">{t('home.nftGallery')}</span>
-                          </button>
-                        </SheetClose>
-                        {/* Quick Access - Leaderboard */}
-                        <SheetClose asChild>
-                          <button
-                            onClick={() => navigate("/full-ranking")}
-                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
-                          >
-                            <Crown className="w-5 h-5 text-amber-500" />
-                            <span className="font-inter font-medium">{t('home.leadersLabel')}</span>
-                          </button>
-                        </SheetClose>
-                        {/* Quick Access - Chat */}
-                        <SheetClose asChild>
-                          <button
-                            onClick={() => navigate("/chat")}
-                            className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
-                          >
-                            <MessageCircle className="w-5 h-5 text-blue-500" />
-                            <span className="font-inter font-medium">{t('home.chatLabel')}</span>
-                          </button>
-                        </SheetClose>
                         {/* Settings */}
                         <SheetClose asChild>
                           <button
@@ -589,6 +475,4 @@ export const Navigation = React.forwardRef<HTMLElement, {}>(
       </div>
     </>
   );
-});
-
-Navigation.displayName = "Navigation";
+};

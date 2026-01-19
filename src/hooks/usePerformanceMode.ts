@@ -1,30 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useIsMobile } from './use-mobile';
 
-interface PerformanceMode {
-  /** Whether to reduce animations (mobile, low-end, or reduced motion preference) */
-  shouldReduceAnimations: boolean;
-  /** Whether device is mobile */
-  isMobile: boolean;
-  /** User prefers reduced motion */
-  prefersReducedMotion: boolean;
-  /** Device has low hardware capabilities */
-  isLowEndDevice: boolean;
-  /** Animation budget (0-2) based on device capabilities */
-  animationBudget: 0 | 1 | 2;
-  /** Whether to use blur placeholders for images */
-  shouldUseBlurPlaceholder: boolean;
-  /** Recommended animation duration multiplier */
-  durationMultiplier: number;
-  /** Whether device supports backdrop-filter */
-  supportsBackdropFilter: boolean;
-}
-
-export const usePerformanceMode = (): PerformanceMode => {
+export const usePerformanceMode = () => {
   const isMobile = useIsMobile();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isLowEndDevice, setIsLowEndDevice] = useState(false);
-  const [supportsBackdropFilter, setSupportsBackdropFilter] = useState(true);
 
   useEffect(() => {
     // Check for reduced motion preference
@@ -39,52 +19,16 @@ export const usePerformanceMode = (): PerformanceMode => {
 
     // Detect low-end devices (rough heuristic based on hardware concurrency)
     const cores = navigator.hardwareConcurrency || 4;
-    const isLowEnd = cores < 4;
-    setIsLowEndDevice(isLowEnd);
-
-    // Check backdrop-filter support
-    const supportsBlur = CSS.supports('backdrop-filter', 'blur(10px)') || 
-                         CSS.supports('-webkit-backdrop-filter', 'blur(10px)');
-    setSupportsBackdropFilter(supportsBlur);
+    setIsLowEndDevice(cores < 4);
 
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  const performanceMetrics = useMemo(() => {
-    const shouldReduceAnimations = isMobile || prefersReducedMotion || isLowEndDevice;
-    
-    // Animation budget: 0 = no animations, 1 = essential only, 2 = full
-    let animationBudget: 0 | 1 | 2 = 2;
-    if (prefersReducedMotion) {
-      animationBudget = 0;
-    } else if (isLowEndDevice || isMobile) {
-      animationBudget = 1;
-    }
-
-    // Duration multiplier for animations
-    let durationMultiplier = 1;
-    if (prefersReducedMotion) {
-      durationMultiplier = 0.01; // Near-instant
-    } else if (isLowEndDevice) {
-      durationMultiplier = 0.5; // Faster animations
-    }
-
-    // Use blur placeholders on capable devices only
-    const shouldUseBlurPlaceholder = !isLowEndDevice && supportsBackdropFilter;
-
-    return {
-      shouldReduceAnimations,
-      animationBudget,
-      shouldUseBlurPlaceholder,
-      durationMultiplier,
-    };
-  }, [isMobile, prefersReducedMotion, isLowEndDevice, supportsBackdropFilter]);
-
   return {
-    ...performanceMetrics,
+    // Use performance mode on mobile or low-end devices or when user prefers reduced motion
+    shouldReduceAnimations: isMobile || prefersReducedMotion || isLowEndDevice,
     isMobile,
     prefersReducedMotion,
     isLowEndDevice,
-    supportsBackdropFilter,
   };
 };

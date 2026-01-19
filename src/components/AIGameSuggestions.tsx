@@ -162,14 +162,15 @@ export function AIGameSuggestions() {
               className="p-4 bg-muted/30 rounded-xl space-y-2"
             >
               {formatSuggestions(suggestions).map((line, index) => (
-                <motion.div
-                  key={`suggestion-${index}`}
+                <motion.p
+                  key={index}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  className="text-sm"
                 >
-                  <p className="text-sm">{line}</p>
-                </motion.div>
+                  {line}
+                </motion.p>
               ))}
             </motion.div>
           )}

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
-import { useGameAudio } from "@/hooks/useGameAudio";
 
 interface Game {
   id: string;
@@ -30,7 +28,6 @@ interface GameCardProps {
 export const GameCard = ({ game }: GameCardProps) => {
   const { user } = useAuth();
   const { shouldReduceAnimations } = usePerformanceMode();
-  const { playBloop, playBling, playCardAppear } = useGameAudio();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(game.total_likes);
   const [plays, setPlays] = useState(game.total_plays);
@@ -40,19 +37,6 @@ export const GameCard = ({ game }: GameCardProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  // Educational badge based on genre
-  const getEducationalBadge = (genre: string) => {
-    const badges: Record<string, { emoji: string; label: string; gradient: string }> = {
-      educational: { emoji: "📚", label: "Học tốt", gradient: "from-green-500 to-emerald-500" },
-      puzzle: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
-      brain: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
-      creative: { emoji: "🎨", label: "Sáng tạo", gradient: "from-pink-500 to-rose-500" },
-    };
-    return badges[genre] || null;
-  };
-
-  const educationalBadge = getEducationalBadge(game.genre);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -197,14 +181,9 @@ export const GameCard = ({ game }: GameCardProps) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      onAnimationComplete={() => playCardAppear()}
-    >
     <Card 
       ref={cardRef}
-      className="group overflow-hidden border-0 h-full flex flex-col relative rounded-[28px] min-h-[180px] bg-white/25 backdrop-blur-sm"
+      className="group overflow-hidden border-0 animate-fade-in h-full flex flex-col relative rounded-3xl"
       style={{
         background: shouldReduceAnimations 
           ? 'linear-gradient(135deg, hsl(280, 90%, 65%), hsl(190, 100%, 60%))'
@@ -218,15 +197,12 @@ export const GameCard = ({ game }: GameCardProps) => {
         contain: 'layout style paint',
       }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => {
-        !shouldReduceAnimations && setIsHovered(true);
-        playBloop();
-      }}
+      onMouseEnter={() => !shouldReduceAnimations && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="bg-white rounded-[24px] h-full flex flex-col">
+      <div className="bg-white rounded-[calc(1.5rem-5px)] h-full flex flex-col">
       <div 
-        className="relative aspect-video overflow-hidden transition-all rounded-t-[24px]"
+        className="relative aspect-video overflow-hidden transition-all"
         style={{
           transitionDuration: shouldReduceAnimations ? '0.2s' : '0.5s',
           transform: !shouldReduceAnimations && isHovered 
@@ -320,23 +296,16 @@ export const GameCard = ({ game }: GameCardProps) => {
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent opacity-40 group-hover:opacity-60 transition-opacity" />
         
-        {/* Play Button - Always Visible with Pulse Glow */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <motion.div
-            animate={{
-              boxShadow: [
-                "0 0 15px rgba(236, 72, 153, 0.4)",
-                "0 0 30px rgba(168, 85, 247, 0.6)",
-                "0 0 15px rgba(236, 72, 153, 0.4)"
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 
-              flex items-center justify-center shadow-2xl
-              group-hover:scale-110 transition-transform duration-300"
+        {/* Play Icon Overlay - simplified on mobile */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ transitionDuration: shouldReduceAnimations ? '0.2s' : '0.3s' }}
+        >
+          <div 
+            className={`bg-primary/90 p-6 rounded-full shadow-2xl ${shouldReduceAnimations ? '' : 'transform scale-0 group-hover:scale-100 transition-transform duration-300'}`}
           >
-            <Play className="w-8 h-8 text-white ml-1" fill="white" />
-          </motion.div>
+            <Play className="w-12 h-12 text-white" />
+          </div>
         </div>
 
         {/* Badges */}
@@ -357,13 +326,6 @@ export const GameCard = ({ game }: GameCardProps) => {
             <span className="font-fredoka font-bold text-sm">{plays}</span>
           </div>
         </div>
-
-        {/* Educational Badge */}
-        {educationalBadge && (
-          <Badge className={`absolute bottom-3 right-3 bg-gradient-to-r ${educationalBadge.gradient} text-white border-0 shadow-lg text-xs z-10`}>
-            {educationalBadge.emoji} {educationalBadge.label}
-          </Badge>
-        )}
       </div>
       
       <CardContent className="p-3 sm:p-6 space-y-2 sm:space-y-4 flex-1 flex flex-col">
@@ -375,7 +337,7 @@ export const GameCard = ({ game }: GameCardProps) => {
         </p>
 
         <div className="flex items-center gap-1 sm:gap-2 pt-1 sm:pt-2">
-          <Link to={`/game/${game.id}`} className="flex-1" onClick={() => playBling()}>
+          <Link to={`/game/${game.id}`} className="flex-1">
             <Button className="w-full h-10 sm:h-14 group/btn font-fredoka font-bold text-xs sm:text-base flex items-center justify-center px-2 sm:px-4">
               <span className="hidden xs:inline">Play Now!</span>
               <span className="xs:hidden">Play</span>
@@ -399,6 +361,5 @@ export const GameCard = ({ game }: GameCardProps) => {
       </CardContent>
       </div>
     </Card>
-    </motion.div>
   );
 };

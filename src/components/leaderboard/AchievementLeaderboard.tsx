@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import { Crown, Trophy, Medal, RefreshCw, Loader2, Star, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -135,30 +135,26 @@ const PodiumCard = memo(({ user, rank, isCurrentUser }: {
 });
 PodiumCard.displayName = 'PodiumCard';
 
-interface AchievementUserRowProps {
+const UserRow = memo(({ user, rank, isCurrentUser, index }: {
   user: AchievementUser;
   rank: number;
   isCurrentUser: boolean;
   index: number;
-}
+}) => {
+  const navigate = useNavigate();
 
-const UserRowInner = React.forwardRef<HTMLDivElement, AchievementUserRowProps>(
-  function UserRowInner({ user, rank, isCurrentUser, index }, ref) {
-    const navigate = useNavigate();
-
-    return (
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.03 }}
-        onClick={() => navigate(`/profile/${user.id}`)}
-        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:scale-[1.01] ${
-          isCurrentUser
-            ? "bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-400/60 shadow-sm"
-            : "bg-white border border-gray-200 hover:border-pink-200 hover:shadow-md"
-        }`}
-      >
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.03 }}
+      onClick={() => navigate(`/profile/${user.id}`)}
+      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:scale-[1.01] ${
+        isCurrentUser
+          ? "bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-400/60 shadow-sm"
+          : "bg-white border border-gray-200 hover:border-pink-200 hover:shadow-md"
+      }`}
+    >
       {/* Rank */}
       <div className="w-10 flex justify-center shrink-0">
         <span className="text-xl font-black bg-gradient-to-b from-yellow-500 to-pink-500 bg-clip-text text-transparent">
@@ -189,12 +185,10 @@ const UserRowInner = React.forwardRef<HTMLDivElement, AchievementUserRowProps>(
           {user.achievement_count}/{TOTAL_ACHIEVEMENTS}
         </span>
       </div>
-      </motion.div>
-    );
-  }
-);
-UserRowInner.displayName = 'UserRowInner';
-const UserRow = memo(UserRowInner);
+    </motion.div>
+  );
+});
+UserRow.displayName = 'UserRow';
 
 export function AchievementLeaderboard() {
   const [users, setUsers] = useState<AchievementUser[]>([]);

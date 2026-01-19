@@ -1,19 +1,19 @@
-import { Home, Gamepad2, User, Gift, Sparkles } from "lucide-react";
+import { Home, Gamepad2, Upload, User, Gift, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
-import { useNavigationSound } from "@/hooks/useNavigationSound";
 
-// 🎀 FUN PLANET PASTEL CUTE BOTTOM NAV - Phase 6: Icon-First Design
+// 🎀 FUN PLANET PASTEL CUTE BOTTOM NAV - Kids Gaming 2025
 export const MobileBottomNavEnhanced = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { isDev } = useUserRole();
   const { t } = useTranslation();
   const { shouldReduceAnimations } = usePerformanceMode();
-  const { playTapSound, triggerHaptic } = useNavigationSound();
 
   // Hide bottom nav on game play pages for immersive experience
   const hideOnPaths = ['/game/'];
@@ -21,41 +21,24 @@ export const MobileBottomNavEnhanced = () => {
 
   if (shouldHide) return null;
 
-  // Fixed 4 tabs only: Home, Games, Rewards, Profile
-  const navItems = [
-    { 
-      icon: Home, 
-      label: t('nav.home'), 
-      path: "/", 
-      gradientFrom: "from-pink-400",
-      gradientVia: "via-purple-400",
-      gradientTo: "to-blue-400"
-    },
-    { 
-      icon: Gamepad2, 
-      label: t('nav.games'), 
-      path: "/games", 
-      gradientFrom: "from-purple-400",
-      gradientVia: "via-blue-400",
-      gradientTo: "to-cyan-400"
-    },
-    { 
-      icon: Gift, 
-      label: t('nav.rewardGalaxy'), 
-      path: "/reward-galaxy", 
-      gradientFrom: "from-yellow-400",
-      gradientVia: "via-orange-400",
-      gradientTo: "to-pink-400"
-    },
-    { 
-      icon: User, 
-      label: t('nav.profile'), 
-      path: user ? "/profile" : "/auth", 
-      gradientFrom: "from-blue-400",
-      gradientVia: "via-cyan-400",
-      gradientTo: "to-green-400"
-    },
+  const baseNavItems = [
+    { icon: Home, label: t('nav.home'), path: "/", emoji: "🏠", color: "from-[hsl(340,70%,75%)] to-[hsl(280,65%,75%)]" },
+    { icon: Gamepad2, label: t('nav.games'), path: "/games", emoji: "🎮", color: "from-[hsl(280,65%,75%)] to-[hsl(200,70%,75%)]" },
+    { icon: Gift, label: t('nav.rewardGalaxy'), path: "/reward-galaxy", emoji: "🎁", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
   ];
+
+  // Add upload tab for developers, wallet for others
+  const navItems = isDev 
+    ? [
+        ...baseNavItems.slice(0, 2),
+        { icon: Upload, label: t('nav.upload'), path: "/upload-game", emoji: "📤", color: "from-[hsl(160,55%,70%)] to-[hsl(180,60%,65%)]" },
+        ...baseNavItems.slice(2),
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
+      ]
+    : [
+        ...baseNavItems,
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
+      ];
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
@@ -63,68 +46,63 @@ export const MobileBottomNavEnhanced = () => {
     return location.pathname.startsWith(path);
   };
 
-  const handleTap = () => {
-    triggerHaptic();
-    playTapSound();
-  };
-
   return (
     <motion.nav 
       initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
       transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#E2C0F0]/98 via-white/95 to-[#B0C8F0]/90 backdrop-blur-xl border-t-2 border-purple-300/60 shadow-[0_-8px_40px_rgba(243,196,251,0.45),0_-2px_16px_rgba(144,112,224,0.30)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-card/98 via-card/95 to-card/90 backdrop-blur-xl border-t-2 border-primary/30 shadow-[0_-8px_40px_hsla(280,65%,65%,0.15),0_-2px_16px_hsla(340,70%,75%,0.1)]"
       style={{ 
-        paddingBottom: 'max(env(safe-area-inset-bottom), 12px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom), 8px)',
       }}
     >
-      {/* ✨ Rainbow shimmer top border - brighter holographic */}
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-pink-400 via-purple-500 via-blue-500 to-cyan-400" />
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-transparent via-white/70 to-transparent animate-pulse" />
+      {/* ✨ Sparkle decoration */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       
-      {/* 4-column grid with 88px height */}
-      <div className="grid grid-cols-4 h-[88px] max-w-md mx-auto">
-        {navItems.map((item) => {
+      <div className={cn(
+        "grid h-[76px] max-w-lg mx-auto",
+        "grid-cols-5"
+      )}>
+        {navItems.map((item, index) => {
           const Icon = item.icon;
           const active = isActive(item.path);
           
           return (
             <Link
-              key={item.path}
+              key={item.label}
               to={item.path}
-              onClick={handleTap}
               className={cn(
-                "flex flex-col items-center justify-center gap-1.5 transition-all duration-300 touch-manipulation active:scale-90 min-h-[88px] relative group"
+                "flex flex-col items-center justify-center gap-1 transition-all duration-300 touch-manipulation active:scale-90 min-h-[76px] relative group",
+                active 
+                  ? "text-primary" 
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {/* 🌈 Rainbow gradient indicator when active */}
+              {/* 🌈 Active rainbow indicator */}
               {active && (
                 <motion.div
-                  layoutId="mobileActiveTab"
+                  layoutId="activeTab"
                   className={cn(
-                    "absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1.5 rounded-full bg-gradient-to-r",
-                    item.gradientFrom, item.gradientVia, item.gradientTo
+                    "absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-gradient-to-r",
+                    item.color
                   )}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               
-              {/* 💎 Icon container - enhanced holographic glow matching MiniLeaderboard */}
+              {/* 💎 Icon container with diamond effect */}
               <motion.div 
                 className={cn(
-                  "relative p-3 rounded-2xl transition-all duration-300 border",
-                  active 
-                    ? "bg-gradient-to-br from-pink-100/80 to-blue-100/60 border-purple-300/60 shadow-[0_0_30px_rgba(243,196,251,0.6),0_0_15px_rgba(162,210,255,0.4)]"
-                    : "border-transparent"
+                  "relative p-2.5 rounded-2xl transition-all duration-300",
+                  active && "bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/10 shadow-[0_0_20px_hsla(280,65%,65%,0.3)]"
                 )}
-                whileTap={shouldReduceAnimations ? undefined : { scale: 0.8 }}
+                whileTap={shouldReduceAnimations ? undefined : { scale: 0.85 }}
+                whileHover={shouldReduceAnimations ? undefined : { scale: 1.1 }}
               >
-              <Icon 
+                <Icon 
                   className={cn(
-                    "w-7 h-7 transition-all duration-300",
-                    active 
-                      ? "text-purple-600 scale-110 drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]" 
-                      : "text-gray-500 group-hover:text-gray-600"
+                    "w-6 h-6 transition-all duration-300",
+                    active && "scale-110 drop-shadow-[0_0_8px_hsla(280,65%,65%,0.6)]"
                   )} 
                   strokeWidth={active ? 2.5 : 2} 
                 />
@@ -136,22 +114,22 @@ export const MobileBottomNavEnhanced = () => {
                     animate={{ scale: 1, opacity: 1 }}
                     className="absolute -top-1 -right-1"
                   >
-                    <Sparkles className="w-4 h-4 text-yellow-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)]" />
+                    <Sparkles className="w-3 h-3 text-yellow-400" />
                   </motion.div>
                 )}
               </motion.div>
               
-              {/* 📝 Label - Quicksand Montessori typography */}
+              {/* 📝 Label */}
               <span className={cn(
-                "font-quicksand text-[10px] xs:text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 truncate max-w-full leading-tight",
-                active ? "text-purple-600 drop-shadow-[0_1px_2px_rgba(168,85,247,0.3)]" : "text-gray-500"
+                "text-xs font-bold transition-all duration-300",
+                active ? "text-primary" : "text-muted-foreground"
               )}>
                 {item.label}
               </span>
               
-              {/* 🎯 Notification dot for profile */}
+              {/* 🎯 Badge for notifications (example) */}
               {item.path === (user ? "/profile" : "/auth") && user && (
-                <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-[hsl(340,70%,65%)] to-[hsl(0,65%,60%)] rounded-full animate-pulse" />
               )}
             </Link>
           );

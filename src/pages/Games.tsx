@@ -18,7 +18,6 @@ import confetti from "canvas-confetti";
 import { useLegendStatus } from "@/hooks/useLegendStatus";
 import LegendParticleEffect from "@/components/LegendParticleEffect";
 import { AIGameSuggestions } from "@/components/AIGameSuggestions";
-import { useGameAudio } from "@/hooks/useGameAudio";
 
 // Community games only - Sample games removed
 interface UploadedGame {
@@ -695,24 +694,6 @@ const Games = () => {
   );
 };
 
-// Educational badge helper with HOT badge support
-const getEducationalBadge = (category: string, totalPlays?: number) => {
-  // HOT badge for trending games (>100 plays)
-  if (totalPlays && totalPlays > 100) {
-    return { emoji: "🔥", label: "HOT", gradient: "from-orange-500 to-red-500" };
-  }
-  
-  const badges: Record<string, { emoji: string; label: string; gradient: string }> = {
-    educational: { emoji: "📚", label: "Học tốt", gradient: "from-green-500 to-emerald-500" },
-    puzzle: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
-    brain: { emoji: "🧠", label: "Rèn luyện tư duy", gradient: "from-purple-500 to-indigo-500" },
-    creative: { emoji: "🎨", label: "Sáng tạo", gradient: "from-pink-500 to-rose-500" },
-    creativity: { emoji: "🎨", label: "Sáng tạo", gradient: "from-pink-500 to-rose-500" },
-    casual: { emoji: "🎮", label: "Vui nhộn", gradient: "from-blue-400 to-cyan-400" },
-  };
-  return badges[category?.toLowerCase()] || null;
-};
-
 // Light Treasure Card Component
 interface LightTreasureCardProps {
   game: Game | UploadedGame | LovableGame;
@@ -725,12 +706,12 @@ interface LightTreasureCardProps {
 const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
   ({ game, type, index, playersOnline, onPlay }, ref) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { playBloop, playBling, playCardAppear } = useGameAudio();
   
   const getThumbnail = () => {
     if ('thumbnail_url' in game && game.thumbnail_url) return game.thumbnail_url;
     if ('image_url' in game && game.image_url) return game.image_url;
     if ('thumbnail_path' in game && game.thumbnail_path) {
+      // Handle local paths (starting with /) or http URLs directly
       if (game.thumbnail_path.startsWith('/') || game.thumbnail_path.startsWith('http')) {
         return game.thumbnail_path;
       }
@@ -751,21 +732,12 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
   const getGamePath = () => {
     if ('component_name' in game) return `/game/${game.id}`;
     if ('project_url' in game) return `/lovable-game/${game.id}`;
+    // Uploaded HTML games go to the details/play page
     return `/game-details/${game.id}`;
-  };
-
-  // Get category for educational badge
-  const getCategory = () => {
-    if ('genre' in game && game.genre) return game.genre;
-    if ('category' in game && (game as UploadedGame).category) return (game as UploadedGame).category;
-    return '';
   };
 
   const badge = getBadge();
   const thumbnail = getThumbnail();
-  const category = getCategory();
-  const totalPlays = 'total_plays' in game ? game.total_plays : 0;
-  const eduBadge = getEducationalBadge(category, totalPlays || 0);
   
   return (
     <motion.div
@@ -773,11 +745,7 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.05, 0.5) }}
-      onAnimationComplete={() => playCardAppear()}
-      onMouseEnter={() => {
-        setIsHovered(true);
-        playBloop();
-      }}
+      onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="group relative"
     >
@@ -788,7 +756,7 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
             rotateY: isHovered ? 5 : 0,
           }}
           transition={{ type: "spring", stiffness: 300 }}
-          className="relative rounded-[28px] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-primary/10 hover:border-primary/30 min-h-[180px] md:min-h-[220px] bg-white/25 backdrop-blur-sm"
+          className="relative bg-card rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-primary/10 hover:border-primary/30"
         >
           {/* Diamond sparkle effect on hover */}
           {isHovered && (
@@ -825,12 +793,12 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
           )}
           
           {/* Thumbnail */}
-          <div className="aspect-video rounded-[24px] bg-gradient-to-br from-primary/20 via-purple-500/10 to-pink-500/20 relative overflow-hidden m-1">
+          <div className="aspect-video bg-gradient-to-br from-primary/20 via-purple-500/10 to-pink-500/20 relative overflow-hidden">
             {thumbnail ? (
               <img
                 src={thumbnail}
                 alt={game.title}
-                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 rounded-[24px]"
+                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -838,62 +806,27 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
               </div>
             )}
             
-            {/* Glassmorphism overlay on hover */}
-            <div className="absolute inset-0 bg-white/25 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[24px]" />
-            
-            {/* Play Button - Always Visible with Pulse Glow */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-              <motion.div
-                animate={{
-                  boxShadow: [
-                    "0 0 20px rgba(236, 72, 153, 0.4)",
-                    "0 0 40px rgba(168, 85, 247, 0.6)",
-                    "0 0 20px rgba(236, 72, 153, 0.4)"
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 
-                  flex items-center justify-center shadow-2xl
-                  active:scale-95 group-hover:scale-110 transition-transform duration-300 
-                  cursor-pointer pointer-events-auto touch-manipulation"
-                onClick={(e) => {
-                  e.preventDefault();
-                  playBling();
-                  onPlay();
-                }}
-              >
-                <Play className="w-8 h-8 text-white ml-1" fill="white" />
-              </motion.div>
-            </div>
-            
             {/* Badge */}
-            <div className={`absolute top-3 left-3 px-3 py-1 rounded-full bg-gradient-to-r ${badge.color} text-white text-xs font-bold shadow-lg z-10`}>
+            <div className={`absolute top-3 left-3 px-3 py-1 rounded-full bg-gradient-to-r ${badge.color} text-white text-xs font-bold shadow-lg`}>
               {badge.text}
             </div>
             
             {/* Genre/Category badge */}
             {'genre' in game && game.genre && (
-              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-xs font-bold z-10">
+              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-xs font-bold">
                 {game.genre}
               </div>
             )}
             {'category' in game && (game as UploadedGame).category && (
-              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-xs font-bold z-10">
+              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-xs font-bold">
                 {(game as UploadedGame).category}
-              </div>
-            )}
-
-            {/* Educational Badge */}
-            {eduBadge && (
-              <div className={`absolute bottom-3 left-3 px-2 py-1 rounded-full bg-gradient-to-r ${eduBadge.gradient} text-white text-xs font-bold shadow-lg z-10`}>
-                {eduBadge.emoji} {eduBadge.label}
               </div>
             )}
           </div>
           
           {/* Content */}
           <div className="p-4 space-y-3">
-            <h3 className="font-bold text-base sm:text-lg text-foreground truncate group-hover:text-primary transition-colors">
+            <h3 className="font-bold text-lg text-foreground truncate group-hover:text-primary transition-colors">
               {game.title}
             </h3>
             
@@ -911,13 +844,12 @@ const LightTreasureCard = forwardRef<HTMLDivElement, LightTreasureCardProps>(
               </div>
             </div>
             
-            {/* Play Button Footer */}
+            {/* Play Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={(e) => {
                 e.preventDefault();
-                playBling();
                 onPlay();
               }}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-primary via-purple-500 to-pink-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all relative overflow-hidden"

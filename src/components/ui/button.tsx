@@ -30,19 +30,6 @@ const buttonVariants = cva(
         
         // 🔗 Link
         link: "text-primary underline-offset-4 hover:underline hover:text-[hsl(280,65%,55%)]",
-        
-        // 🌈 Holographic - NEW
-        holographic: cn(
-          "bg-gradient-to-r from-[hsl(340,70%,75%)] via-[hsl(280,65%,70%)] to-[hsl(200,70%,70%)]",
-          "text-white font-bold",
-          "[text-shadow:0_1px_4px_hsla(280,65%,30%,0.4)]",
-          "shadow-[0_0_20px_rgba(243,196,251,0.5),0_0_10px_rgba(162,210,255,0.3)]",
-          "hover:shadow-[0_0_30px_rgba(243,196,251,0.7),0_0_15px_rgba(162,210,255,0.5)]",
-          "hover:brightness-110 hover:scale-[1.02]",
-          "active:scale-[0.98]",
-          "animate-pulse-glow",
-          "border-0"
-        ),
       },
       size: {
         default: "h-12 px-6 py-3",

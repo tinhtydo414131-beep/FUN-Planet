@@ -13,7 +13,7 @@ interface Angel2DFallbackProps {
 export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
   return (
     <motion.div
-      className="relative w-[60px] h-[60px] md:w-20 md:h-20 cursor-pointer select-none"
+      className="relative w-14 h-14 md:w-16 md:h-16 cursor-pointer select-none"
       onClick={onClick}
       whileHover={{ scale: 1.08, rotate: 5 }}
       whileTap={{ scale: 0.95 }}
@@ -21,16 +21,16 @@ export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
-      {/* Holographic pink-purple outer glow */}
+      {/* Purple outer glow */}
       <motion.div
         className="absolute inset-[-4px] rounded-full"
         style={{
-          background: "radial-gradient(circle, rgba(236,72,153,0.4) 0%, rgba(168,85,247,0.3) 50%, transparent 70%)",
-          filter: "blur(5px)",
+          background: "radial-gradient(circle, rgba(147,51,234,0.4) 0%, transparent 70%)",
+          filter: "blur(4px)",
         }}
         animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.5, 0.8, 0.5],
+          scale: [1, 1.1, 1],
+          opacity: [0.5, 0.7, 0.5],
         }}
         transition={{
           duration: 2.5,
@@ -51,14 +51,14 @@ export function Angel2DFallback({ onClick }: Angel2DFallbackProps) {
           ease: "easeInOut",
         }}
       >
-        {/* Project circular logo with holographic glow */}
+        {/* Project circular logo */}
         <img
           src={projectLogo}
           alt="Chat AI"
           className="w-full h-full object-cover rounded-full"
           style={{
-            filter: "drop-shadow(0 0 8px rgba(236,72,153,0.5))",
-            boxShadow: "0 0 16px rgba(168,85,247,0.4), 0 0 32px rgba(236,72,153,0.2)",
+            filter: "drop-shadow(0 0 8px rgba(147,51,234,0.5))",
+            boxShadow: "0 0 16px rgba(147,51,234,0.4), 0 0 32px rgba(147,51,234,0.2)",
           }}
         />
       </motion.div>

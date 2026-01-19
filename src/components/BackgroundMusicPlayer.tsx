@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -19,8 +19,7 @@ interface Track {
   artist?: string;
 }
 
-export const BackgroundMusicPlayer = React.forwardRef<HTMLDivElement, {}>(
-  function BackgroundMusicPlayer(_props, ref) {
+export const BackgroundMusicPlayer = () => {
   const [playlist, setPlaylist] = useState<Track[]>([]);
   const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -274,7 +273,6 @@ export const BackgroundMusicPlayer = React.forwardRef<HTMLDivElement, {}>(
   
   return (
     <div 
-      ref={ref}
       className="fixed top-4 right-4 z-[999] select-none md:bottom-6 md:right-6 md:top-auto"
       style={style}
     >
@@ -471,6 +469,4 @@ export const BackgroundMusicPlayer = React.forwardRef<HTMLDivElement, {}>(
       </div>
     </div>
   );
-});
-
-BackgroundMusicPlayer.displayName = "BackgroundMusicPlayer";
+};
