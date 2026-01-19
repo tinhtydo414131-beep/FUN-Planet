@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, Medal, ChevronLeft, ChevronRight, Gem, RefreshCw, Search, Trophy, Users, Wifi, WifiOff, Send, Gift, Clock, Award, Star, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -260,15 +260,7 @@ const PodiumCard = memo(({
 PodiumCard.displayName = 'PodiumCard';
 
 // User Row Component - White Theme
-const UserRow = memo(({
-  user,
-  rank,
-  isCurrentUser,
-  index,
-  currentUserId,
-  onTransfer,
-  onUserClick,
-}: {
+interface UserRowProps {
   user: RankedUser;
   rank: number;
   isCurrentUser: boolean;
@@ -276,20 +268,23 @@ const UserRow = memo(({
   currentUserId?: string;
   onTransfer: (user: RankedUser) => void;
   onUserClick: (user: RankedUser, rank: number) => void;
-}) => {
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.03 }}
-      onClick={() => onUserClick(user, rank)}
-      className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.01] ${
-        isCurrentUser
-          ? "bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-400/60 shadow-[0_0_20px_rgba(255,215,0,0.15)]"
-          : "bg-white border border-gray-200 hover:border-pink-200 hover:shadow-md"
-      }`}
-    >
+}
+
+const UserRowInner = React.forwardRef<HTMLDivElement, UserRowProps>(
+  function UserRowInner({ user, rank, isCurrentUser, index, currentUserId, onTransfer, onUserClick }, ref) {
+    return (
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.03 }}
+        onClick={() => onUserClick(user, rank)}
+        className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.01] ${
+          isCurrentUser
+            ? "bg-gradient-to-r from-yellow-50 to-pink-50 border-2 border-yellow-400/60 shadow-[0_0_20px_rgba(255,215,0,0.15)]"
+            : "bg-white border border-gray-200 hover:border-pink-200 hover:shadow-md"
+        }`}
+      >
       {/* Rank */}
       <div className="w-10 sm:w-12 flex justify-center shrink-0">
         <span className="text-xl sm:text-2xl font-black bg-gradient-to-b from-yellow-500 to-pink-500 bg-clip-text text-transparent">
@@ -347,10 +342,12 @@ const UserRow = memo(({
           </Button>
         </div>
       )}
-    </motion.div>
-  );
-});
-UserRow.displayName = 'UserRow';
+      </motion.div>
+    );
+  }
+);
+UserRowInner.displayName = 'UserRowInner';
+const UserRow = memo(UserRowInner);
 
 export default function FullRanking() {
   const [allUsers, setAllUsers] = useState<RankedUser[]>([]);
