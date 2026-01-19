@@ -147,7 +147,7 @@ export const CategoryIslands = () => {
 
         {/* 3D Cube Grid - Always 4 columns horizontal */}
         <div 
-          className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-6"
+          className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-6"
           style={{ perspective: '1000px' }}
           role="list"
           aria-label={t('categoryIslands.gridLabel', 'Game categories')}
@@ -156,7 +156,7 @@ export const CategoryIslands = () => {
             <motion.button
               key={island.id}
               onClick={() => handleIslandClick(island)}
-              className="relative group focus:outline-none touch-manipulation min-h-[70px] sm:min-h-[90px] md:min-h-[100px]"
+              className="relative group focus:outline-none touch-manipulation min-h-[80px] sm:min-h-[95px] md:min-h-[110px]"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ 
                 opacity: 1, 
@@ -198,7 +198,7 @@ export const CategoryIslands = () => {
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 sm:gap-2 md:gap-3 p-1.5 sm:p-2 md:p-3">
                     {/* Custom Icon - Smaller on mobile */}
                     <motion.div
-                      className="relative scale-[0.65] sm:scale-75 md:scale-100"
+                      className="relative scale-[0.7] sm:scale-[0.8] md:scale-100"
                       whileHover={{ scale: 1.1 }}
                       transition={{ duration: 0.3 }}
                     >
@@ -206,7 +206,7 @@ export const CategoryIslands = () => {
                     </motion.div>
 
                     {/* Label - Smaller text on mobile */}
-                    <span className="text-white font-bold text-[9px] sm:text-xs md:text-base drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] text-center leading-tight">
+                    <span className="text-white font-bold text-[10px] sm:text-xs md:text-base drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] text-center leading-tight">
                       {t(island.labelKey)}
                     </span>
 

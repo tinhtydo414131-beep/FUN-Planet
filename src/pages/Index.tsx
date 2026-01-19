@@ -164,9 +164,9 @@ const Index = () => {
       
       {/* Category Islands - Glass Container */}
       <div className="mx-2 md:mx-4 mb-4 md:mb-6">
-        <div className="bg-white/30 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg border border-white/40">
-          <CategoryIslands />
-        </div>
+          <div className="bg-white/35 backdrop-blur-md rounded-3xl p-5 md:p-6 shadow-lg border border-white/50">
+            <CategoryIslands />
+          </div>
       </div>
       
       {/* Recently Played - Show recent games with one-click resume */}
@@ -174,9 +174,9 @@ const Index = () => {
       
       {/* Featured Games - Glass Container */}
       <div className="mx-2 md:mx-4 mb-4 md:mb-6">
-        <div className="bg-white/30 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg border border-white/40">
-          <FeaturedGamesSection />
-        </div>
+          <div className="bg-white/35 backdrop-blur-md rounded-3xl p-5 md:p-6 shadow-lg border border-white/50">
+            <FeaturedGamesSection />
+          </div>
       </div>
 
       {/* Simplified Footer - Subtle glass style matching page */}
