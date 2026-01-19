@@ -159,9 +159,13 @@ export function FeaturedGamesSection() {
               onAnimationComplete={() => playCardAppear()}
             >
               <div 
-                className="relative flex flex-col rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98] overflow-hidden"
+                className="relative flex flex-col rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] bg-white/40 backdrop-blur-sm transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98] overflow-hidden"
                 style={{
-                  boxShadow: '0 8px 24px rgba(243, 196, 251, 0.25), inset 0 1px 0 rgba(255,255,255,0.4)'
+                  boxShadow: '0 8px 24px rgba(243, 196, 251, 0.25), inset 0 1px 0 rgba(255,255,255,0.4)',
+                  border: '2px solid transparent',
+                  backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 50%, #CDB4DB 100%)',
+                  backgroundOrigin: 'border-box',
+                  backgroundClip: 'padding-box, border-box'
                 }}
                 onClick={() => {
                   playBling();
@@ -220,9 +224,13 @@ export function FeaturedGamesSection() {
                   onAnimationComplete={() => playCardAppear()}
                 >
                   <div 
-                    className="relative flex flex-col rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98] overflow-hidden"
+                    className="relative flex flex-col rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] bg-white/40 backdrop-blur-sm transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98] overflow-hidden"
                     style={{
-                      boxShadow: '0 8px 24px rgba(168, 85, 247, 0.15), inset 0 1px 0 rgba(255,255,255,0.4)'
+                      boxShadow: '0 8px 24px rgba(168, 85, 247, 0.15), inset 0 1px 0 rgba(255,255,255,0.4)',
+                      border: '2px solid transparent',
+                      backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #F3C4FB 0%, #A2D2FF 50%, #CDB4DB 100%)',
+                      backgroundOrigin: 'border-box',
+                      backgroundClip: 'padding-box, border-box'
                     }}
                     onClick={() => handlePlayGame(game)}
                     onMouseEnter={() => playBloop()}
