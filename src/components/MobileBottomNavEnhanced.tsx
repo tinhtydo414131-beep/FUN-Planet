@@ -141,9 +141,9 @@ export const MobileBottomNavEnhanced = () => {
                 )}
               </motion.div>
               
-              {/* 📝 Label - responsive text size for multilingual support */}
+              {/* 📝 Label - Quicksand Montessori typography */}
               <span className={cn(
-                "text-[10px] xs:text-[11px] sm:text-xs font-bold transition-all duration-300 truncate max-w-full leading-tight",
+                "font-quicksand text-[10px] xs:text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 truncate max-w-full leading-tight",
                 active ? "text-purple-600 drop-shadow-[0_1px_2px_rgba(168,85,247,0.3)]" : "text-gray-500"
               )}>
                 {item.label}

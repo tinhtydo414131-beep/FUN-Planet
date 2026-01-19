@@ -187,6 +187,30 @@
     line-height: 1.4;
   }
   
+  /* ===== MOBILE TYPOGRAPHY ADJUSTMENTS ===== */
+  @media (max-width: 640px) {
+    body {
+      font-size: 1rem; /* 16px on mobile for better fit */
+    }
+    
+    h1 {
+      font-size: clamp(1.75rem, 10vw, 2.5rem); /* 28px - 40px mobile */
+      letter-spacing: -0.01em;
+    }
+    
+    h2 {
+      font-size: clamp(1.25rem, 5vw, 1.5rem); /* 20px - 24px mobile */
+    }
+    
+    h3 {
+      font-size: clamp(1rem, 4vw, 1.25rem); /* 16px - 20px mobile */
+    }
+    
+    button, [role="button"] {
+      letter-spacing: 0.05em; /* Slightly tighter on mobile */
+    }
+  }
+  
   /* White text on holographic background - Enhanced legibility */
   .holo-text-white {
     color: white;
