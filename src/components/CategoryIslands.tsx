@@ -142,7 +142,7 @@ export const CategoryIslands = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          {t('categoryIslands.title')}
+          {t('categoryIslands.title', 'Khám Phá Thể Loại')}
         </motion.h2>
 
         {/* 3D Cube Grid */}
@@ -183,9 +183,9 @@ export const CategoryIslands = () => {
                   transformStyle: 'preserve-3d'
                 }}
               >
-                {/* Front Face - Main Card */}
+                {/* Front Face - Main Card with holographic border on hover */}
                 <div
-                  className={`relative w-full aspect-square rounded-2xl md:rounded-3xl bg-gradient-to-br ${island.gradient} transition-all duration-300 overflow-hidden group-hover:scale-[1.02]`}
+                  className={`relative w-full aspect-square rounded-2xl md:rounded-3xl bg-gradient-to-br ${island.gradient} transition-all duration-300 overflow-hidden group-hover:scale-[1.02] border-2 border-transparent group-hover:border-white/50`}
                   style={{
                     boxShadow: `0 10px 25px ${island.shadowColor}, inset 0 -3px 10px rgba(0,0,0,0.1), inset 0 3px 10px rgba(255,255,255,0.3)`,
                     transform: 'translateZ(6px)',
@@ -210,10 +210,10 @@ export const CategoryIslands = () => {
                       {t(island.labelKey)}
                     </span>
 
-                    {/* "Mới" Badge - inline */}
+                    {/* "Mới" Badge - white background, pink text */}
                     {island.hasNewGames && (
                       <Badge 
-                        className="bg-white/90 text-pink-600 text-[9px] md:text-[10px] px-2 py-0.5 border-0 shadow-sm font-bold"
+                        className="bg-white text-pink-500 text-[9px] md:text-[10px] px-2.5 py-0.5 border border-pink-200 shadow-md font-bold tracking-wide"
                       >
                         Mới
                       </Badge>
@@ -221,19 +221,19 @@ export const CategoryIslands = () => {
                   </div>
                 </div>
 
-                {/* Right Side Face - 3D Depth - smaller on mobile */}
+                {/* Right Side Face - 3D Depth with matching shadow color */}
                 <div 
-                  className="absolute top-0 -right-[3px] md:-right-2 w-[3px] md:w-2 h-full origin-left rounded-r-xl"
+                  className="absolute top-0 -right-[4px] md:-right-2 w-[4px] md:w-2 h-full origin-left rounded-r-xl"
                   style={{ 
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(0,0,0,0.15))',
+                    background: `linear-gradient(to bottom, ${island.shadowColor.replace('0.4', '0.25')}, rgba(0,0,0,0.2))`,
                   }}
                 />
 
-                {/* Bottom Face - 3D Depth - smaller on mobile */}
+                {/* Bottom Face - 3D Depth with matching shadow color */}
                 <div 
-                  className="absolute -bottom-[3px] md:-bottom-2 left-0 w-full h-[3px] md:h-2 origin-top rounded-b-xl"
+                  className="absolute -bottom-[4px] md:-bottom-2 left-0 w-full h-[4px] md:h-2 origin-top rounded-b-xl"
                   style={{ 
-                    background: 'linear-gradient(to right, rgba(255,255,255,0.15), rgba(0,0,0,0.15))',
+                    background: `linear-gradient(to right, ${island.shadowColor.replace('0.4', '0.25')}, rgba(0,0,0,0.2))`,
                   }}
                 />
               </div>
