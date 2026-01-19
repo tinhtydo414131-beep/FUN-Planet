@@ -34,7 +34,7 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
 
       const newRows: LeaderboardRow[] = [];
 
-      // Row 1: Top Ranking (CAMLY)
+      // Row 1: Top Ranking (CAMLY) - with fallback
       if (rankingResult.data?.[0]) {
         const r = rankingResult.data[0];
         const value = Number(r.wallet_balance) || Number(r.total_camly) || 0;
@@ -47,9 +47,20 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
           value: formatValue(value),
           userId: r.id,
         });
+      } else {
+        // Fallback khi không có dữ liệu ranking
+        newRows.push({
+          id: 'top-ranking',
+          icon: <Trophy className="w-4 h-4 text-yellow-500" />,
+          label: 'Top Ranking',
+          username: 'Đang chờ...',
+          avatar_url: null,
+          value: '🏆',
+          userId: '',
+        });
       }
 
-      // Row 2: Hot 1h (placeholder - using same top ranking for now)
+      // Row 2: Hot 1h - with fallback
       if (rankingResult.data?.[0]) {
         const r = rankingResult.data[0];
         newRows.push({
@@ -61,9 +72,20 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
           value: '🔥',
           userId: r.id,
         });
+      } else {
+        // Fallback khi không có dữ liệu hot
+        newRows.push({
+          id: 'hot-1h',
+          icon: <Clock className="w-4 h-4 text-orange-500" />,
+          label: 'Hót 1h',
+          username: 'Đang chờ...',
+          avatar_url: null,
+          value: '🔥',
+          userId: '',
+        });
       }
 
-      // Row 3: Top Donors
+      // Row 3: Top Donors - with fallback
       if (donorsResult.data?.[0]) {
         const d = donorsResult.data[0];
         const donated = Number(d.total_donated) || 0;
@@ -75,6 +97,17 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
           avatar_url: d.avatar_url,
           value: formatValue(donated),
           userId: d.id || d.user_id,
+        });
+      } else {
+        // Fallback khi không có donors
+        newRows.push({
+          id: 'top-donors',
+          icon: <Heart className="w-4 h-4 text-pink-500" />,
+          label: 'Top Donors',
+          username: 'Đang chờ...',
+          avatar_url: null,
+          value: '💖',
+          userId: '',
         });
       }
 
