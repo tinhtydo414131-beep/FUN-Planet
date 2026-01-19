@@ -129,12 +129,12 @@ export const CategoryIslands = () => {
 
   return (
     <section 
-      className="py-4 md:py-8 px-2 md:px-4"
+      className="py-2 md:py-4"
       role="navigation"
       aria-label={t('categoryIslands.navigationLabel', 'Game Categories Navigation')}
     >
-      {/* Seamless container - content floats on holographic background */}
-      <div className="container mx-auto max-w-4xl py-4 md:py-8">
+      {/* Content inside glass container */}
+      <div className="container mx-auto max-w-4xl">
         {/* Section Header */}
         <motion.h2 
           className="text-lg md:text-2xl font-extrabold text-center mb-4 md:mb-6 text-gray-700"
@@ -145,9 +145,9 @@ export const CategoryIslands = () => {
           {t('categoryIslands.title', 'Khám Phá Thể Loại')}
         </motion.h2>
 
-        {/* 3D Cube Grid */}
+        {/* 3D Cube Grid - Always 4 columns horizontal */}
         <div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+          className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-6"
           style={{ perspective: '1000px' }}
           role="list"
           aria-label={t('categoryIslands.gridLabel', 'Game categories')}
@@ -156,7 +156,7 @@ export const CategoryIslands = () => {
             <motion.button
               key={island.id}
               onClick={() => handleIslandClick(island)}
-              className="relative group focus:outline-none touch-manipulation min-h-[100px]"
+              className="relative group focus:outline-none touch-manipulation min-h-[70px] sm:min-h-[90px] md:min-h-[100px]"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ 
                 opacity: 1, 
@@ -183,9 +183,9 @@ export const CategoryIslands = () => {
                   transformStyle: 'preserve-3d'
                 }}
               >
-                {/* Front Face - Main Card with holographic border on hover */}
+              {/* Front Face - Main Card with holographic border on hover */}
                 <div
-                  className={`relative w-full aspect-square rounded-2xl md:rounded-3xl bg-gradient-to-br ${island.gradient} transition-all duration-300 overflow-hidden group-hover:scale-[1.02] border-2 border-transparent group-hover:border-white/50`}
+                  className={`relative w-full aspect-square rounded-xl sm:rounded-2xl md:rounded-3xl bg-gradient-to-br ${island.gradient} transition-all duration-300 overflow-hidden group-hover:scale-[1.02] border-2 border-transparent group-hover:border-white/50`}
                   style={{
                     boxShadow: `0 10px 25px ${island.shadowColor}, inset 0 -3px 10px rgba(0,0,0,0.1), inset 0 3px 10px rgba(255,255,255,0.3)`,
                     transform: 'translateZ(6px)',
@@ -194,26 +194,26 @@ export const CategoryIslands = () => {
                   {/* Subtle glass overlay */}
                   <div className="absolute inset-0 bg-white/10" />
 
-                  {/* Content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 md:gap-3 p-3">
-                    {/* Custom Icon */}
+                  {/* Content - Scaled for 4-column mobile */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 sm:gap-2 md:gap-3 p-1.5 sm:p-2 md:p-3">
+                    {/* Custom Icon - Smaller on mobile */}
                     <motion.div
-                      className="relative"
+                      className="relative scale-[0.65] sm:scale-75 md:scale-100"
                       whileHover={{ scale: 1.1 }}
                       transition={{ duration: 0.3 }}
                     >
                       {island.customIcon}
                     </motion.div>
 
-                    {/* Label */}
-                    <span className="text-white font-bold text-xs sm:text-sm md:text-base drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] text-center leading-tight">
+                    {/* Label - Smaller text on mobile */}
+                    <span className="text-white font-bold text-[9px] sm:text-xs md:text-base drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] text-center leading-tight">
                       {t(island.labelKey)}
                     </span>
 
-                    {/* "Mới" Badge - white background, pink text */}
+                    {/* "Mới" Badge - Smaller on mobile */}
                     {island.hasNewGames && (
                       <Badge 
-                        className="bg-white text-pink-500 text-[9px] md:text-[10px] px-2.5 py-0.5 border border-pink-200 shadow-md font-bold tracking-wide"
+                        className="bg-white text-pink-500 text-[7px] sm:text-[8px] md:text-[10px] px-1.5 sm:px-2 md:px-2.5 py-0 sm:py-0.5 border border-pink-200 shadow-md font-bold tracking-wide"
                       >
                         Mới
                       </Badge>

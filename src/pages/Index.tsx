@@ -162,14 +162,22 @@ const Index = () => {
       {/* Hero Section */}
       <Hero />
       
-      {/* Category Islands - Moved up after Hero */}
-      <CategoryIslands />
+      {/* Category Islands - Glass Container */}
+      <div className="mx-2 md:mx-4 mb-4 md:mb-6">
+        <div className="bg-white/30 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg border border-white/40">
+          <CategoryIslands />
+        </div>
+      </div>
       
       {/* Recently Played - Show recent games with one-click resume */}
       <RecentlyPlayedSection />
       
-      {/* Featured Games - Play Instantly */}
-      <FeaturedGamesSection />
+      {/* Featured Games - Glass Container */}
+      <div className="mx-2 md:mx-4 mb-4 md:mb-6">
+        <div className="bg-white/30 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg border border-white/40">
+          <FeaturedGamesSection />
+        </div>
+      </div>
 
       {/* Simplified Footer - Subtle glass style matching page */}
       <footer className="bg-white/30 backdrop-blur-sm border-t border-white/40 py-8 px-4 pb-24 md:pb-8">
