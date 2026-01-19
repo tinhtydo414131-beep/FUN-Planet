@@ -206,9 +206,9 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
       transition={{ delay: 0.5 }}
       className="w-full sm:w-72 md:w-80 mx-auto lg:mx-0"
     >
-      {/* Header Title - Quicksand Montessori */}
+      {/* Header Title - Quicksand Montessori with mobile responsive */}
       <div className="text-right mb-2">
-        <h3 className="text-sm md:text-base font-quicksand font-bold text-gray-700 holo-text-white uppercase tracking-wide">Mini Leaderboard</h3>
+        <h3 className="text-xs sm:text-sm md:text-base font-quicksand font-bold text-gray-700 holo-text-white uppercase tracking-wide">Mini Leaderboard</h3>
       </div>
       
       {/* Glassmorphism container with animated holographic border */}
@@ -267,8 +267,8 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
                     {row.icon}
                   </div>
                   
-                  {/* Label */}
-                  <span className="text-xs font-medium text-gray-600 w-16 truncate flex-shrink-0">
+                  {/* Label - Nunito for content */}
+                  <span className="font-nunito text-[11px] sm:text-xs font-medium text-gray-600 w-16 truncate flex-shrink-0">
                     {row.label}
                   </span>
                   

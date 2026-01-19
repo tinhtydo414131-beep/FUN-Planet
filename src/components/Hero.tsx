@@ -153,7 +153,7 @@ export const Hero = () => {
                 }}
               >
                 <motion.span 
-                  className="text-3xl sm:text-4xl lg:text-5xl font-quicksand font-bold uppercase tracking-wide"
+                  className="text-2xl sm:text-3xl lg:text-5xl font-quicksand font-bold uppercase tracking-wide"
                   style={{
                     background: 'linear-gradient(135deg, #E879F9 0%, #A855F7 50%, #7C3AED 100%)',
                     WebkitBackgroundClip: 'text',
@@ -166,7 +166,7 @@ export const Hero = () => {
                   CHƠI
                 </motion.span>
                 <motion.span 
-                  className="text-3xl sm:text-4xl lg:text-5xl font-quicksand font-bold uppercase tracking-wide"
+                  className="text-2xl sm:text-3xl lg:text-5xl font-quicksand font-bold uppercase tracking-wide"
                   style={{
                     background: 'linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #E879F9 100%)',
                     WebkitBackgroundClip: 'text',
