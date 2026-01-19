@@ -158,11 +158,13 @@ export const Navigation = () => {
                 return (
                   <Tooltip key={item.path}>
                     <TooltipTrigger asChild>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => navigate(item.path)}
                         onMouseEnter={playPopSound}
                         className={`
-                          w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative overflow-hidden
+                          w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative overflow-hidden p-0
                           ${active 
                             ? `bg-gradient-to-br ${item.gradient} shadow-[0_0_20px_rgba(243,196,251,0.5)]` 
                             : 'bg-white/60 hover:bg-white/80 border border-purple-200/50'
@@ -179,7 +181,7 @@ export const Navigation = () => {
                           className={`w-6 h-6 transition-all relative z-10 ${active ? 'text-white drop-shadow-md' : 'text-gray-600'}`} 
                           strokeWidth={active ? 2.5 : 2}
                         />
-                      </button>
+                      </Button>
                     </TooltipTrigger>
                     <TooltipContent 
                       side="bottom" 
@@ -195,13 +197,15 @@ export const Navigation = () => {
               {isAdmin && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => navigate("/admin/master")}
                       onMouseEnter={playPopSound}
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-orange-400 to-red-400 shadow-[0_0_16px_rgba(255,100,0,0.4)] hover:scale-110 hover:shadow-[0_0_24px_rgba(255,100,0,0.6)] transition-all duration-300 active:scale-95"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-orange-400 to-red-400 shadow-[0_0_16px_rgba(255,100,0,0.4)] hover:scale-110 hover:shadow-[0_0_24px_rgba(255,100,0,0.6)] transition-all duration-300 active:scale-95 p-0"
                     >
                       <Crown className="w-6 h-6 text-white drop-shadow-md" strokeWidth={2.5} />
-                    </button>
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="bg-orange-50 border-orange-200 text-orange-700 font-medium">
                     {t('nav.adminDashboard')}
