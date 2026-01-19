@@ -36,17 +36,17 @@ export const Hero = () => {
   };
 
   return <section className="relative pt-16 sm:pt-28 md:pt-32 pb-8 sm:pb-12 px-2 sm:px-4 overflow-hidden min-h-screen flex flex-col justify-start">
-      {/* Background image - optimized for mobile */}
+      {/* Holographic sky background */}
       <img 
-        src="/images/backgrounds/fun-planet-bg.jpg" 
-        alt="Fun Planet Background"
+        src="/images/backgrounds/holographic-sky-bg.png" 
+        alt="Fun Planet Holographic Sky"
         className="absolute inset-0 w-full h-full object-cover z-0"
         loading="eager"
         decoding="async"
         fetchPriority="high"
         style={{ 
-          objectPosition: 'center 40%',
-          filter: 'contrast(1.05) saturate(1.1) brightness(1.12)',
+          objectPosition: 'center 55%',
+          filter: 'contrast(1.02) saturate(1.05) brightness(1.05)',
         }}
       />
       
