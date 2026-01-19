@@ -156,7 +156,7 @@ export const CategoryIslands = () => {
             <motion.button
               key={island.id}
               onClick={() => handleIslandClick(island)}
-              className="relative group focus:outline-none touch-manipulation"
+              className="relative group focus:outline-none touch-manipulation min-h-[100px]"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ 
                 opacity: 1, 
@@ -221,17 +221,17 @@ export const CategoryIslands = () => {
                   </div>
                 </div>
 
-                {/* Right Side Face - 3D Depth with matching shadow color */}
+                {/* Right Side Face - 3D Depth (1.5px mobile, 2px desktop) */}
                 <div 
-                  className="absolute top-0 -right-[4px] md:-right-2 w-[4px] md:w-2 h-full origin-left rounded-r-xl"
+                  className="absolute top-0 -right-[1.5px] md:-right-2 w-[1.5px] md:w-2 h-full origin-left rounded-r-xl"
                   style={{ 
                     background: `linear-gradient(to bottom, ${island.shadowColor.replace('0.4', '0.25')}, rgba(0,0,0,0.2))`,
                   }}
                 />
 
-                {/* Bottom Face - 3D Depth with matching shadow color */}
+                {/* Bottom Face - 3D Depth (1.5px mobile, 2px desktop) */}
                 <div 
-                  className="absolute -bottom-[4px] md:-bottom-2 left-0 w-full h-[4px] md:h-2 origin-top rounded-b-xl"
+                  className="absolute -bottom-[1.5px] md:-bottom-2 left-0 w-full h-[1.5px] md:h-2 origin-top rounded-b-xl"
                   style={{ 
                     background: `linear-gradient(to right, ${island.shadowColor.replace('0.4', '0.25')}, rgba(0,0,0,0.2))`,
                   }}

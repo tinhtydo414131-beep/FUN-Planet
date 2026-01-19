@@ -183,23 +183,23 @@ const Index = () => {
               <span className="text-muted-foreground text-xs sm:text-sm hidden sm:inline">{t('home.footerSlogan')}</span>
             </div>
             
-            {/* Quick Links - Enhanced touch targets */}
+            {/* Quick Links - Enhanced touch targets (min 48px) */}
             <div className="flex flex-wrap justify-center gap-2 md:gap-4 text-sm">
               <span 
                 onClick={() => navigate("/games")} 
-                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
+                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors min-h-[48px] py-3 px-4 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation flex items-center"
               >
                 🎮 {t('nav.games')}
               </span>
               <span 
                 onClick={() => navigate("/about")} 
-                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
+                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors min-h-[48px] py-3 px-4 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation flex items-center"
               >
                 📖 {t('home.about')}
               </span>
               <span 
                 onClick={() => navigate("/parent-dashboard")} 
-                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors py-2 px-3 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation"
+                className="text-muted-foreground hover:text-primary cursor-pointer transition-colors min-h-[48px] py-3 px-4 rounded-lg hover:bg-primary/5 active:bg-primary/10 touch-manipulation flex items-center"
               >
                 👪 {t('home.forParents')}
               </span>
