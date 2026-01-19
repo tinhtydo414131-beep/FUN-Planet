@@ -153,7 +153,7 @@ export const Hero = () => {
                 }}
               >
                 <motion.span 
-                  className="text-3xl sm:text-4xl lg:text-5xl font-black"
+                  className="text-3xl sm:text-4xl lg:text-5xl font-quicksand font-bold uppercase tracking-wide"
                   style={{
                     background: 'linear-gradient(135deg, #E879F9 0%, #A855F7 50%, #7C3AED 100%)',
                     WebkitBackgroundClip: 'text',
@@ -166,7 +166,7 @@ export const Hero = () => {
                   CHƠI
                 </motion.span>
                 <motion.span 
-                  className="text-3xl sm:text-4xl lg:text-5xl font-black"
+                  className="text-3xl sm:text-4xl lg:text-5xl font-quicksand font-bold uppercase tracking-wide"
                   style={{
                     background: 'linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #E879F9 100%)',
                     WebkitBackgroundClip: 'text',
@@ -210,7 +210,7 @@ export const Hero = () => {
               initial={{ opacity: 0, scale: 0.9 }} 
               animate={{ opacity: 1, scale: 1 }} 
               transition={{ delay: 0.3 }}
-              className="text-3xl xs:text-4xl sm:text-5xl lg:text-7xl font-black tracking-wider relative mb-4 text-center"
+              className="hero-title-fun-planet text-3xl xs:text-4xl sm:text-5xl lg:text-7xl relative mb-4 text-center"
             >
               {/* Holographic shadow - pink/blue theme */}
               <span 

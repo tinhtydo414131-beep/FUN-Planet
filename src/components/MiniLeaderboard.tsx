@@ -206,9 +206,9 @@ export const MiniLeaderboard = React.forwardRef<HTMLDivElement, object>((props, 
       transition={{ delay: 0.5 }}
       className="w-full sm:w-72 md:w-80 mx-auto lg:mx-0"
     >
-      {/* Header Title */}
+      {/* Header Title - Quicksand Montessori */}
       <div className="text-right mb-2">
-        <h3 className="text-sm md:text-base font-bold text-gray-700">Mini Leaderboard</h3>
+        <h3 className="text-sm md:text-base font-quicksand font-bold text-gray-700 holo-text-white uppercase tracking-wide">Mini Leaderboard</h3>
       </div>
       
       {/* Glassmorphism container with animated holographic border */}

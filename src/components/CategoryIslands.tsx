@@ -205,8 +205,8 @@ export const CategoryIslands = () => {
                       {island.customIcon}
                     </motion.div>
 
-                    {/* Label - Smaller text on mobile */}
-                    <span className="text-white font-bold text-[10px] sm:text-xs md:text-base drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] text-center leading-tight">
+                    {/* Label - Quicksand Montessori style */}
+                    <span className="text-white font-quicksand font-bold text-[10px] sm:text-xs md:text-base uppercase tracking-wide drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] text-center leading-tight holo-text-white">
                       {t(island.labelKey)}
                     </span>
 

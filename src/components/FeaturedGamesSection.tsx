@@ -268,8 +268,8 @@ export function FeaturedGamesSection() {
                     </div>
                     
                     <div className="p-2 md:p-3">
-                      <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-0.5">{game.title}</h3>
-                      <p className="text-[8px] md:text-[10px] text-gray-500 truncate mb-1">
+                      <h3 className="font-quicksand font-bold text-gray-800 text-xs md:text-sm truncate mb-0.5">{game.title}</h3>
+                      <p className="font-nunito text-[8px] md:text-[10px] text-gray-500 truncate mb-1">
                         {game.play_count ? `${game.play_count} plays` : 'New release'}
                       </p>
                       <div className="flex items-center justify-between">
