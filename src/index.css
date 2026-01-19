@@ -948,6 +948,20 @@ body.fullscreen-active .game-container {
   border: none !important;
 }
 
+/* ==========================================
+   CategoryIslands 3D Rotation - Responsive
+   ========================================== */
+.island-3d-cube {
+  transform: rotateX(3deg) rotateY(-3deg);
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .island-3d-cube {
+    transform: rotateX(6deg) rotateY(-6deg);
+  }
+}
+
 /* CSS Fullscreen game container for iOS Safari */
 body.css-fullscreen .game-container {
   position: fixed !important;
