@@ -142,12 +142,12 @@ export const CategoryIslands = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          {t('categoryIslands.title', 'Khám Phá Thể Loại')}
+          Category Islands
         </motion.h2>
 
         {/* 3D Cube Grid - Always 4 columns horizontal */}
         <div 
-          className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+          className="grid grid-cols-4 gap-4 sm:gap-5 md:gap-6"
           style={{ perspective: '1000px' }}
           role="list"
           aria-label={t('categoryIslands.gridLabel', 'Game categories')}
@@ -156,7 +156,7 @@ export const CategoryIslands = () => {
             <motion.button
               key={island.id}
               onClick={() => handleIslandClick(island)}
-              className="relative group focus:outline-none touch-manipulation min-h-[80px] sm:min-h-[95px] md:min-h-[110px]"
+              className="relative group focus:outline-none touch-manipulation min-h-[90px] sm:min-h-[100px] md:min-h-[120px]"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ 
                 opacity: 1, 

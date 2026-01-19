@@ -267,9 +267,11 @@ export function FeaturedGamesSection() {
                       </motion.div>
                     </div>
                     
-                    {/* Info below thumbnail */}
                     <div className="p-2 md:p-3">
-                      <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-1">{game.title}</h3>
+                      <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-0.5">{game.title}</h3>
+                      <p className="text-[8px] md:text-[10px] text-gray-500 truncate mb-1">
+                        {game.play_count ? `${game.play_count} plays` : 'New release'}
+                      </p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1 text-[10px] md:text-xs text-gray-600">
                           <Star className="w-3 h-3 md:w-3.5 md:h-3.5 text-yellow-500" fill="currentColor" />
