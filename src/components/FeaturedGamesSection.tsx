@@ -78,7 +78,7 @@ export function FeaturedGamesSection() {
     }
   };
 
-  // Loading skeleton with horizontal layout - mobile optimized
+  // Loading skeleton with NEW horizontal layout
   if (loading) {
     return (
       <section className="py-4 md:py-8 px-2 md:px-4">
@@ -86,7 +86,7 @@ export function FeaturedGamesSection() {
           <div className="h-6 md:h-8 bg-white/30 rounded-lg w-32 md:w-48 mb-4 md:mb-6 animate-pulse" />
           <div className="flex gap-3 md:gap-4 overflow-hidden">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex-shrink-0 w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] bg-white/30 rounded-xl md:rounded-2xl animate-pulse" />
+              <div key={i} className="flex-shrink-0 w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-white/30 rounded-xl md:rounded-2xl animate-pulse" />
             ))}
           </div>
         </div>
@@ -145,7 +145,7 @@ export function FeaturedGamesSection() {
             className="flex gap-3 md:gap-4 overflow-x-auto pb-3 md:pb-4 snap-x snap-mandatory scrollbar-hide -mx-1 px-1 md:-mx-2 md:px-2"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {/* Built-in Game: Gem Fusion Quest - 3D Cube Style */}
+            {/* Built-in Game: Gem Fusion Quest - NEW Horizontal Layout */}
             <motion.div
               className="flex-shrink-0 snap-center"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -155,10 +155,9 @@ export function FeaturedGamesSection() {
               onAnimationComplete={() => playCardAppear()}
             >
               <div 
-                className="relative group cursor-pointer"
-                style={{ 
-                  transform: 'rotateX(3deg) rotateY(-2deg)',
-                  transformStyle: 'preserve-3d'
+                className="relative flex items-center rounded-2xl md:rounded-3xl w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98]"
+                style={{
+                  boxShadow: '0 8px 24px rgba(243, 196, 251, 0.25), inset 0 1px 0 rgba(255,255,255,0.4)'
                 }}
                 onClick={() => {
                   playBling();
@@ -166,69 +165,46 @@ export function FeaturedGamesSection() {
                 }}
                 onMouseEnter={() => playBloop()}
               >
-                {/* Front Face - Main Card */}
-                <div 
-                  className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/40 backdrop-blur-sm border border-pink-300/50 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-pink-400/70 active:scale-[0.98]"
-                  style={{
-                    boxShadow: '0 8px 24px rgba(243, 196, 251, 0.3), inset 0 1px 0 rgba(255,255,255,0.4)'
-                  }}
-                >
-                  {/* Thumbnail */}
-                  <img 
-                    src={gemFusionThumbnail}
-                    alt="Gem Fusion Quest"
-                    className="absolute inset-2 md:inset-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[55%] object-cover rounded-xl md:rounded-2xl transition-transform duration-500 group-hover:scale-105"
-                  />
+                {/* Left: Thumbnail + Info */}
+                <div className="flex-1 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-hidden">
+                  {/* Thumbnail - small, rounded */}
+                  <div className="relative flex-shrink-0">
+                    <img 
+                      src={gemFusionThumbnail}
+                      alt="Gem Fusion Quest"
+                      className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover rounded-xl md:rounded-2xl transition-transform duration-300 group-hover:scale-105"
+                    />
+                    {/* NEW Badge */}
+                    <Badge className="absolute -top-1 -left-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg text-[7px] md:text-[9px] px-1.5 py-0">
+                      ✨ NEW
+                    </Badge>
+                  </div>
                   
-                  {/* NEW Badge */}
-                  <Badge className="absolute top-3 left-3 md:top-4 md:left-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg z-10 text-[8px] md:text-[10px]">
-                    ✨ NEW
-                  </Badge>
-
-                  {/* Bottom Info */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-gradient-to-t from-white/80 to-white/40 backdrop-blur-sm">
-                    <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-1">Gem Fusion Quest</h3>
-                    <div className="flex items-center gap-1 text-[10px] md:text-xs text-gray-600 mb-2">
+                  {/* Info */}
+                  <div className="flex flex-col justify-center min-w-0">
+                    <h3 className="font-bold text-gray-800 text-[11px] sm:text-xs md:text-sm truncate mb-0.5">Gem Fusion Quest</h3>
+                    <div className="flex items-center gap-1 text-[9px] sm:text-[10px] md:text-xs text-gray-600">
                       <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-500" fill="currentColor" />
                       <span>5.0</span>
-                      <span className="mx-0.5">•</span>
-                      <span>Puzzle</span>
                     </div>
-                    
-                    {/* Play Button - Below info */}
-                    <motion.div
-                      className="w-full h-7 md:h-9 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-all"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Play className="w-3 h-3 md:w-4 md:h-4 text-white mr-1" fill="white" />
-                      <span className="text-white text-[10px] md:text-xs font-semibold">Chơi ngay</span>
-                    </motion.div>
+                    <span className="text-[8px] sm:text-[9px] md:text-[10px] text-purple-600 font-medium">Puzzle</span>
                   </div>
                 </div>
 
-                {/* Right Side Face - 3D Depth */}
-                <div 
-                  className="absolute top-0 -right-1.5 md:-right-2 w-1.5 md:w-2 h-full origin-left rounded-r-xl"
-                  style={{ 
-                    background: 'linear-gradient(to bottom, rgba(243,196,251,0.4), rgba(162,210,255,0.3))',
-                  }}
-                />
-
-                {/* Bottom Face - 3D Depth */}
-                <div 
-                  className="absolute -bottom-1.5 md:-bottom-2 left-0 w-full h-1.5 md:h-2 origin-top rounded-b-xl"
-                  style={{ 
-                    background: 'linear-gradient(to right, rgba(243,196,251,0.3), rgba(162,210,255,0.4))',
-                  }}
-                />
-
-                {/* Floating Shadow */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[85%] h-3 bg-pink-400/20 blur-lg rounded-full" />
+                {/* Right: Circular Play Button */}
+                <div className="flex-shrink-0 pr-2 md:pr-3">
+                  <motion.div
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Play className="w-4 h-4 md:w-5 md:h-5 text-white ml-0.5" fill="white" />
+                  </motion.div>
+                </div>
               </div>
             </motion.div>
 
-            {/* Database Games - 3D Cube Style */}
+            {/* Database Games - NEW Horizontal Layout */}
             {games.map((game, index) => {
               const isHot = (game.play_count || 0) > 100;
               
@@ -243,92 +219,67 @@ export function FeaturedGamesSection() {
                   onAnimationComplete={() => playCardAppear()}
                 >
                   <div 
-                    className="relative group cursor-pointer"
-                    style={{ 
-                      transform: 'rotateX(3deg) rotateY(-2deg)',
-                      transformStyle: 'preserve-3d'
+                    className="relative flex items-center rounded-2xl md:rounded-3xl w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-white/40 backdrop-blur-sm border border-pink-200/60 hover:border-pink-300/80 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer group active:scale-[0.98]"
+                    style={{
+                      boxShadow: '0 8px 24px rgba(168, 85, 247, 0.15), inset 0 1px 0 rgba(255,255,255,0.4)'
                     }}
                     onClick={() => handlePlayGame(game)}
                     onMouseEnter={() => playBloop()}
                   >
-                    {/* Front Face - Main Card */}
-                    <div 
-                      className="relative overflow-hidden rounded-2xl md:rounded-3xl w-[140px] sm:w-[160px] md:w-[200px] aspect-[3/4] bg-white/40 backdrop-blur-sm border border-purple-300/50 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:border-purple-400/70 active:scale-[0.98]"
-                      style={{
-                        boxShadow: '0 8px 24px rgba(168, 85, 247, 0.2), inset 0 1px 0 rgba(255,255,255,0.4)'
-                      }}
-                    >
-                      {/* Thumbnail - Inset style */}
-                      {getThumbnailUrl(game.thumbnail_path) ? (
-                        <img 
-                          src={getThumbnailUrl(game.thumbnail_path)!}
-                          alt={game.title}
-                          className="absolute inset-2 md:inset-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[55%] object-cover rounded-xl md:rounded-2xl transition-transform duration-500 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="absolute inset-2 md:inset-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[55%] bg-gradient-to-br from-purple-300 to-pink-300 rounded-xl md:rounded-2xl flex items-center justify-center">
-                          <Gamepad2 className="w-8 h-8 md:w-10 md:h-10 text-white/60" />
-                        </div>
-                      )}
+                    {/* Left: Thumbnail + Info */}
+                    <div className="flex-1 flex items-center gap-2 md:gap-3 p-2 md:p-3 overflow-hidden">
+                      {/* Thumbnail - small, rounded */}
+                      <div className="relative flex-shrink-0">
+                        {getThumbnailUrl(game.thumbnail_path) ? (
+                          <img 
+                            src={getThumbnailUrl(game.thumbnail_path)!}
+                            alt={game.title}
+                            className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover rounded-xl md:rounded-2xl transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-300 to-pink-300 rounded-xl md:rounded-2xl flex items-center justify-center">
+                            <Gamepad2 className="w-6 h-6 md:w-8 md:h-8 text-white/60" />
+                          </div>
+                        )}
+                        
+                        {/* HOT Badge */}
+                        {isHot && (
+                          <Badge className="absolute -top-1 -left-1 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg text-[7px] md:text-[9px] px-1.5 py-0">
+                            🔥 HOT
+                          </Badge>
+                        )}
+                      </div>
                       
-                      {/* HOT Badge */}
-                      {isHot && (
-                        <Badge className="absolute top-3 left-3 md:top-4 md:left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg z-10 text-[8px] md:text-[10px]">
-                          🔥 HOT
-                        </Badge>
-                      )}
-
-                      {/* Bottom Info */}
-                      <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-gradient-to-t from-white/80 to-white/40 backdrop-blur-sm">
-                        <h3 className="font-bold text-gray-800 text-xs md:text-sm truncate mb-1">{game.title}</h3>
-                        <div className="flex items-center gap-1 text-[10px] md:text-xs text-gray-600 mb-2">
+                      {/* Info */}
+                      <div className="flex flex-col justify-center min-w-0">
+                        <h3 className="font-bold text-gray-800 text-[11px] sm:text-xs md:text-sm truncate mb-0.5">{game.title}</h3>
+                        <div className="flex items-center gap-1 text-[9px] sm:text-[10px] md:text-xs text-gray-600">
                           <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-500" fill="currentColor" />
                           <span>4.8</span>
-                          {game.category && (
-                            <>
-                              <span className="mx-0.5">•</span>
-                              <span className="capitalize">{game.category}</span>
-                            </>
-                          )}
                         </div>
-                        
-                        {/* Play Button - Below info */}
-                        <motion.div
-                          className="w-full h-7 md:h-9 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-all"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Play className="w-3 h-3 md:w-4 md:h-4 text-white mr-1" fill="white" />
-                          <span className="text-white text-[10px] md:text-xs font-semibold">Chơi ngay</span>
-                        </motion.div>
+                        {game.category && (
+                          <span className="text-[8px] sm:text-[9px] md:text-[10px] text-purple-600 font-medium capitalize">{game.category}</span>
+                        )}
                       </div>
                     </div>
 
-                    {/* Right Side Face - 3D Depth */}
-                    <div 
-                      className="absolute top-0 -right-1.5 md:-right-2 w-1.5 md:w-2 h-full origin-left rounded-r-xl"
-                      style={{ 
-                        background: 'linear-gradient(to bottom, rgba(168,85,247,0.3), rgba(236,72,153,0.2))',
-                      }}
-                    />
-
-                    {/* Bottom Face - 3D Depth */}
-                    <div 
-                      className="absolute -bottom-1.5 md:-bottom-2 left-0 w-full h-1.5 md:h-2 origin-top rounded-b-xl"
-                      style={{ 
-                        background: 'linear-gradient(to right, rgba(168,85,247,0.2), rgba(236,72,153,0.3))',
-                      }}
-                    />
-
-                    {/* Floating Shadow */}
-                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[85%] h-3 bg-purple-400/15 blur-lg rounded-full" />
+                    {/* Right: Circular Play Button */}
+                    <div className="flex-shrink-0 pr-2 md:pr-3">
+                      <motion.div
+                        className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Play className="w-4 h-4 md:w-5 md:h-5 text-white ml-0.5" fill="white" />
+                      </motion.div>
+                    </div>
                   </div>
                 </motion.div>
               );
             })}
 
-            {/* View All Card */}
+            {/* View All Card - NEW Horizontal Layout */}
             <motion.div
               className="flex-shrink-0 snap-center"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -337,18 +288,18 @@ export function FeaturedGamesSection() {
               transition={{ duration: 0.3, delay: 0.4 }}
             >
               <div 
-                className="relative overflow-hidden rounded-xl md:rounded-2xl w-[140px] sm:w-[160px] md:w-[220px] aspect-[3/4] bg-gradient-to-br from-purple-400/30 to-pink-400/30 backdrop-blur-sm border-2 border-dashed border-purple-300/60 hover:border-purple-400 transition-all duration-300 cursor-pointer flex items-center justify-center group"
+                className="relative flex items-center justify-center rounded-2xl md:rounded-3xl w-[200px] sm:w-[220px] md:w-[280px] h-[90px] sm:h-[100px] md:h-[120px] bg-gradient-to-br from-purple-400/20 to-pink-400/20 backdrop-blur-sm border-2 border-dashed border-pink-300/60 hover:border-pink-400 transition-all duration-300 cursor-pointer group"
                 onClick={() => {
                   playSound(523.25, 0.1, 'sine');
                   navigate('/games');
                 }}
               >
-                <div className="text-center">
+                <div className="flex items-center gap-2 md:gap-3">
                   <motion.div
-                    className="w-10 h-10 md:w-14 md:h-14 mx-auto mb-2 md:mb-3 rounded-full bg-white/40 flex items-center justify-center group-hover:bg-white/60 transition-colors"
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500/80 to-purple-500/80 flex items-center justify-center group-hover:from-pink-500 group-hover:to-purple-500 transition-all shadow-md group-hover:shadow-lg"
                     whileHover={{ scale: 1.1, rotate: 90 }}
                   >
-                    <ChevronRight className="w-5 h-5 md:w-7 md:h-7 text-purple-600" />
+                    <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </motion.div>
                   <span className="font-bold text-purple-700 text-xs md:text-sm">Xem Tất Cả</span>
                 </div>
@@ -357,8 +308,7 @@ export function FeaturedGamesSection() {
 
           </div>
 
-          {/* Mobile scroll fade indicator - positioned outside scroll container */}
-          <div className="absolute right-0 top-16 bottom-8 w-8 bg-gradient-to-l from-white/30 to-transparent pointer-events-none md:hidden rounded-r-2xl" />
+          {/* Removed: Mobile scroll fade - cards float freely on holographic background */}
         </div>
       </section>
 
