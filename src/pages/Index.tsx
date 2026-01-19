@@ -164,7 +164,7 @@ const Index = () => {
       
       {/* Category Islands - Glass Container */}
       <div className="mx-2 md:mx-4 mb-4 md:mb-6">
-          <div className="bg-white/35 backdrop-blur-md rounded-3xl p-5 md:p-6 shadow-lg border border-white/50">
+          <div className="bg-white/45 backdrop-blur-lg rounded-3xl p-5 md:p-6 shadow-xl border border-white/60">
             <CategoryIslands />
           </div>
       </div>
@@ -174,7 +174,7 @@ const Index = () => {
       
       {/* Featured Games - Glass Container */}
       <div className="mx-2 md:mx-4 mb-4 md:mb-6">
-          <div className="bg-white/35 backdrop-blur-md rounded-3xl p-5 md:p-6 shadow-lg border border-white/50">
+          <div className="bg-white/45 backdrop-blur-lg rounded-3xl p-5 md:p-6 shadow-xl border border-white/60">
             <FeaturedGamesSection />
           </div>
       </div>
