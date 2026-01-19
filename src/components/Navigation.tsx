@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { User, LogOut, Trophy, Users, MessageCircle, Wallet, Music, Settings, Gift, Bell, Menu, X, Search, Gamepad2, BookOpen, Shield, Sparkles, Crown, Home } from "lucide-react";
 
 const funPlanetLogo = "/logo-header-circular.png";
@@ -6,7 +7,6 @@ import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -33,7 +33,8 @@ import { useTranslation } from "react-i18next";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigationSound } from "@/hooks/useNavigationSound";
 
-export const Navigation = () => {
+export const Navigation = React.forwardRef<HTMLElement, {}>(
+  function Navigation(_props, ref) {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
@@ -588,4 +589,6 @@ export const Navigation = () => {
       </div>
     </>
   );
-};
+});
+
+Navigation.displayName = "Navigation";
