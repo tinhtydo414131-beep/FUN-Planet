@@ -97,24 +97,24 @@ export function FeaturedGamesSection() {
 
   return (
     <>
-      <section id="featured-games" className="py-16 px-4 bg-gradient-to-b from-background to-primary/5">
+      <section id="featured-games" className="py-8 md:py-12 lg:py-16 px-4 glass-card rounded-3xl mx-2 md:mx-4">
         <div className="container mx-auto max-w-7xl">
-          {/* Section Header */}
+          {/* Section Header - Holographic */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8 md:mb-12"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-pink-500/20 rounded-full mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-400/20 via-purple-500/20 to-blue-400/20 rounded-full mb-4">
               <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
-              <span className="font-bold text-sm">HOT TODAY</span>
+              <span className="font-quicksand font-bold text-sm uppercase tracking-wide">HOT TODAY</span>
               <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-quicksand font-bold text-holographic mb-4">
               Today's Featured Games 🎮
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl font-nunito text-muted-foreground max-w-2xl mx-auto">
               Play instantly without leaving the page! No downloads, no registration required.
             </p>
           </motion.div>
@@ -190,7 +190,7 @@ export function FeaturedGamesSection() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card
-                  className="group relative overflow-hidden rounded-2xl border-2 border-transparent hover:border-primary/50 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:scale-105"
+                  className="group relative overflow-hidden rounded-2xl border-2 border-transparent hover:border-pink-300/50 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:scale-105 bg-white/80 backdrop-blur-sm"
                   onClick={() => handlePlayGame(game)}
                 >
                   {/* Thumbnail */}
@@ -209,13 +209,13 @@ export function FeaturedGamesSection() {
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                     
-                    {/* Play Button */}
+                    {/* Play Button - Holographic */}
                     <motion.div
                       initial={{ scale: 0 }}
                       whileHover={{ scale: 1.1 }}
                       className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-xl">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 flex items-center justify-center shadow-xl holo-glow">
                         <Play className="w-8 h-8 text-white ml-1" />
                       </div>
                     </motion.div>
@@ -248,7 +248,7 @@ export function FeaturedGamesSection() {
             ))}
           </div>
 
-          {/* View All Button */}
+          {/* View All Button - Holographic */}
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -259,7 +259,7 @@ export function FeaturedGamesSection() {
               size="lg"
               variant="outline"
               onClick={() => document.getElementById('games-gallery')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-6 text-lg font-bold border-2 hover:bg-primary/10"
+              className="px-8 py-6 text-lg font-quicksand font-bold uppercase tracking-wide border-2 hover:bg-primary/10 btn-holographic"
             >
               View All Games →
             </Button>

@@ -172,18 +172,19 @@ export const Hero = () => {
           </motion.div>
 
           {/* Slogan - Enhanced glassmorphism */}
+          {/* Slogan - Glassmorphism Holographic */}
           <motion.p initial={{
           opacity: 0
         }} animate={{
           opacity: 1
         }} transition={{
           delay: 0.3
-        }} className="text-xs sm:text-base md:text-lg text-white font-rajdhani font-black max-w-[90vw] sm:max-w-2xl mx-auto leading-relaxed px-3 sm:px-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] bg-gradient-to-r from-purple-600/70 via-pink-600/70 to-cyan-600/70 backdrop-blur-xl rounded-2xl py-2.5 sm:py-4 border border-white/50 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_0_40px_rgba(168,85,247,0.25)]">
+        }} className="text-xs sm:text-base md:text-lg text-white font-quicksand font-bold max-w-[90vw] sm:max-w-2xl mx-auto leading-relaxed px-3 sm:px-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] glass-card-dark holo-glow-hover rounded-2xl py-2.5 sm:py-4">
             🚀 {t('hero.slogan')} 💎✨
           </motion.p>
 
 
-          {/* Search bar - Glossy white with pink-blue gradient border */}
+          {/* Search bar - Holographic border */}
           <motion.form initial={{
           opacity: 0,
           y: 20
@@ -194,19 +195,10 @@ export const Hero = () => {
           delay: 0.4
         }} onSubmit={handleSearch} className="max-w-xl mx-auto px-2 sm:px-4">
             <div className="relative group">
-              {/* Pink-blue gradient border */}
+              {/* Holographic animated gradient border */}
+              <div className="absolute -inset-[2px] rounded-2xl holo-border-animated opacity-80 group-hover:opacity-100 transition duration-300" />
               <div 
-                className="absolute -inset-[2px] rounded-2xl opacity-90 group-hover:opacity-100 transition duration-300"
-                style={{
-                  background: 'linear-gradient(90deg, #E040A0 0%, #C060C0 25%, #9070E0 50%, #70A0F0 75%, #50B0FF 100%)',
-                }}
-              />
-              <div 
-                className="relative rounded-xl overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,245,255,0.92) 50%, rgba(255,255,255,0.95) 100%)',
-                  backdropFilter: 'blur(20px)',
-                }}
+                className="relative rounded-xl overflow-hidden bg-white/95 backdrop-blur-xl"
               >
                 {/* Search icon - outline style only */}
                 <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 z-10" strokeWidth={1.5} />
