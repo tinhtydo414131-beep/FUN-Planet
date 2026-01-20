@@ -229,149 +229,162 @@ const Index = () => {
       
 
       {/* Full Games Gallery */}
-      <section id="games-gallery" className="py-16 px-4 bg-gradient-to-b from-primary/5 to-background">
+      <section id="games-gallery" className="py-16 px-4">
         <div className="container mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-              {t('home.gameCategories')} 🎨
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              {t('home.pickFavorite')}
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {categories.map((category, index) => (
-              <motion.button
-                key={category.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                onClick={() => navigate("/games")}
-                className="relative overflow-hidden rounded-3xl border-4 border-primary/30 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all group"
-              >
-                <div className="relative aspect-[4/3]">
-                  <img 
-                    src={category.image} 
-                    alt={category.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                  <div className={`absolute inset-0 ${category.color} opacity-40 group-hover:opacity-30 transition-opacity`} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
-                    <p className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">{category.count}</p>
-                    <p className="text-lg md:text-xl font-bold drop-shadow-lg">{category.name}</p>
-                    <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-sm drop-shadow-lg">{t('home.playNowArrow')}</span>
+          <div className="glass-card rounded-3xl p-6 md:p-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl md:text-5xl font-quicksand font-bold text-holographic mb-4">
+                {t('home.gameCategories')} 🎨
+              </h2>
+              <p className="text-xl text-muted-foreground font-nunito">
+                {t('home.pickFavorite')}
+              </p>
+            </motion.div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {categories.map((category, index) => (
+                <motion.button
+                  key={category.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  onClick={() => navigate("/games")}
+                  className="relative overflow-hidden rounded-3xl border-2 border-white/40 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all group glass-card"
+                  style={{
+                    borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1'
+                  }}
+                >
+                  <div className="relative aspect-[4/3]">
+                    <img 
+                      src={category.image} 
+                      alt={category.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className={`absolute inset-0 ${category.color} opacity-40 group-hover:opacity-30 transition-opacity`} />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+                      <p className="text-4xl md:text-5xl font-quicksand font-bold mb-2 drop-shadow-lg">{category.count}</p>
+                      <p className="text-lg md:text-xl font-quicksand font-bold drop-shadow-lg">{category.name}</p>
+                      <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="text-sm font-nunito drop-shadow-lg">{t('home.playNowArrow')}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.button>
-            ))}
-          </div>
+                </motion.button>
+              ))}
+            </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mt-10"
-          >
-            <Button
-              onClick={() => navigate("/games")}
-              size="lg"
-              className="px-12 py-6 text-xl font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl"
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center mt-10"
             >
-              {t('home.browseAll')}
-            </Button>
-          </motion.div>
+              <Button
+                onClick={() => navigate("/games")}
+                size="lg"
+                className="btn-holographic px-12 py-6 text-xl rounded-2xl"
+              >
+                {t('home.browseAll')}
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-              {t('home.whyKidsLove')}
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              {t('home.bestExperience')}
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="overflow-hidden border-2 border-primary/30 hover:border-primary/60 transition-all hover:shadow-xl group h-full">
-                  <div className="relative aspect-video overflow-hidden">
-                    <img 
-                      src={feature.image} 
-                      alt={feature.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-20 group-hover:opacity-10 transition-opacity`} />
-                  </div>
-                  <div className="p-6">
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} mb-4`}>
-                      {feature.icon}
+          <div className="glass-card rounded-3xl p-6 md:p-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl md:text-5xl font-quicksand font-bold text-holographic mb-4">
+                {t('home.whyKidsLove')}
+              </h2>
+              <p className="text-xl text-muted-foreground font-nunito max-w-2xl mx-auto">
+                {t('home.bestExperience')}
+              </p>
+            </motion.div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className="overflow-hidden glass-card border-2 border-white/40 hover:border-white/60 transition-all hover:shadow-xl group h-full"
+                    style={{
+                      borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1'
+                    }}
+                  >
+                    <div className="relative aspect-video overflow-hidden">
+                      <img 
+                        src={feature.image} 
+                        alt={feature.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-20 group-hover:opacity-10 transition-opacity`} />
                     </div>
-                    <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+                    <div className="p-6">
+                      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} mb-4`}>
+                        {feature.icon}
+                      </div>
+                      <h3 className="text-xl font-quicksand font-bold mb-2">{feature.title}</h3>
+                      <p className="text-muted-foreground font-nunito">{feature.description}</p>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Quick Access */}
-      <section className="py-12 px-4 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
+      <section className="py-12 px-4">
         <div className="container mx-auto max-w-7xl">
-          <h2 className="text-3xl font-bold text-center mb-8 text-primary">
-            {t('home.quickAccess')}
-          </h2>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-            {[
-              { path: "/games", icon: "🎮", label: t('home.gamesLabel') },
-              { path: "/upload-game", icon: "📤", label: t('home.uploadLabel') },
-              { path: "/reward-galaxy", icon: "🎁", label: t('home.rewardsLabel') },
-              { path: "/nft-gallery", icon: "💎", label: t('home.nftsLabel') },
-              { path: "/chat", icon: "💬", label: t('home.chatLabel') },
-              { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: t('home.parentsLabel') },
-              { path: "/leaderboard", icon: "🏆", label: t('home.leadersLabel') },
-              { path: "/achievement-leaderboard", icon: "🏅", label: t('home.achievementsLabel') },
-              { path: "/find-friends", icon: "👥", label: t('home.friendsLabel') },
-              { path: user ? "/profile" : "/auth", icon: "👤", label: user ? t('home.profileLabel') : t('home.loginLabel') },
-            ].map((item) => (
-              <Button
-                key={item.path}
-                variant="outline"
-                onClick={() => navigate(item.path)}
-                className="flex flex-col items-center gap-1 h-20 border-2 border-primary/20 hover:border-primary hover:bg-primary/10 transition-all hover:scale-105"
-              >
-                <span className="text-2xl">{item.icon}</span>
-                <span className="text-xs font-bold">{item.label}</span>
-              </Button>
-            ))}
+          <div className="glass-card rounded-3xl p-6 md:p-8">
+            <h2 className="text-3xl font-quicksand font-bold text-center mb-8 text-holographic">
+              {t('home.quickAccess')}
+            </h2>
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+              {[
+                { path: "/games", icon: "🎮", label: t('home.gamesLabel') },
+                { path: "/upload-game", icon: "📤", label: t('home.uploadLabel') },
+                { path: "/reward-galaxy", icon: "🎁", label: t('home.rewardsLabel') },
+                { path: "/nft-gallery", icon: "💎", label: t('home.nftsLabel') },
+                { path: "/chat", icon: "💬", label: t('home.chatLabel') },
+                { path: "/parent-dashboard", icon: "👨‍👩‍👧", label: t('home.parentsLabel') },
+                { path: "/leaderboard", icon: "🏆", label: t('home.leadersLabel') },
+                { path: "/achievement-leaderboard", icon: "🏅", label: t('home.achievementsLabel') },
+                { path: "/find-friends", icon: "👥", label: t('home.friendsLabel') },
+                { path: user ? "/profile" : "/auth", icon: "👤", label: user ? t('home.profileLabel') : t('home.loginLabel') },
+              ].map((item) => (
+                <Button
+                  key={item.path}
+                  variant="outline"
+                  onClick={() => navigate(item.path)}
+                  className="flex flex-col items-center gap-1 h-20 glass-card border-2 border-white/40 hover:border-white/60 hover:shadow-lg transition-all hover:scale-105 rounded-2xl"
+                >
+                  <span className="text-2xl">{item.icon}</span>
+                  <span className="text-xs font-quicksand font-bold uppercase tracking-wide">{item.label}</span>
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -379,18 +392,25 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <Card className="p-8 md:p-12 border-4 border-primary/40 shadow-2xl bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+          <Card className="p-8 md:p-12 glass-card border-2 border-white/40 shadow-2xl text-center rounded-3xl relative overflow-hidden"
+            style={{
+              borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1'
+            }}
+          >
+            {/* Holographic background glow */}
+            <div className="absolute inset-0 holographic-bg opacity-20 pointer-events-none" />
+            
+            <h2 className="text-3xl md:text-4xl font-quicksand font-bold text-holographic mb-4 relative z-10">
               {t('home.readyToPlay')}
             </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground font-nunito mb-8 max-w-2xl mx-auto relative z-10">
               {t('home.joinThousands')}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
               <Button
                 onClick={() => navigate("/games")}
                 size="lg"
-                className="text-xl px-10 py-6 bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl"
+                className="btn-holographic text-xl px-10 py-6 rounded-2xl"
               >
                 {t('home.playNow')}
               </Button>
@@ -398,7 +418,7 @@ const Index = () => {
                 onClick={() => navigate("/upload-game")}
                 size="lg"
                 variant="outline"
-                className="text-xl px-10 py-6 border-2 border-primary hover:bg-primary/10"
+                className="text-xl px-10 py-6 border-2 border-white/60 hover:bg-white/20 rounded-2xl font-quicksand font-bold uppercase tracking-wide"
               >
                 {t('home.uploadGame')}
               </Button>
