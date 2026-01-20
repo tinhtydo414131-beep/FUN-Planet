@@ -423,11 +423,11 @@ export default function FullRanking() {
       }
 
       const usersWithEarnings: RankedUser[] = (data || []).map((row: any) => ({
-        id: row.id,
+        id: row.user_id, // ✅ Sửa từ row.id thành row.user_id (RPC trả về user_id)
         username: (row.username || 'Unknown').trim(),
         avatar_url: row.avatar_url,
         wallet_balance: Number(row.wallet_balance) || 0,
-        wallet_address: null, // RPC không trả về field này
+        wallet_address: null,
         pending_amount: Number(row.pending_amount) || 0,
         claimed_amount: Number(row.claimed_amount) || 0,
         total_camly: Number(row.total_camly) || 0,
