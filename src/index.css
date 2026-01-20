@@ -70,10 +70,10 @@
     --shadow-diamond: 0 0 40px hsla(280, 65%, 75%, 0.4), 0 0 80px hsla(340, 70%, 80%, 0.3), 0 0 120px hsla(200, 70%, 80%, 0.2);
     
     /* 🌈 Holographic Color System - Phase 2 */
-    --holo-pink: 340 70% 75%;      /* #F3C4FB */
-    --holo-purple: 280 65% 75%;    /* #CDB4DB */
-    --holo-blue: 200 70% 75%;      /* #A2D2FF */
-    --holo-mint: 175 60% 78%;      /* #B8F0F0 */
+    --holo-pink: 340, 70%, 75%;      /* #F3C4FB */
+    --holo-purple: 280, 65%, 75%;    /* #CDB4DB */
+    --holo-blue: 200, 70%, 75%;      /* #A2D2FF */
+    --holo-mint: 175, 60%, 78%;      /* #B8F0F0 */
     
     /* Gradient Definitions */
     --gradient-holographic: linear-gradient(135deg, 
@@ -984,10 +984,10 @@ body.css-fullscreen .css-fullscreen-hide {
   padding: 2px;
   background: linear-gradient(
     135deg,
-    hsl(var(--holo-pink)),
-    hsl(var(--holo-blue)),
-    hsl(var(--holo-purple)),
-    hsl(var(--holo-pink))
+    #F3C4FB,
+    #A2D2FF,
+    #CDB4DB,
+    #F3C4FB
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -1059,14 +1059,12 @@ body.css-fullscreen .css-fullscreen-hide {
   );
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 2px solid;
-  border-image: linear-gradient(90deg, 
-    hsl(var(--holo-pink)), 
-    hsl(var(--holo-purple)), 
-    hsl(var(--holo-blue)), 
-    hsl(var(--holo-mint)),
-    hsl(var(--holo-pink))
-  ) 1;
+  border-top: 2px solid transparent;
+  background-image: 
+    linear-gradient(135deg, hsla(340, 70%, 90%, 0.95), hsla(280, 65%, 88%, 0.95), hsla(200, 70%, 90%, 0.95)),
+    var(--gradient-holographic-border);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
 }
 
 /* 7. Holographic Text Gradient */
