@@ -317,7 +317,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 pb-24">
+    <div className="min-h-screen bg-background holographic-page-bg pb-24">
       <Navigation />
       
       {/* Cover Photo & Avatar */}
