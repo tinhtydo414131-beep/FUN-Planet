@@ -22,22 +22,22 @@ export const MobileBottomNavEnhanced = () => {
   if (shouldHide) return null;
 
   const baseNavItems = [
-    { icon: Home, label: t('nav.home'), path: "/", emoji: "🏠", color: "from-[hsl(340,70%,75%)] to-[hsl(280,65%,75%)]" },
-    { icon: Gamepad2, label: t('nav.games'), path: "/games", emoji: "🎮", color: "from-[hsl(280,65%,75%)] to-[hsl(200,70%,75%)]" },
-    { icon: Gift, label: t('nav.rewardGalaxy'), path: "/reward-galaxy", emoji: "🎁", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
+    { icon: Home, label: t('nav.home'), path: "/", emoji: "🏠", color: "from-[#F3C4FB] to-[#CDB4DB]" },
+    { icon: Gamepad2, label: t('nav.games'), path: "/games", emoji: "🎮", color: "from-[#CDB4DB] to-[#A2D2FF]" },
+    { icon: Gift, label: t('nav.rewardGalaxy'), path: "/reward-galaxy", emoji: "🎁", color: "from-[#FFD93D] to-[#FF8C42]" },
   ];
 
   // Add upload tab for developers, wallet for others
   const navItems = isDev 
     ? [
         ...baseNavItems.slice(0, 2),
-        { icon: Upload, label: t('nav.upload'), path: "/upload-game", emoji: "📤", color: "from-[hsl(160,55%,70%)] to-[hsl(180,60%,65%)]" },
+        { icon: Upload, label: t('nav.upload'), path: "/upload-game", emoji: "📤", color: "from-[#8FD9A8] to-[#6ECFCF]" },
         ...baseNavItems.slice(2),
-        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[#A2D2FF] to-[#8FD9A8]" },
       ]
     : [
         ...baseNavItems,
-        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[#A2D2FF] to-[#8FD9A8]" },
       ];
 
   const isActive = (path: string) => {
@@ -129,7 +129,7 @@ export const MobileBottomNavEnhanced = () => {
               
               {/* 🎯 Badge for notifications (example) */}
               {item.path === (user ? "/profile" : "/auth") && user && (
-                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-[hsl(340,70%,65%)] to-[hsl(0,65%,60%)] rounded-full animate-pulse" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-[#F3C4FB] to-[#FF6B6B] rounded-full animate-pulse" />
               )}
             </Link>
           );
