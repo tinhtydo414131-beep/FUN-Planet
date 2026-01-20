@@ -6,6 +6,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
+import { useTouchFeedback } from "@/hooks/useTouchFeedback";
 
 // 🎀 FUN PLANET PASTEL CUTE BOTTOM NAV - Kids Gaming 2025
 export const MobileBottomNavEnhanced = () => {
@@ -14,6 +15,7 @@ export const MobileBottomNavEnhanced = () => {
   const { isDev } = useUserRole();
   const { t } = useTranslation();
   const { shouldReduceAnimations } = usePerformanceMode();
+  const { triggerFeedback } = useTouchFeedback({ type: 'selection' });
 
   // Hide bottom nav on game play pages for immersive experience
   const hideOnPaths = ['/game/'];
@@ -71,8 +73,9 @@ export const MobileBottomNavEnhanced = () => {
             <Link
               key={item.label}
               to={item.path}
+              onClick={() => triggerFeedback('selection')}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 transition-all duration-300 touch-manipulation active:scale-90 min-h-[76px] relative group",
+                "flex flex-col items-center justify-center gap-1 transition-all duration-300 touch-manipulation active:scale-90 min-h-[76px] relative group touch-ripple touch-button no-context-menu",
                 active 
                   ? "text-primary" 
                   : "text-muted-foreground hover:text-foreground"

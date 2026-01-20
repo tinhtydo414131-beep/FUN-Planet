@@ -254,7 +254,7 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 onClick={() => navigate("/games")}
-                className="relative overflow-hidden rounded-3xl glass-card holo-border holo-border-animated shadow-xl hover:shadow-2xl hover:holo-glow transform hover:scale-105 transition-all group"
+                className="relative overflow-hidden rounded-3xl glass-card holo-border holo-border-animated shadow-xl hover:shadow-2xl hover:holo-glow transform hover:scale-105 transition-all group touch-card touch-glow active:scale-95"
               >
                 <div className="relative aspect-[4/3]">
                   <img 
