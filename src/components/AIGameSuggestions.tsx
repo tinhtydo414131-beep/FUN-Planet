@@ -92,7 +92,7 @@ export function AIGameSuggestions() {
   return (
     <Card className="border-2 border-purple-500/30 bg-gradient-to-br from-card via-purple-500/5 to-pink-500/5 overflow-hidden">
       <CardHeader className="pb-2">
-        <CardTitle className="font-fredoka flex items-center gap-2 text-xl">
+        <CardTitle className="font-quicksand flex items-center gap-2 text-xl">
           <Sparkles className="w-6 h-6 text-purple-500" />
           AI Game Suggestions
           <Badge className="ml-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">

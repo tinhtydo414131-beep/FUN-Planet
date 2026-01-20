@@ -92,7 +92,7 @@ export function MessageActionsMenu({ messageId, isOwn, isPinned, onEdit, onDelet
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-fredoka">{t('messages.deleteTitle')}</AlertDialogTitle>
+            <AlertDialogTitle className="font-quicksand">{t('messages.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
               {t('messages.deleteDescription')}
             </AlertDialogDescription>

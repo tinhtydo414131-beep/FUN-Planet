@@ -48,7 +48,7 @@ export const LandscapePrompt = () => {
         <div className="flex justify-center">
           <RotateCcw className="h-16 w-16 animate-spin" style={{ animationDuration: "3s" }} />
         </div>
-        <h3 className="text-xl font-fredoka font-bold">
+        <h3 className="text-xl font-quicksand font-bold">
           {t('landscape.title')}
         </h3>
         <p className="text-sm font-comic">

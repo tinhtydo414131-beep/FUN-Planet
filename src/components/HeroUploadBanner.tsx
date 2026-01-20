@@ -52,7 +52,7 @@ export const HeroUploadBanner = () => {
           </motion.div>
 
           {/* Main text */}
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-orbitron font-black text-white leading-tight">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-quicksand font-bold text-white leading-tight">
             Are you ready to become a{" "}
             <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
               CREATOR

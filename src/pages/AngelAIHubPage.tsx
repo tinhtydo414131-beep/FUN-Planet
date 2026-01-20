@@ -34,7 +34,7 @@ const AngelAIHubPage = () => {
               <FloatingMascot size="lg" />
               
               <div className="space-y-2 mt-4">
-                <ShimmerText as="h1" className="text-3xl font-bold font-fredoka">
+                <ShimmerText as="h1" className="text-3xl font-bold font-quicksand">
                   Angel AI
                 </ShimmerText>
                 <p className="text-white/80 text-lg">
@@ -102,7 +102,7 @@ const AngelAIHubPage = () => {
             <div className="flex items-center gap-3">
               <FloatingMascot size="sm" />
               <div className="text-center">
-                <ShimmerText as="h1" className="text-xl sm:text-2xl font-bold font-fredoka">
+                <ShimmerText as="h1" className="text-xl sm:text-2xl font-bold font-quicksand">
                   Angel AI Hub
                 </ShimmerText>
                 <p className="text-xs sm:text-sm text-white/60">Thiên thần trí tuệ của bé</p>

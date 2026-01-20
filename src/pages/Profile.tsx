@@ -240,7 +240,7 @@ export default function Profile() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <Gamepad2 className="w-16 h-16 text-primary animate-bounce mx-auto" />
-          <p className="text-2xl font-fredoka text-primary">Loading...</p>
+          <p className="text-2xl font-quicksand text-primary">Loading...</p>
         </div>
       </div>
     );
@@ -251,7 +251,7 @@ export default function Profile() {
       <div className="min-h-screen bg-background">
         <Navigation />
         <div className="container mx-auto py-32 px-4 text-center">
-          <p className="text-2xl font-fredoka text-muted-foreground">Profile not found</p>
+          <p className="text-2xl font-quicksand text-muted-foreground">Profile not found</p>
         </div>
       </div>
     );

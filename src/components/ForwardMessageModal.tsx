@@ -95,7 +95,7 @@ export function ForwardMessageModal({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 font-fredoka">
+          <DialogTitle className="flex items-center gap-2 font-quicksand">
             <Forward className="w-5 h-5 text-primary" />
             Forward Message
           </DialogTitle>

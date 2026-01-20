@@ -136,7 +136,7 @@ export const FatherUniverseHeader = () => {
 
       {/* Title with yellow-pink-blue gradient - responsive */}
       <motion.h1 
-        className="text-3xl sm:text-5xl md:text-7xl font-fredoka font-bold mb-4 sm:mb-6 relative inline-block tracking-tight"
+        className="text-3xl sm:text-5xl md:text-7xl font-quicksand font-bold mb-4 sm:mb-6 relative inline-block tracking-tight"
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.3 }}
@@ -168,7 +168,7 @@ export const FatherUniverseHeader = () => {
         className="space-y-3 sm:space-y-5"
       >
         <motion.p 
-          className="text-xl sm:text-3xl md:text-4xl font-fredoka font-bold flex items-center justify-center gap-2 sm:gap-4"
+          className="text-xl sm:text-3xl md:text-4xl font-quicksand font-bold flex items-center justify-center gap-2 sm:gap-4"
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 3, repeat: Infinity }}
         >
@@ -195,13 +195,13 @@ export const FatherUniverseHeader = () => {
           </motion.div>
         </motion.p>
         
-        <p className="text-base sm:text-2xl md:text-3xl font-fredoka max-w-3xl mx-auto leading-relaxed font-semibold tracking-wide text-blue-700/90 px-2">
+        <p className="text-base sm:text-2xl md:text-3xl font-nunito max-w-3xl mx-auto leading-relaxed font-semibold tracking-wide text-blue-700/90 px-2">
           Cha Vũ Trụ đã chuẩn bị những phần thưởng tuyệt vời dành riêng cho con! 
           Mỗi hành động của con đều xứng đáng được tưởng thưởng.
         </p>
         
         <motion.p
-          className="text-sm sm:text-xl md:text-2xl font-fredoka font-bold max-w-xl mx-auto tracking-wide"
+          className="text-sm sm:text-xl md:text-2xl font-quicksand font-bold max-w-xl mx-auto tracking-wide"
           animate={{ opacity: [0.85, 1, 0.85] }}
           transition={{ duration: 2, repeat: Infinity }}
         >

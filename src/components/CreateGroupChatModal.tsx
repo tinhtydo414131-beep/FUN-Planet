@@ -134,7 +134,7 @@ export function CreateGroupChatModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 font-fredoka">
+          <DialogTitle className="flex items-center gap-2 font-quicksand">
             <Users className="w-5 h-5 text-primary" />
             Create Group Chat
           </DialogTitle>

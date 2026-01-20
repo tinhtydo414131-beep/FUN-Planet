@@ -288,7 +288,7 @@ export function OnboardingTour({ role, onComplete, onSkip }: OnboardingTourProps
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <h2 className="text-2xl font-bold font-fredoka mb-3">{step.title}</h2>
+              <h2 className="text-2xl font-bold font-quicksand mb-3">{step.title}</h2>
               <p className="text-muted-foreground mb-6">{step.description}</p>
 
               {/* Tips */}

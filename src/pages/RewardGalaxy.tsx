@@ -326,7 +326,7 @@ export default function RewardGalaxy() {
           >
             <Globe className="w-16 h-16 text-primary mx-auto" />
           </motion.div>
-          <p className="text-xl font-fredoka text-primary">Đang tải Ngân Hà Phần Thưởng...</p>
+          <p className="text-xl font-quicksand text-primary">Đang tải Ngân Hà Phần Thưởng...</p>
         </div>
       </div>
     );
@@ -373,7 +373,7 @@ export default function RewardGalaxy() {
           {/* Reward Categories - Planet Cards */}
           <div className="mb-8 sm:mb-14">
             <motion.h2 
-              className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-center mb-6 sm:mb-10"
+              className="text-2xl sm:text-3xl md:text-4xl font-quicksand font-bold text-center mb-6 sm:mb-10"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
