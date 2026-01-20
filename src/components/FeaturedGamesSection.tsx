@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Play, X, Maximize2, Star, Users, Flame, Sparkles } from "lucide-react";
 import { GamePreviewPlaceholder } from "@/components/GamePreviewPlaceholder";
 import gemFusionThumbnail from "@/assets/games/gem-fusion-quest-thumbnail.png";
+import { useTouchFeedback } from "@/hooks/useTouchFeedback";
 
 interface FeaturedGame {
   id: string;
@@ -25,6 +26,7 @@ export function FeaturedGamesSection() {
   const [loading, setLoading] = useState(true);
   const [selectedGame, setSelectedGame] = useState<FeaturedGame | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { triggerFeedback } = useTouchFeedback({ type: 'gameAction' });
 
   useEffect(() => {
     fetchFeaturedGames();
@@ -127,8 +129,8 @@ export function FeaturedGamesSection() {
             </p>
           </motion.div>
 
-          {/* Games Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {/* Games Grid - Touch optimized */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 touch-scroll">
             {/* Gem Fusion Quest - Built-in Game Featured */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -136,8 +138,11 @@ export function FeaturedGamesSection() {
               viewport={{ once: true }}
             >
               <Card
-                className="group relative overflow-hidden rounded-2xl glass-card holo-border holo-border-animated hover:holo-glow-strong cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
-                onClick={() => navigate('/games/gem-fusion-quest')}
+                className="group relative overflow-hidden rounded-2xl glass-card holo-border holo-border-animated hover:holo-glow-strong cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 game-card-touch touch-glow"
+                onClick={() => {
+                  triggerFeedback('gameAction');
+                  navigate('/games/gem-fusion-quest');
+                }}
               >
                 {/* Thumbnail */}
                 <div className="relative aspect-video overflow-hidden">
@@ -198,8 +203,11 @@ export function FeaturedGamesSection() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card
-                  className="group relative overflow-hidden rounded-2xl glass-card holo-border hover:holo-glow cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
-                  onClick={() => handlePlayGame(game)}
+                  className="group relative overflow-hidden rounded-2xl glass-card holo-border hover:holo-glow cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 game-card-touch touch-glow"
+                  onClick={() => {
+                    triggerFeedback('gameAction');
+                    handlePlayGame(game);
+                  }}
                 >
                   {/* Thumbnail */}
                   <div className="relative aspect-video overflow-hidden">
