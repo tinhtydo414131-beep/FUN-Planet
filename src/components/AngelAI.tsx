@@ -13,6 +13,7 @@ import { useAngelAIChat, ChatMessage, ChatHistoryGroup } from "@/hooks/useAngelA
 import { useToast } from "@/hooks/use-toast";
 import { useWebSpeechRecognition } from "@/hooks/useWebSpeechRecognition";
 import { useWebSpeechSynthesis } from "@/hooks/useWebSpeechSynthesis";
+import { useTouchFeedback } from "@/hooks/useTouchFeedback";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -775,6 +776,8 @@ function MessageBubble({ message, isExpanded = true }: { message: ChatMessage; i
 
 // Floating Angel Button for triggering Angel AI - Simplified 2D only
 export function AngelAIButton({ onClick }: { onClick: () => void }) {
+  const { triggerFeedback } = useTouchFeedback({ type: 'notification' });
+  
   const {
     position,
     isDragging,
@@ -792,6 +795,7 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
 
   const handleClick = () => {
     if (!isDragging) {
+      triggerFeedback('notification');
       onClick();
     }
   };
@@ -801,7 +805,7 @@ export function AngelAIButton({ onClick }: { onClick: () => void }) {
 
   return (
     <div
-      className="fixed z-50 touch-none select-none"
+      className="fixed z-50 touch-none select-none touch-fab touch-glow"
       style={{
         ...style,
         right: isDesktop ? '1rem' : 'max(0.75rem, env(safe-area-inset-right, 0px))',
