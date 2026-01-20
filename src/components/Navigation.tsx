@@ -244,6 +244,13 @@ export const Navigation = () => {
                           <Crown className="mr-3 h-5 w-5" />
                           <span className="font-medium">{t('nav.adminDashboard')}</span>
                         </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => navigate("/docs/platform")} 
+                          className="py-3 text-blue-600 hover:text-blue-500"
+                        >
+                          <BookOpen className="mr-3 h-5 w-5" />
+                          <span className="font-medium">Developer Docs</span>
+                        </DropdownMenuItem>
                       </>
                     )}
                     <DropdownMenuSeparator />
@@ -435,19 +442,30 @@ export const Navigation = () => {
                           </button>
                         </SheetClose>
                         {isAdmin && (
-                          <SheetClose asChild>
-                            <button
-                              onClick={() => navigate("/admin/master")}
-                              className="flex items-center gap-3 w-full p-4 rounded-xl transition-colors"
-                              style={{
-                                background: 'linear-gradient(135deg, rgba(255,100,0,0.15) 0%, rgba(239,68,68,0.15) 100%)',
-                                border: '2px solid rgba(255,100,0,0.4)',
-                              }}
-                            >
-                              <Crown className="w-5 h-5 text-orange-500" />
-                              <span className="font-inter font-bold text-orange-600">👑 {t('nav.adminDashboard')}</span>
-                            </button>
-                          </SheetClose>
+                          <>
+                            <SheetClose asChild>
+                              <button
+                                onClick={() => navigate("/admin/master")}
+                                className="flex items-center gap-3 w-full p-4 rounded-xl transition-colors"
+                                style={{
+                                  background: 'linear-gradient(135deg, rgba(255,100,0,0.15) 0%, rgba(239,68,68,0.15) 100%)',
+                                  border: '2px solid rgba(255,100,0,0.4)',
+                                }}
+                              >
+                                <Crown className="w-5 h-5 text-orange-500" />
+                                <span className="font-inter font-bold text-orange-600">👑 {t('nav.adminDashboard')}</span>
+                              </button>
+                            </SheetClose>
+                            <SheetClose asChild>
+                              <button
+                                onClick={() => navigate("/docs/platform")}
+                                className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
+                              >
+                                <BookOpen className="w-5 h-5 text-blue-500" />
+                                <span className="font-inter font-medium text-blue-600">Developer Docs</span>
+                              </button>
+                            </SheetClose>
+                          </>
                         )}
                       </>
                     )}

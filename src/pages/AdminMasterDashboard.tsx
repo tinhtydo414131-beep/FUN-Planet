@@ -13,6 +13,7 @@ import {
   TrendingUp,
   ArrowLeft,
   RefreshCw,
+  BookOpen,
   BarChart3,
   Settings,
   Loader2,
@@ -245,6 +246,15 @@ export default function AdminMasterDashboard() {
                 onNavigateToTab={handleNavigateToTab}
                 onRefreshStats={loadStats}
               />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/docs/platform")}
+                className="gap-2"
+              >
+                <BookOpen className="h-4 w-4" />
+                Developer Docs
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
