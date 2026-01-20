@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Home, Clock, Calendar, Play, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { useTouchFeedback } from "@/hooks/useTouchFeedback";
 
 interface GameSession {
   id: string;
@@ -21,6 +22,85 @@ interface GameSession {
     genre: string;
   };
 }
+
+// Session Card component with touch feedback
+const SessionCard = ({ session, navigate, formatDuration }: { 
+  session: GameSession; 
+  navigate: (path: string) => void;
+  formatDuration: (seconds: number) => string;
+}) => {
+  const { triggerFeedback } = useTouchFeedback({ type: 'gameAction' });
+  
+  return (
+    <Card 
+      className="touch-card touch-glow border-2 border-primary/20 hover:border-primary/50 transition-all hover:shadow-lg cursor-pointer"
+      onClick={() => {
+        triggerFeedback('gameAction');
+        navigate(`/game/${session.games.id}`);
+      }}
+    >
+      <CardContent className="p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          {/* Thumbnail */}
+          <div className="relative w-full sm:w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 border-2 border-primary/30">
+            {session.games.thumbnail_url ? (
+              <img
+                src={session.games.thumbnail_url}
+                alt={session.games.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-5xl">
+                🎮
+              </div>
+            )}
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 space-y-3 w-full">
+            <h3 className="text-2xl font-fredoka font-bold text-primary">
+              {session.games.title}
+            </h3>
+            
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="w-5 h-5 text-primary" />
+                <span className="font-comic text-sm">
+                  {formatDistanceToNow(new Date(session.started_at), { addSuffix: true })}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Clock className="w-5 h-5 text-secondary" />
+                <span className="font-comic text-sm">
+                  {formatDuration(session.duration_seconds)}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-comic text-sm">
+                {session.games.genre}
+              </span>
+            </div>
+          </div>
+
+          {/* Play Again Button */}
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerFeedback('gameAction');
+              navigate(`/game/${session.games.id}`);
+            }}
+            className="font-fredoka font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-lg w-full sm:w-auto"
+          >
+            <Play className="mr-2 w-4 h-4" />
+            Chơi Lại
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function RecentlyPlayed() {
   const { user } = useAuth();
@@ -135,71 +215,12 @@ export default function RecentlyPlayed() {
           ) : (
             <div className="space-y-4">
               {sessions.map((session) => (
-                <Card 
+                <SessionCard 
                   key={session.id}
-                  className="border-2 border-primary/20 hover:border-primary/50 transition-all hover:shadow-lg cursor-pointer"
-                  onClick={() => navigate(`/game/${session.games.id}`)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                      {/* Thumbnail */}
-                      <div className="relative w-full sm:w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 border-2 border-primary/30">
-                        {session.games.thumbnail_url ? (
-                          <img
-                            src={session.games.thumbnail_url}
-                            alt={session.games.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-5xl">
-                            🎮
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 space-y-3 w-full">
-                        <h3 className="text-2xl font-fredoka font-bold text-primary">
-                          {session.games.title}
-                        </h3>
-                        
-                        <div className="flex flex-wrap gap-4">
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Calendar className="w-5 h-5 text-primary" />
-                            <span className="font-comic text-sm">
-                              {formatDistanceToNow(new Date(session.started_at), { addSuffix: true })}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Clock className="w-5 h-5 text-accent" />
-                            <span className="font-comic text-sm font-bold">
-                              {formatDuration(session.duration_seconds)}
-                            </span>
-                          </div>
-
-                          <div className="px-3 py-1 bg-primary/10 rounded-full">
-                            <span className="font-comic text-sm text-primary font-bold capitalize">
-                              {session.games.genre}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Play Again Button */}
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/game/${session.games.id}`);
-                        }}
-                        className="font-fredoka font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-lg w-full sm:w-auto"
-                      >
-                        <Play className="mr-2 w-4 h-4" />
-                        Chơi Lại
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  session={session} 
+                  navigate={navigate} 
+                  formatDuration={formatDuration}
+                />
               ))}
             </div>
           )}

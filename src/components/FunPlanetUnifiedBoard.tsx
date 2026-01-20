@@ -952,7 +952,7 @@ export const FunPlanetUnifiedBoard = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.1 + 0.5 }}
                                     whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(255, 215, 0, 0.4)" }}
-                                    className={`flex items-center gap-2.5 sm:gap-3 rounded-xl border p-2.5 sm:p-3 backdrop-blur-sm cursor-pointer transition-all border-white/40 bg-gradient-to-r from-white/30 to-white/25 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
+                                    className={`touch-card flex items-center gap-2.5 sm:gap-3 rounded-xl border p-2.5 sm:p-3 backdrop-blur-sm cursor-pointer transition-all border-white/40 bg-gradient-to-r from-white/30 to-white/25 ${isCurrentUser ? "ring-2 ring-yellow-400" : ""}`}
                                   >
                                   <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-amber-500/20 flex-shrink-0">
                                     <span className="text-sm sm:text-base font-bold bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">#{rank}</span>
