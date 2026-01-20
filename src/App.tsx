@@ -64,7 +64,6 @@ const BackgroundMusicPlayer = lazy(() => import("@/components/BackgroundMusicPla
 const PWAInstallPrompt = lazy(() => import("@/components/PWAInstallPrompt").then(m => ({ default: m.PWAInstallPrompt })));
 const RoleSelectionModal = lazy(() => import("@/components/RoleSelectionModal").then(m => ({ default: m.RoleSelectionModal })));
 const FloatingChatButton = lazy(() => import("@/components/FloatingChatButton").then(m => ({ default: m.FloatingChatButton })));
-const WelcomeCreatorPopup = lazy(() => import("@/components/WelcomeCreatorPopup").then(m => ({ default: m.WelcomeCreatorPopup })));
 const GameCompleteClaimPopup = lazy(() => import("@/components/GameCompleteClaimPopup").then(m => ({ default: m.GameCompleteClaimPopup })));
 const DailyLoginRewardPopup = lazy(() => import("@/components/reward-galaxy/DailyLoginRewardPopup").then(m => ({ default: m.DailyLoginRewardPopup })));
 const MobileBottomNavEnhanced = lazy(() => import("@/components/MobileBottomNavEnhanced").then(m => ({ default: m.MobileBottomNavEnhanced })));
@@ -247,11 +246,6 @@ const AppContent = () => {
         {/* Floating Chat Button - Mobile only, draggable */}
         <Suspense fallback={null}>
           <FloatingChatButton />
-        </Suspense>
-        
-        {/* Welcome Creator Popup - Shows for new users */}
-        <Suspense fallback={null}>
-          <WelcomeCreatorPopup />
         </Suspense>
         
         {/* Game Complete Claim Popup - Shows after games */}
