@@ -98,4 +98,7 @@ export const routeConfig = {
   about: "/about",
   resetPassword: "/reset-password",
   install: "/install",
+  
+  // Documentation
+  platformDocs: "/docs/platform",
 } as const;
