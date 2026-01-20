@@ -57,7 +57,7 @@ export const MobileBottomNavEnhanced = () => {
       }}
     >
       {/* ✨ Rainbow sparkle border at top */}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[hsl(var(--holo-pink))] via-[hsl(var(--holo-purple))] via-[hsl(var(--holo-blue))] to-[hsl(var(--holo-mint))]" style={{ backgroundSize: '300% 100%', animation: 'holographic-shift 5s linear infinite' }} />
+      <div className="absolute inset-x-0 top-0 h-0.5" style={{ background: 'var(--gradient-holographic-border)', backgroundSize: '300% 100%', animation: 'holo-shift 5s linear infinite' }} />
       
       <div className={cn(
         "grid h-[76px] max-w-lg mx-auto",
