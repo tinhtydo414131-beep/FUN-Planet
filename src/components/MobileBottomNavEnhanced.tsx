@@ -121,7 +121,7 @@ export const MobileBottomNavEnhanced = () => {
               
               {/* 📝 Label */}
               <span className={cn(
-                "text-xs font-bold transition-all duration-300",
+                "text-[10px] font-quicksand font-bold uppercase tracking-widest transition-all duration-300",
                 active ? "text-primary" : "text-muted-foreground"
               )}>
                 {item.label}
