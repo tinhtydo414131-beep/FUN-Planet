@@ -1096,3 +1096,202 @@ body.css-fullscreen .css-fullscreen-hide {
     0 2px 8px hsl(340 70% 75% / 0.08),
     inset 0 1px 0 hsl(0 0% 100% / 0.5);
 }
+
+/* ========================================
+   9. MOBILE TOUCH REFINEMENTS - Phase 5
+   ======================================== */
+
+/* Ripple Effect for Touch Feedback */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.touch-ripple {
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    hsla(280, 65%, 75%, 0.4) 0%,
+    hsla(340, 70%, 75%, 0.2) 50%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  opacity: 0;
+  transition: none;
+}
+
+.touch-ripple:active::after {
+  animation: ripple 0.6s ease-out forwards;
+}
+
+/* Touch-Friendly Card Transitions */
+.touch-card {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.touch-card:active {
+  transform: scale(0.97);
+  box-shadow: 
+    0 2px 8px hsla(280, 65%, 65%, 0.15),
+    0 1px 3px hsla(340, 70%, 75%, 0.1);
+}
+
+/* Touch Button Enhancement */
+.touch-button {
+  min-height: 48px;
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+}
+
+.touch-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    hsla(280, 65%, 75%, 0.3) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.touch-button:active::before {
+  opacity: 1;
+}
+
+/* Press State Animation */
+@keyframes press-bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.press-bounce:active {
+  animation: press-bounce 0.2s ease-out;
+}
+
+/* Holographic Touch Glow */
+.touch-glow {
+  position: relative;
+  transition: box-shadow 0.2s ease;
+}
+
+.touch-glow:active {
+  box-shadow: 
+    0 0 20px hsla(340, 70%, 75%, 0.5),
+    0 0 40px hsla(280, 65%, 75%, 0.3),
+    0 0 60px hsla(200, 70%, 75%, 0.2);
+}
+
+/* Mobile-Optimized Scrolling */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+.touch-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Snap Scrolling for Cards */
+.snap-scroll-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-scroll-x > * {
+  scroll-snap-align: start;
+}
+
+/* Interactive Feedback for Icons */
+.touch-icon {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-icon:active {
+  transform: scale(0.85);
+  opacity: 0.7;
+}
+
+/* Floating Action Button Touch */
+.touch-fab {
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 
+    0 4px 16px hsla(280, 65%, 65%, 0.3),
+    0 2px 6px hsla(340, 70%, 75%, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.touch-fab:active {
+  transform: scale(0.92);
+  box-shadow: 
+    0 2px 8px hsla(280, 65%, 65%, 0.4),
+    0 1px 3px hsla(340, 70%, 75%, 0.3);
+}
+
+/* Game Card Touch Enhancement */
+.game-card-touch {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-card-touch:active {
+  transform: scale(0.97) translateY(2px);
+  border-color: hsla(280, 65%, 75%, 0.5);
+  box-shadow: 
+    0 2px 12px hsla(280, 65%, 65%, 0.2),
+    inset 0 0 20px hsla(340, 70%, 75%, 0.1);
+}
+
+/* Prevent Long-Press Context Menu on Mobile */
+.no-context-menu {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Safe Area Padding for Mobile */
+.safe-area-bottom {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 1.5rem));
+}
+
+.safe-area-top {
+  padding-top: max(1rem, env(safe-area-inset-top, 1rem));
+}
