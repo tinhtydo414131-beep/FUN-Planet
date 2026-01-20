@@ -82,11 +82,12 @@ export const MobileBottomNavEnhanced = () => {
               {active && (
                 <motion.div
                   layoutId="activeTab"
-                  className={cn(
-                    "absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-gradient-to-r",
-                    item.color
-                  )}
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  style={{
+                    background: 'linear-gradient(90deg, #F3C4FB, #CDB4DB, #A2D2FF)',
+                    boxShadow: "0 0 12px rgba(243, 196, 251, 0.6), 0 0 8px rgba(162, 210, 255, 0.4)"
+                  }}
                 />
               )}
               
