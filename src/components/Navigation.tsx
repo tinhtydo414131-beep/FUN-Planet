@@ -118,7 +118,7 @@ export const Navigation = () => {
       />
 
       {/* Desktop Navigation - Sticky */}
-      <nav className="hidden md:block sticky-header glass-card backdrop-blur-lg border-b border-white/20">
+      <nav className="hidden md:block sticky-header">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
             {/* Logo - Circular with Image + Text */}
@@ -127,7 +127,7 @@ export const Navigation = () => {
               className="flex items-center group ml-2 md:ml-5"
             >
               {/* Circular logo - larger size, no text */}
-              <div className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border-2 border-[#CDB4DB]/50 shadow-lg group-hover:border-[#F3C4FB] group-hover:shadow-[0_0_25px_rgba(243,196,251,0.5),0_0_40px_rgba(162,210,255,0.3)] transition-all duration-300">
+              <div className="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border-2 border-purple-400/50 shadow-lg group-hover:border-purple-500 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300">
                 <img 
                   src={funPlanetLogo} 
                   alt="FUN Planet" 
@@ -326,7 +326,7 @@ export const Navigation = () => {
                           navigate("/auth");
                           setMobileMenuOpen(false);
                         }}
-                        className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-secondary font-quicksand font-bold text-base uppercase tracking-wide"
+                        className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-secondary font-jakarta font-bold text-base"
                       >
                         {t('nav.loginSignup')}
                       </Button>
@@ -343,7 +343,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <User className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-quicksand font-medium">{t('nav.myProfile')}</span>
+                            <span className="font-inter font-medium">{t('nav.myProfile')}</span>
                           </button>
                         </SheetClose>
                         <SheetClose asChild>
@@ -356,7 +356,7 @@ export const Navigation = () => {
                             }}
                           >
                             <Gift className="w-5 h-5 text-yellow-500" />
-                            <span className="font-quicksand font-bold text-yellow-600">{t('nav.rewardGalaxy')}</span>
+                            <span className="font-inter font-bold text-yellow-600">{t('nav.rewardGalaxy')}</span>
                             <Sparkles className="ml-auto w-4 h-4 text-yellow-400 animate-pulse" />
                           </button>
                         </SheetClose>
@@ -366,7 +366,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Users className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-quicksand font-medium">{t('nav.findFriends')}</span>
+                            <span className="font-inter font-medium">{t('nav.findFriends')}</span>
                             {pendingCount > 0 && (
                               <Badge className="ml-auto bg-red-500 text-white text-xs px-2">
                                 {pendingCount}
@@ -381,7 +381,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-quicksand font-medium">{t('nav.messages')}</span>
+                            <span className="font-inter font-medium">{t('nav.messages')}</span>
                           </button>
                         </SheetClose>
                         {/* Public Music */}
@@ -391,7 +391,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Music className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-quicksand font-medium">{t('nav.music')}</span>
+                            <span className="font-inter font-medium">{t('nav.music')}</span>
                           </button>
                         </SheetClose>
                         {/* Education Hub */}
@@ -401,7 +401,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <BookOpen className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-quicksand font-medium">{t('nav.educationHub')}</span>
+                            <span className="font-inter font-medium">{t('nav.educationHub')}</span>
                           </button>
                         </SheetClose>
                         {/* Parent Controls */}
@@ -411,7 +411,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Shield className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-quicksand font-medium">{t('nav.parentControls')}</span>
+                            <span className="font-inter font-medium">{t('nav.parentControls')}</span>
                           </button>
                         </SheetClose>
                         {/* Achievement Leaderboard */}
@@ -421,7 +421,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Trophy className="w-5 h-5 text-amber-500" />
-                            <span className="font-quicksand font-medium">{t('nav.achievementLeaderboard')}</span>
+                            <span className="font-inter font-medium">{t('nav.achievementLeaderboard')}</span>
                           </button>
                         </SheetClose>
                         {/* Settings */}
@@ -431,7 +431,7 @@ export const Navigation = () => {
                             className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-muted/50 transition-colors"
                           >
                             <Settings className="w-5 h-5 text-muted-foreground" />
-                            <span className="font-quicksand font-medium">{t('nav.settings')}</span>
+                            <span className="font-inter font-medium">{t('nav.settings')}</span>
                           </button>
                         </SheetClose>
                         {isAdmin && (
@@ -445,7 +445,7 @@ export const Navigation = () => {
                               }}
                             >
                               <Crown className="w-5 h-5 text-orange-500" />
-                              <span className="font-quicksand font-bold text-orange-600">👑 {t('nav.adminDashboard')}</span>
+                              <span className="font-inter font-bold text-orange-600">👑 {t('nav.adminDashboard')}</span>
                             </button>
                           </SheetClose>
                         )}
@@ -462,7 +462,7 @@ export const Navigation = () => {
                           className="flex items-center gap-3 w-full p-4 rounded-xl text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <LogOut className="w-5 h-5" />
-                          <span className="font-quicksand font-medium">{t('nav.logOut')}</span>
+                          <span className="font-inter font-medium">{t('nav.logOut')}</span>
                         </button>
                       </SheetClose>
                     </div>

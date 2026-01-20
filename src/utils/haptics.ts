@@ -1,100 +1,59 @@
 /**
- * 🎮 Fun Planet Haptic Feedback System
- * Enhanced vibration utility for mobile touch interactions
+ * Vibration utility functions for mobile haptic feedback
  */
-
-// Check if haptics are supported
-const isHapticsSupported = (): boolean => {
-  return 'vibrate' in navigator;
-};
-
-// Safely trigger vibration
-const vibrate = (pattern: number | number[]): boolean => {
-  if (isHapticsSupported()) {
-    try {
-      navigator.vibrate(pattern);
-      return true;
-    } catch (e) {
-      console.log('Haptics not available');
-      return false;
-    }
-  }
-  return false;
-};
 
 export const haptics = {
   /**
-   * ✨ Light tap - for buttons, toggles, selections
+   * Light tap feedback for button presses
    */
-  light: () => vibrate(8),
+  light: () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10);
+    }
+  },
 
   /**
-   * 👆 Medium tap - for card presses, navigation
+   * Medium feedback for game actions
    */
-  medium: () => vibrate(15),
+  medium: () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(20);
+    }
+  },
 
   /**
-   * 💪 Strong tap - for important actions, confirmations
+   * Strong feedback for important events
    */
-  strong: () => vibrate(40),
+  strong: () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50);
+    }
+  },
 
   /**
-   * 🎉 Success pattern - celebration double tap
+   * Success pattern - double tap
    */
-  success: () => vibrate([20, 40, 20]),
+  success: () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate([30, 50, 30]);
+    }
+  },
 
   /**
-   * ❌ Error pattern - strong warning
+   * Error pattern - strong single
    */
-  error: () => vibrate([80]),
+  error: () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(100);
+    }
+  },
 
   /**
-   * 🔘 Selection - minimal tap for list items
+   * Selection pattern - quick tap
    */
-  selection: () => vibrate(5),
-
-  /**
-   * 🎮 Game action - quick responsive tap
-   */
-  gameAction: () => vibrate(12),
-
-  /**
-   * 🏆 Achievement unlocked - celebration pattern
-   */
-  achievement: () => vibrate([30, 60, 30, 60, 50]),
-
-  /**
-   * 💰 Reward received - gentle celebration
-   */
-  reward: () => vibrate([15, 30, 15]),
-
-  /**
-   * 📱 Notification - attention grabber
-   */
-  notification: () => vibrate([20, 50, 20, 50]),
-
-  /**
-   * 🎯 Impact - for game collisions, heavy interactions
-   */
-  impact: () => vibrate(35),
-
-  /**
-   * 🌊 Ripple - subtle wave effect
-   */
-  ripple: () => vibrate([8, 20, 8]),
-
-  /**
-   * ⚡ Quick burst - instant feedback
-   */
-  burst: () => vibrate(6),
-
-  /**
-   * 🔄 Long press feedback
-   */
-  longPress: () => vibrate([10, 30, 50]),
-
-  /**
-   * Check if haptics are available
-   */
-  isSupported: isHapticsSupported,
+  selection: () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(5);
+    }
+  }
 };

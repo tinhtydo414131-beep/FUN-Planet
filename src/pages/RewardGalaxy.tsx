@@ -318,15 +318,15 @@ export default function RewardGalaxy() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen holographic-page-bg flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           >
-            <Globe className="w-16 h-16 text-[#F3C4FB] mx-auto" style={{ filter: 'drop-shadow(0 0 12px rgba(243,196,251,0.6))' }} />
+            <Globe className="w-16 h-16 text-primary mx-auto" />
           </motion.div>
-          <p className="text-xl font-quicksand text-[#CDB4DB]">Đang tải Ngân Hà Phần Thưởng...</p>
+          <p className="text-xl font-quicksand text-primary">Đang tải Ngân Hà Phần Thưởng...</p>
         </div>
       </div>
     );
@@ -379,7 +379,7 @@ export default function RewardGalaxy() {
             >
               <span
                 style={{
-                  background: 'linear-gradient(135deg, #F3C4FB, #CDB4DB, #A2D2FF, #F3C4FB)',
+                  background: 'linear-gradient(135deg, #FFD700, #FF69B4, #60A5FA, #FFD700)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
@@ -390,7 +390,7 @@ export default function RewardGalaxy() {
             </motion.h2>
             
             {/* Responsive grid: 1 col mobile, 2 col tablet, 5 col desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6 glass-card p-4 sm:p-6 rounded-3xl border border-white/20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6">
               {/* Daily Login Reward - Mint green to warm yellow */}
               <DailyLoginRewardCard
                 canClaim={canClaimDailyLogin}

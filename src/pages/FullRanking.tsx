@@ -520,20 +520,20 @@ export default function FullRanking() {
 
   const currentUserRank = user ? findUserRank(user.id) : null;
 
-  // Floating particles - Holographic Pink-Purple-Blue-Mint theme
+  // Floating particles - Yellow, Pink, Blue theme
   const floatingParticles = [
-    { color: "text-[#F3C4FB]", x: "5%", y: "10%", duration: 4, size: "w-5 h-5", type: "star" },
-    { color: "text-[#CDB4DB]", x: "90%", y: "15%", duration: 5, size: "w-4 h-4", type: "sparkle" },
-    { color: "text-[#A2D2FF]", x: "10%", y: "60%", duration: 4.5, size: "w-4 h-4", type: "star" },
-    { color: "text-[#B8F0F0]", x: "85%", y: "55%", duration: 3.5, size: "w-5 h-5", type: "sparkle" },
-    { color: "text-[#F3C4FB]", x: "50%", y: "5%", duration: 4, size: "w-5 h-5", type: "star" },
-    { color: "text-[#CDB4DB]", x: "75%", y: "30%", duration: 5.5, size: "w-4 h-4", type: "sparkle" },
-    { color: "text-[#A2D2FF]", x: "20%", y: "40%", duration: 4.2, size: "w-4 h-4", type: "star" },
-    { color: "text-[#B8F0F0]", x: "60%", y: "70%", duration: 3.8, size: "w-5 h-5", type: "sparkle" },
+    { color: "text-yellow-500", x: "5%", y: "10%", duration: 4, size: "w-5 h-5", type: "star" },
+    { color: "text-pink-500", x: "90%", y: "15%", duration: 5, size: "w-4 h-4", type: "sparkle" },
+    { color: "text-blue-500", x: "10%", y: "60%", duration: 4.5, size: "w-4 h-4", type: "star" },
+    { color: "text-yellow-400", x: "85%", y: "55%", duration: 3.5, size: "w-5 h-5", type: "sparkle" },
+    { color: "text-pink-400", x: "50%", y: "5%", duration: 4, size: "w-5 h-5", type: "star" },
+    { color: "text-blue-400", x: "75%", y: "30%", duration: 5.5, size: "w-4 h-4", type: "sparkle" },
+    { color: "text-yellow-500", x: "20%", y: "40%", duration: 4.2, size: "w-4 h-4", type: "star" },
+    { color: "text-pink-500", x: "60%", y: "70%", duration: 3.8, size: "w-5 h-5", type: "sparkle" },
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden holographic-page-bg">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-white via-pink-50/30 to-blue-50/30">
       {/* Subtle decorative gradients */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-0 left-0 w-96 h-96 bg-yellow-200/20 rounded-full blur-3xl" />
@@ -572,11 +572,8 @@ export default function FullRanking() {
           
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-[#F3C4FB]" style={{ filter: 'drop-shadow(0 0 6px rgba(243,196,251,0.6))' }} />
-              <span 
-                className="bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(135deg, #F3C4FB, #CDB4DB, #A2D2FF, #F3C4FB)' }}
-              >
+              <Trophy className="w-6 h-6 text-yellow-500" style={{ filter: 'drop-shadow(0 0 6px rgba(255,215,0,0.6))' }} />
+              <span className="bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
                 Bảng Xếp Hạng Toàn Cầu
               </span>
             </h1>
@@ -633,17 +630,17 @@ export default function FullRanking() {
 
         {/* Tabs for CAMLY vs Achievement Ranking */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid w-full grid-cols-2 glass-card border border-white/20 shadow-sm rounded-xl p-1">
+          <TabsList className="grid w-full grid-cols-2 bg-white border border-gray-200 shadow-sm rounded-xl p-1">
             <TabsTrigger 
               value="camly" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#F3C4FB] data-[state=active]:via-[#CDB4DB] data-[state=active]:to-[#A2D2FF] data-[state=active]:text-gray-800 data-[state=active]:shadow-md text-gray-600 rounded-lg font-quicksand font-bold transition-all"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-400 data-[state=active]:to-yellow-500 data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 rounded-lg font-medium transition-all"
             >
               <Gem className="w-4 h-4 mr-2" />
               CAMLY Ranking
             </TabsTrigger>
             <TabsTrigger 
               value="achievement" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#CDB4DB] data-[state=active]:via-[#A2D2FF] data-[state=active]:to-[#B8F0F0] data-[state=active]:text-gray-800 data-[state=active]:shadow-md text-gray-600 rounded-lg font-quicksand font-bold transition-all"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-400 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 rounded-lg font-medium transition-all"
             >
               <Award className="w-4 h-4 mr-2" />
               Achievement Ranking
@@ -675,8 +672,8 @@ export default function FullRanking() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-8 p-4 sm:p-6 rounded-3xl glass-card holo-border"
-                style={{ boxShadow: '0 8px 32px rgba(243,196,251,0.15), 0 0 40px rgba(162,210,255,0.1)' }}
+                className="mb-8 p-4 sm:p-6 rounded-3xl bg-white border border-gray-200/80"
+                style={{ boxShadow: '0 8px 32px rgba(168,85,247,0.08), 0 0 40px rgba(255,182,193,0.1)' }}
               >
                 <div className="flex justify-center items-end gap-2 sm:gap-6">
                   {/* 2nd Place */}

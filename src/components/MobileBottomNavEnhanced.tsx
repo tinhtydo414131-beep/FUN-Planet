@@ -6,7 +6,6 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
-import { useTouchFeedback } from "@/hooks/useTouchFeedback";
 
 // 🎀 FUN PLANET PASTEL CUTE BOTTOM NAV - Kids Gaming 2025
 export const MobileBottomNavEnhanced = () => {
@@ -15,7 +14,6 @@ export const MobileBottomNavEnhanced = () => {
   const { isDev } = useUserRole();
   const { t } = useTranslation();
   const { shouldReduceAnimations } = usePerformanceMode();
-  const { triggerFeedback } = useTouchFeedback({ type: 'selection' });
 
   // Hide bottom nav on game play pages for immersive experience
   const hideOnPaths = ['/game/'];
@@ -24,22 +22,22 @@ export const MobileBottomNavEnhanced = () => {
   if (shouldHide) return null;
 
   const baseNavItems = [
-    { icon: Home, label: t('nav.home'), path: "/", emoji: "🏠", color: "from-[#F3C4FB] to-[#CDB4DB]" },
-    { icon: Gamepad2, label: t('nav.games'), path: "/games", emoji: "🎮", color: "from-[#CDB4DB] to-[#A2D2FF]" },
-    { icon: Gift, label: t('nav.rewardGalaxy'), path: "/reward-galaxy", emoji: "🎁", color: "from-[#FFD93D] to-[#FF8C42]" },
+    { icon: Home, label: t('nav.home'), path: "/", emoji: "🏠", color: "from-[hsl(340,70%,75%)] to-[hsl(280,65%,75%)]" },
+    { icon: Gamepad2, label: t('nav.games'), path: "/games", emoji: "🎮", color: "from-[hsl(280,65%,75%)] to-[hsl(200,70%,75%)]" },
+    { icon: Gift, label: t('nav.rewardGalaxy'), path: "/reward-galaxy", emoji: "🎁", color: "from-[hsl(45,85%,70%)] to-[hsl(24,80%,70%)]" },
   ];
 
   // Add upload tab for developers, wallet for others
   const navItems = isDev 
     ? [
         ...baseNavItems.slice(0, 2),
-        { icon: Upload, label: t('nav.upload'), path: "/upload-game", emoji: "📤", color: "from-[#8FD9A8] to-[#6ECFCF]" },
+        { icon: Upload, label: t('nav.upload'), path: "/upload-game", emoji: "📤", color: "from-[hsl(160,55%,70%)] to-[hsl(180,60%,65%)]" },
         ...baseNavItems.slice(2),
-        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[#A2D2FF] to-[#8FD9A8]" },
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
       ]
     : [
         ...baseNavItems,
-        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[#A2D2FF] to-[#8FD9A8]" },
+        { icon: User, label: t('nav.profile'), path: user ? "/profile" : "/auth", emoji: "👤", color: "from-[hsl(200,70%,75%)] to-[hsl(160,55%,70%)]" },
       ];
 
   const isActive = (path: string) => {
@@ -53,17 +51,17 @@ export const MobileBottomNavEnhanced = () => {
       initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
       transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 mobile-nav-holographic shadow-[0_-8px_40px_hsla(280,65%,65%,0.2),0_-2px_16px_hsla(340,70%,75%,0.15)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-card/98 via-card/95 to-card/90 backdrop-blur-xl border-t-2 border-primary/30 shadow-[0_-8px_40px_hsla(280,65%,65%,0.15),0_-2px_16px_hsla(340,70%,75%,0.1)]"
       style={{ 
         paddingBottom: 'max(env(safe-area-inset-bottom), 8px)',
       }}
     >
-      {/* ✨ Rainbow sparkle border at top */}
-      <div className="absolute inset-x-0 top-0 h-0.5" style={{ background: 'var(--gradient-holographic-border)', backgroundSize: '300% 100%', animation: 'holo-shift 5s linear infinite' }} />
+      {/* ✨ Sparkle decoration */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       
       <div className={cn(
         "grid h-[76px] max-w-lg mx-auto",
-        isDev ? "grid-cols-5" : "grid-cols-4"
+        "grid-cols-5"
       )}>
         {navItems.map((item, index) => {
           const Icon = item.icon;
@@ -73,9 +71,8 @@ export const MobileBottomNavEnhanced = () => {
             <Link
               key={item.label}
               to={item.path}
-              onClick={() => triggerFeedback('selection')}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 transition-all duration-300 touch-manipulation active:scale-90 min-h-[76px] relative group touch-ripple touch-button no-context-menu",
+                "flex flex-col items-center justify-center gap-1 transition-all duration-300 touch-manipulation active:scale-90 min-h-[76px] relative group",
                 active 
                   ? "text-primary" 
                   : "text-muted-foreground hover:text-foreground"
@@ -85,12 +82,11 @@ export const MobileBottomNavEnhanced = () => {
               {active && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full"
+                  className={cn(
+                    "absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-gradient-to-r",
+                    item.color
+                  )}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  style={{
-                    background: 'linear-gradient(90deg, #F3C4FB, #CDB4DB, #A2D2FF)',
-                    boxShadow: "0 0 12px rgba(243, 196, 251, 0.6), 0 0 8px rgba(162, 210, 255, 0.4)"
-                  }}
                 />
               )}
               
@@ -125,7 +121,7 @@ export const MobileBottomNavEnhanced = () => {
               
               {/* 📝 Label */}
               <span className={cn(
-                "text-[10px] font-quicksand font-bold uppercase tracking-widest transition-all duration-300",
+                "text-xs font-bold transition-all duration-300",
                 active ? "text-primary" : "text-muted-foreground"
               )}>
                 {item.label}
@@ -133,7 +129,7 @@ export const MobileBottomNavEnhanced = () => {
               
               {/* 🎯 Badge for notifications (example) */}
               {item.path === (user ? "/profile" : "/auth") && user && (
-                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-[#F3C4FB] to-[#FF6B6B] rounded-full animate-pulse" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-[hsl(340,70%,65%)] to-[hsl(0,65%,60%)] rounded-full animate-pulse" />
               )}
             </Link>
           );

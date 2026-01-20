@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Play, X, Maximize2, Star, Users, Flame, Sparkles } from "lucide-react";
 import { GamePreviewPlaceholder } from "@/components/GamePreviewPlaceholder";
 import gemFusionThumbnail from "@/assets/games/gem-fusion-quest-thumbnail.png";
-import { useTouchFeedback } from "@/hooks/useTouchFeedback";
 
 interface FeaturedGame {
   id: string;
@@ -26,7 +25,6 @@ export function FeaturedGamesSection() {
   const [loading, setLoading] = useState(true);
   const [selectedGame, setSelectedGame] = useState<FeaturedGame | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { triggerFeedback } = useTouchFeedback({ type: 'gameAction' });
 
   useEffect(() => {
     fetchFeaturedGames();
@@ -99,8 +97,8 @@ export function FeaturedGamesSection() {
 
   return (
     <>
-      <section id="featured-games" className="py-16 px-4">
-        <div className="container mx-auto max-w-7xl section-holographic p-6 md:p-8">
+      <section id="featured-games" className="py-16 px-4 bg-gradient-to-b from-background to-primary/5">
+        <div className="container mx-auto max-w-7xl">
           {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -113,15 +111,7 @@ export function FeaturedGamesSection() {
               <span className="font-bold text-sm">HOT TODAY</span>
               <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
             </div>
-            <h2 
-              className="text-4xl md:text-5xl font-quicksand font-bold uppercase tracking-wide mb-4"
-              style={{ 
-                backgroundImage: 'linear-gradient(135deg, #F3C4FB 0%, #CDB4DB 25%, #A2D2FF 50%, #B8F0F0 75%, #F3C4FB 100%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent'
-              }}
-            >
+            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
               Today's Featured Games 🎮
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -129,8 +119,8 @@ export function FeaturedGamesSection() {
             </p>
           </motion.div>
 
-          {/* Games Grid - Touch optimized */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 touch-scroll">
+          {/* Games Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {/* Gem Fusion Quest - Built-in Game Featured */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -138,11 +128,8 @@ export function FeaturedGamesSection() {
               viewport={{ once: true }}
             >
               <Card
-                className="group relative overflow-hidden rounded-2xl glass-card holo-border holo-border-animated hover:holo-glow-strong cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 game-card-touch touch-glow"
-                onClick={() => {
-                  triggerFeedback('gameAction');
-                  navigate('/games/gem-fusion-quest');
-                }}
+                className="group relative overflow-hidden rounded-2xl border-2 border-yellow-400/50 hover:border-yellow-400 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500/20 hover:scale-105"
+                onClick={() => navigate('/games/gem-fusion-quest')}
               >
                 {/* Thumbnail */}
                 <div className="relative aspect-video overflow-hidden">
@@ -165,7 +152,7 @@ export function FeaturedGamesSection() {
                     whileHover={{ scale: 1.1 }}
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl" style={{ background: 'linear-gradient(135deg, #F3C4FB, #CDB4DB, #A2D2FF)' }}>
+                    <div className="w-16 h-16 rounded-full bg-yellow-500/90 flex items-center justify-center shadow-xl">
                       <Play className="w-8 h-8 text-white ml-1" />
                     </div>
                   </motion.div>
@@ -203,11 +190,8 @@ export function FeaturedGamesSection() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card
-                  className="group relative overflow-hidden rounded-2xl glass-card holo-border hover:holo-glow cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 game-card-touch touch-glow"
-                  onClick={() => {
-                    triggerFeedback('gameAction');
-                    handlePlayGame(game);
-                  }}
+                  className="group relative overflow-hidden rounded-2xl border-2 border-transparent hover:border-primary/50 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:scale-105"
+                  onClick={() => handlePlayGame(game)}
                 >
                   {/* Thumbnail */}
                   <div className="relative aspect-video overflow-hidden">
@@ -231,7 +215,7 @@ export function FeaturedGamesSection() {
                       whileHover={{ scale: 1.1 }}
                       className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl" style={{ background: 'linear-gradient(135deg, #F3C4FB, #CDB4DB, #A2D2FF)' }}>
+                      <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-xl">
                         <Play className="w-8 h-8 text-white ml-1" />
                       </div>
                     </motion.div>

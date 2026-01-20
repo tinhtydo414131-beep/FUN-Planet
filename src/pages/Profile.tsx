@@ -237,10 +237,10 @@ export default function Profile() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen holographic-page-bg flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Gamepad2 className="w-16 h-16 text-[#F3C4FB] animate-bounce mx-auto" style={{ filter: 'drop-shadow(0 0 12px rgba(243,196,251,0.6))' }} />
-          <p className="text-2xl font-quicksand text-[#CDB4DB]">Loading...</p>
+          <Gamepad2 className="w-16 h-16 text-primary animate-bounce mx-auto" />
+          <p className="text-2xl font-quicksand text-primary">Loading...</p>
         </div>
       </div>
     );
@@ -248,10 +248,10 @@ export default function Profile() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen holographic-page-bg">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <div className="container mx-auto py-32 px-4 text-center">
-          <p className="text-2xl font-quicksand text-[#CDB4DB]">Profile not found</p>
+          <p className="text-2xl font-quicksand text-muted-foreground">Profile not found</p>
         </div>
       </div>
     );
@@ -317,7 +317,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen holographic-page-bg pb-24">
+    <div className="min-h-screen bg-muted/30 pb-24">
       <Navigation />
       
       {/* Cover Photo & Avatar */}
@@ -328,7 +328,7 @@ export default function Profile() {
       />
 
       {/* Action Buttons */}
-      <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap gap-2 justify-end glass-card border-b border-white/20 backdrop-blur-sm">
+      <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap gap-2 justify-end border-b border-border">
         <Button variant="outline" onClick={() => navigate('/reward-galaxy')} className="gap-2">
           <Gift className="w-4 h-4" />
         </Button>

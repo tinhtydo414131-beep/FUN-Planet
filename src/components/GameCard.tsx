@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { usePerformanceMode } from "@/hooks/usePerformanceMode";
-import { useTouchFeedback } from "@/hooks/useTouchFeedback";
 
 interface Game {
   id: string;
@@ -29,7 +28,6 @@ interface GameCardProps {
 export const GameCard = ({ game }: GameCardProps) => {
   const { user } = useAuth();
   const { shouldReduceAnimations } = usePerformanceMode();
-  const { triggerFeedback } = useTouchFeedback({ type: 'gameAction' });
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(game.total_likes);
   const [plays, setPlays] = useState(game.total_plays);
@@ -185,8 +183,7 @@ export const GameCard = ({ game }: GameCardProps) => {
   return (
     <Card 
       ref={cardRef}
-      onClick={() => triggerFeedback('gameAction')}
-      className="group overflow-hidden border-0 animate-fade-in h-full flex flex-col relative rounded-3xl game-card-touch touch-glow"
+      className="group overflow-hidden border-0 animate-fade-in h-full flex flex-col relative rounded-3xl"
       style={{
         background: shouldReduceAnimations 
           ? 'linear-gradient(135deg, hsl(280, 90%, 65%), hsl(190, 100%, 60%))'
