@@ -61,7 +61,7 @@ export const MobileBottomNavEnhanced = () => {
       
       <div className={cn(
         "grid h-[76px] max-w-lg mx-auto",
-        "grid-cols-5"
+        isDev ? "grid-cols-5" : "grid-cols-4"
       )}>
         {navItems.map((item, index) => {
           const Icon = item.icon;

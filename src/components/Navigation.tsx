@@ -118,7 +118,7 @@ export const Navigation = () => {
       />
 
       {/* Desktop Navigation - Sticky */}
-      <nav className="hidden md:block sticky-header">
+      <nav className="hidden md:block sticky-header glass-card backdrop-blur-lg border-b border-white/20">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
             {/* Logo - Circular with Image + Text */}
