@@ -91,7 +91,7 @@ export default function ResetPassword() {
               <Gamepad2 className="w-12 h-12 text-white" />
             </div>
           </div>
-          <CardTitle className="text-3xl font-fredoka text-primary">
+          <CardTitle className="text-3xl font-quicksand text-primary">
             Đặt lại mật khẩu 🔑
           </CardTitle>
           <CardDescription className="text-base font-comic">
@@ -134,7 +134,7 @@ export default function ResetPassword() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-14 text-lg font-fredoka font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all"
+              className="w-full h-14 text-lg font-quicksand font-bold bg-gradient-to-r from-primary to-secondary hover:shadow-xl transition-all"
             >
               {loading ? "Đang xử lý... ⏳" : "Đặt lại mật khẩu 🚀"}
             </Button>

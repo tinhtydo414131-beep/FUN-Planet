@@ -207,7 +207,7 @@ export function AchievementNFTMinter({ walletAddress }: AchievementNFTMinterProp
   return (
     <Card className="border-2 border-purple-500/30 bg-gradient-to-br from-card via-purple-500/5 to-pink-500/5 overflow-hidden">
       <CardHeader className="pb-2">
-        <CardTitle className="font-fredoka flex items-center gap-2 text-xl">
+        <CardTitle className="font-quicksand flex items-center gap-2 text-xl">
           <Gem className="w-6 h-6 text-purple-500" />
           Achievement NFTs
           {mintableCount > 0 && (
@@ -263,7 +263,7 @@ export function AchievementNFTMinter({ walletAddress }: AchievementNFTMinterProp
                   {/* Achievement Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-fredoka font-bold text-lg">{achievement.name}</h4>
+                      <h4 className="font-quicksand font-bold text-lg">{achievement.name}</h4>
                       <Badge 
                         variant="outline" 
                         className={`text-xs bg-gradient-to-r ${RARITY_COLORS[achievement.rarity]} bg-clip-text text-transparent border-current`}

@@ -126,7 +126,7 @@ export const WalletStatusCard = ({
               <div>
                 {/* Title with gradient - Yellow Pink Blue */}
                 <p 
-                  className="text-2xl md:text-3xl font-fredoka font-bold"
+                  className="text-2xl md:text-3xl font-quicksand font-bold"
                   style={{
                     background: 'linear-gradient(135deg, #FFD700, #FF69B4, #60A5FA)',
                     WebkitBackgroundClip: 'text',
@@ -211,7 +211,7 @@ export const WalletStatusCard = ({
                 
                 <div className="relative z-10">
                   <p 
-                    className="text-xl md:text-2xl font-fredoka font-bold tracking-wide"
+                    className="text-xl md:text-2xl font-quicksand font-bold tracking-wide"
                     style={{
                       background: 'linear-gradient(135deg, #FFD700, #FF69B4)',
                       WebkitBackgroundClip: 'text',
@@ -221,7 +221,7 @@ export const WalletStatusCard = ({
                     Số dư CAMLY
                   </p>
                   <motion.p 
-                    className="text-4xl md:text-5xl font-bold font-fredoka"
+                    className="text-4xl md:text-5xl font-bold font-quicksand"
                     style={{
                       background: 'linear-gradient(135deg, #FFD700, #FFA500, #FFD700)',
                       backgroundSize: '200% 200%',

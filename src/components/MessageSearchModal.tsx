@@ -68,7 +68,7 @@ export function MessageSearchModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 font-fredoka">
+          <DialogTitle className="flex items-center gap-2 font-quicksand">
             <Search className="w-5 h-5 text-primary" />
             Search Messages
           </DialogTitle>

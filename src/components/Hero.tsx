@@ -124,7 +124,7 @@ export const Hero = () => {
               
             </motion.div>
             
-            <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-orbitron font-black tracking-wider relative">
+            <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-quicksand font-bold tracking-wider relative">
               {/* Metallic gold shadow with enhanced depth */}
               <span 
                 className="absolute inset-0"

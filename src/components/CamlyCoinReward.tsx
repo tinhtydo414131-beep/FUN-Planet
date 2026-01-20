@@ -64,7 +64,7 @@ export const CamlyCoinReward = ({ amount, message, onComplete }: CamlyCoinReward
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-              className="text-6xl font-fredoka font-bold text-white drop-shadow-lg"
+              className="text-6xl font-quicksand font-bold text-white drop-shadow-lg"
             >
               +{amount.toLocaleString()}
             </motion.div>

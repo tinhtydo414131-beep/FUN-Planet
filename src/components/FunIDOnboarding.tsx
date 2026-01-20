@@ -158,11 +158,11 @@ export function FunIDOnboarding({
                   
                 </motion.div>
 
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
+                <h1 className="text-2xl font-quicksand font-bold bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
                   Chào bé ánh sáng! 🌟
                 </h1>
                 
-                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                <p className="text-gray-600 dark:text-gray-300 mb-6 font-nunito">
                   Angel ở đây để dẫn bé vào thế giới FUN Planet! 
                   Bé muốn đăng nhập bằng ví hay số điện thoại/email?
                 </p>
@@ -187,7 +187,7 @@ export function FunIDOnboarding({
             opacity: 0,
             y: -20
           }} className="text-center">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6">
+                <h2 className="text-xl font-quicksand font-bold text-gray-800 dark:text-white mb-6">
                   Chọn cách đăng nhập 🔑
                 </h2>
 
@@ -246,10 +246,10 @@ export function FunIDOnboarding({
                   <Mail className="w-8 h-8 text-white" />
                 </div>
 
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                <h2 className="text-xl font-quicksand font-bold text-gray-800 dark:text-white mb-2">
                   Nhập Email của bé
                 </h2>
-                <p className="text-sm text-gray-500 mb-6">
+                <p className="text-sm text-gray-500 mb-6 font-nunito">
                   Angel sẽ gửi mã xác nhận 4 số cho bé
                 </p>
 
@@ -284,10 +284,10 @@ export function FunIDOnboarding({
                   <Star className="w-8 h-8 text-white" />
                 </motion.div>
 
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                <h2 className="text-xl font-quicksand font-bold text-gray-800 dark:text-white mb-2">
                   Nhập mã xác nhận
                 </h2>
-                <p className="text-sm text-gray-500 mb-6">
+                <p className="text-sm text-gray-500 mb-6 font-nunito">
                   Mã 6 số đã gửi đến {email}
                 </p>
 
@@ -327,12 +327,12 @@ export function FunIDOnboarding({
                   <Heart className="w-12 h-12 text-white" fill="white" />
                 </motion.div>
 
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
+                <h1 className="text-2xl font-quicksand font-bold bg-gradient-to-r from-yellow-600 via-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
                   Chào mừng đến New Earth! 🌍
                 </h1>
 
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  Bé đã nhận được Soul NFT "Hạt Giống Ánh Sáng" 
+                <p className="text-gray-600 dark:text-gray-300 mb-4 font-nunito">
+                  Bé đã nhận được Soul NFT "Hạt Giống Ánh Sáng"
                   và 50.000 CAMLY khởi đầu!
                 </p>
 

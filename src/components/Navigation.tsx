@@ -145,7 +145,7 @@ export const Navigation = () => {
                 <NavLink 
                   key={link.path}
                   to={link.path} 
-                  className={`px-5 py-2.5 rounded-xl font-jakarta font-semibold text-base transition-all ${
+                  className={`px-5 py-2.5 rounded-xl font-quicksand font-bold text-base transition-all ${
                     (link as any).admin
                       ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/40 text-orange-600 hover:border-orange-500/60 hover:shadow-[0_0_15px_rgba(255,100,0,0.3)]'
                       : (link as any).angelAI
@@ -177,12 +177,12 @@ export const Navigation = () => {
                     <button className="flex items-center gap-3 ml-2 p-1.5 rounded-xl hover:bg-muted/50 active:scale-95 transition-all">
                       <Avatar className="w-10 h-10 border-2 border-primary/30">
                         <AvatarImage src={avatarUrl || undefined} />
-                        <AvatarFallback className="bg-primary/20 text-primary font-jakarta font-bold">
+                        <AvatarFallback className="bg-primary/20 text-primary font-quicksand font-bold">
                           {user?.email?.[0]?.toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       {username && (
-                        <span className="font-jakarta font-semibold text-foreground">
+                        <span className="font-quicksand font-bold text-foreground">
                           {username}
                         </span>
                       )}
@@ -256,7 +256,7 @@ export const Navigation = () => {
               ) : (
                 <Button
                   onClick={() => navigate("/auth")}
-                  className="font-jakarta font-bold text-base px-6 py-2.5 h-11 rounded-xl bg-gradient-to-r from-primary to-secondary shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                  className="font-quicksand font-bold text-base px-6 py-2.5 h-11 rounded-xl bg-gradient-to-r from-primary to-secondary shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                 >
                   {t('common.login')}
                 </Button>
@@ -311,12 +311,12 @@ export const Navigation = () => {
                       <div className="flex items-center gap-3">
                         <Avatar className="w-12 h-12 border-2 border-primary/30">
                           <AvatarImage src={avatarUrl || undefined} />
-                          <AvatarFallback className="bg-primary/20 text-primary font-jakarta font-bold text-lg">
+                          <AvatarFallback className="bg-primary/20 text-primary font-quicksand font-bold text-lg">
                             {user?.email?.[0]?.toUpperCase() || "U"}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-jakarta font-bold text-foreground">{username || "User"}</p>
+                          <p className="font-quicksand font-bold text-foreground">{username || "User"}</p>
                           <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
                       </div>

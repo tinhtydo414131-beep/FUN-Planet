@@ -96,7 +96,7 @@ export const MobileGameControls = ({
         <Button
           variant="secondary"
           size="lg"
-          className="w-20 h-20 bg-secondary/90 hover:bg-secondary text-white shadow-lg rounded-full active:scale-95 transition-transform font-fredoka font-bold text-xl"
+          className="w-20 h-20 bg-secondary/90 hover:bg-secondary text-white shadow-lg rounded-full active:scale-95 transition-transform font-quicksand font-bold text-xl"
           onTouchStart={(e) => {
             e.preventDefault();
             handleJump();

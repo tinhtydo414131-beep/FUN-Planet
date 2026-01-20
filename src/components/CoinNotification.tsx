@@ -240,7 +240,7 @@ export function CoinNotification() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <motion.p
-                      className="text-2xl font-fredoka font-bold text-white drop-shadow-md"
+                      className="text-2xl font-quicksand font-bold text-white drop-shadow-md"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 500, damping: 15 }}

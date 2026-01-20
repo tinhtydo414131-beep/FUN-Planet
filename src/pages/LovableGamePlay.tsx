@@ -119,7 +119,7 @@ export default function LovableGamePlay() {
               <span className="hidden sm:inline">Back</span>
             </Button>
             <div>
-              <h1 className="font-fredoka font-bold text-lg sm:text-xl text-foreground truncate max-w-[200px] sm:max-w-none">
+              <h1 className="font-quicksand font-bold text-lg sm:text-xl text-foreground truncate max-w-[200px] sm:max-w-none">
                 {game.title}
               </h1>
               <div className="flex items-center gap-2">

@@ -306,7 +306,7 @@ const AdminMusicTab = forwardRef<HTMLDivElement, AdminMusicTabProps>(({ onStatsU
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <CardTitle className="text-2xl font-fredoka flex items-center gap-2">
+            <CardTitle className="text-2xl font-quicksand flex items-center gap-2">
               <Music2 className="w-6 h-6 text-pink-500" />
               <span className="bg-gradient-to-r from-yellow-500 via-pink-500 to-blue-500 bg-clip-text text-transparent">
                 Quản Lý Nhạc

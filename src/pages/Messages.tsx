@@ -811,7 +811,7 @@ export default function Messages() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <MessageCircle className="w-16 h-16 text-primary animate-bounce mx-auto" />
-          <p className="text-2xl font-fredoka text-primary">Loading messages... ⏳</p>
+          <p className="text-2xl font-quicksand text-primary">Loading messages... ⏳</p>
         </div>
       </div>
     );

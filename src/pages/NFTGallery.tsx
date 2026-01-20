@@ -126,7 +126,7 @@ export default function NFTGallery() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold font-fredoka bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold font-quicksand bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
             NFT Gallery
           </h1>
           <p className="text-muted-foreground">

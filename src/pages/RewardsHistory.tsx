@@ -162,7 +162,7 @@ export default function RewardsHistory() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="w-12 h-12 text-yellow-500 animate-spin mx-auto" />
-          <p className="text-xl font-fredoka text-muted-foreground">Loading rewards history...</p>
+          <p className="text-xl font-quicksand text-muted-foreground">Loading rewards history...</p>
         </div>
       </div>
     );
@@ -185,7 +185,7 @@ export default function RewardsHistory() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-fredoka font-bold flex items-center gap-3">
+              <h1 className="text-3xl font-quicksand font-bold flex items-center gap-3">
                 <History className="w-8 h-8 text-yellow-500" />
                 Rewards History
               </h1>

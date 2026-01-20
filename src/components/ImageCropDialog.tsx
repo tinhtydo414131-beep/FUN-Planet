@@ -144,7 +144,7 @@ export const ImageCropDialog = ({ open, imageUrl, onCropComplete, onClose }: Ima
           </Button>
           <Button
             onClick={createCroppedImage}
-            className="font-fredoka font-bold bg-gradient-to-r from-primary to-secondary"
+            className="font-quicksand font-bold bg-gradient-to-r from-primary to-secondary"
           >
             Xong ✓
           </Button>
