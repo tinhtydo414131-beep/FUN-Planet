@@ -161,7 +161,7 @@ const Index = () => {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background relative overflow-hidden pb-20 md:pb-0"
+      className="min-h-screen bg-background relative overflow-hidden pb-24 md:pb-0"
       initial="initial"
       animate="animate"
       exit="exit"
@@ -378,7 +378,7 @@ const Index = () => {
                   key={item.path}
                   variant="outline"
                   onClick={() => navigate(item.path)}
-                  className="flex flex-col items-center gap-1 h-20 glass-card border-2 border-white/40 hover:border-white/60 hover:shadow-lg transition-all hover:scale-105 rounded-2xl"
+                  className="flex flex-col items-center gap-1 h-20 glass-card border-2 border-white/40 hover:border-white/60 hover:shadow-lg transition-all hover:scale-105 rounded-2xl holo-border-animated"
                 >
                   <span className="text-2xl">{item.icon}</span>
                   <span className="text-xs font-quicksand font-bold uppercase tracking-wide">{item.label}</span>
@@ -428,15 +428,18 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-primary/10 to-secondary/10 border-t-2 border-primary/30 py-12 px-4">
+      <footer 
+        className="glass-card border-t-2 py-12 px-4"
+        style={{ borderImage: 'linear-gradient(135deg, #F3C4FB, #A2D2FF, #CDB4DB, #F3C4FB) 1' }}
+      >
         <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
             <div>
-              <h3 className="text-xl font-bold text-primary mb-4">FUN Planet 🌍</h3>
+              <h3 className="text-xl font-quicksand font-bold text-holographic mb-4">FUN Planet 🌍</h3>
               <p className="text-muted-foreground">{t('home.footerSlogan')}</p>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">{t('nav.games')}</h4>
+              <h4 className="text-lg font-quicksand font-bold mb-4">{t('nav.games')}</h4>
               <div className="space-y-2">
                 <p onClick={() => navigate("/games")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.browseGames')}</p>
                 <p onClick={() => navigate("/upload-game")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.uploadGame')}</p>
@@ -444,14 +447,14 @@ const Index = () => {
               </div>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">{t('home.features')}</h4>
+              <h4 className="text-lg font-quicksand font-bold mb-4">{t('home.features')}</h4>
               <div className="space-y-2">
                 <p onClick={() => navigate("/reward-galaxy")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.rewardsLabel')}</p>
                 <p onClick={() => navigate("/nft-gallery")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.nftGallery')}</p>
               </div>
             </div>
             <div>
-              <h4 className="text-lg font-bold mb-4">{t('home.about')}</h4>
+              <h4 className="text-lg font-quicksand font-bold mb-4">{t('home.about')}</h4>
               <div className="space-y-2">
                 <p onClick={() => navigate("/about")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.aboutUs')}</p>
                 <p onClick={() => navigate("/parent-dashboard")} className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">{t('home.forParents')}</p>
