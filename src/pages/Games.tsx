@@ -387,7 +387,7 @@ const Games = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background holographic-page-bg pb-safe">
+    <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background pb-safe">
       <LegendParticleEffect isLegend={isLegend} />
       <Navigation />
       
@@ -423,21 +423,21 @@ const Games = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-8 space-y-4"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 glass-card rounded-full border border-white/40 mb-4">
-              <Sparkles className="w-5 h-5 text-pink-500 animate-pulse" />
-              <span className="text-sm font-quicksand font-bold uppercase tracking-wide text-holographic">KHO BÁU ÁNH SÁNG</span>
-              <Sparkles className="w-5 h-5 text-blue-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full border border-yellow-400/30 mb-4">
+              <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
+              <span className="text-sm font-bold text-yellow-600">KHO BÁU ÁNH SÁNG</span>
+              <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
             </div>
             
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-quicksand font-bold">
-              <span className="text-holographic">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold">
+              <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 Khám phá Kho Báu Game Ánh Sáng!
               </span>
               <span className="ml-2">🌟</span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-muted-foreground font-nunito max-w-2xl mx-auto">
-              Hiện có <span className="font-bold text-holographic text-2xl">{totalGames}</span> game hướng thượng chờ bé khám phá!
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Hiện có <span className="font-bold text-primary text-2xl">{totalGames}</span> game hướng thượng chờ bé khám phá!
             </p>
             
             {/* Action Buttons */}
@@ -445,7 +445,7 @@ const Games = () => {
               <Button
                 onClick={() => navigate('/')}
                 variant="outline"
-                className="rounded-full px-6 font-quicksand font-bold uppercase tracking-wide glass-card border-2 border-white/40 hover:border-white/60"
+                className="rounded-full px-6 font-bold border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
               >
                 <Home className="w-4 h-4 mr-2" />
                 Về Trang Chính
@@ -454,7 +454,7 @@ const Games = () => {
               
               <Button
                 onClick={() => navigate('/upload-game')}
-                className="btn-holographic rounded-full px-6"
+                className="rounded-full px-6 font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Tải Game Lên +500K 💎
@@ -482,15 +482,15 @@ const Games = () => {
             className="max-w-2xl mx-auto mb-8"
           >
             <div className="relative group">
-              <div className="absolute -inset-[2px] rounded-2xl holo-border-animated opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative flex items-center glass-card border-2 border-white/40 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative flex items-center bg-card border-2 border-primary/20 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:border-primary/40 transition-all">
                 <Search className="absolute left-4 w-5 h-5 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="🔍 Tìm game yêu thích..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-4 py-4 text-lg border-0 bg-transparent focus-visible:ring-0 font-nunito"
+                  className="pl-12 pr-4 py-4 text-lg border-0 bg-transparent focus-visible:ring-0"
                 />
                 {searchQuery && (
                   <Button

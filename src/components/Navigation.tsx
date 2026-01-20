@@ -326,7 +326,7 @@ export const Navigation = () => {
                           navigate("/auth");
                           setMobileMenuOpen(false);
                         }}
-                        className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-secondary font-quicksand font-bold text-base uppercase tracking-wide"
+                        className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-secondary font-jakarta font-bold text-base"
                       >
                         {t('nav.loginSignup')}
                       </Button>
