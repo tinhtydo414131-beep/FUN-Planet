@@ -387,7 +387,7 @@ const Games = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background pb-safe">
+    <div className="min-h-screen holographic-page-bg pb-safe">
       <LegendParticleEffect isLegend={isLegend} />
       <Navigation />
       
@@ -423,14 +423,19 @@ const Games = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-8 space-y-4"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full border border-yellow-400/30 mb-4">
-              <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
-              <span className="text-sm font-bold text-yellow-600">KHO BÁU ÁNH SÁNG</span>
-              <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#F3C4FB]/20 via-[#CDB4DB]/20 to-[#A2D2FF]/20 rounded-full border border-[#F3C4FB]/30 mb-4">
+              <Sparkles className="w-5 h-5 text-[#F3C4FB] animate-pulse" />
+              <span className="text-sm font-quicksand font-bold uppercase tracking-wide text-[#CDB4DB]">KHO BÁU ÁNH SÁNG</span>
+              <Sparkles className="w-5 h-5 text-[#A2D2FF] animate-pulse" />
             </div>
             
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold">
-              <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-quicksand font-bold">
+              <span 
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: 'linear-gradient(135deg, #F3C4FB 0%, #CDB4DB 25%, #A2D2FF 50%, #B8F0F0 75%, #F3C4FB 100%)',
+                }}
+              >
                 Khám phá Kho Báu Game Ánh Sáng!
               </span>
               <span className="ml-2">🌟</span>
@@ -483,7 +488,7 @@ const Games = () => {
           >
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative flex items-center bg-card border-2 border-primary/20 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:border-primary/40 transition-all">
+              <div className="relative flex items-center glass-card border-2 border-[#F3C4FB]/30 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl hover:border-[#F3C4FB]/60 transition-all">
                 <Search className="absolute left-4 w-5 h-5 text-muted-foreground" />
                 <Input
                   type="text"
@@ -513,7 +518,7 @@ const Games = () => {
             transition={{ delay: 0.2 }}
             className="mb-6"
           >
-            <p className="text-center text-sm font-bold text-muted-foreground mb-3">🎂 ĐỘ TUỔI</p>
+            <p className="text-center text-sm font-quicksand font-bold uppercase tracking-wide text-muted-foreground mb-3">🎂 ĐỘ TUỔI</p>
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
               {ageFilters.map((filter) => {
                 const Icon = filter.icon;
@@ -523,10 +528,10 @@ const Games = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedAge(filter.id)}
-                    className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full font-bold text-sm sm:text-base transition-all ${
+                    className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-full font-quicksand font-bold text-sm sm:text-base transition-all ${
                       selectedAge === filter.id
-                        ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
-                        : 'bg-card border-2 border-primary/20 hover:border-primary/50 text-foreground'
+                        ? 'bg-gradient-to-r from-[#F3C4FB] via-[#CDB4DB] to-[#A2D2FF] text-gray-800 shadow-lg'
+                        : 'glass-card border-2 border-[#F3C4FB]/20 hover:border-[#F3C4FB]/50 text-foreground'
                     }`}
                   >
                     <span className="text-lg">{filter.emoji}</span>
@@ -544,7 +549,7 @@ const Games = () => {
             transition={{ delay: 0.25 }}
             className="mb-6"
           >
-            <p className="text-center text-sm font-bold text-muted-foreground mb-3">📚 CHỦ ĐỀ</p>
+            <p className="text-center text-sm font-quicksand font-bold uppercase tracking-wide text-muted-foreground mb-3">📚 CHỦ ĐỀ</p>
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
               {topicFilters.map((filter) => {
                 const Icon = filter.icon;
