@@ -161,7 +161,7 @@ const Index = () => {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background relative overflow-hidden pb-20 md:pb-0"
+      className="min-h-screen holographic-page-bg relative overflow-hidden pb-20 md:pb-0"
       initial="initial"
       animate="animate"
       exit="exit"
@@ -229,7 +229,7 @@ const Index = () => {
       
 
       {/* Full Games Gallery */}
-      <section id="games-gallery" className="py-16 px-4 bg-gradient-to-b from-primary/5 to-background">
+      <section id="games-gallery" className="py-16 px-4">
         <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -254,7 +254,7 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 onClick={() => navigate("/games")}
-                className="relative overflow-hidden rounded-3xl border-4 border-primary/30 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all group"
+                className="relative overflow-hidden rounded-3xl glass-card holo-border holo-border-animated shadow-xl hover:shadow-2xl hover:holo-glow transform hover:scale-105 transition-all group"
               >
                 <div className="relative aspect-[4/3]">
                   <img 
@@ -319,7 +319,7 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="overflow-hidden border-2 border-primary/30 hover:border-primary/60 transition-all hover:shadow-xl group h-full">
+                <Card className="overflow-hidden glass-card holo-border hover:holo-glow transition-all hover:shadow-xl group h-full">
                   <div className="relative aspect-video overflow-hidden">
                     <img 
                       src={feature.image} 
@@ -379,7 +379,7 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <Card className="p-8 md:p-12 border-4 border-primary/40 shadow-2xl bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 text-center">
+          <Card className="p-8 md:p-12 glass-card-strong holo-border holo-border-animated holo-glow shadow-2xl text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
               {t('home.readyToPlay')}
             </h2>

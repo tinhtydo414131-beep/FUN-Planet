@@ -51,13 +51,13 @@ export const MobileBottomNavEnhanced = () => {
       initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
       transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-card/98 via-card/95 to-card/90 backdrop-blur-xl border-t-2 border-primary/30 shadow-[0_-8px_40px_hsla(280,65%,65%,0.15),0_-2px_16px_hsla(340,70%,75%,0.1)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 mobile-nav-holographic shadow-[0_-8px_40px_hsla(280,65%,65%,0.2),0_-2px_16px_hsla(340,70%,75%,0.15)]"
       style={{ 
         paddingBottom: 'max(env(safe-area-inset-bottom), 8px)',
       }}
     >
-      {/* ✨ Sparkle decoration */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      {/* ✨ Rainbow sparkle border at top */}
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[hsl(var(--holo-pink))] via-[hsl(var(--holo-purple))] via-[hsl(var(--holo-blue))] to-[hsl(var(--holo-mint))]" style={{ backgroundSize: '300% 100%', animation: 'holographic-shift 5s linear infinite' }} />
       
       <div className={cn(
         "grid h-[76px] max-w-lg mx-auto",

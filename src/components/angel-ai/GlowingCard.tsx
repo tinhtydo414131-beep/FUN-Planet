@@ -17,24 +17,24 @@ export const GlowingCard = ({
 }: GlowingCardProps) => {
   const glowStyles = {
     purple: {
-      border: "from-purple-500 via-pink-500 to-purple-500",
-      shadow: "shadow-[0_0_30px_rgba(147,51,234,0.3)]",
-      hoverShadow: "hover:shadow-[0_0_50px_rgba(147,51,234,0.5)]",
+      border: "from-[hsl(var(--holo-purple))] via-[hsl(var(--holo-pink))] to-[hsl(var(--holo-purple))]",
+      shadow: "shadow-[0_0_30px_hsla(280,65%,80%,0.3)]",
+      hoverShadow: "hover:shadow-[0_0_50px_hsla(280,65%,80%,0.5)]",
     },
     pink: {
-      border: "from-pink-500 via-rose-400 to-pink-500",
-      shadow: "shadow-[0_0_30px_rgba(236,72,153,0.3)]",
-      hoverShadow: "hover:shadow-[0_0_50px_rgba(236,72,153,0.5)]",
+      border: "from-[hsl(var(--holo-pink))] via-[hsl(340,70%,80%)] to-[hsl(var(--holo-pink))]",
+      shadow: "shadow-[0_0_30px_hsla(340,70%,85%,0.3)]",
+      hoverShadow: "hover:shadow-[0_0_50px_hsla(340,70%,85%,0.5)]",
     },
     blue: {
-      border: "from-blue-500 via-cyan-400 to-blue-500",
-      shadow: "shadow-[0_0_30px_rgba(59,130,246,0.3)]",
-      hoverShadow: "hover:shadow-[0_0_50px_rgba(59,130,246,0.5)]",
+      border: "from-[hsl(var(--holo-blue))] via-[hsl(var(--holo-mint))] to-[hsl(var(--holo-blue))]",
+      shadow: "shadow-[0_0_30px_hsla(200,70%,80%,0.3)]",
+      hoverShadow: "hover:shadow-[0_0_50px_hsla(200,70%,80%,0.5)]",
     },
     rainbow: {
-      border: "from-purple-500 via-pink-500 via-amber-400 via-cyan-400 to-purple-500",
-      shadow: "shadow-[0_0_30px_rgba(168,85,247,0.3)]",
-      hoverShadow: "hover:shadow-[0_0_50px_rgba(168,85,247,0.5)]",
+      border: "from-[hsl(var(--holo-pink))] via-[hsl(var(--holo-purple))] via-[hsl(var(--holo-blue))] via-[hsl(var(--holo-mint))] to-[hsl(var(--holo-pink))]",
+      shadow: "shadow-[0_0_30px_hsla(280,65%,80%,0.3)]",
+      hoverShadow: "hover:shadow-[0_0_50px_hsla(280,65%,80%,0.5)]",
     },
   };
 

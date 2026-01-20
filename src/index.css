@@ -68,6 +68,21 @@
     --shadow-button: 0 6px 24px hsla(280, 65%, 65%, 0.25), 0 2px 8px hsla(340, 70%, 75%, 0.15);
     --shadow-button-hover: 0 12px 40px hsla(280, 65%, 65%, 0.35), 0 4px 16px hsla(340, 70%, 75%, 0.25);
     --shadow-diamond: 0 0 40px hsla(280, 65%, 75%, 0.4), 0 0 80px hsla(340, 70%, 80%, 0.3), 0 0 120px hsla(200, 70%, 80%, 0.2);
+    
+    /* 🌈 Holographic Color System - Phase 2 */
+    --holo-pink: 340 70% 85%;
+    --holo-purple: 280 65% 80%;
+    --holo-blue: 200 70% 80%;
+    --holo-mint: 175 55% 85%;
+    
+    /* Holographic Glow Effects */
+    --holo-glow: 0 0 20px hsla(340, 70%, 85%, 0.5), 0 0 40px hsla(200, 70%, 80%, 0.3);
+    --holo-glow-strong: 0 0 30px hsla(340, 70%, 85%, 0.6), 0 0 60px hsla(280, 65%, 80%, 0.4), 0 0 90px hsla(200, 70%, 80%, 0.3);
+    
+    /* Glass Effects */
+    --glass-white-light: 0 0% 100% / 0.35;
+    --glass-white-medium: 0 0% 100% / 0.45;
+    --glass-white-strong: 0 0% 100% / 0.60;
   }
 
   .dark {
@@ -891,4 +906,181 @@ body.css-fullscreen .css-fullscreen-hide {
   font-size: 0.625rem; /* 10px fixed for nav labels */
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* ============================================== */
+/* === PHASE 2: HOLOGRAPHIC COLOR SYSTEM ======= */
+/* ============================================== */
+
+/* 1. Holographic Page Background */
+.holographic-page-bg {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--holo-pink)) 0%,
+    hsl(var(--holo-purple)) 25%,
+    hsl(var(--holo-blue)) 50%,
+    hsl(var(--holo-mint)) 75%,
+    hsl(var(--holo-pink)) 100%
+  );
+  background-size: 400% 400%;
+  animation: holographic-shift 15s ease infinite;
+}
+
+@keyframes holographic-shift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 50% 0%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 100%; }
+}
+
+/* 2. Glass Card Styles */
+.glass-card {
+  background: hsl(var(--glass-white-medium));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(0 0% 100% / 0.6);
+  box-shadow: 0 8px 32px hsl(280 65% 65% / 0.08), 0 2px 8px hsl(340 70% 75% / 0.06);
+}
+
+.glass-card-light {
+  background: hsl(var(--glass-white-light));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid hsl(0 0% 100% / 0.4);
+}
+
+.glass-card-strong {
+  background: hsl(var(--glass-white-strong));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid hsl(0 0% 100% / 0.7);
+  box-shadow: 0 8px 40px hsl(280 65% 65% / 0.12);
+}
+
+/* 3. Holographic Border Animation */
+.holo-border {
+  position: relative;
+}
+
+.holo-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--holo-pink)),
+    hsl(var(--holo-blue)),
+    hsl(var(--holo-purple)),
+    hsl(var(--holo-pink))
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.holo-border-animated::before {
+  background-size: 300% 300%;
+  animation: holo-border-shift 5s linear infinite;
+}
+
+@keyframes holo-border-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 4. Holographic Glow Effects */
+.holo-glow {
+  box-shadow: var(--holo-glow);
+}
+
+.holo-glow-strong {
+  box-shadow: var(--holo-glow-strong);
+}
+
+.holo-glow-pulse {
+  animation: holo-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes holo-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px hsla(340, 70%, 85%, 0.4), 0 0 40px hsla(200, 70%, 80%, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px hsla(340, 70%, 85%, 0.6), 0 0 60px hsla(280, 65%, 80%, 0.4), 0 0 80px hsla(200, 70%, 80%, 0.3);
+  }
+}
+
+/* 5. Holographic Button Styles */
+.btn-holographic {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--holo-pink)) 0%,
+    hsl(var(--holo-purple)) 50%,
+    hsl(var(--holo-blue)) 100%
+  );
+  background-size: 200% 200%;
+  color: hsl(280 25% 20%);
+  border: 2px solid hsl(0 0% 100% / 0.5);
+  box-shadow: 0 4px 20px hsla(280, 65%, 65%, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-holographic:hover {
+  background-position: 100% 50%;
+  box-shadow: 0 6px 30px hsla(280, 65%, 65%, 0.5), 0 0 40px hsla(340, 70%, 85%, 0.3);
+  transform: translateY(-2px);
+}
+
+/* 6. Mobile Navigation Holographic Styles */
+.mobile-nav-holographic {
+  background: linear-gradient(
+    135deg,
+    hsla(340, 70%, 90%, 0.95) 0%,
+    hsla(280, 65%, 88%, 0.95) 50%,
+    hsla(200, 70%, 90%, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 2px solid;
+  border-image: linear-gradient(90deg, 
+    hsl(var(--holo-pink)), 
+    hsl(var(--holo-purple)), 
+    hsl(var(--holo-blue)), 
+    hsl(var(--holo-mint)),
+    hsl(var(--holo-pink))
+  ) 1;
+}
+
+/* 7. Holographic Text Gradient */
+.text-holographic {
+  background: linear-gradient(
+    135deg,
+    hsl(340 70% 60%) 0%,
+    hsl(280 65% 55%) 25%,
+    hsl(200 70% 50%) 50%,
+    hsl(175 55% 45%) 75%,
+    hsl(340 70% 60%) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holographic-shift 8s ease infinite;
+}
+
+/* 8. Holographic Section Container */
+.section-holographic {
+  background: hsl(var(--glass-white-medium));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(0 0% 100% / 0.6);
+  border-radius: 1.5rem;
+  box-shadow: 
+    0 8px 32px hsl(280 65% 65% / 0.1),
+    0 2px 8px hsl(340 70% 75% / 0.08),
+    inset 0 1px 0 hsl(0 0% 100% / 0.5);
 }
