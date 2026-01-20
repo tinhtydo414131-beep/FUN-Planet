@@ -628,7 +628,7 @@ export const FunPlanetUnifiedBoard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative overflow-hidden rounded-3xl shadow-xl"
-          style={{ background: "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)" }}
+          style={{ background: "linear-gradient(135deg, hsla(280, 65%, 75%, 0.9) 0%, hsla(260, 50%, 70%, 0.85) 25%, hsla(200, 70%, 75%, 0.85) 50%, hsla(175, 60%, 78%, 0.9) 100%)" }}
         >
           {/* Inner Border */}
           <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ border: "2px solid rgba(255, 215, 0, 0.7)", boxShadow: "inset 0 0 25px rgba(255, 215, 0, 0.3)", zIndex: 5 }} />
@@ -706,7 +706,7 @@ export const FunPlanetUnifiedBoard = () => {
               {/* Honor Board Header */}
               <div className="mb-2 flex items-center justify-center gap-1.5 sm:gap-2">
                 <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>🌍</motion.span>
-                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 5s linear infinite" }}>HONOR BOARD</h3>
+                <h3 className="bg-gradient-to-r from-[#F3C4FB] via-[#A2D2FF] to-[#F3C4FB] bg-clip-text text-lg sm:text-xl md:text-2xl font-quicksand font-bold uppercase tracking-wide text-transparent drop-shadow-[0_0_15px_rgba(243,196,251,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 5s linear infinite" }}>HONOR BOARD</h3>
                 <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>🏆</motion.span>
               </div>
 

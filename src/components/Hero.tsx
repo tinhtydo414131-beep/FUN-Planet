@@ -99,9 +99,12 @@ export const Hero = () => {
         }} animate={{
           opacity: 1,
           y: 0
-        }} className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1 sm:py-2.5 bg-gradient-to-r from-purple-600/95 via-pink-600/95 to-cyan-600/95 backdrop-blur-lg rounded-full border-2 border-white/60 shadow-[0_0_30px_rgba(168,85,247,0.5)]">
-            <Sparkles className="w-3 h-3 sm:w-5 sm:h-5 text-yellow-300 animate-pulse drop-shadow-[0_0_10px_rgba(253,224,71,0.8)]" />
-            <span className="font-space text-[10px] sm:text-base font-black text-white drop-shadow-lg">🌟 {t('hero.badge')}</span>
+        }} 
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1 sm:py-2.5 bg-gradient-to-r from-[#F3C4FB] via-[#CDB4DB] to-[#A2D2FF] backdrop-blur-lg rounded-full border-2 border-white/60"
+          style={{ boxShadow: '0 0 30px rgba(243, 196, 251, 0.5), 0 0 15px rgba(162, 210, 255, 0.3)' }}
+        >
+            <Sparkles className="w-3 h-3 sm:w-5 sm:h-5 text-white animate-pulse drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+            <span className="font-quicksand text-[10px] sm:text-base font-bold text-white drop-shadow-lg uppercase tracking-wide">🌟 {t('hero.badge')}</span>
           </motion.div>
 
           {/* Logo with diamonds */}
@@ -143,11 +146,11 @@ export const Hero = () => {
               >
                 FUN PLANET
               </span>
-              {/* Main animated gradient with extended yellow range */}
+              {/* Main animated holographic gradient */}
               <span 
                 className="relative bg-clip-text text-transparent"
                 style={{ 
-                  backgroundImage: 'linear-gradient(135deg, #FFD700 0%, #FFDC00 10%, #FFC800 18%, #FFB000 25%, #FF6BD6 35%, #E040A0 45%, #D050C0 55%, #9070E0 65%, #7090F0 72%, #FFE066 82%, #FFCC00 90%, #FFD700 100%)',
+                  backgroundImage: 'linear-gradient(135deg, #F3C4FB 0%, #CDB4DB 20%, #A2D2FF 40%, #B8F0F0 60%, #CDB4DB 80%, #F3C4FB 100%)',
                   backgroundSize: '200% 200%',
                   animation: 'gradient-shift 8s ease infinite',
                   WebkitBackgroundClip: 'text',
@@ -178,7 +181,7 @@ export const Hero = () => {
           opacity: 1
         }} transition={{
           delay: 0.3
-        }} className="text-xs sm:text-base md:text-lg text-white font-rajdhani font-black max-w-[90vw] sm:max-w-2xl mx-auto leading-relaxed px-3 sm:px-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] bg-gradient-to-r from-purple-600/70 via-pink-600/70 to-cyan-600/70 backdrop-blur-xl rounded-2xl py-2.5 sm:py-4 border border-white/50 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_0_40px_rgba(168,85,247,0.25)]">
+        }} className="text-xs sm:text-base md:text-lg text-white font-nunito font-bold max-w-[90vw] sm:max-w-2xl mx-auto leading-relaxed px-3 sm:px-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)] bg-gradient-to-r from-[#F3C4FB]/70 via-[#CDB4DB]/70 to-[#A2D2FF]/70 backdrop-blur-xl rounded-2xl py-2.5 sm:py-4 border border-white/50 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_0_40px_rgba(243,196,251,0.25)]">
             🚀 {t('hero.slogan')} 💎✨
           </motion.p>
 
@@ -194,11 +197,11 @@ export const Hero = () => {
           delay: 0.4
         }} onSubmit={handleSearch} className="max-w-xl mx-auto px-2 sm:px-4">
             <div className="relative group">
-              {/* Pink-blue gradient border */}
+              {/* Holographic gradient border */}
               <div 
                 className="absolute -inset-[2px] rounded-2xl opacity-90 group-hover:opacity-100 transition duration-300"
                 style={{
-                  background: 'linear-gradient(90deg, #E040A0 0%, #C060C0 25%, #9070E0 50%, #70A0F0 75%, #50B0FF 100%)',
+                  background: 'linear-gradient(90deg, #F3C4FB 0%, #CDB4DB 25%, #A2D2FF 50%, #B8F0F0 75%, #F3C4FB 100%)',
                 }}
               />
               <div 
@@ -215,13 +218,13 @@ export const Hero = () => {
                   placeholder={t('hero.searchPlaceholder')} 
                   value={search} 
                   onChange={e => setSearch(e.target.value)} 
-                  className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-rajdhani font-medium bg-transparent border-0 rounded-xl shadow-none focus:ring-0 focus:border-0 text-purple-700 placeholder:text-gray-400"
+                  className="pl-9 sm:pl-12 pr-20 sm:pr-28 py-4 sm:py-6 text-sm sm:text-base font-nunito font-medium bg-transparent border-0 rounded-xl shadow-none focus:ring-0 focus:border-0 text-purple-700 placeholder:text-gray-400"
                 />
                 <Button 
                   type="submit" 
                   onMouseEnter={() => playPop()} 
                   onClick={() => playClick()} 
-                  className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-space font-bold px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm rounded-xl border-2 border-purple-300/50 hover:border-purple-400/70 transition-all"
+                  className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 font-quicksand font-bold uppercase tracking-wide px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm rounded-xl border-2 border-purple-300/50 hover:border-purple-400/70 transition-all"
                   style={{
                     background: 'linear-gradient(135deg, rgba(200,180,255,0.95) 0%, rgba(180,160,255,0.9) 50%, rgba(200,190,255,0.95) 100%)',
                     color: '#6D28D9',

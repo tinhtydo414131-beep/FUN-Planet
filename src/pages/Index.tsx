@@ -237,7 +237,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+            <h2 className="text-4xl md:text-5xl font-quicksand font-bold text-primary mb-4">
               {t('home.gameCategories')} 🎨
             </h2>
             <p className="text-xl text-muted-foreground">
@@ -302,7 +302,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+            <h2 className="text-4xl md:text-5xl font-quicksand font-bold text-primary mb-4">
               {t('home.whyKidsLove')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -346,7 +346,7 @@ const Index = () => {
       {/* Quick Access */}
       <section className="py-12 px-4 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
         <div className="container mx-auto max-w-7xl">
-          <h2 className="text-3xl font-bold text-center mb-8 text-primary">
+          <h2 className="text-3xl font-quicksand font-bold text-center mb-8 text-primary">
             {t('home.quickAccess')}
           </h2>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -379,8 +379,8 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-4xl">
-          <Card className="p-8 md:p-12 glass-card-strong holo-border holo-border-animated holo-glow shadow-2xl text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+          <Card className="p-8 md:p-12 glass-card-strong holo-border holo-border-animated holo-glow shadow-2xl text-center bg-gradient-to-r from-[#F3C4FB]/10 via-[#CDB4DB]/10 to-[#A2D2FF]/10">
+            <h2 className="text-3xl md:text-4xl font-quicksand font-bold text-primary mb-4">
               {t('home.readyToPlay')}
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">

@@ -111,7 +111,15 @@ export function FeaturedGamesSection() {
               <span className="font-bold text-sm">HOT TODAY</span>
               <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
+            <h2 
+              className="text-4xl md:text-5xl font-quicksand font-bold uppercase tracking-wide mb-4"
+              style={{ 
+                backgroundImage: 'linear-gradient(135deg, #F3C4FB 0%, #CDB4DB 25%, #A2D2FF 50%, #B8F0F0 75%, #F3C4FB 100%)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent'
+              }}
+            >
               Today's Featured Games 🎮
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -152,7 +160,7 @@ export function FeaturedGamesSection() {
                     whileHover={{ scale: 1.1 }}
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <div className="w-16 h-16 rounded-full bg-yellow-500/90 flex items-center justify-center shadow-xl">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl" style={{ background: 'linear-gradient(135deg, #F3C4FB, #CDB4DB, #A2D2FF)' }}>
                       <Play className="w-8 h-8 text-white ml-1" />
                     </div>
                   </motion.div>
@@ -215,7 +223,7 @@ export function FeaturedGamesSection() {
                       whileHover={{ scale: 1.1 }}
                       className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-xl">
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl" style={{ background: 'linear-gradient(135deg, #F3C4FB, #CDB4DB, #A2D2FF)' }}>
                         <Play className="w-8 h-8 text-white ml-1" />
                       </div>
                     </motion.div>
