@@ -3,14 +3,21 @@ import React from 'react';
 export const CosmicBackground = () => {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Base gradient - Light pastel white theme */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-purple-50/50 to-pink-50/50" />
-      
-      {/* Radial center glow - soft pastel center */}
+      {/* Holographic gradient background */}
       <div 
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at 50% 30%, rgba(255,235,180,0.2) 0%, rgba(255,182,193,0.1) 30%, transparent 70%)',
+          background: 'linear-gradient(135deg, hsl(340 70% 92%) 0%, hsl(280 65% 90%) 25%, hsl(200 70% 92%) 50%, hsl(175 55% 92%) 75%, hsl(340 70% 92%) 100%)',
+          backgroundSize: '400% 400%',
+          animation: 'holographic-shift 15s ease infinite',
+        }}
+      />
+      
+      {/* Radial center glow - soft holographic center */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 30%, hsla(280, 65%, 85%, 0.3) 0%, hsla(340, 70%, 90%, 0.2) 30%, transparent 70%)',
         }}
       />
       
@@ -18,7 +25,7 @@ export const CosmicBackground = () => {
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 60%, rgba(255,240,245,0.3) 100%)',
+          background: 'radial-gradient(ellipse at center, transparent 60%, hsla(200, 70%, 95%, 0.4) 100%)',
         }}
       />
     </div>

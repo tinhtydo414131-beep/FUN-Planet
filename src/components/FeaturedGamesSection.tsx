@@ -97,8 +97,8 @@ export function FeaturedGamesSection() {
 
   return (
     <>
-      <section id="featured-games" className="py-16 px-4 bg-gradient-to-b from-background to-primary/5">
-        <div className="container mx-auto max-w-7xl">
+      <section id="featured-games" className="py-16 px-4">
+        <div className="container mx-auto max-w-7xl section-holographic p-6 md:p-8">
           {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -128,7 +128,7 @@ export function FeaturedGamesSection() {
               viewport={{ once: true }}
             >
               <Card
-                className="group relative overflow-hidden rounded-2xl border-2 border-yellow-400/50 hover:border-yellow-400 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-500/20 hover:scale-105"
+                className="group relative overflow-hidden rounded-2xl glass-card holo-border holo-border-animated hover:holo-glow-strong cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
                 onClick={() => navigate('/games/gem-fusion-quest')}
               >
                 {/* Thumbnail */}
@@ -190,7 +190,7 @@ export function FeaturedGamesSection() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card
-                  className="group relative overflow-hidden rounded-2xl border-2 border-transparent hover:border-primary/50 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:scale-105"
+                  className="group relative overflow-hidden rounded-2xl glass-card holo-border hover:holo-glow cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
                   onClick={() => handlePlayGame(game)}
                 >
                   {/* Thumbnail */}
