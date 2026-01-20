@@ -183,12 +183,14 @@ const Index = () => {
             onSkip={skipOnboarding} 
           />
         )}
+        {/* FunIDOnboarding auto-display disabled per memory/ux/onboarding-auto-display-policy
         {showFunIdOnboarding && !user && (
           <FunIDOnboarding 
             onComplete={handleFunIdComplete}
             onSkip={handleFunIdComplete}
           />
         )}
+        */}
         {showAngelChat && user && funId && (
           <AngelAI 
             isNewUser={isNewUser}
