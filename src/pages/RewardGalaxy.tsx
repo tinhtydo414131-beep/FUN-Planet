@@ -339,7 +339,7 @@ export default function RewardGalaxy() {
       
       <Navigation />
 
-      <section className="relative pt-20 pb-32 px-4 z-10">
+      <section className="relative pt-16 sm:pt-20 pb-24 sm:pb-32 px-3 sm:px-4 z-10">
         <div className="container mx-auto max-w-6xl">
           {/* Father Universe Header */}
           <FatherUniverseHeader />
@@ -371,9 +371,9 @@ export default function RewardGalaxy() {
           />
 
           {/* Reward Categories - Planet Cards */}
-          <div className="mb-14">
+          <div className="mb-8 sm:mb-14">
             <motion.h2 
-              className="text-3xl md:text-4xl font-fredoka font-bold text-center mb-10"
+              className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-center mb-6 sm:mb-10"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -390,7 +390,7 @@ export default function RewardGalaxy() {
             </motion.h2>
             
             {/* Responsive grid: 1 col mobile, 2 col tablet, 5 col desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6">
               {/* Daily Login Reward - Mint green to warm yellow */}
               <DailyLoginRewardCard
                 canClaim={canClaimDailyLogin}

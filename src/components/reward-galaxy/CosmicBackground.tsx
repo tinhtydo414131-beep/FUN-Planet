@@ -1,17 +1,9 @@
 import { motion } from 'framer-motion';
-import camlyCoin from '@/assets/camly-coin.png';
 
 export const CosmicBackground = () => {
-  // Generate random coin positions and animations
-  const flyingCoins = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    initialX: Math.random() * 100,
-    initialY: Math.random() * 100,
-    size: 30 + Math.random() * 30,
-    duration: 12 + Math.random() * 8,
-    delay: Math.random() * 6,
-  }));
-
+  // Reduced star count for better performance (30 instead of 80)
+  const starCount = 30;
+  
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {/* Base gradient - Light pastel white theme */}
@@ -25,8 +17,8 @@ export const CosmicBackground = () => {
         }}
       />
       
-      {/* Soft pastel clouds for depth */}
-      <div className="absolute inset-0 opacity-30">
+      {/* Soft pastel clouds for depth - hidden on mobile */}
+      <div className="absolute inset-0 opacity-30 hidden sm:block">
         <motion.div 
           className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-purple-200/30 rounded-full blur-[180px]"
           animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.35, 0.2] }}
@@ -42,15 +34,10 @@ export const CosmicBackground = () => {
           animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.25, 0.15] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.div 
-          className="absolute top-0 right-1/3 w-[350px] h-[350px] bg-blue-200/15 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
       </div>
       
-      {/* Twinkling stars - Yellow, Pink, Blue colors */}
-      {[...Array(80)].map((_, i) => {
+      {/* Twinkling stars - Reduced count: 30 instead of 80 */}
+      {[...Array(starCount)].map((_, i) => {
         const size = 2 + Math.random() * 4;
         const colorIndex = i % 3;
         const colors = ['#FFD700', '#FF69B4', '#60A5FA']; // Yellow, Pink, Blue
@@ -81,103 +68,58 @@ export const CosmicBackground = () => {
         );
       })}
       
-      {/* Flying Camly Coins with soft glow */}
-      {flyingCoins.map((coin) => (
-        <motion.div
-          key={`coin-${coin.id}`}
-          className="absolute"
-          style={{
-            left: `${coin.initialX}%`,
-            top: `${coin.initialY}%`,
-            width: coin.size,
-            height: coin.size,
-          }}
-          animate={{
-            x: [0, 100, -50, 80, 0],
-            y: [0, -80, 50, -100, 0],
-            rotate: [0, 360, 720, 1080, 1440],
-            scale: [1, 1.1, 0.9, 1.15, 1],
-          }}
-          transition={{
-            duration: coin.duration,
-            repeat: Infinity,
-            delay: coin.delay,
-            ease: "easeInOut",
-          }}
-        >
-          <motion.img
-            src={camlyCoin}
-            alt="Camly Coin"
-            className="w-full h-full object-contain"
+      {/* Shooting stars with pastel trails - Reduced to 2, hidden on mobile */}
+      <div className="hidden sm:block">
+        {[...Array(2)].map((_, i) => (
+          <motion.div
+            key={`shooting-star-${i}`}
+            className="absolute"
             style={{
-              filter: 'drop-shadow(0 0 15px rgba(255,215,0,0.6)) drop-shadow(0 0 30px rgba(255,215,0,0.3))',
+              left: `${10 + i * 40}%`,
+              top: '-5%',
             }}
             animate={{
-              filter: [
-                'drop-shadow(0 0 15px rgba(255,215,0,0.6)) drop-shadow(0 0 30px rgba(255,215,0,0.3))',
-                'drop-shadow(0 0 25px rgba(255,215,0,0.8)) drop-shadow(0 0 45px rgba(255,215,0,0.5))',
-                'drop-shadow(0 0 15px rgba(255,215,0,0.6)) drop-shadow(0 0 30px rgba(255,215,0,0.3))',
-              ],
+              x: ['0%', '50%'],
+              y: ['0vh', '100vh'],
+              opacity: [0, 1, 1, 0],
             }}
             transition={{
-              duration: 2.5,
+              duration: 7 + i * 0.8,
               repeat: Infinity,
-              ease: "easeInOut",
+              delay: i * 5,
+              ease: "linear",
             }}
-          />
-        </motion.div>
-      ))}
+          >
+            {/* Star head - pastel colors */}
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{
+                background: i % 2 === 0 
+                  ? 'radial-gradient(circle at 30% 30%, #FFD700, #FFA500)' 
+                  : 'radial-gradient(circle at 30% 30%, #FF69B4, #EC4899)',
+                boxShadow: i % 2 === 0 
+                  ? '0 0 15px #FFD700, 0 0 30px #FFA50060' 
+                  : '0 0 15px #FF69B4, 0 0 30px #EC489960',
+              }}
+            />
+            {/* Soft tail */}
+            <div 
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 rounded-full"
+              style={{
+                background: i % 2 === 0 
+                  ? 'linear-gradient(to bottom, #FFD70080, transparent)' 
+                  : 'linear-gradient(to bottom, #FF69B480, transparent)',
+                filter: 'blur(2px)',
+              }}
+            />
+          </motion.div>
+        ))}
+      </div>
       
-      {/* Shooting stars with pastel trails */}
-      {[...Array(4)].map((_, i) => (
-        <motion.div
-          key={`shooting-star-${i}`}
-          className="absolute"
-          style={{
-            left: `${5 + i * 22}%`,
-            top: '-5%',
-          }}
-          animate={{
-            x: ['0%', '50%'],
-            y: ['0vh', '100vh'],
-            opacity: [0, 1, 1, 0],
-          }}
-          transition={{
-            duration: 7 + i * 0.8,
-            repeat: Infinity,
-            delay: i * 5,
-            ease: "linear",
-          }}
-        >
-          {/* Star head - pastel colors */}
-          <div 
-            className="w-3 h-3 rounded-full"
-            style={{
-              background: i % 2 === 0 
-                ? 'radial-gradient(circle at 30% 30%, #FFD700, #FFA500)' 
-                : 'radial-gradient(circle at 30% 30%, #FF69B4, #EC4899)',
-              boxShadow: i % 2 === 0 
-                ? '0 0 15px #FFD700, 0 0 30px #FFA50060' 
-                : '0 0 15px #FF69B4, 0 0 30px #EC489960',
-            }}
-          />
-          {/* Soft tail */}
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 rounded-full"
-            style={{
-              background: i % 2 === 0 
-                ? 'linear-gradient(to bottom, #FFD70080, transparent)' 
-                : 'linear-gradient(to bottom, #FF69B480, transparent)',
-              filter: 'blur(2px)',
-            }}
-          />
-        </motion.div>
-      ))}
-      
-      {/* Decorative elements - Pastel planets */}
+      {/* Decorative elements - Pastel planets - Hidden on mobile */}
       {/* Planet 1 - Bottom right - Soft purple/pink */}
       <motion.div
-        className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-40"
+        className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-40 hidden sm:block"
         style={{
           background: 'radial-gradient(circle at 30% 30%, #F5D0FE, #E879F9, #C026D3)',
           boxShadow: '0 0 60px rgba(232, 121, 249, 0.3), inset 0 -20px 40px rgba(192, 38, 211, 0.3)',
@@ -195,9 +137,9 @@ export const CosmicBackground = () => {
         />
       </motion.div>
       
-      {/* Planet 2 - Top left - Soft pink/blue */}
+      {/* Planet 2 - Top left - Soft pink/blue - Hidden on mobile */}
       <motion.div
-        className="absolute -top-8 -left-8 w-28 h-28 rounded-full opacity-30"
+        className="absolute -top-8 -left-8 w-28 h-28 rounded-full opacity-30 hidden sm:block"
         style={{
           background: 'radial-gradient(circle at 30% 30%, #FBCFE8, #F472B6, #EC4899)',
           boxShadow: '0 0 40px rgba(244, 114, 182, 0.3)',
@@ -205,34 +147,6 @@ export const CosmicBackground = () => {
         animate={{ rotate: -360 }}
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
       />
-      
-      {/* Ambient light rays - very soft */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-5">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={`ray-${i}`}
-            className="absolute top-0 left-1/2 w-2 origin-top"
-            style={{
-              height: '100vh',
-              background: i % 3 === 0 
-                ? 'linear-gradient(to bottom, rgba(255,215,0,0.3), transparent 60%)' 
-                : i % 3 === 1
-                ? 'linear-gradient(to bottom, rgba(255,105,180,0.25), transparent 60%)'
-                : 'linear-gradient(to bottom, rgba(96,165,250,0.25), transparent 60%)',
-              transform: `rotate(${i * 60}deg) translateX(-50%)`,
-              filter: 'blur(15px)',
-            }}
-            animate={{
-              opacity: [0.05, 0.15, 0.05],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-              delay: i * 0.8,
-            }}
-          />
-        ))}
-      </div>
       
       {/* Soft vignette for depth - very subtle */}
       <div 
