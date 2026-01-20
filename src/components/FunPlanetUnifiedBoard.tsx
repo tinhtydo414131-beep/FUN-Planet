@@ -618,17 +618,17 @@ export const FunPlanetUnifiedBoard = () => {
       `}</style>
 
       <div className="relative">
-        {/* Outer Gold Glow */}
-        <div className="absolute rounded-3xl pointer-events-none" style={{ inset: "-12px", boxShadow: "0 0 30px rgba(255, 215, 0, 0.5), 0 0 50px rgba(255, 165, 0, 0.3), 0 0 80px rgba(255, 215, 0, 0.2)", zIndex: -15 }} />
+        {/* Holographic Outer Glow */}
+        <div className="absolute rounded-3xl pointer-events-none holo-glow" style={{ inset: "-12px", zIndex: -15 }} />
 
-        {/* Gold Metallic Border */}
-        <div className="absolute rounded-3xl animate-metallic-shine" style={{ inset: "-8px", background: "linear-gradient(135deg, #FFD700 0%, #FFFACD 10%, #FFF8DC 20%, #FFD700 35%, #B8860B 50%, #FFD700 65%, #FFF8DC 80%, #FFFACD 90%, #FFD700 100%)", backgroundSize: "200% 200%", boxShadow: "0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3), inset 0 1px 3px rgba(255, 255, 255, 0.5), inset 0 -1px 3px rgba(0, 0, 0, 0.3)", zIndex: -10 }} />
+        {/* Holographic Metallic Border */}
+        <div className="absolute rounded-3xl holo-border-animated" style={{ inset: "-8px", zIndex: -10 }} />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative overflow-hidden rounded-3xl shadow-xl"
-          style={{ background: "linear-gradient(135deg, rgba(88, 28, 135, 0.9) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(30, 58, 138, 0.9) 100%)" }}
+          style={{ background: "linear-gradient(135deg, hsl(320 85% 85% / 0.15) 0%, hsl(280 40% 80% / 0.2) 33%, hsl(210 80% 82% / 0.25) 66%, hsl(175 70% 82% / 0.2) 100%)" }}
         >
           {/* Inner Border */}
           <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ border: "2px solid rgba(255, 215, 0, 0.7)", boxShadow: "inset 0 0 25px rgba(255, 215, 0, 0.3)", zIndex: 5 }} />
@@ -703,10 +703,10 @@ export const FunPlanetUnifiedBoard = () => {
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-0">
             {/* =============== LEFT COLUMN: HONOR + LEGENDS =============== */}
             <div className="p-3 sm:p-4 flex flex-col">
-              {/* Honor Board Header */}
+              {/* Honor Board Header - Holographic */}
               <div className="mb-2 flex items-center justify-center gap-1.5 sm:gap-2">
                 <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>🌍</motion.span>
-                <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 5s linear infinite" }}>HONOR BOARD</h3>
+                <h3 className="text-holographic text-lg sm:text-xl md:text-2xl font-quicksand font-bold uppercase tracking-wide drop-shadow-[0_0_15px_rgba(243,196,251,0.7)]">HONOR BOARD</h3>
                 <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>🏆</motion.span>
               </div>
 
@@ -754,22 +754,22 @@ export const FunPlanetUnifiedBoard = () => {
 
               {/* Legends Board */}
               <div className="flex-1 flex flex-col min-h-0">
-                {/* Legends Header */}
+                {/* Legends Header - Holographic */}
                 <div className="mb-2 sm:mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
                   <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>👑</motion.span>
-                  <h3 className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-lg sm:text-xl md:text-2xl font-bold text-transparent drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]" style={{ backgroundSize: "200% 100%", animation: "shimmer 5s linear infinite" }}>FUN PLANET LEGENDS</h3>
+                  <h3 className="text-holographic text-lg sm:text-xl md:text-2xl font-quicksand font-bold uppercase tracking-wide drop-shadow-[0_0_15px_rgba(162,210,255,0.7)]">FUN PLANET LEGENDS</h3>
                   <motion.span className="text-sm sm:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.15, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>👑</motion.span>
                 </div>
 
-                {/* Tabs */}
+                {/* Tabs - Holographic */}
                 <div className="flex gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                  <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/50" : "bg-white/25 !text-white hover:bg-white/30"}`}>
-                    <Gem className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`} />
-                    <span className={`text-xs sm:text-base font-bold ${activeTab === "donors" ? "!text-white" : "!text-yellow-400"}`}>Donate & Sponsor</span>
+                  <button onClick={() => setActiveTab("donors")} className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-4 rounded-xl font-quicksand font-bold uppercase tracking-wide text-xs sm:text-sm transition-all duration-300 ${activeTab === "donors" ? "bg-gradient-to-r from-pink-400 via-purple-500 to-blue-400 text-white shadow-lg holo-glow" : "glass-card-dark text-white/80 hover:bg-white/30"}`}>
+                    <Gem className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${activeTab === "donors" ? "text-white" : "text-pink-300"}`} />
+                    <span>Donate</span>
                   </button>
-                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-lg shadow-teal-500/50" : "bg-white/25 !text-white hover:bg-white/30"}`}>
-                    <Gamepad2 className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`} />
-                    <span className={`text-xs sm:text-base font-bold ${activeTab === "creators" ? "!text-white" : "!text-yellow-400"}`}>Top Creators</span>
+                  <button onClick={() => setActiveTab("creators")} className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-4 rounded-xl font-quicksand font-bold uppercase tracking-wide text-xs sm:text-sm transition-all duration-300 ${activeTab === "creators" ? "bg-gradient-to-r from-pink-400 via-purple-500 to-blue-400 text-white shadow-lg holo-glow" : "glass-card-dark text-white/80 hover:bg-white/30"}`}>
+                    <Gamepad2 className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${activeTab === "creators" ? "text-white" : "text-blue-300"}`} />
+                    <span>Creators</span>
                   </button>
                 </div>
 

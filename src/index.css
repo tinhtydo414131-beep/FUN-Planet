@@ -2,6 +2,161 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =================================
+   HOLOGRAPHIC DESIGN SYSTEM
+   Fun Planet - Pink-Purple-Blue-Mint
+   ================================= */
+
+:root {
+  /* Holographic Colors */
+  --holo-pink: 320 85% 85%;
+  --holo-purple: 280 40% 80%;
+  --holo-blue: 210 80% 82%;
+  --holo-mint: 175 70% 82%;
+  
+  /* Holographic Gradients */
+  --holo-gradient: linear-gradient(135deg, 
+    hsl(var(--holo-pink)) 0%, 
+    hsl(var(--holo-purple)) 33%, 
+    hsl(var(--holo-blue)) 66%, 
+    hsl(var(--holo-mint)) 100%
+  );
+}
+
+/* Holographic Background */
+.holographic-bg {
+  background: linear-gradient(135deg, 
+    hsl(var(--holo-pink)) 0%, 
+    hsl(var(--holo-purple)) 33%, 
+    hsl(var(--holo-blue)) 66%, 
+    hsl(var(--holo-mint)) 100%
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Holographic Border - Animated */
+.holo-border-animated {
+  background: linear-gradient(135deg, 
+    hsl(var(--holo-pink)), 
+    hsl(var(--holo-blue)), 
+    hsl(var(--holo-purple)), 
+    hsl(var(--holo-pink))
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Holographic Glow */
+.holo-glow {
+  box-shadow: 
+    0 0 20px hsla(var(--holo-pink), 0.4),
+    0 0 40px hsla(var(--holo-blue), 0.3),
+    0 0 60px hsla(var(--holo-purple), 0.2);
+}
+
+.holo-glow-hover:hover {
+  box-shadow: 
+    0 0 25px hsla(var(--holo-pink), 0.5),
+    0 0 50px hsla(var(--holo-blue), 0.4),
+    0 0 75px hsla(var(--holo-purple), 0.3);
+}
+
+/* Glass Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.12);
+}
+
+.glass-card-dark {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Holographic Button */
+.btn-holographic {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, hsl(var(--holo-pink)) 0%, hsl(var(--holo-blue)) 100%);
+  border: none;
+  color: hsl(280 60% 25%);
+  transition: all 0.3s ease;
+}
+
+.btn-holographic:hover {
+  box-shadow: 0 0 25px hsla(var(--holo-pink), 0.6);
+  transform: scale(1.02);
+}
+
+/* Holographic Text Gradient */
+.text-holographic {
+  background: linear-gradient(135deg, 
+    hsl(var(--holo-pink)), 
+    hsl(var(--holo-purple)), 
+    hsl(var(--holo-blue))
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Active Indicator - Holographic */
+.active-indicator-holo {
+  background: linear-gradient(90deg, 
+    hsl(var(--holo-pink)), 
+    hsl(var(--holo-purple)), 
+    hsl(var(--holo-blue))
+  );
+  background-size: 200% 100%;
+  animation: gradient-shift 2s ease infinite;
+}
+
+/* =================================
+   MOBILE RESPONSIVE TYPOGRAPHY
+   ================================= */
+
+@media (max-width: 768px) {
+  body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  h1 { 
+    font-family: 'Quicksand', sans-serif;
+    font-size: 28px; 
+    font-weight: 700;
+  }
+  
+  h2 { 
+    font-family: 'Quicksand', sans-serif;
+    font-size: 22px; 
+    font-weight: 700;
+  }
+  
+  h3 {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  
+  .btn-primary, .btn-holographic {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-height: 48px;
+  }
+}
+
 /* Fun Planet Web3 Design System - Clean & Modern */
 
 @layer base {

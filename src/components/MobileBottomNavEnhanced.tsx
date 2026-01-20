@@ -51,13 +51,13 @@ export const MobileBottomNavEnhanced = () => {
       initial={shouldReduceAnimations ? false : { y: 100 }}
       animate={{ y: 0 }}
       transition={shouldReduceAnimations ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-card/98 via-card/95 to-card/90 backdrop-blur-xl border-t-2 border-primary/30 shadow-[0_-8px_40px_hsla(280,65%,65%,0.15),0_-2px_16px_hsla(340,70%,75%,0.1)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
       style={{ 
         paddingBottom: 'max(env(safe-area-inset-bottom), 8px)',
       }}
     >
-      {/* ✨ Sparkle decoration */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      {/* ✨ Holographic top border */}
+      <div className="absolute inset-x-0 top-0 h-[2px] holo-border-animated" />
       
       <div className={cn(
         "grid h-[76px] max-w-lg mx-auto",
@@ -78,14 +78,11 @@ export const MobileBottomNavEnhanced = () => {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {/* 🌈 Active rainbow indicator */}
+              {/* 🌈 Holographic active indicator */}
               {active && (
                 <motion.div
                   layoutId="activeTab"
-                  className={cn(
-                    "absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full bg-gradient-to-r",
-                    item.color
-                  )}
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 rounded-full active-indicator-holo"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
@@ -119,9 +116,9 @@ export const MobileBottomNavEnhanced = () => {
                 )}
               </motion.div>
               
-              {/* 📝 Label */}
+              {/* 📝 Label - Holographic Typography */}
               <span className={cn(
-                "text-xs font-bold transition-all duration-300",
+                "text-[10px] font-quicksand font-bold uppercase tracking-widest transition-all duration-300",
                 active ? "text-primary" : "text-muted-foreground"
               )}>
                 {item.label}
