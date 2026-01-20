@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import camlyCoinPro from '@/assets/camly-coin-pro.png';
+
 
 interface ProfileSidebarProps {
   profile: {
@@ -227,39 +227,6 @@ export function ProfileSidebar({
         </CardContent>
       </Card>
 
-      {/* Wallet Card */}
-      <Card className="shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-primary via-secondary to-accent p-6 text-white">
-          <div className="flex items-center gap-3 mb-4">
-            <img src={camlyCoinPro} alt="CAMLY" className="w-12 h-12" />
-            <div>
-              <p className="text-white/80 text-sm">Your Balance</p>
-              <p className="text-3xl font-bold">{camlyBalance.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              onClick={() => navigate('/reward-galaxy')}
-              className="flex-1 bg-white/20 hover:bg-white/30 text-white border-0"
-            >
-              <Gift className="w-4 h-4 mr-2" />
-              Rewards
-            </Button>
-          </div>
-        </div>
-        {!isConnected && (
-          <CardContent className="p-4">
-            <Button
-              onClick={onConnectWallet}
-              variant="outline"
-              className="w-full border-yellow-500/50 hover:bg-yellow-500/10"
-            >
-              <Gem className="w-4 h-4 mr-2" />
-              Connect for Rewards (+50,000 CAMLY)
-            </Button>
-          </CardContent>
-        )}
-      </Card>
 
       {/* Recent Transactions */}
       <Card className="shadow-sm">
